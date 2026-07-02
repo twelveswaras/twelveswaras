@@ -1,0 +1,37 @@
+# twelveswaras — Python 3.11. Non-commercial, open-source (D1) → AGPL libs are fine.
+# Phase 1 = librosa-only floor (no native-lib pain). Phase 2 adds the Carnatic tonic layer.
+#
+# This is the PIP manifest for the HF Space (Linux, wheels exist). For LOCAL dev on
+# Apple Silicon use `conda env create -f environment.yml` instead — pip tries to build
+# llvmlite/librosa from source on arm64 and fails.
+
+# --- Core + DSP (§6.1) ---
+numpy
+scipy
+pandas
+librosa            # feature extraction — the workhorse
+soundfile          # wav/flac I/O
+# ffmpeg is a SYSTEM package: `brew install ffmpeg` (not pip)
+
+# --- Data + loaders (§6.3) ---
+mirdata            # one-line loaders for Saraga Carnatic/Hindustani
+huggingface_hub    # push/pull the commons + model
+datasets           # datasets.Features spec (schema.py)
+
+# --- Modeling — PyTorch (D15), baseline-first ladder (D16) ---
+torch              # arm64 wheels ship MPS support
+torchaudio
+scikit-learn       # SVM baseline
+xgboost            # XGBoost floor (D16 step 1)
+# pytorch-lightning   # add when we move past the XGBoost floor to the CNN
+
+# --- Experiment tracking (§6.5) ---
+wandb
+
+# --- Serving (§6.6) ---
+gradio             # HF Space UI: identify (v0) → contribute/verify (v1)
+
+# --- Phase 2: Carnatic tonic layer (D5) — native/AGPL, add after the floor works ---
+# essentia         # tonic ID, predominant-melody (arm64 install handled in Phase 2)
+# compiam          # ⭐ MTG toolkit: tonic-norm, Saraga loaders, DEEPSRGM benchmark
+# torchcrepe       # deep pitch tracker (cleaner f0 on vocals)

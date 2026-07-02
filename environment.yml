@@ -1,0 +1,42 @@
+# Local dev env (conda). Native/scientific packages come from conda-forge as
+# prebuilt osx-arm64 binaries so nothing compiles on Apple Silicon (pip tries to
+# build llvmlite/librosa from source and fails). The HF Space uses requirements.txt
+# (pip on Linux, where wheels exist).
+#
+#   conda env create -f environment.yml
+#   conda activate twelveswaras
+#
+# Phase 2 (D5) adds essentia/compiam — see the commented block at the bottom.
+name: twelveswaras
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  # Core + DSP (§6.1) — llvmlite/numba/librosa as binaries (the pip pain point)
+  - numpy
+  - scipy
+  - pandas
+  - librosa
+  - pysoundfile   # conda-forge name for PyPI's "soundfile"
+  - numba
+  - llvmlite
+  - ffmpeg
+  # Modeling — PyTorch (D15) + XGBoost/SVM floor (D16)
+  - pytorch
+  - torchaudio
+  - scikit-learn
+  - xgboost
+  # Data + commons (§6.3, D10)
+  - datasets
+  - huggingface_hub
+  # Pure-Python bits are cleaner via pip
+  - pip:
+      - mirdata
+      - gradio
+      - wandb
+  # --- Phase 2 (D5), add when the floor works ---
+  # - essentia        # conda-forge osx-arm64 availability is the thing to verify then
+  # - pip:
+  #     - compiam
+  #     - torchcrepe
