@@ -1,0 +1,34 @@
+# Local planning / context — not for publication
+supporting-docs/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.ipynb_checkpoints/
+
+# Data & models (large; canonical copies live on the HF Hub, not in git)
+data/
+models/
+*.wav
+*.flac
+*.ogg
+*.mp3
+*.pkl
+*.parquet
+*.pt
+*.onnx
+*.tflite
+
+# Env / secrets
+.env
+.env.local
+*.hf_token
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
