@@ -2,9 +2,9 @@
 
     python -m raaga_id.train
 
-Floor path: iterate Saraga clips (v0 vocab) -> extract frame vectors -> fit the
-XGBoost baseline -> save. Freeze a test split immediately (build-order step 6) so
-evaluate.py always scores against the same benchmark.
+Floor path (D16 step 1): split Saraga tracks train/test BY TRACK (frozen benchmark,
+no window leakage) -> window the train tracks into 10 s clips (D7) -> extract frame
+vectors -> fit the XGBoost baseline -> save.
 """
 from __future__ import annotations
 
@@ -17,38 +17,50 @@ from .config import MODELS_DIR
 from .model import RaagaXGB
 
 
-def build_dataset(only_vocab: bool = True):
-    X, y, ids = [], [], []
-    for clip in data.iter_clips(only_vocab=only_vocab):
+def build_windowed(clips, max_windows: int | None):
+    """Return (X, y) of per-window vectors labelled with each window's track raaga."""
+    X, y = [], []
+    for clip in clips:
         try:
-            X.append(features.extract(str(clip.audio_path)))
-            y.append(clip.raaga)
-            ids.append(clip.track_id)
+            vecs = features.extract_windows(str(clip.audio_path), max_windows=max_windows)
         except Exception as exc:  # noqa: BLE001 — skip unreadable clips, keep going
             print(f"  skip {clip.track_id}: {exc}")
+            continue
+        X.extend(vecs)
+        y.extend([clip.raaga] * len(vecs))
     if not X:
         raise SystemExit(
-            "No clips found. Download Saraga first: "
+            "No windows extracted. Download Saraga first: "
             "python -c 'from raaga_id.data import download_saraga; download_saraga()'"
         )
-    return np.vstack(X), np.array(y), ids
+    return np.vstack(X), np.array(y)
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Train the v0 raaga floor (XGBoost).")
     ap.add_argument("--out", default=str(MODELS_DIR / "raaga_xgb.json"))
-    ap.add_argument("--all-raagas", action="store_true", help="train on all raagas, not just v0 vocab")
+    ap.add_argument("--max-windows", type=int, default=60, help="cap windows/track (bounds compute)")
+    ap.add_argument("--test-frac", type=float, default=0.25)
     args = ap.parse_args()
 
-    X, y, _ = build_dataset(only_vocab=not args.all_raagas)
+    clips = list(data.iter_clips(only_vocab=True))
+    if not clips:
+        raise SystemExit("No labelled clips in the v0 vocab — check raagas.json / Saraga download.")
+
+    train_ids, test_ids = data.split_by_track(clips, test_frac=args.test_frac)
+    train_clips = [c for c in clips if c.track_id in train_ids]
+    print(f"{len(clips)} tracks -> {len(train_clips)} train / {len(test_ids)} test "
+          f"(frozen: {data.FROZEN_TEST_PATH})")
+
+    X, y = build_windowed(train_clips, args.max_windows)
     classes = sorted(set(y))
     idx = {c: i for i, c in enumerate(classes)}
     y_idx = np.array([idx[c] for c in y])
 
-    print(f"training on {len(X)} clips across {len(classes)} raagas: {classes}")
+    print(f"training on {len(X)} windows across {len(classes)} raagas: {classes}")
     model = RaagaXGB(classes).fit(X, y_idx)
     path = model.save(args.out)
-    print(f"saved -> {path}")
+    print(f"saved -> {path}\nnext: python -m raaga_id.evaluate --model {path}")
 
 
 if __name__ == "__main__":

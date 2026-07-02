@@ -34,8 +34,10 @@ def identify(audio, model: RaagaXGB) -> str:
         import librosa
 
         wav = librosa.resample(wav, orig_sr=sr, target_sr=SAMPLE_RATE)
-    vec = features.frame_vector(features.tonic_normalize(wav))
-    preds = model.top_k(vec, k=TOP_K)
+    vecs = features.window_vectors(features.tonic_normalize(wav))
+    if not vecs:
+        return "🤔 Too short — give me at least ~5 seconds of melody."
+    preds = model.aggregate_top_k(vecs, k=TOP_K)
     if preds[0].confidence < LOW_CONFIDENCE:
         return "🤔 Not sure — not enough clear melody. Try a longer, cleaner clip."
     return "\n".join(f"{p.raaga}: {p.confidence:.0%}" for p in preds)

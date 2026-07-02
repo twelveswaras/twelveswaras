@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from .config import SAMPLE_RATE
+from .config import CLIP_SECONDS, MIN_CLIP_SECONDS, SAMPLE_RATE
 
 
 def load_audio(path: str, sr: int = SAMPLE_RATE) -> np.ndarray:
@@ -54,8 +54,47 @@ def frame_vector(y: np.ndarray, sr: int = SAMPLE_RATE) -> np.ndarray:
     return np.concatenate(stats).astype(np.float32)
 
 
+def window_vectors(
+    y: np.ndarray,
+    sr: int = SAMPLE_RATE,
+    window_s: float = CLIP_SECONDS,
+    hop_s: float = CLIP_SECONDS,
+    max_windows: int | None = None,
+) -> list[np.ndarray]:
+    """Slide a `window_s` window over a (long) clip -> one frame vector per window.
+
+    Saraga tracks are full concert recordings, so one vector per track would be a
+    single over-smoothed sample. Windowing (D7: 10 s) turns each recording into many
+    training examples. Tail segments shorter than MIN_CLIP_SECONDS are dropped;
+    hop_s == window_s gives non-overlapping windows (the training default).
+    """
+    win = int(round(window_s * sr))
+    hop = max(1, int(round(hop_s * sr)))
+    min_len = int(round(MIN_CLIP_SECONDS * sr))
+    out: list[np.ndarray] = []
+    start = 0
+    while start < len(y):
+        seg = y[start : start + win]
+        if len(seg) < min_len:
+            break
+        out.append(frame_vector(seg, sr))
+        if max_windows and len(out) >= max_windows:
+            break
+        start += hop
+    return out
+
+
 def extract(path: str, sr: int = SAMPLE_RATE) -> np.ndarray:
-    """Full floor path: load -> tonic-normalize (no-op in Phase 1) -> frame vector."""
+    """Single-vector path for short clips: load -> tonic-normalize -> frame vector."""
     y = load_audio(path, sr)
     y = tonic_normalize(y, sr)
     return frame_vector(y, sr)
+
+
+def extract_windows(
+    path: str, sr: int = SAMPLE_RATE, max_windows: int | None = None
+) -> list[np.ndarray]:
+    """Load a (long) recording and return one frame vector per 10 s window."""
+    y = load_audio(path, sr)
+    y = tonic_normalize(y, sr)
+    return window_vectors(y, sr, max_windows=max_windows)

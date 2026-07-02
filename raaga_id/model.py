@@ -51,6 +51,16 @@ class RaagaXGB:
     def top_k(self, x: np.ndarray, k: int = TOP_K) -> list[Prediction]:
         """Top-k raagas + confidence for one frame vector (D6: always top-3)."""
         proba = self.predict_proba(x.reshape(1, -1))[0]
+        return self._decode(proba, k)
+
+    def aggregate_top_k(self, X: np.ndarray, k: int = TOP_K) -> list[Prediction]:
+        """Top-k for a clip given its per-window vectors: mean the window
+        probabilities, then decode (D7: aggregate predictions across a long clip)."""
+        X = np.atleast_2d(X)
+        proba = self.predict_proba(X).mean(axis=0)
+        return self._decode(proba, k)
+
+    def _decode(self, proba: np.ndarray, k: int) -> list[Prediction]:
         order = np.argsort(proba)[::-1][:k]
         return [Prediction(self.classes[i], float(proba[i])) for i in order]
 
