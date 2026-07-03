@@ -116,3 +116,22 @@ TDMS → 2-D CNN (the surface is an image).
 Calibration (D25) refit on the TDMS model: **T = 0.475, ECE 0.356 → 0.062, NLL 0.978 → 0.647,
 mean top-1 confidence 0.510 → 0.810** (accuracy unchanged, argmax-preserving). Same story as
 PCD — window-averaging left it under-confident.
+
+### CNN on the TDMS surface beats the XGBoost floor (spike, D30, 2026-07-03)
+
+The 48×48 TDMS surface is an image, so a small 2-D CNN can learn spatial gamaka structure the
+flat-vector XGBoost can't (`tools/cnn_spike.py`; same frozen split, same per-track mean-softmax
+aggregation). **Key architecture note:** global-average-pool *fails* (top1 0.333) — it discards
+*where* the off-diagonal mass sits, which IS the raga signal; a position-preserving **flatten
+head** is essential.
+
+| model | frozen top1 | frozen top3 |
+|-------|-------------|-------------|
+| XGBoost on TDMS (live) | 0.798 | 0.938 |
+| **CNN on TDMS** (4 seeds) | **0.868** (0.853–0.884) | **0.959** (0.953–0.961) |
+
+**+7.0 pts top1**, robust across seeds (worst seed still +5.5). NOT yet productionized: adds a
+**torch dependency to the Space** (heavier image / slower cold-start), needs `RaagaCNN` promoted +
+a val-split checkpoint + seed-averaging + calibration refit. Decision gated behind the real-world
+benchmark — if real-world is limited by tonic/domain not model capacity, the torch weight isn't
+worth it yet.
