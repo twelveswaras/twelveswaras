@@ -58,22 +58,6 @@ footer { display: none !important; }
 .gradio-container .label span.text + div, .gradio-container .fill { background: #f59e0b !important; }
 """
 
-# Pops the browser's mic-permission prompt via getUserMedia; returns a status for the
-# info Markdown. Only re-prompts if the permission is undecided (browsers won't re-ask
-# after a denial — that needs the address-bar site settings).
-_MIC_JS = """
-async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
-    stream.getTracks().forEach(t => t.stop());
-    return "✅ Microphone enabled — switch to the **Record** tab and record.";
-  } catch (e) {
-    return "🚫 Mic is blocked. Click the tune/lock icon at the left of the address bar → "
-         + "**Microphone → Allow**, then reload. (Or just use **Upload**.)";
-  }
-}
-"""
-
 
 def _theme():
     import gradio as gr
@@ -176,7 +160,6 @@ def build_ui():
         gr.HTML(TITLE_HTML)
         audio = gr.Audio(sources=["microphone", "upload"], type="numpy",
                          label="Upload or record ~15–30 s")
-        mic_btn = gr.Button("🎤 Enable microphone", size="sm")
         gr.Markdown("🎚️ **For best accuracy, include a tanpura / shruti-box drone.** A live "
                     "concert always has one — the tonic (Sa) is found from it, so solo voice "
                     "without a drone is unreliable.")
@@ -191,8 +174,6 @@ def build_ui():
         # No button: auto-identify when a file is uploaded or a recording stops.
         audio.upload(lambda a: identify(a, model), audio, outs)
         audio.stop_recording(lambda a: identify(a, model), audio, outs)
-        # Pop the browser mic-permission prompt (only works if not previously denied).
-        mic_btn.click(None, None, info, js=_MIC_JS)
     return demo
 
 
