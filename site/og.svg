@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <rect width="1200" height="630" fill="#0a0a0a"/>
+  <g transform="translate(520,140)">
+    <defs><linearGradient id="og" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f59e0b"/><stop offset="1" stop-color="#b45309"/></linearGradient></defs>
+    <g transform="scale(0.625)">
+      <rect width="256" height="256" rx="56" fill="url(#og)"/>
+      <g fill="#fff">
+        <rect x="36" y="140" width="10" height="60" rx="5"/><rect x="52" y="105" width="10" height="95" rx="5"/>
+        <rect x="68" y="145" width="10" height="55" rx="5"/><rect x="84" y="80" width="10" height="120" rx="5"/>
+        <rect x="100" y="120" width="10" height="80" rx="5"/><rect x="116" y="95" width="10" height="105" rx="5"/>
+        <rect x="132" y="64" width="10" height="136" rx="5"/><rect x="148" y="130" width="10" height="70" rx="5"/>
+        <rect x="164" y="90" width="10" height="110" rx="5"/><rect x="180" y="115" width="10" height="85" rx="5"/>
+        <rect x="196" y="100" width="10" height="100" rx="5"/><rect x="212" y="135" width="10" height="65" rx="5"/>
+      </g>
+    </g>
+  </g>
+  <text x="600" y="470" text-anchor="middle" font-weight="800" font-size="90" letter-spacing="-3"><tspan fill="#ededed">twelve</tspan><tspan fill="#f59e0b">swaras</tspan></text>
+  <text x="600" y="524" text-anchor="middle" font-size="33" fill="#9ca3af">identify the raaga · a Shazam for Carnatic music</text>
+</svg>

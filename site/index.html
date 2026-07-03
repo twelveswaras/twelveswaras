@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>twelveswaras — identify the raaga (Shazam for Carnatic music)</title>
+<meta name="description" content="Point your phone at a Carnatic performance and identify the raaga. A free, open-source 'Shazam for raagas' — with an open CC-BY data commons. Carnatic first; Hindustani planned.">
+<link rel="canonical" href="https://twelveswaras.com/">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="twelveswaras">
+
+<!-- Open Graph / Twitter -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://twelveswaras.com/">
+<meta property="og:title" content="twelveswaras — identify the raaga">
+<meta property="og:description" content="A free, open-source 'Shazam for raagas'. Point your phone at a Carnatic performance; it names the raaga.">
+<meta property="og:image" content="https://twelveswaras.com/og.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="twelveswaras — identify the raaga">
+<meta name="twitter:description" content="A free, open-source 'Shazam for raagas' for Carnatic music.">
+<meta name="twitter:image" content="https://twelveswaras.com/og.svg">
+
+<!-- AEO: structured data for answer engines -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "twelveswaras",
+  "description": "An open 'Shazam for raagas' that identifies the raaga of a Carnatic music performance from audio.",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Web",
+  "url": "https://twelveswaras.com/",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "isAccessibleForFree": true,
+  "license": "https://opensource.org/licenses/MIT",
+  "codeRepository": "https://github.com/twelveswaras"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "What is twelveswaras?",
+     "acceptedAnswer": {"@type": "Answer", "text": "twelveswaras is a free, open-source 'Shazam for raagas'. Give it a short clip of Carnatic music and it identifies the raaga — showing the top-3 with confidence, plus the tonic (Sa) it detected."}},
+    {"@type": "Question", "name": "How do I identify a raaga?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Open the app, tap record (or upload a clip), and let it hear ~15-30 seconds of melody. It extracts the predominant-melody pitch and the tonic, then names the raaga. A tanpura or shruti-box drone under the melody gives the best results."}},
+    {"@type": "Question", "name": "Does it work at a live concert?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Yes. A concert always has a tanpura drone, which is exactly what the tool uses to find the tonic. Point your phone at the stage for ~30 seconds. (Solo singing with no drone is unreliable, because the tonic is hard to find without it.)"}},
+    {"@type": "Question", "name": "Is twelveswaras free and open source?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Yes — it is a non-commercial, open-source public good. The code is MIT-licensed and the contributor data commons is CC-BY-4.0. It is not a commercial product."}},
+    {"@type": "Question", "name": "How many raagas does it recognise?",
+     "acceptedAnswer": {"@type": "Answer", "text": "40 Carnatic raagas in this version. The name, schema and pipeline are tradition-neutral by design, with Hindustani planned as a fast-follow."}},
+    {"@type": "Question", "name": "Do I need to install an app?",
+     "acceptedAnswer": {"@type": "Answer", "text": "No. It runs in your browser. On a phone you can 'Add to Home Screen' for an app-like, full-screen experience — no App Store or Play Store needed."}}
+  ]
+}
+</script>
+
+<style>
+  :root{
+    --bg:#0a0a0a; --card:#15151a; --elev:#1a1a1f; --line:#262626;
+    --fg:#ededed; --muted:#9ca3af;
+    --amber:#f59e0b; --amber-bright:#fbbf24; --amber-strong:#d97706; --amber-deep:#b45309;
+    --sans:system-ui, ui-sans-serif, -apple-system, "Segoe UI", sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--amber-bright);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px}
+  section{padding:56px 0;border-top:1px solid var(--line)}
+  h2{font-size:clamp(1.3rem,4.5vw,1.7rem);font-weight:700;letter-spacing:-.5px;margin:0 0 .6rem}
+  p{color:var(--muted);max-width:62ch}
+  .lead{color:var(--fg)}
+
+  /* header / hero */
+  header{padding:52px 0 8px;text-align:center}
+  .logo{display:inline-flex;align-items:center;gap:.7rem}
+  .word{font-size:clamp(1.8rem,8vw,3rem);font-weight:800;letter-spacing:-1.5px}
+  .word .a{color:var(--fg)} .word .b{color:var(--amber)}
+  .tag{color:var(--muted);font-size:clamp(.95rem,3.6vw,1.15rem);margin:.4rem 0 1.4rem}
+  .cta{display:inline-flex;align-items:center;gap:.5rem;background:var(--amber-strong);
+    color:#fff;font-weight:700;padding:.8rem 1.6rem;border-radius:12px;font-size:1.05rem;
+    border:1px solid var(--amber-strong)}
+  .cta:hover{background:var(--amber-deep);text-decoration:none}
+  .ghost{display:inline-block;margin-top:.9rem;color:var(--muted);font-size:.9rem}
+
+  /* steps */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:20px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .step .n{color:var(--amber);font-weight:800;font-size:.85rem;letter-spacing:.5px}
+  .step h3{margin:.3rem 0 .3rem;font-size:1.05rem}
+  .step p{margin:0;font-size:.95rem}
+
+  /* recognizer embed */
+  .embed{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:18px}
+  .embed iframe{width:100%;height:680px;border:0;display:block;background:var(--bg)}
+  .note{font-size:.82rem;color:var(--muted);margin-top:.6rem}
+
+  /* faq */
+  details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.2rem 1rem;margin:10px 0}
+  summary{cursor:pointer;font-weight:600;padding:.7rem 0;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"+";color:var(--amber);font-weight:800;margin-right:.6rem}
+  details[open] summary::before{content:"–"}
+  details p{margin:.2rem 0 .9rem}
+
+  footer{border-top:1px solid var(--line);padding:32px 0 48px;text-align:center;color:var(--muted);font-size:.85rem}
+  .badges{margin-top:.6rem;font-size:.82rem}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="logo">
+      <svg width="52" height="52" viewBox="0 0 256 256" aria-hidden="true">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f59e0b"/><stop offset="1" stop-color="#b45309"/></linearGradient></defs>
+        <rect width="256" height="256" rx="56" fill="url(#g)"/>
+        <g fill="#fff">
+          <rect x="36" y="140" width="10" height="60" rx="5"/><rect x="52" y="105" width="10" height="95" rx="5"/>
+          <rect x="68" y="145" width="10" height="55" rx="5"/><rect x="84" y="80" width="10" height="120" rx="5"/>
+          <rect x="100" y="120" width="10" height="80" rx="5"/><rect x="116" y="95" width="10" height="105" rx="5"/>
+          <rect x="132" y="64" width="10" height="136" rx="5"/><rect x="148" y="130" width="10" height="70" rx="5"/>
+          <rect x="164" y="90" width="10" height="110" rx="5"/><rect x="180" y="115" width="10" height="85" rx="5"/>
+          <rect x="196" y="100" width="10" height="100" rx="5"/><rect x="212" y="135" width="10" height="65" rx="5"/>
+        </g></svg>
+      <span class="word"><span class="a">twelve</span><span class="b">swaras</span></span>
+    </div>
+    <p class="tag">identify the raaga — a Shazam for Carnatic music</p>
+    <a class="cta" href="#try">🎶 Launch the recognizer</a>
+    <div class="ghost">free · open source · no sign-up</div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <p class="lead">Give it a clip of Carnatic music — from a concert, a recording, or your own singing over a drone.</p>
+    <div class="steps">
+      <div class="step"><div class="n">01 · LISTEN</div><h3>Record or upload</h3><p>~15–30 s of melody. At a concert, just point your phone at the stage.</p></div>
+      <div class="step"><div class="n">02 · FIND Sa</div><h3>Detect the tonic</h3><p>It finds the tonic (Sa) from the tanpura drone and traces the melody line.</p></div>
+      <div class="step"><div class="n">03 · IDENTIFY</div><h3>Name the raaga</h3><p>A pitch-class fingerprint → the top-3 raagas with confidence, in a few seconds.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="try">
+  <div class="wrap">
+    <h2>Try it</h2>
+    <p>Works best with a <strong>tanpura / shruti-box drone</strong> under the melody — which a live concert always has.</p>
+    <div class="embed">
+      <iframe src="https://twelveswaras-twelveswaras.hf.space" title="twelveswaras raaga recognizer" allow="microphone"></iframe>
+    </div>
+    <p class="note">The recognizer runs on a Hugging Face Space. If the frame is blank, the Space may be waking up — or open it directly.</p>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <h2>An open public good</h2>
+    <p class="lead">twelveswaras is <strong>non-commercial and open source</strong> — never a product, not owned by any company. It pairs a raaga-recognition model with a community-contributed, openly-licensed <strong>data commons</strong> so it improves over time.</p>
+    <p>The twelve swaras are the twelve note-positions of the octave — the shared alphabet of both Carnatic and Hindustani music. Carnatic is where we start; the name, schema and pipeline are tradition-neutral by design, with Hindustani planned as a fast-follow.</p>
+    <p><strong>Code:</strong> MIT · <strong>Data commons:</strong> CC-BY-4.0 · <a href="https://github.com/twelveswaras">GitHub →</a></p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>FAQ</h2>
+    <details open><summary>Does it work at a live concert?</summary><p>Yes — a concert has a tanpura drone, which is exactly what it uses to find the tonic. Point your phone at the stage for ~30 seconds. Solo singing with no drone is unreliable.</p></details>
+    <details><summary>Is it free and open source?</summary><p>Yes. Non-commercial, MIT-licensed code, CC-BY-4.0 data commons. Not a commercial product.</p></details>
+    <details><summary>How many raagas does it know?</summary><p>40 Carnatic raagas in this version. Hindustani is planned.</p></details>
+    <details><summary>Do I need to install an app?</summary><p>No — it runs in your browser. On a phone, "Add to Home Screen" for a full-screen, app-like experience.</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    a non-commercial, open-source public good · Carnatic first · CC-BY data commons
+    <div class="badges"><a href="https://github.com/twelveswaras">github.com/twelveswaras</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

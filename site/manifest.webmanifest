@@ -1,0 +1,15 @@
+{
+  "name": "twelveswaras — identify the raaga",
+  "short_name": "twelveswaras",
+  "description": "A Shazam for raagas — identify the raaga of a Carnatic music performance.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "categories": ["music", "education"],
+  "icons": [
+    {"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ]
+}
