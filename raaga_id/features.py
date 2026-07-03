@@ -75,6 +75,40 @@ def pitch_class_histogram(f0_hz, tonic_hz: float, n_bins: int = 120) -> np.ndarr
     return hist / hist.sum()
 
 
+def tdms(times, f0_hz, tonic_hz: float, delay: float = 0.3, n_bins: int = 48) -> np.ndarray:
+    """Time-Delayed Melody Surface (Gulati et al., ISMIR 2016) — the gamaka feature (refines
+    D16). A 2-D histogram of (pitch(t), pitch(t+delay)) over the tonic-normalized, octave-folded
+    melody: a held note sits on the diagonal, while gamaka/transitions smear off-diagonal in a
+    raaga-characteristic way. This keeps the *movement* the 1-D PCD discards — the information
+    that should separate allied raagas (Mōhanaṁ/Bilahari/Bēgaḍa) which share a scale.
+
+    Returns a flat (n_bins*n_bins,) surface normalized to sum 1, or zeros when too few voiced
+    pairs. `delay` is in seconds; the frame hop is inferred from `times`.
+    """
+    times = np.asarray(times, dtype=float)
+    f0 = np.asarray(f0_hz, dtype=float)
+    zeros = np.zeros(n_bins * n_bins, dtype=np.float32)
+    if times.size < 2:
+        return zeros
+    voiced = f0 > 0
+    cents = np.zeros_like(f0)
+    cents[voiced] = np.mod(1200.0 * np.log2(f0[voiced] / tonic_hz), 1200.0)
+    bins = np.mod((cents / (1200.0 / n_bins)).astype(int), n_bins)
+
+    hop = float(np.median(np.diff(times)))
+    d = max(1, int(round(delay / hop)))
+    if d >= bins.size:
+        return zeros
+    a, b = bins[:-d], bins[d:]
+    both = voiced[:-d] & voiced[d:]          # count a pair only if both endpoints are voiced
+    a, b = a[both], b[both]
+    if a.size == 0:
+        return zeros
+    surf = np.zeros((n_bins, n_bins), dtype=np.float64)
+    np.add.at(surf, (a, b), 1.0)
+    return (surf / surf.sum()).astype(np.float32).ravel()
+
+
 def frame_vector(y: np.ndarray, sr: int = SAMPLE_RATE, tonic_pc: int = 0) -> np.ndarray:
     """Tonic-relative pitch-class descriptor for one window (D16 step 1).
 

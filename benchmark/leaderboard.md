@@ -79,3 +79,21 @@ Temperature scaling (one scalar, fit on 4-fold OOF predictions; `tools/calibrate
 `RaagaXGB._decode`. Accuracy is untouched — only the confidence numbers become honest
 (a "70%" is now right ~70% of the time). Allied raagas (Mōhanaṁ/Bilahari/Bēgaḍa) stay
 relatively close because PCD is blind to gamaka — that's the next lever (TDMS, refines D16).
+
+### Gamaka feature — TDMS vs PCD (D28, 2026-07-03)
+
+Track-level 4-fold CV (567 tracks, 40 raagas; `tools/tdms_experiment.py`) — does the
+Time-Delayed Melody Surface (Gulati et al., ISMIR 2016; `features.tdms`, 48×48, delay 0.3 s)
+capture the gamaka/movement the static PCD discards?
+
+| feature | top1 | top3 | allied triple (Mōhanaṁ/Bilahari/Bēgaḍa, n=42) |
+|---------|------|------|-----------------------------------------------|
+| PCD (120d) | 0.658 | 0.840 | 0.548 |
+| **TDMS (2304d)** | **0.725** | **0.869** | **0.714** |
+| PCD+TDMS (2424d) | 0.709 | 0.852 | 0.667 |
+
+**TDMS wins outright (+6.7 pts top1) and lifts the allied triple +17 pts** — gamaka is the
+missing signal. PCD+TDMS is *worse* than TDMS alone (the surface's diagonal already carries the
+pitch marginal, so PCD is redundant). NB these are *track-level*; production PCD is windowed +
+aggregated (0.780), so the next step is a windowed-TDMS run on the frozen set before swapping the
+inference feature. Then TDMS→CNN.
