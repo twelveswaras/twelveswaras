@@ -99,25 +99,26 @@ def _load_model() -> RaagaXGB:
 
 
 def _learn_plot(raaga, user_profile):
-    """A dark/amber bar chart of the raaga's reference swara fingerprint vs the user's
-    clip — the 'how to hear this raaga' visual."""
+    """A dark/amber bar chart of which of the seven swaras the raaga rests on vs the user's
+    clip — the 'how to hear this raaga' visual, in the notes a beginner knows."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
     from raaga_id import learn
-    from raaga_id.features import SWARA_LABELS
+    from raaga_id.features import to_swaras7
 
-    x = np.arange(12)
+    names, user7 = to_swaras7(user_profile)
+    x = np.arange(len(names))
     fig, ax = plt.subplots(figsize=(6, 2.4))
     fig.patch.set_facecolor("#0a0a0a")
     ax.set_facecolor("#0a0a0a")
     ref = learn.reference_profile(raaga)
     if ref is not None:
-        ax.bar(x - 0.2, ref, width=0.4, color="#f59e0b", label=raaga)
-    ax.bar(x + 0.2, np.asarray(user_profile), width=0.4, color="#6b7280", label="your clip")
+        ax.bar(x - 0.2, to_swaras7(ref)[1], width=0.4, color="#f59e0b", label=raaga)
+    ax.bar(x + 0.2, user7, width=0.4, color="#6b7280", label="your clip")
     ax.set_xticks(x)
-    ax.set_xticklabels(SWARA_LABELS, color="#ededed", fontsize=8)
+    ax.set_xticklabels(names, color="#ededed", fontsize=9)
     ax.tick_params(axis="x", length=0)
     ax.set_yticks([])
     for spine in ax.spines.values():
@@ -188,7 +189,7 @@ def build_ui():
         result = gr.Label(num_top_classes=TOP_K, label="Raaga")
         info = gr.Markdown("_Recognition runs automatically when you upload or finish recording._")
         with gr.Accordion("🎓 How to hear this raaga", open=False):
-            learn_plot = gr.Plot(label="Swara fingerprint — this raaga vs your clip")
+            learn_plot = gr.Plot(label="Typical shape from recordings (gold) vs your clip (grey)")
             learn_md = gr.Markdown()
         gr.HTML(FOOTER_HTML)
 

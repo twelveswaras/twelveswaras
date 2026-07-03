@@ -49,6 +49,20 @@ def tonic_pc_from_hz(hz: float) -> int:
 # 12 semitone positions relative to Sa (common Carnatic labels for the swara-sthanas).
 SWARA_LABELS = ["S", "R1", "R2", "G2", "G3", "M1", "M2", "P", "D1", "D2", "N2", "N3"]
 
+# The seven swaras every learner knows. For the "how to hear this raaga" panel we fold the 12
+# chromatic positions down to these names (sa ri ga ma pa da ni) — the beginner's vocabulary,
+# not the R1/R2/G2/G3 sthana subscripts. Each name groups its sthana variants.
+SWARA7 = ["Sa", "Ri", "Ga", "Ma", "Pa", "Da", "Ni"]
+_SWARA7_GROUPS = [[0], [1, 2], [3, 4], [5, 6], [7], [8, 9], [10, 11]]  # indices into SWARA_LABELS
+
+
+def to_swaras7(profile):
+    """Fold a 12-position swara profile to the seven named swaras (SWARA7), summing each swara's
+    sthana variants. Returns (names, values). The friendly display unit for new learners."""
+    p = np.asarray(profile, dtype=float)
+    vals = np.array([p[g].sum() for g in _SWARA7_GROUPS])
+    return SWARA7, vals
+
 
 def pcd_to_swaras(pcd) -> np.ndarray:
     """Fold a fine PCD (n_bins, a multiple of 12) to a 12-position swara profile

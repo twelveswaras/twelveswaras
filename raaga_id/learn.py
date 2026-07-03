@@ -14,7 +14,7 @@ from functools import lru_cache
 import numpy as np
 
 from .config import ROOT
-from .features import SWARA_LABELS
+from .features import to_swaras7
 
 PROFILES_PATH = ROOT / "raaga_profiles.json"
 GUIDE_PATH = ROOT / "raaga_guide.json"
@@ -37,10 +37,11 @@ def reference_profile(raaga: str):
 
 
 def top_swaras(profile, k: int = 4) -> list[str]:
-    """Names of the k most-emphasized swaras (dropping negligible ones)."""
-    profile = np.asarray(profile, dtype=float)
-    order = np.argsort(profile)[::-1][:k]
-    return [SWARA_LABELS[i] for i in order if profile[i] > 0.03]
+    """The k swaras the raaga rests on most, by their everyday names (Sa Ri Ga Ma Pa Da Ni),
+    dropping ones it barely touches."""
+    names, vals = to_swaras7(profile)
+    order = np.argsort(vals)[::-1][:k]
+    return [names[i] for i in order if vals[i] > 0.03]
 
 
 def guide(raaga: str) -> dict:
@@ -49,24 +50,27 @@ def guide(raaga: str) -> dict:
 
 
 def summary_md(raaga: str, user_profile=None) -> str:
-    """Markdown: the swaras the raaga leans on + what the user's clip emphasized + any
-    curated notes (else a 'coming soon' line)."""
-    lines = [f"### How to hear **{raaga}**"]
-    ref = reference_profile(raaga)
-    if ref is not None:
-        lines.append(f"**{raaga}** leans on **{' · '.join(top_swaras(ref))}** "
-                     "(the swaras it emphasizes, relative to Sa).")
+    """A warm, plain-language 'how to hear this raaga' note for someone new to Carnatic music —
+    which of the seven swaras the raaga rests on, what their clip leaned on, and (when an expert
+    has filled it in) the raaga's ascent/descent and its telltale phrase."""
+    lines = [f"### How to hear **{raaga}**",
+             "Every raaga is a way of moving through the seven swaras — "
+             "**sa · ri · ga · ma · pa · da · ni**. Here's what to listen for."]
+    # NB: we do NOT auto-state which swaras the *raaga* uses — the data profiles are gamaka-
+    # smeared (ornaments glide pitch across neighbours), so that claim can be wrong. The raaga's
+    # actual notes belong to the expert guide below. We only describe the user's own clip.
     if user_profile is not None:
-        lines.append(f"Your clip's melody sat on **{' · '.join(top_swaras(user_profile))}**.")
+        lines.append(f"In your clip, the melody sat mostly on **{' · '.join(top_swaras(user_profile))}** — "
+                     "the notes it kept returning to.")
 
     g = guide(raaga)
     if g:
-        for label, key in (("Ārōhaṇa", "arohana"), ("Avarōhaṇa", "avarohana"),
-                           ("Pakaḍ / signature phrase", "pakad"), ("Listen for", "listen_for"),
-                           ("Not to be confused with", "vs")):
+        for label, key in (("Going up", "arohana"), ("Coming down", "avarohana"),
+                           ("Its signature phrase", "pakad"), ("Listen for", "listen_for"),
+                           ("Easy to mix up with", "vs")):
             if g.get(key):
                 lines.append(f"- **{label}:** {g[key]}")
     else:
-        lines.append("_Expert notes — ārōhaṇa/avarōhaṇa, characteristic phrases, allied-raaga "
-                     "contrasts — coming soon (vetted, not auto-generated)._")
+        lines.append("_More on the way — how the raaga rises and falls, its signature phrase, "
+                     "and the raagas it's easy to mix up with (written by musicians, not guessed)._")
     return "\n\n".join(lines)
