@@ -58,13 +58,26 @@ def test_split_no_leak():
     assert train | test == {c.track_id for c in clips}
 
 
+def test_precise_tonic_hz_is_used():
+    # known frequencies -> pitch classes (A4=440 -> A=9, C4 -> C=0)
+    assert features.tonic_pc_from_hz(440.0) == 9
+    assert features.tonic_pc_from_hz(261.63) == 0
+    # passing tonic_hz must route through tonic_pc_from_hz, not the drone estimate.
+    # 8s => exactly one window == the whole clip, so it equals frame_vector directly.
+    y = synth(SCALES["sunny"], 0, seconds=8)
+    given = features.window_vectors(y, tonic_hz=261.63)          # forces tonic pc 0
+    manual = features.frame_vector(y, tonic_pc=0)
+    assert len(given) == 1 and np.allclose(given[0], manual), "tonic_hz not applied as expected"
+
+
 def test_tonic_invariant_and_discriminative():
     X, y = [], []
     tonics = [-5, -2, 0, 3]                                    # each class seen at 4 tonics
     for label, scale in SCALES.items():
         for s, tonic in enumerate(tonics):
             for v in features.window_vectors(synth(scale, tonic, seconds=30, seed=s)):
-                X.append(v); y.append(label)
+                X.append(v)
+                y.append(label)
     X = np.vstack(X)
     names = sorted(set(y))
     idx = {c: i for i, c in enumerate(names)}
@@ -85,5 +98,6 @@ if __name__ == "__main__":
         data.FROZEN_TEST_PATH = Path(d) / "test_track_ids.json"  # don't clobber real benchmark
         test_window_vectors_shape()
         test_split_no_leak()
+        test_precise_tonic_hz_is_used()
         test_tonic_invariant_and_discriminative()
     print("SMOKE OK — windowing, split, tonic-invariant features, train/save/load, aggregate all pass")

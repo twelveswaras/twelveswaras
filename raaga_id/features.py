@@ -1,10 +1,10 @@
 """Feature extraction.
 
 Modeling ladder (D16): tonic-normalized pitch-class/swara histogram + XGBoost floor
--> TDMS -> CNN on mel/CQT. This module starts at the FLOOR (D16 step 1) with a
-librosa-only fixed-length vector — deliberately no essentia/compIAM yet so Phase 1
-runs anywhere. `tonic_normalize` is the Phase-2 seam (D5) where the real quality
-unlock plugs in.
+-> TDMS -> CNN on mel/CQT. The floor (D16 step 1) is a librosa chroma histogram rolled
+so the tonic (Sa) sits at bin 0 (D5). The tonic comes from Saraga's ctonic annotation
+when available (precise), else a drone-argmax estimate; essentia TonicIndianArtMusic is
+the inference-time upgrade for unlabelled clips (Phase 2).
 """
 from __future__ import annotations
 
@@ -25,15 +25,6 @@ def load_audio(path: str, sr: int = SAMPLE_RATE, duration: float | None = None) 
     return y.astype(np.float32)
 
 
-def tonic_normalize(y: np.ndarray, sr: int = SAMPLE_RATE) -> np.ndarray:
-    """PHASE 2 SEAM (D5). Identify the tonic (Sa) and shift so pitch classes align
-    to the swara grid. Until essentia/compIAM land, this is a no-op passthrough;
-    the librosa floor leans on pitch-shift augmentation instead (like the thesis).
-    """
-    # TODO(phase2): essentia TonicIndianArtMusic / compiam -> shift to Sa.
-    return y
-
-
 def estimate_tonic_pc(y: np.ndarray, sr: int = SAMPLE_RATE) -> int:
     """Cheap tonic (Sa) estimate: the most energetic pitch class over the clip.
 
@@ -45,6 +36,14 @@ def estimate_tonic_pc(y: np.ndarray, sr: int = SAMPLE_RATE) -> int:
 
     chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
     return int(chroma.mean(axis=1).argmax())
+
+
+def tonic_pc_from_hz(hz: float) -> int:
+    """Map a tonic frequency (Hz) to its chroma pitch class (0-11). Used with a
+    precise tonic — Saraga's ctonic annotation, or essentia at inference."""
+    import librosa
+
+    return int(round(librosa.hz_to_midi(hz))) % 12
 
 
 def frame_vector(y: np.ndarray, sr: int = SAMPLE_RATE, tonic_pc: int = 0) -> np.ndarray:
@@ -74,6 +73,7 @@ def window_vectors(
     window_s: float = CLIP_SECONDS,
     hop_s: float = CLIP_SECONDS,
     max_windows: int | None = None,
+    tonic_hz: float | None = None,
 ) -> list[np.ndarray]:
     """Slide a `window_s` window over a (long) clip -> one frame vector per window.
 
@@ -89,7 +89,8 @@ def window_vectors(
         return []
     if max_windows:  # only look at the span we'll use (fast tonic estimate on long uploads)
         y = y[: win + hop * (max_windows - 1)]
-    tonic_pc = estimate_tonic_pc(y, sr)  # one Sa estimate per recording (drone is stable)
+    # Prefer a precise tonic (Saraga ctonic) when given; else the drone-argmax heuristic.
+    tonic_pc = tonic_pc_from_hz(tonic_hz) if tonic_hz else estimate_tonic_pc(y, sr)
     out: list[np.ndarray] = []
     start = 0
     while start < len(y):
@@ -103,17 +104,14 @@ def window_vectors(
     return out
 
 
-def extract(path: str, sr: int = SAMPLE_RATE) -> np.ndarray:
-    """Single-vector path for short clips: load -> estimate Sa -> tonic-relative vector."""
-    y = load_audio(path, sr)
-    return frame_vector(y, sr, estimate_tonic_pc(y, sr))
-
-
 def extract_windows(
-    path: str, sr: int = SAMPLE_RATE, max_windows: int | None = None
+    path: str,
+    sr: int = SAMPLE_RATE,
+    max_windows: int | None = None,
+    tonic_hz: float | None = None,
 ) -> list[np.ndarray]:
-    """Load a (long) recording and return one frame vector per 10 s window."""
+    """Load a (long) recording and return one frame vector per 10 s window.
+    Pass tonic_hz (Saraga ctonic) for a precise tonic; otherwise it's estimated."""
     duration = None if max_windows is None else max_windows * CLIP_SECONDS + 1.0
     y = load_audio(path, sr, duration=duration)
-    y = tonic_normalize(y, sr)
-    return window_vectors(y, sr, max_windows=max_windows)
+    return window_vectors(y, sr, max_windows=max_windows, tonic_hz=tonic_hz)

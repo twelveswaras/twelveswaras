@@ -32,7 +32,8 @@ def main() -> None:
         if clip.track_id not in frozen:
             continue
         try:
-            vecs = features.extract_windows(str(clip.audio_path), max_windows=args.max_windows)
+            vecs = features.extract_windows(str(clip.audio_path), max_windows=args.max_windows,
+                                            tonic_hz=clip.tonic_hz)
         except Exception as exc:  # noqa: BLE001
             print(f"  skip {clip.track_id}: {exc}")
             continue

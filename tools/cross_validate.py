@@ -27,7 +27,8 @@ def main() -> None:
     # 1) extract per-track window features once
     per_track = []  # (track_id, raaga, X_windows)
     for c in data.iter_clips(only_vocab=True):
-        vecs = features.extract_windows(str(c.audio_path), max_windows=args.max_windows)
+        vecs = features.extract_windows(str(c.audio_path), max_windows=args.max_windows,
+                                        tonic_hz=c.tonic_hz)
         if vecs:
             per_track.append((c.track_id, c.raaga, np.vstack(vecs)))
     if not per_track:

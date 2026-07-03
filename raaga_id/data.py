@@ -27,6 +27,7 @@ class Clip:
     audio_path: Path
     raaga: str            # canonical (raagas.json)
     tradition: str = "carnatic"
+    tonic_hz: float | None = None   # Saraga ctonic annotation (precise Sa), if present
 
 
 def _dataset(download: bool = False):
@@ -64,7 +65,8 @@ def iter_clips(only_vocab: bool = True):
         audio_path = getattr(track, "audio_path", None)
         if not audio_path or not Path(audio_path).exists():
             continue
-        yield Clip(track_id=track_id, audio_path=Path(audio_path), raaga=canon)
+        yield Clip(track_id=track_id, audio_path=Path(audio_path), raaga=canon,
+                   tonic_hz=_tonic_of(track))
 
 
 def load_frozen_test() -> set[str] | None:
@@ -132,3 +134,13 @@ def _raaga_of(track) -> str | None:
     if isinstance(raaga, str):
         return raaga
     return None
+
+
+def _tonic_of(track) -> float | None:
+    """Saraga's ctonic annotation (tonic in Hz), if present. mirdata exposes it as
+    ``track.tonic`` (loads the .ctonic file) — the precise Sa for tonic normalization."""
+    try:
+        t = track.tonic
+    except Exception:  # noqa: BLE001 — missing/unreadable ctonic file
+        return None
+    return float(t) if isinstance(t, (int, float)) and t > 0 else None

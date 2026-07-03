@@ -22,7 +22,8 @@ def build_windowed(clips, max_windows: int | None):
     X, y = [], []
     for clip in clips:
         try:
-            vecs = features.extract_windows(str(clip.audio_path), max_windows=max_windows)
+            vecs = features.extract_windows(str(clip.audio_path), max_windows=max_windows,
+                                            tonic_hz=clip.tonic_hz)
         except Exception as exc:  # noqa: BLE001 — skip unreadable clips, keep going
             print(f"  skip {clip.track_id}: {exc}")
             continue
