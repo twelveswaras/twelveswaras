@@ -20,7 +20,11 @@ HOP_SECONDS = 5.0          # stride when aggregating predictions across a long c
 
 # Output UX (D6).
 TOP_K = 3                  # always show top-3 + confidence
-LOW_CONFIDENCE = 0.40      # below this -> "not sure" state (also gate on melody energy)
+# Below this averaged top-1 probability -> "not sure". Calibrated to the v0 floor:
+# real clips average ~0.28-0.60 for the top class, near-random/percussion ~0.08-0.12
+# (uniform = 1/12 = 0.083), so 0.15 shows top-3 for real music and gates only noise.
+LOW_CONFIDENCE = 0.15
+INFER_MAX_WINDOWS = 60     # analyse ~first 10 min of a long upload (matches training)
 
 # Verification (D13). Configurable; these are the v0 defaults.
 PROMOTE_MIN_VOTES = 3

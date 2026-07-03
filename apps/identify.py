@@ -10,7 +10,7 @@ from __future__ import annotations
 import numpy as np
 
 from raaga_id import features
-from raaga_id.config import LOW_CONFIDENCE, MODELS_DIR, SAMPLE_RATE, TOP_K
+from raaga_id.config import INFER_MAX_WINDOWS, LOW_CONFIDENCE, MODELS_DIR, SAMPLE_RATE, TOP_K
 from raaga_id.model import RaagaXGB
 
 MODEL_PATH = MODELS_DIR / "raaga_xgb.json"
@@ -34,7 +34,7 @@ def identify(audio, model: RaagaXGB) -> str:
         import librosa
 
         wav = librosa.resample(wav, orig_sr=sr, target_sr=SAMPLE_RATE)
-    vecs = features.window_vectors(wav)  # estimates Sa + tonic-relative features internally
+    vecs = features.window_vectors(wav, max_windows=INFER_MAX_WINDOWS)  # Sa + tonic-relative, ~first 10 min
     if not vecs:
         return "🤔 Too short — give me at least ~5 seconds of melody."
     preds = model.aggregate_top_k(vecs, k=TOP_K)

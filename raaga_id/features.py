@@ -87,6 +87,8 @@ def window_vectors(
     min_len = int(round(MIN_CLIP_SECONDS * sr))
     if len(y) < min_len:
         return []
+    if max_windows:  # only look at the span we'll use (fast tonic estimate on long uploads)
+        y = y[: win + hop * (max_windows - 1)]
     tonic_pc = estimate_tonic_pc(y, sr)  # one Sa estimate per recording (drone is stable)
     out: list[np.ndarray] = []
     start = 0
