@@ -70,6 +70,34 @@ def test_precise_tonic_hz_is_used():
     assert len(given) == 1 and np.allclose(given[0], manual), "tonic_hz not applied as expected"
 
 
+def test_pitch_class_histogram():
+    tonic = 200.0
+    fifth = tonic * 2 ** (7 / 12)                     # 700 cents above Sa
+    f0 = np.array([tonic] * 30 + [fifth] * 10 + [0.0] * 5)  # unvoiced (0) must be ignored
+    h = features.pitch_class_histogram(f0, tonic, n_bins=12)
+    assert h.shape == (12,)
+    assert np.isclose(h.sum(), 1.0)                   # normalized distribution
+    assert h.argmax() == 0                            # most mass at Sa (bin 0)
+    assert h[7] > 0 and np.isclose(h[7], 0.25)        # a quarter of voiced mass at the fifth
+    # octave-folding: same pitch class an octave up lands in the same bin
+    h2 = features.pitch_class_histogram(np.array([tonic * 2]), tonic, n_bins=12)
+    assert h2[0] == 1.0
+    # all-unvoiced -> zeros, not a crash
+    assert features.pitch_class_histogram(np.zeros(10), tonic, n_bins=12).sum() == 0.0
+
+
+def test_pitch_windows():
+    times = np.arange(0.0, 26.0, 0.01)               # 26s pitch track, 100 Hz frame rate
+    f0 = np.full_like(times, 200.0)                  # all voiced at the tonic (Sa)
+    wins = features.pitch_windows(times, f0, tonic_hz=200.0, n_bins=12)
+    assert len(wins) == 3                            # [0,10) [10,20) [20,26) — 6s tail kept
+    for h in wins:
+        assert h.shape == (12,) and np.isclose(h.sum(), 1.0) and h.argmax() == 0
+    # max_windows caps; a silent (all-unvoiced) track yields nothing
+    assert len(features.pitch_windows(times, f0, 200.0, max_windows=2)) == 2
+    assert features.pitch_windows(times, np.zeros_like(times), 200.0) == []
+
+
 def test_tonic_invariant_and_discriminative():
     X, y = [], []
     tonics = [-5, -2, 0, 3]                                    # each class seen at 4 tonics
@@ -99,5 +127,7 @@ if __name__ == "__main__":
         test_window_vectors_shape()
         test_split_no_leak()
         test_precise_tonic_hz_is_used()
+        test_pitch_class_histogram()
+        test_pitch_windows()
         test_tonic_invariant_and_discriminative()
     print("SMOKE OK — windowing, split, tonic-invariant features, train/save/load, aggregate all pass")

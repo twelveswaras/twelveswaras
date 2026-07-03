@@ -46,6 +46,23 @@ def tonic_pc_from_hz(hz: float) -> int:
     return int(round(librosa.hz_to_midi(hz))) % 12
 
 
+def pitch_class_histogram(f0_hz, tonic_hz: float, n_bins: int = 120) -> np.ndarray:
+    """Tonic-normalized pitch-class distribution (PCD) from a predominant-melody pitch
+    track — the classic raaga fingerprint (D16). Each voiced f0 becomes cents relative
+    to Sa, folded to one octave, binned and normalized; unvoiced frames (f0<=0) are
+    ignored. Works on any (pitch, tonic) source, so Saraga and IAMRRD pool cleanly.
+    Returns zeros when nothing is voiced.
+    """
+    f0 = np.asarray(f0_hz, dtype=float)
+    voiced = f0[f0 > 0]
+    if voiced.size == 0:
+        return np.zeros(n_bins, dtype=np.float32)
+    cents = 1200.0 * np.log2(voiced / tonic_hz)
+    bins = np.mod((np.mod(cents, 1200.0) / (1200.0 / n_bins)).astype(int), n_bins)
+    hist = np.bincount(bins, minlength=n_bins).astype(np.float32)
+    return hist / hist.sum()
+
+
 def frame_vector(y: np.ndarray, sr: int = SAMPLE_RATE, tonic_pc: int = 0) -> np.ndarray:
     """Tonic-relative pitch-class descriptor for one window (D16 step 1).
 
@@ -101,6 +118,40 @@ def window_vectors(
         if max_windows and len(out) >= max_windows:
             break
         start += hop
+    return out
+
+
+def pitch_windows(
+    times,
+    f0_hz,
+    tonic_hz: float,
+    window_s: float = CLIP_SECONDS,
+    hop_s: float = CLIP_SECONDS,
+    max_windows: int | None = None,
+    n_bins: int = 120,
+) -> list[np.ndarray]:
+    """Slide a window over a predominant-melody pitch track -> one tonic-normalized PCD
+    per window (the pitch-track analog of window_vectors, D7). Windows with no voiced
+    pitch are skipped; a trailing window >= MIN_CLIP_SECONDS is kept. Works on any
+    (pitch, tonic) source, so Saraga and IAMRRD share this path.
+    """
+    times = np.asarray(times, dtype=float)
+    f0 = np.asarray(f0_hz, dtype=float)
+    if times.size == 0 or times[-1] < MIN_CLIP_SECONDS:
+        return []
+    end = float(times[-1])
+    out: list[np.ndarray] = []
+    start = 0.0
+    while start < end:
+        if min(start + window_s, end) - start < MIN_CLIP_SECONDS:
+            break
+        seg = f0[(times >= start) & (times < start + window_s)]
+        hist = pitch_class_histogram(seg, tonic_hz, n_bins)
+        if hist.sum() > 0:
+            out.append(hist)
+        if max_windows and len(out) >= max_windows:
+            break
+        start += hop_s
     return out
 
 

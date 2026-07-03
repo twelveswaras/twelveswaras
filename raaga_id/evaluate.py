@@ -2,22 +2,26 @@
 
     python -m raaga_id.evaluate --model models/raaga_xgb.json
 
-Scores per TRACK on the frozen test split: window each held-out recording, average
-the window probabilities (D7), take top-k, compare to the true raaga. Reports top-1
-and top-3 accuracy — top-3 is the headline since the product shows top-3 (D6).
+Scores per TRACK on the frozen test split: PCD-window each held-out recording, average
+the window probabilities (D7), take top-k, compare to the true raaga. Top-3 is the
+headline (the product shows top-3, D6). The frozen benchmark stays the original Saraga
+test tracks so numbers compare across features/data.
 """
 from __future__ import annotations
 
 import argparse
 
+import numpy as np
+
 from . import data, features
-from .config import TOP_K
+from .config import PCD_BINS, TOP_K
 from .model import RaagaXGB
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Score the raaga model on the frozen benchmark.")
     ap.add_argument("--model", required=True)
+    ap.add_argument("--datasets", nargs="+", default=["saraga_carnatic"])
     ap.add_argument("--max-windows", type=int, default=60)
     args = ap.parse_args()
 
@@ -28,21 +32,17 @@ def main() -> None:
                          "(it freezes benchmark/test_track_ids.json).")
 
     top1 = top3 = n = 0
-    for clip in data.iter_clips(only_vocab=True):
-        if clip.track_id not in frozen:
+    for pc in data.iter_pitch_clips(only_vocab=True, datasets=tuple(args.datasets)):
+        if pc.track_id not in frozen:
             continue
-        try:
-            vecs = features.extract_windows(str(clip.audio_path), max_windows=args.max_windows,
-                                            tonic_hz=clip.tonic_hz)
-        except Exception as exc:  # noqa: BLE001
-            print(f"  skip {clip.track_id}: {exc}")
+        wins = features.pitch_windows(pc.times, pc.freqs, pc.tonic_hz,
+                                      max_windows=args.max_windows, n_bins=PCD_BINS)
+        if not wins:
             continue
-        if not vecs:
-            continue
-        names = [p.raaga for p in model.aggregate_top_k(vecs, k=TOP_K)]
+        names = [p.raaga for p in model.aggregate_top_k(np.vstack(wins), k=TOP_K)]
         n += 1
-        top1 += int(names[0] == clip.raaga)
-        top3 += int(clip.raaga in names)
+        top1 += int(names[0] == pc.raaga)
+        top3 += int(pc.raaga in names)
 
     if n == 0:
         raise SystemExit("no evaluation tracks matched the frozen split — check the data.")

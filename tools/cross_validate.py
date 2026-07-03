@@ -1,10 +1,10 @@
-"""Track-level k-fold cross-validation for the floor model.
+"""Track-level k-fold cross-validation of the floor model (PCD features).
 
-    python -m tools.cross_validate [-k 4] [--max-windows 60]
+    python -m tools.cross_validate [-k 4] [--datasets saraga_carnatic compmusic_raga]
 
-The single frozen holdout (benchmark/) is small and noisy on Saraga's sparse data.
-This extracts per-track window features ONCE, then refits XGBoost per fold so every
-track is evaluated exactly once as a held-out test track — a more reliable estimate.
+The single frozen holdout is small/noisy on sparse data. This PCD-windows every track
+once, then refits XGBoost per fold so every track is evaluated exactly once as held-out
+— a more reliable estimate.
 """
 from __future__ import annotations
 
@@ -15,30 +15,30 @@ from collections import defaultdict
 import numpy as np
 
 from raaga_id import data, features
+from raaga_id.config import PCD_BINS
 from raaga_id.model import RaagaXGB
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="k-fold track-level CV of the raaga floor.")
+    ap = argparse.ArgumentParser(description="k-fold track-level CV of the raaga floor (PCD).")
     ap.add_argument("-k", type=int, default=4)
+    ap.add_argument("--datasets", nargs="+", default=["saraga_carnatic"])
     ap.add_argument("--max-windows", type=int, default=60)
     args = ap.parse_args()
 
-    # 1) extract per-track window features once
     per_track = []  # (track_id, raaga, X_windows)
-    for c in data.iter_clips(only_vocab=True):
-        vecs = features.extract_windows(str(c.audio_path), max_windows=args.max_windows,
-                                        tonic_hz=c.tonic_hz)
-        if vecs:
-            per_track.append((c.track_id, c.raaga, np.vstack(vecs)))
+    for pc in data.iter_pitch_clips(only_vocab=True, datasets=tuple(args.datasets)):
+        wins = features.pitch_windows(pc.times, pc.freqs, pc.tonic_hz,
+                                      max_windows=args.max_windows, n_bins=PCD_BINS)
+        if wins:
+            per_track.append((pc.track_id, pc.raaga, np.vstack(wins)))
     if not per_track:
-        raise SystemExit("No features — is Saraga downloaded and raagas.json finalized?")
-    print(f"tracks with features: {len(per_track)}")
+        raise SystemExit("No PCD features — datasets downloaded (pitch + tonic)?")
+    print(f"tracks with features: {len(per_track)} from {args.datasets}")
 
     classes = sorted({r for _, r, _ in per_track})
     cidx = {c: i for i, c in enumerate(classes)}
 
-    # 2) stratified assignment of tracks to K folds
     by_raaga: dict[str, list[int]] = defaultdict(list)
     for i, (_, r, _) in enumerate(per_track):
         by_raaga[r].append(i)
@@ -50,7 +50,6 @@ def main() -> None:
         for j, i in enumerate(idxs):
             folds[j % args.k].append(i)
 
-    # 3) cross-validate
     t1 = t3 = n = 0
     for k in range(args.k):
         test_idx = set(folds[k])

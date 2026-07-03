@@ -12,7 +12,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
-from .config import BENCHMARK_DIR, DATA_DIR, canonical_raaga, load_raagas
+from .config import BENCHMARK_DIR, DATA_DIR, canonical_raaga, fold_raaga, load_raagas
 
 FROZEN_TEST_PATH = BENCHMARK_DIR / "test_track_ids.json"
 
@@ -28,6 +28,18 @@ class Clip:
     raaga: str            # canonical (raagas.json)
     tradition: str = "carnatic"
     tonic_hz: float | None = None   # Saraga ctonic annotation (precise Sa), if present
+
+
+@dataclass
+class PitchClip:
+    """A labelled predominant-melody pitch track + its tonic — the PCD feature source.
+    Dataset-agnostic so Saraga and IAMRRD pool through the same path."""
+    dataset: str
+    track_id: str
+    raaga: str
+    tonic_hz: float
+    times: "object"        # np.ndarray of frame times (s)
+    freqs: "object"        # np.ndarray of f0 (Hz), 0/NaN where unvoiced
 
 
 def _dataset(download: bool = False):
@@ -144,3 +156,39 @@ def _tonic_of(track) -> float | None:
     except Exception:  # noqa: BLE001 — missing/unreadable ctonic file
         return None
     return float(t) if isinstance(t, (int, float)) and t > 0 else None
+
+
+def _pitch_of(track):
+    """(times, freqs) from a track's predominant-melody pitch annotation, or None.
+    Handles Saraga (``track.pitch``) and IAMRRD (``pitch`` / ``pitch_post_processed``)."""
+    for attr in ("pitch", "pitch_post_processed"):
+        try:
+            p = getattr(track, attr, None)
+        except Exception:  # noqa: BLE001 — missing/unreadable pitch file
+            continue
+        if p is not None and getattr(p, "frequencies", None) is not None:
+            return p.times, p.frequencies
+    return None
+
+
+def iter_pitch_clips(only_vocab: bool = True, datasets=("saraga_carnatic",)):
+    """Yield PitchClip across datasets — a labelled pitch track + tonic per recording.
+    Skips tracks missing a raaga, tonic, or pitch annotation."""
+    import mirdata
+
+    vocab = load_raagas()
+    keep = {fold_raaga(r) for r in vocab["canonical"]}
+    for name in datasets:
+        ds = mirdata.initialize(name, data_home=str(DATA_DIR / name))
+        for track_id, track in ds.load_tracks().items():
+            raw = _raaga_of(track)
+            if not raw:
+                continue
+            canon = canonical_raaga(raw, vocab)
+            if only_vocab and fold_raaga(canon) not in keep:
+                continue
+            tonic = _tonic_of(track)
+            pitch = _pitch_of(track)
+            if not tonic or pitch is None:
+                continue
+            yield PitchClip(name, track_id, canon, tonic, pitch[0], pitch[1])
