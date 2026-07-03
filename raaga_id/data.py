@@ -127,25 +127,42 @@ def split_by_track(clips: list[Clip], test_frac: float = 0.25, seed: int = 0) ->
     return all_ids - test, test
 
 
-def _raaga_of(track) -> str | None:
-    """Pull the raaga label from a Saraga Carnatic track.
+def _raga_name(val) -> str | None:
+    """Extract a raaga name from the various shapes mirdata returns (str / dict / list)."""
+    if isinstance(val, str) and val.strip():
+        return val
+    if isinstance(val, dict):
+        return val.get("name")
+    if isinstance(val, (list, tuple)) and val:
+        first = val[0]
+        return first.get("name") if isinstance(first, dict) else str(first)
+    return None
 
-    mirdata exposes it at ``track.metadata["raaga"]`` — a list of dicts each with a
-    ``name`` (verified against mirdata.datasets.saraga_carnatic.load_metadata).
-    """
+
+def _raaga_of(track) -> str | None:
+    """Raaga label across schemas: IAMRRD's ``track.raga`` (name string) or Saraga's
+    ``track.metadata["raaga"]`` (list of dicts with a ``name``)."""
     try:
-        meta = track.metadata
+        name = _raga_name(getattr(track, "raga", None))   # IAMRRD (compmusic_raga)
+    except Exception:  # noqa: BLE001
+        name = None
+    if name:
+        return name
+    try:
+        meta = track.metadata                             # Saraga
     except Exception:  # noqa: BLE001 — missing/corrupt per-track metadata json
         return None
-    if not meta:
-        return None
-    raaga = meta.get("raaga")
-    if isinstance(raaga, list) and raaga:
-        first = raaga[0]
-        return first.get("name") if isinstance(first, dict) else str(first)
-    if isinstance(raaga, str):
-        return raaga
-    return None
+    return _raga_name(meta.get("raaga")) if meta else None
+
+
+def _tradition_of(track, default: str = "carnatic") -> str:
+    """Track tradition (carnatic/hindustani). IAMRRD sets ``track.tradition``; Saraga
+    Carnatic has none, so it defaults to carnatic."""
+    try:
+        t = getattr(track, "tradition", None)
+    except Exception:  # noqa: BLE001
+        t = None
+    return t.lower() if isinstance(t, str) and t else default
 
 
 def _tonic_of(track) -> float | None:
@@ -171,9 +188,10 @@ def _pitch_of(track):
     return None
 
 
-def iter_pitch_clips(only_vocab: bool = True, datasets=("saraga_carnatic",)):
+def iter_pitch_clips(only_vocab: bool = True, datasets=("saraga_carnatic",), tradition="carnatic"):
     """Yield PitchClip across datasets — a labelled pitch track + tonic per recording.
-    Skips tracks missing a raaga, tonic, or pitch annotation."""
+    Filters to one tradition (Hindustani shares raaga names like Bhairavi/Todi but they
+    are different ragas). Skips tracks missing a raaga, tonic, or pitch annotation."""
     import mirdata
 
     vocab = load_raagas()
@@ -181,6 +199,8 @@ def iter_pitch_clips(only_vocab: bool = True, datasets=("saraga_carnatic",)):
     for name in datasets:
         ds = mirdata.initialize(name, data_home=str(DATA_DIR / name))
         for track_id, track in ds.load_tracks().items():
+            if tradition and _tradition_of(track) != tradition:
+                continue
             raw = _raaga_of(track)
             if not raw:
                 continue
