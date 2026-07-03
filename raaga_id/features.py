@@ -109,6 +109,54 @@ def tdms(times, f0_hz, tonic_hz: float, delay: float = 0.3, n_bins: int = 48) ->
     return (surf / surf.sum()).astype(np.float32).ravel()
 
 
+def tdms_windows(
+    times,
+    f0_hz,
+    tonic_hz: float,
+    window_s: float = CLIP_SECONDS,
+    hop_s: float = CLIP_SECONDS,
+    max_windows: int | None = None,
+    delay: float = 0.3,
+    n_bins: int = 48,
+) -> list[np.ndarray]:
+    """Slide a window over a predominant-melody pitch track -> one TDMS surface per window
+    (the delay-surface analog of pitch_windows, D28). Slices identically to pitch_windows so
+    surfaces aggregate exactly like PCD windows; windows with too few voiced pairs are skipped.
+    """
+    times = np.asarray(times, dtype=float)
+    f0 = np.asarray(f0_hz, dtype=float)
+    if times.size == 0 or times[-1] < MIN_CLIP_SECONDS:
+        return []
+    end = float(times[-1])
+    out: list[np.ndarray] = []
+    start = 0.0
+    while start < end:
+        if min(start + window_s, end) - start < MIN_CLIP_SECONDS:
+            break
+        mask = (times >= start) & (times < start + window_s)
+        surf = tdms(times[mask], f0[mask], tonic_hz, delay=delay, n_bins=n_bins)
+        if surf.sum() > 0:
+            out.append(surf)
+        if max_windows and len(out) >= max_windows:
+            break
+        start += hop_s
+    return out
+
+
+def model_windows(times, f0_hz, tonic_hz: float, max_windows: int | None = None,
+                  hop_s: float | None = None) -> list[np.ndarray]:
+    """THE production model feature (D28): windowed TDMS at the config's winning settings.
+    train / evaluate / calibrate / inference all call this one function, so the feature can
+    never drift between how the model is trained and how it's served. `hop_s` overrides only the
+    stride — inference passes a smaller hop so a short clip yields more windows to average (each
+    window is still classified independently, so overlap is safe and doesn't change the feature).
+    """
+    from .config import TDMS_BINS, TDMS_DELAY, TDMS_HOP_S, TDMS_MAX_WINDOWS, TDMS_WINDOW_S
+
+    return tdms_windows(times, f0_hz, tonic_hz, window_s=TDMS_WINDOW_S, hop_s=hop_s or TDMS_HOP_S,
+                        max_windows=max_windows or TDMS_MAX_WINDOWS, delay=TDMS_DELAY, n_bins=TDMS_BINS)
+
+
 def frame_vector(y: np.ndarray, sr: int = SAMPLE_RATE, tonic_pc: int = 0) -> np.ndarray:
     """Tonic-relative pitch-class descriptor for one window (D16 step 1).
 

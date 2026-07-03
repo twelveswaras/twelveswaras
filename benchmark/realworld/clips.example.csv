@@ -1,0 +1,12 @@
+file,raga,source,license,drone,notes
+# Copy this to clips.csv (gitignored) and fill it in. Put the audio in benchmark/realworld/audio/.
+# file    = filename inside benchmark/realworld/audio/ (e.g. concert1_todi.m4a)
+# raga    = the true raaga; any spelling/diacritics — it's folded to the 40-raaga vocab (out-of-vocab rows are skipped)
+# source  = where it came from (your recording, a YouTube URL, archive.org, AIR ...)
+# license = own | cc-by | public-domain | private-eval   (private-eval = measure only, never redistribute)
+# drone   = yes | no | unknown   (lets the harness break accuracy down by drone presence)
+# notes   = anything (kriti name, how you got the label, mic, hall ...)
+# --- example rows (delete these; # in the file column marks a comment) ---
+# margazhi2026_todi.m4a,Tōḍi,my phone @ Music Academy 2026,own,yes,kriti announced from stage
+# yt_kalyani_alapana.m4a,Kalyani,https://youtu.be/XXXX,private-eval,yes,title named the raga
+# student_mohanam.m4a,Mohanam,volunteer clip,own,no,solo voice no drone — tests tonic robustness

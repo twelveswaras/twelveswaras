@@ -14,7 +14,7 @@ import argparse
 import numpy as np
 
 from . import data, features
-from .config import PCD_BINS, TOP_K
+from .config import TOP_K
 from .model import RaagaXGB
 
 
@@ -22,7 +22,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Score the raaga model on the frozen benchmark.")
     ap.add_argument("--model", required=True)
     ap.add_argument("--datasets", nargs="+", default=["saraga_carnatic"])
-    ap.add_argument("--max-windows", type=int, default=60)
+    ap.add_argument("--max-windows", type=int, default=None)
     args = ap.parse_args()
 
     model = RaagaXGB.load(args.model)
@@ -35,8 +35,7 @@ def main() -> None:
     for pc in data.iter_pitch_clips(only_vocab=True, datasets=tuple(args.datasets)):
         if pc.track_id not in frozen:
             continue
-        wins = features.pitch_windows(pc.times, pc.freqs, pc.tonic_hz,
-                                      max_windows=args.max_windows, n_bins=PCD_BINS)
+        wins = features.model_windows(pc.times, pc.freqs, pc.tonic_hz, max_windows=args.max_windows)
         if not wins:
             continue
         names = [p.raaga for p in model.aggregate_top_k(np.vstack(wins), k=TOP_K)]

@@ -20,6 +20,11 @@ models/
 *.flac
 *.ogg
 *.mp3
+*.m4a
+# Real-world benchmark: audio + the filled clip-list stay local (copyright / private-eval).
+# The schema template (clips.example.csv) and the harness ARE tracked.
+benchmark/realworld/audio/
+benchmark/realworld/clips.csv
 *.pkl
 *.parquet
 *.pt

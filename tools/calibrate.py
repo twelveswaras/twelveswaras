@@ -18,7 +18,7 @@ from collections import defaultdict
 import numpy as np
 
 from raaga_id import calibrate, data, features
-from raaga_id.config import MODELS_DIR, PCD_BINS
+from raaga_id.config import MODELS_DIR
 from raaga_id.model import RaagaXGB
 
 
@@ -58,15 +58,15 @@ def main() -> None:
     ap = argparse.ArgumentParser(description="Fit the calibration temperature (D25).")
     ap.add_argument("-k", type=int, default=4)
     ap.add_argument("--datasets", nargs="+", default=["saraga_carnatic", "compmusic_raga"])
-    ap.add_argument("--max-windows", type=int, default=60)
+    ap.add_argument("--max-windows", type=int, default=None,
+                    help="cap windows/track (default: config, matches training)")
     ap.add_argument("--n-estimators", type=int, default=300)
     ap.add_argument("--model", default=str(MODELS_DIR / "raaga_xgb.json"))
     args = ap.parse_args()
 
     per_track = []
     for pc in data.iter_pitch_clips(only_vocab=True, datasets=tuple(args.datasets)):
-        wins = features.pitch_windows(pc.times, pc.freqs, pc.tonic_hz,
-                                      max_windows=args.max_windows, n_bins=PCD_BINS)
+        wins = features.model_windows(pc.times, pc.freqs, pc.tonic_hz, max_windows=args.max_windows)
         if wins:
             per_track.append((pc.track_id, pc.raaga, np.vstack(wins)))
     if not per_track:

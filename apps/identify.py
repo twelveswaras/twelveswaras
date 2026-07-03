@@ -146,7 +146,7 @@ def identify(audio, model: RaagaXGB):
 
     sr, wav = audio
     t0 = time.perf_counter()
-    windows, tonic, heard = pitch_extract.audio_to_pcd(wav, sr)
+    windows, tonic, heard, display_pcd = pitch_extract.audio_to_features(wav, sr)
     if not windows:
         yield {}, "🤔 Couldn't find a clear melody + tonic — try a longer, cleaner clip with a drone.", None, ""
         return
@@ -165,7 +165,7 @@ def identify(audio, model: RaagaXGB):
     from raaga_id import learn
     from raaga_id.features import pcd_to_swaras
     top = preds[0].raaga
-    user_profile = pcd_to_swaras(X.mean(axis=0))
+    user_profile = pcd_to_swaras(display_pcd)   # human-readable swaras from the PCD, not the TDMS surface
     yield labels, info, _learn_plot(top, user_profile), learn.summary_md(top, user_profile)
 
 

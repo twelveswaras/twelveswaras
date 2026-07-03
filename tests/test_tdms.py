@@ -64,9 +64,22 @@ def test_unvoiced_frames_are_skipped():
     assert np.isclose(silent.sum(), 0.0)                     # nothing voiced -> zeros
 
 
+def test_tdms_windows_match_pitch_windows():
+    # The windowed variant must slice the pitch track the same way pitch_windows does (so the
+    # model can aggregate TDMS windows exactly like PCD windows), and each surface normalizes.
+    t = np.arange(2500) * HOP          # 25 s of steady Sa
+    f0 = np.full(2500, TONIC)
+    wins = features.tdms_windows(t, f0, TONIC, delay=0.05, n_bins=N)
+    assert len(wins) == len(features.pitch_windows(t, f0, TONIC)) >= 2
+    for w in wins:
+        assert w.shape == (N * N,) and np.isclose(w.sum(), 1.0)
+
+
 if __name__ == "__main__":
     test_shape_and_normalization()
     test_steady_note_is_pure_diagonal()
     test_movement_lands_off_diagonal()
     test_unvoiced_frames_are_skipped()
-    print("TDMS OK — shape/normalize, steady=diagonal, movement=off-diagonal, unvoiced-skip pass")
+    test_tdms_windows_match_pitch_windows()
+    print("TDMS OK — shape/normalize, steady=diagonal, movement=off-diagonal, unvoiced-skip, "
+          "windowed-count pass")

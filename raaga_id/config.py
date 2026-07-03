@@ -30,7 +30,16 @@ LOW_CONFIDENCE = 0.15
 CLOSE_MARGIN = 0.06
 INFER_MAX_WINDOWS = 60     # analyse ~first 10 min of a long upload (matches training)
 INFER_SECONDS = 90         # cap raw-audio analysed at inference — tonic salience is ~1min/2min
-PCD_BINS = 120             # pitch-class-distribution resolution (10-cent bins); the raaga feature
+PCD_BINS = 120             # pitch-class-distribution resolution (10-cent bins); the display feature
+
+# Production model feature = windowed Time-Delayed Melody Surface (D28). The gate benchmark
+# (tools/tdms_benchmark) put TDMS-30s at top1 0.866 / top3 0.954 vs windowed-PCD 0.780 / 0.926,
+# and the allied triple at 0.881 vs 0.714 — gamaka/movement is what the static PCD threw away.
+TDMS_BINS = 48             # surface is TDMS_BINS x TDMS_BINS (10-cent-ish, 25-cent bins over an octave)
+TDMS_DELAY = 0.3           # seconds; the (pitch(t), pitch(t+delay)) lag that exposes gamaka
+TDMS_WINDOW_S = 30.0       # 30 s windows — dense enough to fill the surface (10 s was too sparse)
+TDMS_HOP_S = 30.0
+TDMS_MAX_WINDOWS = 20      # cap windows/track in training (20 x 30 s = 600 s, matches the gate)
 
 # Verification (D13). Configurable; these are the v0 defaults.
 PROMOTE_MIN_VOTES = 3

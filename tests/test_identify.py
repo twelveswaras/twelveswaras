@@ -49,7 +49,9 @@ def test_idle_prompt_when_no_audio():
 
 def test_result_names_the_heard_segment():
     # Hermetic: stub the essentia path + the matplotlib plot so this runs in the train env.
-    I.pitch_extract.audio_to_pcd = lambda wav, sr: ([np.ones(120) / 120], 200.0, 90.0)
+    # audio_to_features -> (model windows, tonic, heard_seconds, display_pcd).
+    I.pitch_extract.audio_to_features = lambda wav, sr: ([np.ones(2304) / 2304], 200.0, 90.0,
+                                                         np.ones(120) / 120)
     I._learn_plot = lambda *a, **k: None
 
     class FakeModel:

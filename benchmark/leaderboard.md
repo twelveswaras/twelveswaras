@@ -97,3 +97,22 @@ missing signal. PCD+TDMS is *worse* than TDMS alone (the surface's diagonal alre
 pitch marginal, so PCD is redundant). NB these are *track-level*; production PCD is windowed +
 aggregated (0.780), so the next step is a windowed-TDMS run on the frozen set before swapping the
 inference feature. Then TDMS→CNN.
+
+### Windowed TDMS is now the production feature (D28, 2026-07-03)
+
+Windowing lifted TDMS the same way it lifted PCD. Aggregated 4-fold CV (matches production,
+`tools/tdms_benchmark.py`) and the frozen 129-track benchmark:
+
+| feature (aggregated) | CV top1 | CV top3 | CV allied | frozen top1 | frozen top3 |
+|----------------------|---------|---------|-----------|-------------|-------------|
+| windowed PCD (was live) | 0.780 | 0.926 | 0.714 | 0.682 | 0.899 |
+| **windowed TDMS (now live)** | **0.866** | **0.954** | **0.881** | **0.798** | **0.938** |
+
+**+8.6 pts CV top1, +11.6 pts frozen top1, allied triple +16.7 pts.** Feature = 30 s windows,
+delay 0.3 s, 48×48 surface (`features.model_windows` — the single feature used by train /
+evaluate / calibrate / inference, so it can't drift). Model shrank 57 MB → 20 MB. Next rung:
+TDMS → 2-D CNN (the surface is an image).
+
+Calibration (D25) refit on the TDMS model: **T = 0.475, ECE 0.356 → 0.062, NLL 0.978 → 0.647,
+mean top-1 confidence 0.510 → 0.810** (accuracy unchanged, argmax-preserving). Same story as
+PCD — window-averaging left it under-confident.
