@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="twelveswaras">
+  <!-- Shared urbanmorph treatment: ~22%-radius rounded-square tile, brand fill, white mark.
+       twelveswaras' mark = a 12-bar pitch-class histogram (the twelve swaras). -->
+  <defs>
+    <linearGradient id="ts" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#b45309"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="url(#ts)"/>
+  <g fill="#ffffff">
+    <rect x="36"  y="140" width="10" height="60"  rx="5"/>
+    <rect x="52"  y="105" width="10" height="95"  rx="5"/>
+    <rect x="68"  y="145" width="10" height="55"  rx="5"/>
+    <rect x="84"  y="80"  width="10" height="120" rx="5"/>
+    <rect x="100" y="120" width="10" height="80"  rx="5"/>
+    <rect x="116" y="95"  width="10" height="105" rx="5"/>
+    <rect x="132" y="64"  width="10" height="136" rx="5"/>
+    <rect x="148" y="130" width="10" height="70"  rx="5"/>
+    <rect x="164" y="90"  width="10" height="110" rx="5"/>
+    <rect x="180" y="115" width="10" height="85"  rx="5"/>
+    <rect x="196" y="100" width="10" height="100" rx="5"/>
+    <rect x="212" y="135" width="10" height="65"  rx="5"/>
+  </g>
+</svg>

@@ -3,11 +3,13 @@
     python -m apps.identify        # launches the Gradio app (needs the inference env)
 
 Runs the PCD path (essentia pitch + tonic -> pooled model), shows top-3 as confidence
-bars + the estimated Sa + how long recognition took (also logged to the console).
+bars + the estimated Sa + recognition time. Styled to the shared urbanmorph design
+system (dark #0a0a0a canvas, system-ui, hairline borders) with twelveswaras' amber hue.
 """
 from __future__ import annotations
 
 import time
+from pathlib import Path
 
 import numpy as np
 
@@ -15,14 +17,76 @@ from raaga_id import pitch_extract
 from raaga_id.config import LOW_CONFIDENCE, MODELS_DIR, TOP_K
 from raaga_id.model import RaagaXGB
 
+ASSETS = Path(__file__).resolve().parent.parent / "assets"
 MODEL_PATH = MODELS_DIR / "raaga_xgb.json"
 
-TITLE_HTML = """
-<div style="text-align:center; line-height:1.15; margin:.2rem 0 .4rem">
-  <div style="font-size:clamp(1.35rem,6.5vw,2rem); font-weight:700">🎶 twelveswaras</div>
-  <div style="opacity:.6; font-size:clamp(.8rem,3.6vw,1rem)">identify the raaga</div>
+# Inline logo tile (12-bar pitch-class histogram = the twelve swaras), amber gradient.
+_TILE = """
+<svg width="46" height="46" viewBox="0 0 256 256" style="flex:0 0 auto">
+  <defs><linearGradient id="tsl" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f59e0b"/><stop offset="1" stop-color="#b45309"/></linearGradient></defs>
+  <rect width="256" height="256" rx="56" fill="url(#tsl)"/>
+  <g fill="#fff">
+    <rect x="36" y="140" width="10" height="60" rx="5"/><rect x="52" y="105" width="10" height="95" rx="5"/>
+    <rect x="68" y="145" width="10" height="55" rx="5"/><rect x="84" y="80" width="10" height="120" rx="5"/>
+    <rect x="100" y="120" width="10" height="80" rx="5"/><rect x="116" y="95" width="10" height="105" rx="5"/>
+    <rect x="132" y="64" width="10" height="136" rx="5"/><rect x="148" y="130" width="10" height="70" rx="5"/>
+    <rect x="164" y="90" width="10" height="110" rx="5"/><rect x="180" y="115" width="10" height="85" rx="5"/>
+    <rect x="196" y="100" width="10" height="100" rx="5"/><rect x="212" y="135" width="10" height="65" rx="5"/>
+  </g></svg>
+"""
+
+TITLE_HTML = f"""
+<div style="display:flex; align-items:center; justify-content:center; gap:.65rem; margin:.4rem 0 .2rem">
+  {_TILE}
+  <div style="text-align:left; line-height:1.05">
+    <div style="font-size:clamp(1.4rem,6.5vw,2.1rem); font-weight:800; letter-spacing:-1px"><span style="color:#ededed">twelve</span><span style="color:#f59e0b">swaras</span></div>
+    <div style="font-size:clamp(.72rem,3.2vw,.92rem); color:#9ca3af; letter-spacing:.2px">identify the raaga</div>
+  </div>
 </div>
 """
+
+FOOTER_HTML = """
+<div id="ts-footer">a non-commercial, open-source public good · Carnatic first · CC-BY data commons</div>
+"""
+
+CSS = """
+.gradio-container { max-width: 640px !important; margin: 0 auto !important; }
+footer { display: none !important; }
+#ts-footer { text-align:center; color:#9ca3af; opacity:.7; font-size:.78rem; margin:1rem 0 .3rem; }
+/* confidence bars in the brand amber */
+.gradio-container .label span.text + div, .gradio-container .fill { background: #f59e0b !important; }
+"""
+
+
+def _theme():
+    import gradio as gr
+
+    return gr.themes.Base(
+        primary_hue=gr.themes.colors.amber,
+        secondary_hue=gr.themes.colors.amber,
+        neutral_hue=gr.themes.colors.neutral,
+        font=["system-ui", "ui-sans-serif", "-apple-system", "Segoe UI", "sans-serif"],
+        font_mono=["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+    ).set(
+        body_background_fill="#0a0a0a",
+        body_text_color="#ededed",
+        body_text_color_subdued="#9ca3af",
+        background_fill_primary="#15151a",
+        background_fill_secondary="#1a1a1f",
+        block_background_fill="#15151a",
+        block_border_color="#262626",
+        block_border_width="1px",
+        block_radius="12px",
+        block_label_background_fill="#1a1a1f",
+        block_label_text_color="#fbbf24",
+        border_color_primary="#262626",
+        input_background_fill="#1a1a1f",
+        button_primary_background_fill="#d97706",
+        button_primary_background_fill_hover="#b45309",
+        button_primary_text_color="#ffffff",
+        button_primary_border_color="#d97706",
+    )
 
 
 def _load_model() -> RaagaXGB:
@@ -32,8 +96,7 @@ def _load_model() -> RaagaXGB:
 
 
 def identify(audio, model: RaagaXGB):
-    """audio = (sample_rate, np.ndarray) from Gradio. Returns (label_dict, info_md) for a
-    gr.Label + gr.Markdown."""
+    """audio = (sample_rate, np.ndarray) from Gradio. Returns (label_dict, info_md)."""
     if audio is None:
         return {}, "Upload or record ~10 s+ of melody — a clear line with a drone works best."
     sr, wav = audio
@@ -58,15 +121,17 @@ def build_ui():
     model = _load_model()
     pitch_extract.warmup()          # pay the essentia/compiam import cost once, up front
 
-    with gr.Blocks(title="twelveswaras", theme=gr.themes.Soft()) as demo:
+    with gr.Blocks(title="twelveswaras", theme=_theme(), css=CSS) as demo:
         gr.HTML(TITLE_HTML)
         audio = gr.Audio(sources=["microphone", "upload"], type="numpy")
         btn = gr.Button("Identify", variant="primary", size="lg")
         result = gr.Label(num_top_classes=TOP_K, label="Raaga")
         info = gr.Markdown()
+        gr.HTML(FOOTER_HTML)
         btn.click(lambda a: identify(a, model), audio, [result, info])
     return demo
 
 
 if __name__ == "__main__":
-    build_ui().launch()
+    favicon = ASSETS / "favicon.svg"
+    build_ui().launch(favicon_path=str(favicon) if favicon.exists() else None)
