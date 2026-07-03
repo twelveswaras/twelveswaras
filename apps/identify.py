@@ -124,30 +124,45 @@ def _learn_plot(raaga, user_profile):
     return fig
 
 
+def _mmss(seconds: float) -> str:
+    """Whole-second duration as m:ss (e.g. 90 -> '1:30'), for the 'heard 0:00-…' label."""
+    s = int(round(seconds))
+    return f"{s // 60}:{s % 60:02d}"
+
+
 def identify(audio, model: RaagaXGB):
-    """audio = (sample_rate, np.ndarray) from Gradio. Returns (labels, info, plot, learn_md)."""
+    """audio = (sample_rate, np.ndarray) from Gradio. A GENERATOR: it yields a "listening"
+    state first (so the app is visibly working before it answers — D24), then the final
+    (labels, info, plot, learn_md). The info line names the segment it actually heard."""
     if audio is None:
-        return {}, "Upload or record ~10 s+ of melody — a clear line with a drone works best.", None, ""
+        yield {}, "Upload or record ~10 s+ of melody — a clear line with a drone works best.", None, ""
+        return
+    # Show that we're listening BEFORE the ~3.5 s of pitch+tonic extraction, and clear any
+    # previous result, so the answer never appears to precede the analysis.
+    yield {}, "🎧 **Listening…** finding the tonic (Sa) and tracing the swaras.", None, ""
+
     sr, wav = audio
     t0 = time.perf_counter()
-    windows, tonic = pitch_extract.audio_to_pcd(wav, sr)
+    windows, tonic, heard = pitch_extract.audio_to_pcd(wav, sr)
     if not windows:
-        return {}, "🤔 Couldn't find a clear melody + tonic — try a longer, cleaner clip with a drone.", None, ""
+        yield {}, "🤔 Couldn't find a clear melody + tonic — try a longer, cleaner clip with a drone.", None, ""
+        return
     X = np.vstack(windows)
     preds = model.aggregate_top_k(X, k=TOP_K)
     elapsed = time.perf_counter() - t0
-    print(f"[identify] {preds[0].raaga} ({preds[0].confidence:.0%}) · Sa≈{tonic:.0f}Hz · {elapsed:.1f}s",
-          flush=True)
+    print(f"[identify] {preds[0].raaga} ({preds[0].confidence:.0%}) · Sa≈{tonic:.0f}Hz · "
+          f"heard {_mmss(heard)} · {elapsed:.1f}s", flush=True)
 
     labels = {p.raaga: float(p.confidence) for p in preds}
     caveat = "  ·  🤔 low confidence" if preds[0].confidence < LOW_CONFIDENCE else ""
-    info = f"**Sa ≈ {tonic:.0f} Hz**  ·  recognized in **{elapsed:.1f} s**{caveat}"
+    info = (f"**Sa ≈ {tonic:.0f} Hz**  ·  heard **0:00–{_mmss(heard)}**  ·  "
+            f"recognized in **{elapsed:.1f} s**{caveat}")
 
     from raaga_id import learn
     from raaga_id.features import pcd_to_swaras
     top = preds[0].raaga
     user_profile = pcd_to_swaras(X.mean(axis=0))
-    return labels, info, _learn_plot(top, user_profile), learn.summary_md(top, user_profile)
+    yield labels, info, _learn_plot(top, user_profile), learn.summary_md(top, user_profile)
 
 
 def build_ui():
@@ -171,9 +186,13 @@ def build_ui():
         gr.HTML(FOOTER_HTML)
 
         outs = [result, info, learn_plot, learn_md]
+
+        def on_audio(a):        # generator fn so Gradio streams "listening…" then the result
+            yield from identify(a, model)
+
         # No button: auto-identify when a file is uploaded or a recording stops.
-        audio.upload(lambda a: identify(a, model), audio, outs)
-        audio.stop_recording(lambda a: identify(a, model), audio, outs)
+        audio.upload(on_audio, audio, outs)
+        audio.stop_recording(on_audio, audio, outs)
     return demo
 
 

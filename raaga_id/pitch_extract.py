@@ -44,9 +44,11 @@ def warmup() -> None:
 
 
 def audio_to_pcd(audio, sr, max_seconds: float = INFER_SECONDS, max_windows: int = INFER_MAX_WINDOWS):
-    """Raw mono audio -> (list of PCD windows, tonic_hz).
+    """Raw mono audio -> (list of PCD windows, tonic_hz, analysed_seconds).
 
-    Returns ([], None) when the tonic or pitch can't be estimated (no clear melody/drone),
+    analysed_seconds is how much audio (from 0:00) was actually fed to the model — capped at
+    max_seconds — so the UI can tell the user exactly what it heard (D24: legible recognition).
+    Returns ([], None, 0.0) when the tonic or pitch can't be estimated (no clear melody/drone),
     which the caller surfaces as a "not sure" message.
     """
     import librosa
@@ -60,16 +62,17 @@ def audio_to_pcd(audio, sr, max_seconds: float = INFER_SECONDS, max_windows: int
     if max_seconds:
         y = y[: int(max_seconds * TONIC_SR)]
     if y.size < int(MIN_CLIP_SECONDS * TONIC_SR):
-        return [], None
+        return [], None, 0.0
+    analysed_seconds = y.size / TONIC_SR
 
     try:
         tonic = float(tonic_algo.extract(y, input_sr=TONIC_SR))
     except Exception:  # noqa: BLE001 — essentia raises "No peak locations" on unclear audio
-        return [], None
+        return [], None, 0.0
     if not tonic or tonic <= 0:
-        return [], None
+        return [], None, 0.0
 
     f0, _ = melodia(y)
     times = np.arange(len(f0)) * MELODIA_HOP / TONIC_SR
     windows = features.pitch_windows(times, f0, tonic, max_windows=max_windows, n_bins=PCD_BINS)
-    return windows, tonic
+    return windows, tonic, analysed_seconds
