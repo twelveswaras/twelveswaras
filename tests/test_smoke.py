@@ -86,6 +86,17 @@ def test_pitch_class_histogram():
     assert features.pitch_class_histogram(np.zeros(10), tonic, n_bins=12).sum() == 0.0
 
 
+def test_pcd_to_swaras():
+    pcd = np.zeros(120)
+    pcd[3] = 1.0                                    # mass in the Sa region (bins 0-9)
+    sw = features.pcd_to_swaras(pcd)
+    assert sw.shape == (12,) and np.isclose(sw.sum(), 1.0) and np.isclose(sw[0], 1.0)
+    assert len(features.SWARA_LABELS) == 12 and features.SWARA_LABELS[0] == "S"
+    pcd2 = np.zeros(120)
+    pcd2[70] = 1.0                                  # 700 cents = the fifth = P (index 7)
+    assert np.isclose(features.pcd_to_swaras(pcd2)[7], 1.0)
+
+
 def test_pitch_windows():
     times = np.arange(0.0, 26.0, 0.01)               # 26s pitch track, 100 Hz frame rate
     f0 = np.full_like(times, 200.0)                  # all voiced at the tonic (Sa)
@@ -128,6 +139,7 @@ if __name__ == "__main__":
         test_split_no_leak()
         test_precise_tonic_hz_is_used()
         test_pitch_class_histogram()
+        test_pcd_to_swaras()
         test_pitch_windows()
         test_tonic_invariant_and_discriminative()
     print("SMOKE OK — windowing, split, tonic-invariant features, train/save/load, aggregate all pass")

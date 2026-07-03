@@ -111,16 +111,46 @@ def _load_model() -> RaagaXGB:
     return RaagaXGB.load(MODEL_PATH)
 
 
+def _learn_plot(raaga, user_profile):
+    """A dark/amber bar chart of the raaga's reference swara fingerprint vs the user's
+    clip — the 'how to hear this raaga' visual."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    from raaga_id import learn
+    from raaga_id.features import SWARA_LABELS
+
+    x = np.arange(12)
+    fig, ax = plt.subplots(figsize=(6, 2.4))
+    fig.patch.set_facecolor("#0a0a0a")
+    ax.set_facecolor("#0a0a0a")
+    ref = learn.reference_profile(raaga)
+    if ref is not None:
+        ax.bar(x - 0.2, ref, width=0.4, color="#f59e0b", label=raaga)
+    ax.bar(x + 0.2, np.asarray(user_profile), width=0.4, color="#6b7280", label="your clip")
+    ax.set_xticks(x)
+    ax.set_xticklabels(SWARA_LABELS, color="#ededed", fontsize=8)
+    ax.tick_params(axis="x", length=0)
+    ax.set_yticks([])
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    ax.legend(facecolor="#15151a", edgecolor="#262626", labelcolor="#ededed", fontsize=8, loc="upper right")
+    fig.tight_layout()
+    return fig
+
+
 def identify(audio, model: RaagaXGB):
-    """audio = (sample_rate, np.ndarray) from Gradio. Returns (label_dict, info_md)."""
+    """audio = (sample_rate, np.ndarray) from Gradio. Returns (labels, info, plot, learn_md)."""
     if audio is None:
-        return {}, "Upload or record ~10 s+ of melody — a clear line with a drone works best."
+        return {}, "Upload or record ~10 s+ of melody — a clear line with a drone works best.", None, ""
     sr, wav = audio
     t0 = time.perf_counter()
     windows, tonic = pitch_extract.audio_to_pcd(wav, sr)
     if not windows:
-        return {}, "🤔 Couldn't find a clear melody + tonic — try a longer, cleaner clip with a drone."
-    preds = model.aggregate_top_k(np.vstack(windows), k=TOP_K)
+        return {}, "🤔 Couldn't find a clear melody + tonic — try a longer, cleaner clip with a drone.", None, ""
+    X = np.vstack(windows)
+    preds = model.aggregate_top_k(X, k=TOP_K)
     elapsed = time.perf_counter() - t0
     print(f"[identify] {preds[0].raaga} ({preds[0].confidence:.0%}) · Sa≈{tonic:.0f}Hz · {elapsed:.1f}s",
           flush=True)
@@ -128,7 +158,12 @@ def identify(audio, model: RaagaXGB):
     labels = {p.raaga: float(p.confidence) for p in preds}
     caveat = "  ·  🤔 low confidence" if preds[0].confidence < LOW_CONFIDENCE else ""
     info = f"**Sa ≈ {tonic:.0f} Hz**  ·  recognized in **{elapsed:.1f} s**{caveat}"
-    return labels, info
+
+    from raaga_id import learn
+    from raaga_id.features import pcd_to_swaras
+    top = preds[0].raaga
+    user_profile = pcd_to_swaras(X.mean(axis=0))
+    return labels, info, _learn_plot(top, user_profile), learn.summary_md(top, user_profile)
 
 
 def build_ui():
@@ -140,15 +175,22 @@ def build_ui():
     with gr.Blocks(title="twelveswaras", theme=_theme(), css=CSS) as demo:
         gr.HTML(TITLE_HTML)
         audio = gr.Audio(sources=["microphone", "upload"], type="numpy",
-                         label="Upload or record a clip")
+                         label="Upload or record ~15–30 s")
         mic_btn = gr.Button("🎤 Enable microphone", size="sm")
+        gr.Markdown("🎚️ **For best accuracy, include a tanpura / shruti-box drone.** A live "
+                    "concert always has one — the tonic (Sa) is found from it, so solo voice "
+                    "without a drone is unreliable.")
         result = gr.Label(num_top_classes=TOP_K, label="Raaga")
-        info = gr.Markdown("_Upload a clip or record — recognition runs automatically._")
+        info = gr.Markdown("_Recognition runs automatically when you upload or finish recording._")
+        with gr.Accordion("🎓 How to hear this raaga", open=False):
+            learn_plot = gr.Plot(label="Swara fingerprint — this raaga vs your clip")
+            learn_md = gr.Markdown()
         gr.HTML(FOOTER_HTML)
 
+        outs = [result, info, learn_plot, learn_md]
         # No button: auto-identify when a file is uploaded or a recording stops.
-        audio.upload(lambda a: identify(a, model), audio, [result, info])
-        audio.stop_recording(lambda a: identify(a, model), audio, [result, info])
+        audio.upload(lambda a: identify(a, model), audio, outs)
+        audio.stop_recording(lambda a: identify(a, model), audio, outs)
         # Pop the browser mic-permission prompt (only works if not previously denied).
         mic_btn.click(None, None, info, js=_MIC_JS)
     return demo

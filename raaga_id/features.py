@@ -46,6 +46,18 @@ def tonic_pc_from_hz(hz: float) -> int:
     return int(round(librosa.hz_to_midi(hz))) % 12
 
 
+# 12 semitone positions relative to Sa (common Carnatic labels for the swara-sthanas).
+SWARA_LABELS = ["S", "R1", "R2", "G2", "G3", "M1", "M2", "P", "D1", "D2", "N2", "N3"]
+
+
+def pcd_to_swaras(pcd) -> np.ndarray:
+    """Fold a fine PCD (n_bins, a multiple of 12) to a 12-position swara profile
+    (one bin per semitone), normalized — the human-readable raaga fingerprint."""
+    a = np.asarray(pcd, dtype=float)
+    a = a.reshape(12, a.size // 12).sum(axis=1)
+    return a / (a.sum() + 1e-9)
+
+
 def pitch_class_histogram(f0_hz, tonic_hz: float, n_bins: int = 120) -> np.ndarray:
     """Tonic-normalized pitch-class distribution (PCD) from a predominant-melody pitch
     track — the classic raaga fingerprint (D16). Each voiced f0 becomes cents relative
