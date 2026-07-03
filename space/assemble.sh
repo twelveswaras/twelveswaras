@@ -9,6 +9,7 @@ rm -rf "$OUT"
 mkdir -p "$OUT/models"
 cp -r "$SRC/raaga_id" "$SRC/apps" "$SRC/assets" "$OUT/"
 cp "$SRC/schema.py" "$SRC/raagas.json" "$OUT/"
+cp "$SRC/raaga_profiles.json" "$SRC/raaga_guide.json" "$OUT/"   # learner-panel data
 cp "$SRC/models/raaga_xgb.json" "$SRC/models/raaga_xgb.classes.json" "$OUT/models/"
 cp "$SRC/space/app.py" "$SRC/space/requirements.txt" "$SRC/space/packages.txt" "$SRC/space/README.md" "$OUT/"
 find "$OUT" -name '__pycache__' -type d -prune -exec rm -rf {} +
