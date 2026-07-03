@@ -1,0 +1,8 @@
+# HF Space (Linux) deps. essentia needs numpy<2 (numpy 2.x breaks its C-array bridge).
+numpy<2
+essentia
+compiam
+librosa
+xgboost
+gradio
+soundfile

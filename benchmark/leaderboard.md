@@ -40,3 +40,25 @@ model). That's the next gap to close.
 - More data: CMD / IAMRRD to grow per-raaga track counts (D4/D10) — now the top limiter.
 - Richer features: TDMS, then CNN on tonic-normalized mel/CQT (D16); gamaka-aware feats.
 - Robust inference-time tonic (tune essentia params, or a better heuristic).
+
+---
+
+## 40-raaga model (scaled up, 2026-07-03)
+
+Expanded the vocabulary to the **full 40-raaga Carnatic set** (every raaga in IAMRRD,
+~12 tracks each; Saraga pools in). Same PCD pipeline, retrained on 567 pooled tracks; new
+frozen benchmark = 129 held-out tracks across 40 raagas.
+
+| eval | top1 | top3 |
+|------|------|------|
+| holdout (129 tracks) | 0.682 | 0.899 |
+| **4-fold CV (567 tracks)** | **0.780** | **0.926** |
+
+Chance at 40-way = top1 0.025 / top3 0.075 → the model is **31× / 12× chance**. Going
+12→40 raagas cost only ~6 pts top1 / ~2 pts top3 — IAMRRD's extra data carried it.
+
+**Inference is now wired (fully automatic):** essentia Melodia pitch + compiam
+TonicIndianMultiPitch tonic (numpy<2 inference env, see `environment-inference.yml`) →
+PCD → model; the demo (`apps/identify`) runs this. **Needs a drone** — drone-less test
+(isolated vocal) collapses tonic 0.67→0.33 and top1 0.73→0.33, so a-cappella is
+unreliable, but concert/TV audio (has a tanpura) is fine.
