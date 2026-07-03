@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from raaga_id import features
-from raaga_id.config import INFER_MAX_WINDOWS, LOW_CONFIDENCE, MODELS_DIR, SAMPLE_RATE, TOP_K
+from raaga_id import pitch_extract
+from raaga_id.config import LOW_CONFIDENCE, MODELS_DIR, TOP_K
 from raaga_id.model import RaagaXGB
 
 MODEL_PATH = MODELS_DIR / "raaga_xgb.json"
@@ -23,24 +23,19 @@ def _load_model() -> RaagaXGB:
 
 
 def identify(audio, model: RaagaXGB) -> str:
-    """audio = (sample_rate, np.ndarray) from Gradio."""
+    """audio = (sample_rate, np.ndarray) from Gradio. Runs the PCD path: extract
+    predominant-melody pitch + tonic, then classify (needs the numpy<2 inference env)."""
     if audio is None:
-        return "Give me ~10 seconds of melody."
+        return "Give me ~10 seconds of melody (a clip with a clear line + drone works best)."
     sr, wav = audio
-    wav = wav.astype(np.float32)
-    if wav.ndim > 1:
-        wav = wav.mean(axis=1)
-    if sr != SAMPLE_RATE:
-        import librosa
-
-        wav = librosa.resample(wav, orig_sr=sr, target_sr=SAMPLE_RATE)
-    vecs = features.window_vectors(wav, max_windows=INFER_MAX_WINDOWS)  # Sa + tonic-relative, ~first 10 min
-    if not vecs:
-        return "🤔 Too short — give me at least ~5 seconds of melody."
-    preds = model.aggregate_top_k(vecs, k=TOP_K)
+    windows, tonic = pitch_extract.audio_to_pcd(wav, sr)
+    if not windows:
+        return "🤔 Not sure — couldn't find a clear melody + tonic. Try a longer, cleaner clip with a drone."
+    preds = model.aggregate_top_k(np.vstack(windows), k=TOP_K)
     if preds[0].confidence < LOW_CONFIDENCE:
         return "🤔 Not sure — not enough clear melody. Try a longer, cleaner clip."
-    return "\n".join(f"{p.raaga}: {p.confidence:.0%}" for p in preds)
+    lines = "\n".join(f"{p.raaga}: {p.confidence:.0%}" for p in preds)
+    return f"{lines}\n\n(Sa ≈ {tonic:.0f} Hz)"
 
 
 def build_ui():

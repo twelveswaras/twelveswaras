@@ -25,6 +25,7 @@ TOP_K = 3                  # always show top-3 + confidence
 # (uniform = 1/12 = 0.083), so 0.15 shows top-3 for real music and gates only noise.
 LOW_CONFIDENCE = 0.15
 INFER_MAX_WINDOWS = 60     # analyse ~first 10 min of a long upload (matches training)
+INFER_SECONDS = 90         # cap raw-audio analysed at inference — tonic salience is ~1min/2min
 PCD_BINS = 120             # pitch-class-distribution resolution (10-cent bins); the raaga feature
 
 # Verification (D13). Configurable; these are the v0 defaults.

@@ -1,0 +1,27 @@
+# Inference / demo env — SEPARATE from the training env (environment.yml).
+#
+# Why separate: essentia 2.1b6.dev (predominant-pitch + tonic, the audio->PCD path) is
+# broken by numpy 2.x's C-API change, so it needs numpy<2. The training env uses numpy
+# 2.x (conda-forge). Rather than downgrade the whole project, inference lives here.
+#
+#   conda env create -f environment-inference.yml
+#   conda activate twelveswaras-infer
+#   python -m apps.identify
+#
+# Tonic uses compiam's TonicIndianMultiPitch (Salamon/Gulati multipitch); pitch uses
+# essentia PredominantPitchMelodia. Both pip-installed (compiam pins numpy<2).
+name: twelveswaras-infer
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - "numpy<2"        # REQUIRED: essentia's C-array bridge breaks under numpy 2.x
+  - ffmpeg
+  - pip
+  - pip:
+      - essentia       # PredominantPitchMelodia (pitch) + TonicIndianArtMusic
+      - compiam        # TonicIndianMultiPitch (the working tonic recipe)
+      - librosa
+      - xgboost
+      - gradio
+      - soundfile
