@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 
 from raaga_id import pitch_extract
-from raaga_id.config import LOW_CONFIDENCE, MODELS_DIR, TOP_K
+from raaga_id.config import MODELS_DIR, TOP_K
 from raaga_id.model import RaagaXGB
 
 ASSETS = Path(__file__).resolve().parent.parent / "assets"
@@ -56,6 +56,9 @@ footer { display: none !important; }
 #ts-footer { text-align:center; color:#9ca3af; opacity:.7; font-size:.78rem; margin:1rem 0 .3rem; }
 /* confidence bars in the brand amber */
 .gradio-container .label span.text + div, .gradio-container .fill { background: #f59e0b !important; }
+/* audio player: keep the seek bar from covering the 0:00 / total time read-outs */
+.gradio-container .timestamps { position: relative; z-index: 3; margin-top: 4px; }
+.gradio-container .timestamps time { background: #0a0a0a; padding: 0 3px; border-radius: 3px; }
 """
 
 
@@ -153,10 +156,11 @@ def identify(audio, model: RaagaXGB):
     print(f"[identify] {preds[0].raaga} ({preds[0].confidence:.0%}) · Sa≈{tonic:.0f}Hz · "
           f"heard {_mmss(heard)} · {elapsed:.1f}s", flush=True)
 
+    from raaga_id.calibrate import confidence_state
     labels = {p.raaga: float(p.confidence) for p in preds}
-    caveat = "  ·  🤔 low confidence" if preds[0].confidence < LOW_CONFIDENCE else ""
+    _, note = confidence_state(preds)     # calibrated top-2 -> "✓ confident" / "close call" / "not sure"
     info = (f"**Sa ≈ {tonic:.0f} Hz**  ·  heard **0:00–{_mmss(heard)}**  ·  "
-            f"recognized in **{elapsed:.1f} s**{caveat}")
+            f"recognized in **{elapsed:.1f} s**  ·  {note}")
 
     from raaga_id import learn
     from raaga_id.features import pcd_to_swaras

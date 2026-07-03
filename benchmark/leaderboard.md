@@ -62,3 +62,20 @@ TonicIndianMultiPitch tonic (numpy<2 inference env, see `environment-inference.y
 PCD → model; the demo (`apps/identify`) runs this. **Needs a drone** — drone-less test
 (isolated vocal) collapses tonic 0.67→0.33 and top1 0.73→0.33, so a-cappella is
 unreliable, but concert/TV audio (has a tanpura) is fine.
+
+### Calibration (D25, 2026-07-03)
+
+Window-averaging left the softmax **under-confident**, so displayed %s read as falsely flat.
+Temperature scaling (one scalar, fit on 4-fold OOF predictions; `tools/calibrate.py`):
+
+| metric | before | after |
+|--------|--------|-------|
+| ECE (↓ better) | 0.374 | **0.057** |
+| NLL (↓ better) | 1.291 | 0.892 |
+| mean top-1 confidence | 0.406 | 0.724 |
+| top-1 accuracy | 0.780 | 0.780 (argmax-preserving) |
+
+**T = 0.448** (< 1 ⇒ sharpen). Stored in `models/raaga_xgb.calib.json`, applied in
+`RaagaXGB._decode`. Accuracy is untouched — only the confidence numbers become honest
+(a "70%" is now right ~70% of the time). Allied raagas (Mōhanaṁ/Bilahari/Bēgaḍa) stay
+relatively close because PCD is blind to gamaka — that's the next lever (TDMS, refines D16).

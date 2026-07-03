@@ -24,9 +24,10 @@ class Prediction:
 class RaagaXGB:
     """XGBoost floor over frame vectors. Wraps label<->index + top-k decode."""
 
-    def __init__(self, classes: list[str], booster=None):
+    def __init__(self, classes: list[str], booster=None, temperature: float = 1.0):
         self.classes = list(classes)
         self._booster = booster
+        self.temperature = temperature   # calibration (D25); 1.0 = uncalibrated identity
 
     def fit(self, X: np.ndarray, y_idx: np.ndarray, **kwargs):
         from xgboost import XGBClassifier
@@ -61,6 +62,8 @@ class RaagaXGB:
         return self._decode(proba, k)
 
     def _decode(self, proba: np.ndarray, k: int) -> list[Prediction]:
+        from .calibrate import apply_temperature
+        proba = apply_temperature(proba, self.temperature)   # D25; argmax-preserving
         order = np.argsort(proba)[::-1][:k]
         return [Prediction(self.classes[i], float(proba[i])) for i in order]
 
@@ -75,11 +78,13 @@ class RaagaXGB:
     def load(cls, path: str | Path) -> "RaagaXGB":
         from xgboost import XGBClassifier
 
+        from .calibrate import load_temperature
+
         path = Path(path)
         booster = XGBClassifier()
         booster.load_model(str(path))
         classes = json.loads(path.with_suffix(".classes.json").read_text())
-        return cls(classes, booster)
+        return cls(classes, booster, temperature=load_temperature(path))
 
 
 class RaagaCNN:
