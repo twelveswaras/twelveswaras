@@ -35,8 +35,8 @@ dependencies:
       - mirdata
       - gradio
       - wandb
-  # --- Phase 2 (D5), add when the floor works ---
-  # - essentia        # conda-forge osx-arm64 availability is the thing to verify then
-  # - pip:
-  #     - compiam
-  #     - torchcrepe
+      # Phase 2 (D5): precise tonic via essentia TonicIndianArtMusic. arm64 macOS
+      # wheels exist on PyPI, so this installs natively on Apple Silicon.
+      - essentia
+      # - compiam       # optional: Saraga loaders + DEEPSRGM benchmark (pulls tensorflow)
+      # - torchcrepe    # optional: deep pitch tracker
