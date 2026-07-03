@@ -35,14 +35,28 @@ def load_raagas() -> dict:
         return json.load(fh)
 
 
+def fold_raaga(name: str) -> str:
+    """Normalize a raaga name for matching: strip diacritics + case + separators.
+
+    Saraga uses diacritics (Mōhanaṁ, Tōḍi, Śudda sāvēri); our vocab/aliases are ASCII.
+    NFKD-decompose, drop combining marks, lowercase, keep only alphanumerics so
+    'Mōhanaṁ' and 'Mohanam' fold to the same key.
+    """
+    import unicodedata
+
+    decomposed = unicodedata.normalize("NFKD", name)
+    stripped = "".join(c for c in decomposed if not unicodedata.combining(c))
+    return "".join(c for c in stripped.lower() if c.isalnum())
+
+
 def canonical_raaga(name: str, vocab: dict | None = None) -> str:
-    """Map a raw raaga label to its canonical form via the alias table."""
+    """Map a raw raaga label to its canonical form via the alias table (diacritic-insensitive)."""
     vocab = vocab or load_raagas()
-    key = name.strip().lower().replace(" ", "")
+    key = fold_raaga(name)
     for canon in vocab["canonical"]:
-        if key == canon.lower().replace(" ", ""):
+        if key == fold_raaga(canon):
             return canon
     for canon, aliases in vocab.get("aliases", {}).items():
-        if key in {a.lower().replace(" ", "") for a in aliases}:
+        if key in {fold_raaga(a) for a in aliases}:
             return canon
     return name  # unknown -> pass through (surfaces as an out-of-vocab label)

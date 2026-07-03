@@ -34,7 +34,7 @@ def identify(audio, model: RaagaXGB) -> str:
         import librosa
 
         wav = librosa.resample(wav, orig_sr=sr, target_sr=SAMPLE_RATE)
-    vecs = features.window_vectors(features.tonic_normalize(wav))
+    vecs = features.window_vectors(wav)  # estimates Sa + tonic-relative features internally
     if not vecs:
         return "🤔 Too short — give me at least ~5 seconds of melody."
     preds = model.aggregate_top_k(vecs, k=TOP_K)

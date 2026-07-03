@@ -13,11 +13,15 @@ import numpy as np
 from .config import CLIP_SECONDS, MIN_CLIP_SECONDS, SAMPLE_RATE
 
 
-def load_audio(path: str, sr: int = SAMPLE_RATE) -> np.ndarray:
-    """Decode any format to mono float32 at `sr` (ffmpeg handles mp3/m4a)."""
+def load_audio(path: str, sr: int = SAMPLE_RATE, duration: float | None = None) -> np.ndarray:
+    """Decode any format to mono float32 at `sr` (ffmpeg handles mp3/m4a).
+
+    `duration` caps the decode length — Saraga tracks run 20-30 min, so decoding the
+    whole file to use only the first N windows wastes most of the work.
+    """
     import librosa
 
-    y, _ = librosa.load(path, sr=sr, mono=True)
+    y, _ = librosa.load(path, sr=sr, mono=True, duration=duration)
     return y.astype(np.float32)
 
 
@@ -30,12 +34,27 @@ def tonic_normalize(y: np.ndarray, sr: int = SAMPLE_RATE) -> np.ndarray:
     return y
 
 
-def frame_vector(y: np.ndarray, sr: int = SAMPLE_RATE) -> np.ndarray:
-    """Thesis-style fixed-length descriptor over one clip (the ~50-dim floor).
+def estimate_tonic_pc(y: np.ndarray, sr: int = SAMPLE_RATE) -> int:
+    """Cheap tonic (Sa) estimate: the most energetic pitch class over the clip.
 
-    Concatenates means+stds of: chroma (12), MFCC (20), spectral centroid,
-    bandwidth, rolloff, and zero-crossing rate. Fixed length regardless of clip
-    duration, so it drops straight into XGBoost/SVM.
+    Carnatic performances carry a continuous tanpura drone on Sa, so the summed
+    chromagram peaks at the tonic. This is the librosa-only stand-in for the precise
+    essentia `TonicIndianArtMusic` used in Phase 2 (D5).
+    """
+    import librosa
+
+    chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
+    return int(chroma.mean(axis=1).argmax())
+
+
+def frame_vector(y: np.ndarray, sr: int = SAMPLE_RATE, tonic_pc: int = 0) -> np.ndarray:
+    """Tonic-relative pitch-class descriptor for one window (D16 step 1).
+
+    Raaga lives in the pitch classes *relative to Sa*, so we roll the chromagram so
+    the tonic pitch class -> bin 0, then summarize as a normalized 12-bin pitch-class
+    histogram (the raaga fingerprint) + per-bin spread. Timbre features (MFCC,
+    spectral shape) are deliberately EXCLUDED: they encode recording/instrument
+    identity and make the model memorize tracks instead of learning raaga.
     """
     import librosa
 
@@ -43,15 +62,10 @@ def frame_vector(y: np.ndarray, sr: int = SAMPLE_RATE) -> np.ndarray:
         raise ValueError("empty audio")
 
     chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
-    mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=20)
-    centroid = librosa.feature.spectral_centroid(y=y, sr=sr)
-    bandwidth = librosa.feature.spectral_bandwidth(y=y, sr=sr)
-    rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr)
-    zcr = librosa.feature.zero_crossing_rate(y)
-
-    parts = [chroma, mfcc, centroid, bandwidth, rolloff, zcr]
-    stats = [np.concatenate([m.mean(axis=1), m.std(axis=1)]) for m in parts]
-    return np.concatenate(stats).astype(np.float32)
+    chroma = np.roll(chroma, -tonic_pc, axis=0)          # tonic -> bin 0
+    hist = chroma.mean(axis=1)
+    hist = hist / (hist.sum() + 1e-8)                     # pitch-class distribution
+    return np.concatenate([hist, chroma.std(axis=1)]).astype(np.float32)  # 24-dim
 
 
 def window_vectors(
@@ -71,13 +85,16 @@ def window_vectors(
     win = int(round(window_s * sr))
     hop = max(1, int(round(hop_s * sr)))
     min_len = int(round(MIN_CLIP_SECONDS * sr))
+    if len(y) < min_len:
+        return []
+    tonic_pc = estimate_tonic_pc(y, sr)  # one Sa estimate per recording (drone is stable)
     out: list[np.ndarray] = []
     start = 0
     while start < len(y):
         seg = y[start : start + win]
         if len(seg) < min_len:
             break
-        out.append(frame_vector(seg, sr))
+        out.append(frame_vector(seg, sr, tonic_pc))
         if max_windows and len(out) >= max_windows:
             break
         start += hop
@@ -85,16 +102,16 @@ def window_vectors(
 
 
 def extract(path: str, sr: int = SAMPLE_RATE) -> np.ndarray:
-    """Single-vector path for short clips: load -> tonic-normalize -> frame vector."""
+    """Single-vector path for short clips: load -> estimate Sa -> tonic-relative vector."""
     y = load_audio(path, sr)
-    y = tonic_normalize(y, sr)
-    return frame_vector(y, sr)
+    return frame_vector(y, sr, estimate_tonic_pc(y, sr))
 
 
 def extract_windows(
     path: str, sr: int = SAMPLE_RATE, max_windows: int | None = None
 ) -> list[np.ndarray]:
     """Load a (long) recording and return one frame vector per 10 s window."""
-    y = load_audio(path, sr)
+    duration = None if max_windows is None else max_windows * CLIP_SECONDS + 1.0
+    y = load_audio(path, sr, duration=duration)
     y = tonic_normalize(y, sr)
     return window_vectors(y, sr, max_windows=max_windows)

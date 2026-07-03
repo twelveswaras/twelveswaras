@@ -1,25 +1,40 @@
 {
-  "_note": "PROVISIONAL v0 vocabulary. D4 fixes the v0 set data-driven (~12 raagas, mutually distinct, avoid allied-raaga pairs) from Saraga/CMD class counts. This starter list is a placeholder to unblock scaffolding; regenerate it once Saraga is downloaded (tools/select_v0_raagas.py, TODO). Canonical names are human-readable; the aliases table folds transliteration/spelling variants (incl. Saraga's labels) onto the canonical form.",
+  "_note": "v0 set finalized data-driven from Saraga Carnatic 1.5 (D4): top 12 by track count, mutually distinct (allied pairs skipped). Regenerate with tools/select_v0_raagas.py.",
   "tradition": "carnatic",
   "canonical": [
-    "Shankarabharanam",
-    "Kalyani",
     "Todi",
+    "Kamās",
+    "Saurāṣtraṁ",
+    "Behāg",
     "Bhairavi",
-    "Kamboji",
-    "Kharaharapriya",
+    "Suraṭi",
     "Mohanam",
-    "Hindolam",
-    "Mayamalavagowla",
-    "Sindhubhairavi",
-    "Saveri",
-    "Begada"
+    "Rītigauḷa",
+    "Ṣanmukhapriya",
+    "Kalyani",
+    "Begada",
+    "Harikāmbhōji"
   ],
   "aliases": {
-    "Shankarabharanam": ["Dheerasankarabharanam", "Sankarabharanam", "Shankarabharana"],
-    "Kalyani": ["Mechakalyani", "Yaman"],
-    "Kamboji": ["Kambhoji", "Khamboji"],
-    "Mayamalavagowla": ["Mayamalavagoula", "Malahari"],
-    "Hindolam": ["Malkauns"]
+    "Shankarabharanam": [
+      "Dheerasankarabharanam",
+      "Sankarabharanam",
+      "Shankarabharana"
+    ],
+    "Kalyani": [
+      "Mechakalyani",
+      "Yaman"
+    ],
+    "Kamboji": [
+      "Kambhoji",
+      "Khamboji"
+    ],
+    "Mayamalavagowla": [
+      "Mayamalavagoula",
+      "Malahari"
+    ],
+    "Hindolam": [
+      "Malkauns"
+    ]
   }
 }

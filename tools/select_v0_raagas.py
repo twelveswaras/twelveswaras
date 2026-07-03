@@ -17,11 +17,7 @@ import json
 from collections import Counter
 
 from raaga_id import data
-from raaga_id.config import RAAGAS_PATH
-
-
-def _norm(name: str) -> str:
-    return name.strip().lower().replace(" ", "").replace("-", "")
+from raaga_id.config import RAAGAS_PATH, fold_raaga as _norm
 
 
 # Well-known confusable/allied Carnatic pairs (normalized). Keeps the commoner of a
@@ -45,6 +41,11 @@ ALLIED_PAIRS = [
 ]
 
 
+# Not single raagas — exclude from the classifier vocabulary (D8/Q6: raagamalikas are
+# multi-raaga compositions; detect/exclude, don't train on them as a class).
+EXCLUDE = {_norm(x) for x in ("Ragamalika", "Raagamalika", "Ragamalikai")}
+
+
 def _allied(a: str, b: str) -> bool:
     na, nb = _norm(a), _norm(b)
     return any({na, nb} == {_norm(x), _norm(y)} for x, y in ALLIED_PAIRS)
@@ -59,11 +60,14 @@ def raaga_counts() -> Counter:
 
 def propose(counts: Counter, k: int = 12) -> tuple[list[str], list[tuple[str, str]]]:
     chosen: list[str] = []
-    skipped: list[tuple[str, str]] = []  # (raaga, "allied with X")
+    skipped: list[tuple[str, str]] = []  # (raaga, reason)
     for raaga, _ in counts.most_common():
+        if _norm(raaga) in EXCLUDE:
+            skipped.append((raaga, "not a single raaga (D8)"))
+            continue
         clash = next((c for c in chosen if _allied(raaga, c)), None)
         if clash:
-            skipped.append((raaga, clash))
+            skipped.append((raaga, f"allied with {clash}"))
             continue
         chosen.append(raaga)
         if len(chosen) == k:
@@ -90,9 +94,9 @@ def main() -> None:
     for r in chosen:
         print(f"  ✓ {r}  ({counts[r]} tracks)")
     if skipped:
-        print("  skipped (allied with a chosen raaga):")
-        for r, clash in skipped:
-            print(f"    – {r} (allied with {clash})")
+        print("  skipped:")
+        for r, reason in skipped:
+            print(f"    – {r} ({reason})")
 
     if args.write:
         existing = json.loads(RAAGAS_PATH.read_text())
