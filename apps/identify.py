@@ -177,8 +177,11 @@ def build_ui():
 
     with gr.Blocks(title="twelveswaras", theme=_theme(), css=CSS) as demo:
         gr.HTML(TITLE_HTML)
+        # buttons=["download"] drops Gradio's built-in "share": it re-uploads the raw clip to HF's
+        # MIME-restricted uploader (rejects m4a/aac/flac/…) and shares the *input*, not the result
+        # — confusing + flaky. A real "share this raga" is an Explorer feature (D29). Keep download.
         audio = gr.Audio(sources=["microphone", "upload"], type="numpy",
-                         label="Upload or record ~15–30 s")
+                         label="Upload or record ~15–30 s", buttons=["download"])
         gr.Markdown("🎚️ **For best accuracy, include a tanpura / shruti-box drone.** A live "
                     "concert always has one — the tonic (Sa) is found from it, so solo voice "
                     "without a drone is unreliable.")
