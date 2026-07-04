@@ -141,6 +141,16 @@ TEMPLATE = """<!doctype html>
 <link rel="canonical" href="https://twelveswaras.com/raaga/__SLUG__">
 <meta name="theme-color" content="#0b0a08">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta property="og:type" content="article">
+<meta property="og:title" content="__NAME__: a Carnatic raaga · twelveswaras">
+<meta property="og:description" content="__DESC__">
+<meta property="og:image" content="https://twelveswaras.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="__NAME__: a Carnatic raaga">
+<meta name="twitter:image" content="https://twelveswaras.com/og.png">
 __JSONLD__
 <style>
   :root{
@@ -537,6 +547,12 @@ INDEX_TEMPLATE = """<!doctype html>
 <link rel="canonical" href="https://twelveswaras.com/raaga/">
 <meta name="theme-color" content="#0b0a08">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta property="og:title" content="The raagas: all 40, by mēḷa family · twelveswaras">
+<meta property="og:description" content="Browse the 40 Carnatic raagas twelveswaras recognises, grouped by parent melakarta.">
+<meta property="og:image" content="https://twelveswaras.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://twelveswaras.com/og.png">
 <style>
   :root{
     --ink:#0b0a08; --raise:#16130f; --raise-2:#1c1811; --line:#2a241c; --line-2:#39301f;
