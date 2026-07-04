@@ -287,8 +287,11 @@ def build_ui():
             yield from identify(a, model)
 
         # No button: auto-identify when a file is uploaded or a recording stops.
-        audio.upload(on_audio, audio, outs)
-        audio.stop_recording(on_audio, audio, outs)
+        # show_progress="hidden": the generator already yields a "🎧 Listening…" status, so Gradio's
+        # per-output progress spinners are redundant AND duplicate on mobile — each of the 4 outputs
+        # renders its own "N.Ns" eta, and on a narrow layout one floats over the caption text.
+        audio.upload(on_audio, audio, outs, show_progress="hidden")
+        audio.stop_recording(on_audio, audio, outs, show_progress="hidden")
 
         # Clearing the audio (Gradio's ✕) must also reset the result/Sa/panels below — otherwise
         # the previous clip's raaga lingers under an empty input.
