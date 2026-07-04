@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>twelveswaras — identify the raaga (Shazam for Carnatic music)</title>
-<meta name="description" content="Point your phone at a Carnatic performance and identify the raaga (raga). A free, open-source 'Shazam for raagas' — a raga identifier with an open CC-BY data commons. Carnatic first; Hindustani planned.">
+<title>twelveswaras: identify the raaga (Shazam for Carnatic music)</title>
+<meta name="description" content="Point your phone at a Carnatic performance and identify the raaga (raga). A free, open-source 'Shazam for raagas': a raga identifier with an open CC-BY data commons. Carnatic first; Hindustani planned.">
 <link rel="canonical" href="https://twelveswaras.com/">
 <meta name="theme-color" content="#0b0a08">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -15,11 +15,11 @@
 <!-- Open Graph / Twitter -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://twelveswaras.com/">
-<meta property="og:title" content="twelveswaras — identify the raaga">
+<meta property="og:title" content="twelveswaras: identify the raaga">
 <meta property="og:description" content="A free, open-source 'Shazam for raagas'. Point your phone at a Carnatic performance; it names the raaga.">
 <meta property="og:image" content="https://twelveswaras.com/og.svg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="twelveswaras — identify the raaga">
+<meta name="twitter:title" content="twelveswaras: identify the raaga">
 <meta name="twitter:description" content="A free, open-source 'Shazam for raagas' for Carnatic music.">
 <meta name="twitter:image" content="https://twelveswaras.com/og.svg">
 
@@ -45,24 +45,24 @@
   "@type": "FAQPage",
   "mainEntity": [
     {"@type": "Question", "name": "What is twelveswaras?",
-     "acceptedAnswer": {"@type": "Answer", "text": "twelveswaras is a free, open-source 'Shazam for raagas'. Give it a short clip of Carnatic music and it identifies the raaga — showing the top-3 with confidence, plus the tonic (Sa) it detected, and a note on how to hear that raaga."}},
+     "acceptedAnswer": {"@type": "Answer", "text": "twelveswaras is a free, open-source 'Shazam for raagas'. Give it a short clip of Carnatic music and it identifies the raaga, showing the top-3 with confidence, plus the tonic (Sa) it detected, and a note on how to hear that raaga."}},
     {"@type": "Question", "name": "How do I identify a raaga?",
      "acceptedAnswer": {"@type": "Answer", "text": "Open the recognizer, record (or upload) about 15-30 seconds of melody, and it names the raaga. A tanpura or shruti-box drone under the melody gives the best results because the tonic is found from it."}},
     {"@type": "Question", "name": "Does it work at a live concert?",
      "acceptedAnswer": {"@type": "Answer", "text": "Yes. A concert always has a tanpura drone, which is exactly what the tool uses to find the tonic. Point your phone at the stage for about 30 seconds. Solo singing with no drone is unreliable."}},
     {"@type": "Question", "name": "Is twelveswaras free and open source?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Yes — it is a non-commercial, open-source public good. The code is MIT-licensed and the contributor data commons is CC-BY-4.0. It is not a commercial product."}},
+     "acceptedAnswer": {"@type": "Answer", "text": "Yes, it is a non-commercial, open-source public good. The code is MIT-licensed and the contributor data commons is CC-BY-4.0. It is not a commercial product."}},
     {"@type": "Question", "name": "How many raagas does it recognise?",
      "acceptedAnswer": {"@type": "Answer", "text": "40 Carnatic raagas in this version. The name, schema and pipeline are tradition-neutral by design, with Hindustani planned as a fast-follow."}},
     {"@type": "Question", "name": "Do I need to install an app?",
-     "acceptedAnswer": {"@type": "Answer", "text": "No. It runs in your browser. On a phone you can 'Add to Home Screen' for an app-like, full-screen experience — no App Store or Play Store needed."}}
+     "acceptedAnswer": {"@type": "Answer", "text": "No. It runs in your browser. On a phone you can 'Add to Home Screen' for an app-like, full-screen experience, with no App Store or Play Store needed."}}
   ]
 }
 </script>
 
 <style>
   :root{
-    /* warm-biased dark — neutrals chosen toward the amber accent, not default cool grey */
+    /* warm-biased dark; neutrals chosen toward the amber accent, not default cool grey */
     --ink:#0b0a08; --raise:#16130f; --raise-2:#1c1811; --line:#2a241c; --line-2:#39301f;
     --paper:#f2ece2; --muted:#a89e8e; --faint:#6f6656;
     --amber:#f59e0b; --amber-lo:#d97706; --amber-hi:#fbbf24;
@@ -85,8 +85,12 @@
   .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
   .brand svg{width:26px;height:26px;flex:0 0 auto}
+  .top .nav{display:inline-flex;align-items:center;gap:16px}
+  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
+  .top .nav a:hover{color:var(--paper)}
   .top .gh{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
   .top .gh:hover{color:var(--paper)}
+  @media (max-width:460px){.top .nav{gap:12px} .top .nav a{font-size:.72rem}}
 
   /* ---- hero ---- */
   .hero{padding:40px 0 8px;text-align:center}
@@ -99,7 +103,7 @@
   .title .b{color:var(--amber)}
   .thesis{color:var(--muted);font-size:clamp(1.02rem,3.4vw,1.22rem);max-width:34ch;margin:16px auto 0;text-wrap:balance}
 
-  /* the twelve swaras, made visible — a living pitch motif (the page's thesis) */
+  /* the twelve swaras, made visible: a living pitch motif (the page's thesis) */
   .swaras{--n:12;display:flex;align-items:flex-end;justify-content:center;gap:clamp(6px,2.2vw,12px);
     height:96px;margin:30px auto 4px;max-width:440px}
   .swaras b{flex:1;display:block;border-radius:6px 6px 2px 2px;
@@ -128,7 +132,7 @@
 
   /* ---- the recognizer ---- */
   #try{border-top:0;margin-top:22px;padding:0 0 6px}
-  /* a plain, quiet guidance line — no card, no accent rail (that reads as AI-slop) */
+  /* a plain, quiet guidance line: no card, no accent rail (that reads as AI-slop) */
   .drone{display:flex;gap:.5rem;align-items:flex-start;font-size:.9rem;color:var(--muted);
     max-width:560px;margin:0 auto 16px}
   .drone b{color:var(--paper);font-weight:650}
@@ -179,7 +183,8 @@
 
   /* ---- footer ---- */
   footer{border-top:1px solid var(--line);padding:30px 0 46px;text-align:center}
-  footer .tagline{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;text-indent:.04em;color:var(--faint)}
+  footer .tagline{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);
+    max-width:48ch;margin:0 auto;text-wrap:balance}
   footer .links{margin-top:.7rem;font-size:.9rem;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
 </style>
 </head>
@@ -201,13 +206,17 @@
       </svg>
       <span><span class="a">twelve</span><span class="b">swaras</span></span>
     </span>
-    <a class="gh" href="https://github.com/twelveswaras">github ↗</a>
+    <span class="nav">
+      <a href="raaga/">raagas</a>
+      <a href="listen/">train your ear</a>
+      <a class="gh" href="https://github.com/twelveswaras">github ↗</a>
+    </span>
   </nav>
 
   <header class="hero">
     <p class="eyebrow">Shazam for raagas</p>
     <h1 class="title">Name the raaga.<br><span class="b">Learn to hear it.</span></h1>
-    <p class="thesis">Play it a few seconds of Carnatic music — it names the raaga, and shows you how to recognise it yourself.</p>
+    <p class="thesis">Play it a few seconds of Carnatic music: it names the raaga, and shows you how to recognise it yourself.</p>
 
     <p class="swaras-cap" aria-hidden="true">the twelve swaras</p>
     <div class="swaras" role="img" aria-label="twelve swaras, listening">
@@ -225,7 +234,7 @@
 
   <section id="try">
     <p class="drone"><span aria-hidden="true">🎚️</span>
-      <span>Works best with a <b>tanpura or shruti-box drone</b> under the melody — which a live concert always has. The tonic (Sa) is found from it.</span></p>
+      <span>Works best with a <b>tanpura or shruti-box drone</b> under the melody, which a live concert always has. The tonic (Sa) is found from it.</span></p>
     <div class="embed">
       <div class="slot" id="slot">
         <div class="swaras" aria-hidden="true">
@@ -254,7 +263,7 @@
       <div class="stepp">
         <span class="dot">02</span>
         <div><span class="lab">Find Sa</span><h3>It locks onto the tonic</h3>
-          <p>The tanpura drone fixes the tonic (Sa). Every note is then heard relative to it — the way a listener does.</p></div>
+          <p>The tanpura drone fixes the tonic (Sa). Every note is then heard relative to it, the way a listener does.</p></div>
       </div>
       <div class="stepp">
         <span class="dot">03</span>
@@ -266,9 +275,9 @@
 
   <section id="about">
     <h2>An open public good</h2>
-    <p class="lead">twelveswaras is non-commercial and open source — never a product, owned by no company.
+    <p class="lead">twelveswaras is non-commercial and open source, never a product, owned by no company.
       It pairs a raaga-recognition model with a community-built, openly-licensed data commons, so it keeps getting better.</p>
-    <p>The <b style="color:var(--paper);font-weight:600">twelve swaras</b> are the twelve note-positions of the octave — the
+    <p>The <b style="color:var(--paper);font-weight:600">twelve swaras</b> are the twelve note-positions of the octave, the
       shared alphabet of Carnatic and Hindustani music. Carnatic is where we start; the name, schema and pipeline are
       tradition-neutral by design, with Hindustani planned as a fast-follow.</p>
     <div class="facts">
@@ -283,13 +292,13 @@
   <section id="faq">
     <h2>Questions</h2>
     <details open><summary>Does it work at a live concert?</summary>
-      <p>Yes — a concert has a tanpura drone, which is exactly what it needs to find the tonic. Point your phone at the stage for about 30 seconds. Solo singing with no drone is unreliable.</p></details>
+      <p>Yes, a concert has a tanpura drone, which is exactly what it needs to find the tonic. Point your phone at the stage for about 30 seconds. Solo singing with no drone is unreliable.</p></details>
     <details><summary>Is it really free, with no account?</summary>
       <p>Yes. Non-commercial, MIT-licensed code, a CC-BY-4.0 data commons, and no sign-up. It is a public good, not a product.</p></details>
     <details><summary>Which raagas does it know?</summary>
-      <p>40 Carnatic raagas in this version — a mix of the common melakarta and janya raagas you hear in concerts. Hindustani is planned.</p></details>
+      <p>40 Carnatic raagas in this version, a mix of the common melakarta and janya raagas you hear in concerts. Hindustani is planned.</p></details>
     <details><summary>Do I need to install anything?</summary>
-      <p>No — it runs in your browser. On a phone, use “Add to Home Screen” for a full-screen, app-like experience.</p></details>
+      <p>No, it runs in your browser. On a phone, use “Add to Home Screen” for a full-screen, app-like experience.</p></details>
   </section>
 </div>
 
@@ -297,6 +306,8 @@
   <div class="wrap">
     <p class="tagline">a non-commercial, open-source public good · Carnatic first · CC-BY data commons</p>
     <div class="links">
+      <a href="raaga/">browse the raagas</a>
+      <a href="listen/">train your ear</a>
       <a href="https://github.com/twelveswaras">github.com/twelveswaras</a>
     </div>
   </div>
@@ -306,7 +317,7 @@
   // Lazy-load the recognizer: the page paints instantly (18 KB, no framework); the iframe streams
   // in when the "Try it" panel scrolls into view, or when you tap the CTA. The iframe then AUTO-
   // RESIZES to the recognizer's content height (it posts its height back), so the page scrolls and
-  // the frame never shows its own scrollbar — it reads as one page. No third-party branding shown.
+  // the frame never shows its own scrollbar; it reads as one page. No third-party branding shown.
   (function () {
     var SPACE = 'https://twelveswaras-twelveswaras.hf.space';
     var slot = document.getElementById('slot');

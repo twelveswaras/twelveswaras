@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The raagas: all 40, by mēḷa family · twelveswaras</title>
+<meta name="description" content="Browse the 40 Carnatic raagas twelveswaras recognises, grouped by parent melakarta so allied raagas sit together. Each has a page: swaras, how to hear it, and kritis.">
+<link rel="canonical" href="https://twelveswaras.com/raaga/">
+<meta name="theme-color" content="#0b0a08">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --ink:#0b0a08; --raise:#16130f; --raise-2:#1c1811; --line:#2a241c; --line-2:#39301f;
+    --paper:#f2ece2; --muted:#a89e8e; --faint:#6f6656;
+    --amber:#f59e0b; --amber-lo:#d97706; --amber-hi:#fbbf24;
+    --sans:"SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--sans);
+    line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:var(--amber-hi);text-decoration:none} a:hover{color:#fff}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:6px}
+  .wrap{width:100%;max-width:860px;margin:0 auto;padding:0 22px}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 0}
+  .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
+  .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
+  .brand svg{width:26px;height:26px;flex:0 0 auto}
+  .top .gh{font-family:var(--mono);font-size:.76rem;color:var(--muted)}
+  .top .gh:hover{color:var(--paper)}
+  header.hero{padding:26px 0 6px}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin:0 0 10px}
+  h1{font-size:clamp(1.9rem,7vw,2.8rem);font-weight:800;letter-spacing:-.03em;margin:0;text-wrap:balance}
+  .sub{color:var(--muted);max-width:56ch;margin:12px 0 0;font-size:1.02rem;text-wrap:balance}
+  .fam{padding:26px 0 8px;border-top:1px solid var(--line);margin-top:26px}
+  .fam:first-of-type{border-top:0;margin-top:14px}
+  .fam h2{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+    font-size:clamp(1.15rem,4vw,1.4rem);font-weight:800;letter-spacing:-.02em;margin:0 0 6px}
+  .fam h2 .ml{font-family:var(--mono);font-size:.72rem;font-weight:600;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--amber);background:var(--raise);border:1px solid var(--line-2);
+    border-radius:999px;padding:.3rem .7rem;align-self:center}
+  .fam h2 .ct{font-family:var(--mono);font-size:.74rem;font-weight:500;color:var(--faint)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-top:12px}
+  .card{display:block;background:var(--raise);border:1px solid var(--line);border-radius:12px;
+    padding:13px 15px;transition:border-color .12s ease,transform .12s ease}
+  .card:hover{border-color:var(--amber);transform:translateY(-1px)}
+  .card .cn{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .card .name{font-size:1.08rem;font-weight:700;letter-spacing:-.01em;color:var(--paper)}
+  .card .tag{font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;
+    border-radius:5px;padding:.1rem .34rem}
+  .card .tag.mela{color:var(--amber-hi);border:1px solid var(--line-2)}
+  .card .tag.q{color:var(--faint);border:1px dashed var(--line-2)}
+  .card .chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:9px}
+  .card .chips span{font-family:var(--mono);font-size:.64rem;color:var(--muted);
+    border:1px solid var(--line-2);border-radius:5px;padding:.12rem .34rem}
+  .card .chips span.empty{color:var(--faint);border-style:dashed}
+  .foot{font-family:var(--mono);font-size:.72rem;color:var(--faint);text-align:center;
+    border-top:1px solid var(--line);margin-top:34px;padding:22px 0 40px;line-height:1.7}
+  .foot a{color:var(--muted)} .foot a:hover{color:var(--paper)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="top">
+    <a class="brand" href="../" aria-label="twelveswaras home">
+      <svg viewBox="0 0 256 256" aria-hidden="true">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#b45309"/></linearGradient></defs>
+        <rect width="256" height="256" rx="60" fill="url(#g)"/>
+        <g fill="#fff">
+          <rect x="40" y="140" width="12" height="60" rx="6"/><rect x="60" y="104" width="12" height="96" rx="6"/>
+          <rect x="80" y="150" width="12" height="50" rx="6"/><rect x="100" y="76" width="12" height="124" rx="6"/>
+          <rect x="120" y="118" width="12" height="82" rx="6"/><rect x="140" y="92" width="12" height="108" rx="6"/>
+          <rect x="160" y="60" width="12" height="140" rx="6"/><rect x="180" y="128" width="12" height="72" rx="6"/>
+          <rect x="200" y="100" width="12" height="100" rx="6"/></g>
+      </svg>
+      <span><span class="a">twelve</span><span class="b">swaras</span></span>
+    </a>
+    <a class="gh" href="../listen/">train your ear ↗</a>
+  </nav>
+
+  <header class="hero">
+    <p class="eyebrow">The raagas</p>
+    <h1>All 40, by mēḷa family</h1>
+    <p class="sub">Grouped by parent melakarta, so the allied raagas you'd most likely confuse sit side by side. Tap any one to see its swaras, how to hear it, and kritis to listen for.</p>
+  </header>
+
+  <section class="fam">
+    <h2><span class="ml">mēḷa 8</span> Hanumatōḍi <span class="ct">3</span></h2>
+    <div class="grid">
+      <a class="card" href="todi.html"><div class="cn"><span class="name">Tōḍi</span></div><div class="chips"><span>S</span><span>R1</span><span>G2</span><span>M1</span><span>P</span><span>D1</span><span>N2</span></div></a>
+      <a class="card" href="dhanyasi.html"><div class="cn"><span class="name">Dhanyāsi</span></div><div class="chips"><span>S</span><span>R1</span><span>G2</span><span>M1</span><span>P</span><span>D1</span><span>N2</span></div></a>
+      <a class="card" href="sindhubhairavi.html"><div class="cn"><span class="name">Sindhubhairavi</span></div><div class="chips"><span class="empty">notes pending review</span></div></a>
+    </div>
+  </section>
+  <section class="fam">
+    <h2><span class="ml">mēḷa 15</span> Māyāmāḷavagauḷa <span class="ct">3</span></h2>
+    <div class="grid">
+      <a class="card" href="mayamalavagaula.html"><div class="cn"><span class="name">Māyāmāḷavagauḷa</span><span class="tag mela">mēḷa</span></div><div class="chips"><span>S</span><span>R1</span><span>G3</span><span>M1</span><span>P</span><span>D1</span><span>N3</span></div></a>
+      <a class="card" href="gaula.html"><div class="cn"><span class="name">Gauḷa</span></div><div class="chips"><span>S</span><span>R1</span><span>G3</span><span>M1</span><span>P</span><span>N3</span></div></a>
+      <a class="card" href="saveri.html"><div class="cn"><span class="name">Sāvēri</span></div><div class="chips"><span>S</span><span>R1</span><span>G3</span><span>M1</span><span>P</span><span>D1</span><span>N3</span></div></a>
+    </div>
+  </section>
+  <section class="fam">
+    <h2><span class="ml">mēḷa 20</span> Naṭabhairavi <span class="ct">1</span></h2>
+    <div class="grid">
+      <a class="card" href="bhairavi.html"><div class="cn"><span class="name">Bhairavi</span></div><div class="chips"><span>S</span><span>R2</span><span>G2</span><span>M1</span><span>P</span><span>D1</span><span>D2</span><span>N2</span></div></a>
+    </div>
+  </section>
+  <section class="fam">
+    <h2><span class="ml">mēḷa 22</span> Kharaharapriya <span class="ct">10</span></h2>
+    <div class="grid">
+      <a class="card" href="karaharapriya.html"><div class="cn"><span class="name">Karaharapriya</span></div><div class="chips"><span>S</span><span>R2</span><span>G2</span><span>M1</span><span>P</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="husseni.html"><div class="cn"><span class="name">Hussēnī</span></div><div class="chips"><span>S</span><span>R2</span><span>G2</span><span>M1</span><span>P</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="sri.html"><div class="cn"><span class="name">Śrī</span></div><div class="chips"><span>S</span><span>R2</span><span>G2</span><span>M1</span><span>P</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="sriranjani.html"><div class="cn"><span class="name">Śrīranjani</span></div><div class="chips"><span>S</span><span>R2</span><span>G2</span><span>M1</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="madhyamavati.html"><div class="cn"><span class="name">Madhyamāvati</span></div><div class="chips"><span>S</span><span>R2</span><span>M1</span><span>P</span><span>N2</span></div></a>
+      <a class="card" href="kanada.html"><div class="cn"><span class="name">Kānaḍa</span></div><div class="chips"><span>S</span><span>R2</span><span>G2</span><span>M1</span><span>P</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="kapi.html"><div class="cn"><span class="name">Kāpi</span></div><div class="chips"><span class="empty">notes pending review</span></div></a>
+      <a class="card" href="mukhari.html"><div class="cn"><span class="name">Mukhāri</span></div><div class="chips"><span>S</span><span>R2</span><span>G2</span><span>M1</span><span>P</span><span>D1</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="ritigaula.html"><div class="cn"><span class="name">Rītigauḷa</span></div><div class="chips"><span>S</span><span>R2</span><span>G2</span><span>M1</span><span>P</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="anandabhairavi.html"><div class="cn"><span class="name">Ānandabhairavi</span></div><div class="chips"><span class="empty">notes pending review</span></div></a>
+    </div>
+  </section>
+  <section class="fam">
+    <h2><span class="ml">mēḷa 28</span> Harikāmbhōji <span class="ct">10</span></h2>
+    <div class="grid">
+      <a class="card" href="harikambhoji.html"><div class="cn"><span class="name">Harikāmbhōji</span><span class="tag mela">mēḷa</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="mohanam.html"><div class="cn"><span class="name">Mōhanaṁ</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>P</span><span>D2</span></div></a>
+      <a class="card" href="kambhoji.html"><div class="cn"><span class="name">Kāṁbhōji</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="kedaragaula.html"><div class="cn"><span class="name">Kēdāragauḷa</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="surati.html"><div class="cn"><span class="name">Suraṭi</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="sahana.html"><div class="cn"><span class="name">Sahānā</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="natakurinji.html"><div class="cn"><span class="name">Nāṭakurinji</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="sencurutti.html"><div class="cn"><span class="name">Sencuruṭṭi</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="kamas.html"><div class="cn"><span class="name">Kamās</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span><span>N2</span></div></a>
+      <a class="card" href="yadukula-kamboji.html"><div class="cn"><span class="name">Yadukula kāṁbōji</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span><span>N2</span></div></a>
+    </div>
+  </section>
+  <section class="fam">
+    <h2><span class="ml">mēḷa 29</span> Śankarābharaṇaṁ <span class="ct">7</span></h2>
+    <div class="grid">
+      <a class="card" href="sankarabharanam.html"><div class="cn"><span class="name">Śankarābharaṇaṁ</span><span class="tag mela">mēḷa</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span><span>N3</span></div></a>
+      <a class="card" href="bilahari.html"><div class="cn"><span class="name">Bilahari</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span><span>N3</span></div></a>
+      <a class="card" href="begada.html"><div class="cn"><span class="name">Bēgaḍa</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span><span>N2</span><span>N3</span></div></a>
+      <a class="card" href="devagandhari.html"><div class="cn"><span class="name">Dēvagāndhāri</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span><span>N3</span></div></a>
+      <a class="card" href="atana.html"><div class="cn"><span class="name">Aṭāna</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span><span>N2</span><span>N3</span></div></a>
+      <a class="card" href="sama.html"><div class="cn"><span class="name">Sāma</span><span class="tag q" title="parent mēḷa is debated across sources">mēḷa?</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M1</span><span>P</span><span>D2</span></div></a>
+      <a class="card" href="behag.html"><div class="cn"><span class="name">Behāg</span></div><div class="chips"><span class="empty">notes pending review</span></div></a>
+    </div>
+  </section>
+  <section class="fam">
+    <h2><span class="ml">mēḷa 36</span> Chalanāṭa <span class="ct">1</span></h2>
+    <div class="grid">
+      <a class="card" href="nata.html"><div class="cn"><span class="name">Nāṭa</span></div><div class="chips"><span class="empty">notes pending review</span></div></a>
+    </div>
+  </section>
+  <section class="fam">
+    <h2><span class="ml">mēḷa 39</span> Jhālavarāḷi <span class="ct">1</span></h2>
+    <div class="grid">
+      <a class="card" href="varali.html"><div class="cn"><span class="name">Varāḷi</span></div><div class="chips"><span class="empty">notes pending review</span></div></a>
+    </div>
+  </section>
+  <section class="fam">
+    <h2><span class="ml">mēḷa 51</span> Kāmavardani <span class="ct">1</span></h2>
+    <div class="grid">
+      <a class="card" href="kamavardani.html"><div class="cn"><span class="name">Kāmavardani</span><span class="tag mela">mēḷa</span></div><div class="chips"><span>S</span><span>R1</span><span>G3</span><span>M2</span><span>P</span><span>D1</span><span>N3</span></div></a>
+    </div>
+  </section>
+  <section class="fam">
+    <h2><span class="ml">mēḷa 53</span> Gamanaśrama <span class="ct">1</span></h2>
+    <div class="grid">
+      <a class="card" href="purvikalyani.html"><div class="cn"><span class="name">Pūrvīkaḷyāṇi</span></div><div class="chips"><span>S</span><span>R1</span><span>G3</span><span>M2</span><span>P</span><span>D2</span><span>N3</span></div></a>
+    </div>
+  </section>
+  <section class="fam">
+    <h2><span class="ml">mēḷa 56</span> Ṣanmukhapriya <span class="ct">1</span></h2>
+    <div class="grid">
+      <a class="card" href="sanmukhapriya.html"><div class="cn"><span class="name">Ṣanmukhapriya</span><span class="tag mela">mēḷa</span></div><div class="chips"><span>S</span><span>R2</span><span>G2</span><span>M2</span><span>P</span><span>D1</span><span>N2</span></div></a>
+    </div>
+  </section>
+  <section class="fam">
+    <h2><span class="ml">mēḷa 65</span> Mēchakalyāṇi <span class="ct">1</span></h2>
+    <div class="grid">
+      <a class="card" href="kalyani.html"><div class="cn"><span class="name">Kalyāṇi</span></div><div class="chips"><span>S</span><span>R2</span><span>G3</span><span>M2</span><span>P</span><span>D2</span><span>N3</span></div></a>
+    </div>
+  </section>
+
+  <p class="foot">
+    Grouped from our draft reference; a few parent-mēḷa placements (marked mēḷa?) are debated and pending a musician's review. ·
+    <a href="../">identify a raaga →</a> · <a href="../listen/">train your ear →</a>
+  </p>
+</div>
+</body>
+</html>

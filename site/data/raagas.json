@@ -1,0 +1,1074 @@
+{
+  "$schema_version": "0.1",
+  "project": "twelveswaras",
+  "description": "Open reference data for the raagas recognised by twelveswaras, an open-source 'Shazam for raagas' for Carnatic music.",
+  "homepage": "https://twelveswaras.com",
+  "license": {
+    "name": "CC-BY-4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "attribution": "twelveswaras (twelveswaras.com), CC-BY-4.0",
+  "provenance": "Generated from raaga_guide.json, the app's production guide. Note-sets are the model's working vocabulary; reference fields (arohana, pakad, ...) are populated only after review by a musician. Records with reviewed=false are provisional. This file does NOT include the unverified web-research draft, which awaits expert correction.",
+  "count": 40,
+  "tradition": "Carnatic",
+  "raagas": [
+    {
+      "name": "Ānandabhairavi",
+      "slug": "anandabhairavi",
+      "url": "https://twelveswaras.com/raaga/anandabhairavi",
+      "swaras": [],
+      "swara_semitones": [],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Aṭāna",
+      "slug": "atana",
+      "url": "https://twelveswaras.com/raaga/atana",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2",
+        "N2",
+        "N3"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        10,
+        11
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Bēgaḍa",
+      "slug": "begada",
+      "url": "https://twelveswaras.com/raaga/begada",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2",
+        "N2",
+        "N3"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        10,
+        11
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Behāg",
+      "slug": "behag",
+      "url": "https://twelveswaras.com/raaga/behag",
+      "swaras": [],
+      "swara_semitones": [],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Bhairavi",
+      "slug": "bhairavi",
+      "url": "https://twelveswaras.com/raaga/bhairavi",
+      "swaras": [
+        "S",
+        "R2",
+        "G2",
+        "M1",
+        "P",
+        "D1",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        8,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Bilahari",
+      "slug": "bilahari",
+      "url": "https://twelveswaras.com/raaga/bilahari",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2",
+        "N3"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        11
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Dēvagāndhāri",
+      "slug": "devagandhari",
+      "url": "https://twelveswaras.com/raaga/devagandhari",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2",
+        "N3"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        11
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Dhanyāsi",
+      "slug": "dhanyasi",
+      "url": "https://twelveswaras.com/raaga/dhanyasi",
+      "swaras": [
+        "S",
+        "R1",
+        "G2",
+        "M1",
+        "P",
+        "D1",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        1,
+        3,
+        5,
+        7,
+        8,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Gauḷa",
+      "slug": "gaula",
+      "url": "https://twelveswaras.com/raaga/gaula",
+      "swaras": [
+        "S",
+        "R1",
+        "G3",
+        "M1",
+        "P",
+        "N3"
+      ],
+      "swara_semitones": [
+        0,
+        1,
+        4,
+        5,
+        7,
+        11
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Harikāmbhōji",
+      "slug": "harikambhoji",
+      "url": "https://twelveswaras.com/raaga/harikambhoji",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Hussēnī",
+      "slug": "husseni",
+      "url": "https://twelveswaras.com/raaga/husseni",
+      "swaras": [
+        "S",
+        "R2",
+        "G2",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Kalyāṇi",
+      "slug": "kalyani",
+      "url": "https://twelveswaras.com/raaga/kalyani",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M2",
+        "P",
+        "D2",
+        "N3"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        6,
+        7,
+        9,
+        11
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Kamās",
+      "slug": "kamas",
+      "url": "https://twelveswaras.com/raaga/kamas",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Kāmavardani",
+      "slug": "kamavardani",
+      "url": "https://twelveswaras.com/raaga/kamavardani",
+      "swaras": [
+        "S",
+        "R1",
+        "G3",
+        "M2",
+        "P",
+        "D1",
+        "N3"
+      ],
+      "swara_semitones": [
+        0,
+        1,
+        4,
+        6,
+        7,
+        8,
+        11
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Kāṁbhōji",
+      "slug": "kambhoji",
+      "url": "https://twelveswaras.com/raaga/kambhoji",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Kānaḍa",
+      "slug": "kanada",
+      "url": "https://twelveswaras.com/raaga/kanada",
+      "swaras": [
+        "S",
+        "R2",
+        "G2",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Kāpi",
+      "slug": "kapi",
+      "url": "https://twelveswaras.com/raaga/kapi",
+      "swaras": [],
+      "swara_semitones": [],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Karaharapriya",
+      "slug": "karaharapriya",
+      "url": "https://twelveswaras.com/raaga/karaharapriya",
+      "swaras": [
+        "S",
+        "R2",
+        "G2",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Kēdāragauḷa",
+      "slug": "kedaragaula",
+      "url": "https://twelveswaras.com/raaga/kedaragaula",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Madhyamāvati",
+      "slug": "madhyamavati",
+      "url": "https://twelveswaras.com/raaga/madhyamavati",
+      "swaras": [
+        "S",
+        "R2",
+        "M1",
+        "P",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        5,
+        7,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Māyāmāḷavagauḷa",
+      "slug": "mayamalavagaula",
+      "url": "https://twelveswaras.com/raaga/mayamalavagaula",
+      "swaras": [
+        "S",
+        "R1",
+        "G3",
+        "M1",
+        "P",
+        "D1",
+        "N3"
+      ],
+      "swara_semitones": [
+        0,
+        1,
+        4,
+        5,
+        7,
+        8,
+        11
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Mōhanaṁ",
+      "slug": "mohanam",
+      "url": "https://twelveswaras.com/raaga/mohanam",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "P",
+        "D2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        7,
+        9
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Mukhāri",
+      "slug": "mukhari",
+      "url": "https://twelveswaras.com/raaga/mukhari",
+      "swaras": [
+        "S",
+        "R2",
+        "G2",
+        "M1",
+        "P",
+        "D1",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        8,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Nāṭa",
+      "slug": "nata",
+      "url": "https://twelveswaras.com/raaga/nata",
+      "swaras": [],
+      "swara_semitones": [],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Nāṭakurinji",
+      "slug": "natakurinji",
+      "url": "https://twelveswaras.com/raaga/natakurinji",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Pūrvīkaḷyāṇi",
+      "slug": "purvikalyani",
+      "url": "https://twelveswaras.com/raaga/purvikalyani",
+      "swaras": [
+        "S",
+        "R1",
+        "G3",
+        "M2",
+        "P",
+        "D2",
+        "N3"
+      ],
+      "swara_semitones": [
+        0,
+        1,
+        4,
+        6,
+        7,
+        9,
+        11
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Rītigauḷa",
+      "slug": "ritigaula",
+      "url": "https://twelveswaras.com/raaga/ritigaula",
+      "swaras": [
+        "S",
+        "R2",
+        "G2",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Sahānā",
+      "slug": "sahana",
+      "url": "https://twelveswaras.com/raaga/sahana",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Sāma",
+      "slug": "sama",
+      "url": "https://twelveswaras.com/raaga/sama",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Śankarābharaṇaṁ",
+      "slug": "sankarabharanam",
+      "url": "https://twelveswaras.com/raaga/sankarabharanam",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2",
+        "N3"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        11
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Ṣanmukhapriya",
+      "slug": "sanmukhapriya",
+      "url": "https://twelveswaras.com/raaga/sanmukhapriya",
+      "swaras": [
+        "S",
+        "R2",
+        "G2",
+        "M2",
+        "P",
+        "D1",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        3,
+        6,
+        7,
+        8,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Sāvēri",
+      "slug": "saveri",
+      "url": "https://twelveswaras.com/raaga/saveri",
+      "swaras": [
+        "S",
+        "R1",
+        "G3",
+        "M1",
+        "P",
+        "D1",
+        "N3"
+      ],
+      "swara_semitones": [
+        0,
+        1,
+        4,
+        5,
+        7,
+        8,
+        11
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Sencuruṭṭi",
+      "slug": "sencurutti",
+      "url": "https://twelveswaras.com/raaga/sencurutti",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Sindhubhairavi",
+      "slug": "sindhubhairavi",
+      "url": "https://twelveswaras.com/raaga/sindhubhairavi",
+      "swaras": [],
+      "swara_semitones": [],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Śrī",
+      "slug": "sri",
+      "url": "https://twelveswaras.com/raaga/sri",
+      "swaras": [
+        "S",
+        "R2",
+        "G2",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        3,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Śrīranjani",
+      "slug": "sriranjani",
+      "url": "https://twelveswaras.com/raaga/sriranjani",
+      "swaras": [
+        "S",
+        "R2",
+        "G2",
+        "M1",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        3,
+        5,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Suraṭi",
+      "slug": "surati",
+      "url": "https://twelveswaras.com/raaga/surati",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Tōḍi",
+      "slug": "todi",
+      "url": "https://twelveswaras.com/raaga/todi",
+      "swaras": [
+        "S",
+        "R1",
+        "G2",
+        "M1",
+        "P",
+        "D1",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        1,
+        3,
+        5,
+        7,
+        8,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Varāḷi",
+      "slug": "varali",
+      "url": "https://twelveswaras.com/raaga/varali",
+      "swaras": [],
+      "swara_semitones": [],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Yadukula kāṁbōji",
+      "slug": "yadukula-kamboji",
+      "url": "https://twelveswaras.com/raaga/yadukula-kamboji",
+      "swaras": [
+        "S",
+        "R2",
+        "G3",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Train your ear: guess the raaga · twelveswaras</title>
+<meta name="description" content="A free ear-training game for Carnatic raagas: hear a scale, guess the raaga. Runs entirely in your browser.">
+<link rel="canonical" href="https://twelveswaras.com/listen/">
+<meta name="theme-color" content="#0b0a08">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --ink:#0b0a08; --raise:#16130f; --raise-2:#1c1811; --line:#2a241c; --line-2:#39301f;
+    --paper:#f2ece2; --muted:#a89e8e; --faint:#6f6656;
+    --amber:#f59e0b; --amber-lo:#d97706; --amber-hi:#fbbf24;
+    --good:#7fb069; --bad:#c8674f;
+    --sans:"SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--sans);
+    line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:var(--amber-hi);text-decoration:none} a:hover{color:#fff}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:6px}
+  .wrap{width:100%;max-width:620px;margin:0 auto;padding:0 22px}
+
+  .top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 0}
+  .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
+  .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
+  .brand svg{width:26px;height:26px;flex:0 0 auto}
+  .top .gh{font-family:var(--mono);font-size:.76rem;color:var(--muted)}
+  .top .gh:hover{color:var(--paper)}
+
+  header.hero{text-align:center;padding:26px 0 6px}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin:0 0 10px}
+  h1{font-size:clamp(1.8rem,7vw,2.6rem);font-weight:800;letter-spacing:-.03em;margin:0;text-wrap:balance}
+  .sub{color:var(--muted);max-width:42ch;margin:12px auto 0;font-size:1.02rem;text-wrap:balance}
+
+  .game{margin:30px 0 0;text-align:center}
+  .scorebar{display:flex;justify-content:center;gap:22px;font-family:var(--mono);font-size:.74rem;
+    letter-spacing:.04em;color:var(--faint);margin:0 0 22px}
+  .scorebar b{color:var(--amber);font-weight:600}
+  .mode{display:flex;align-items:center;gap:8px;justify-content:center;margin:0 0 20px;flex-wrap:wrap}
+  .mode button{font-family:var(--mono);font-size:.74rem;letter-spacing:.03em;color:var(--muted);
+    background:var(--raise);border:1px solid var(--line);border-radius:999px;padding:.4rem .9rem;cursor:pointer}
+  .mode button.on{border-color:var(--amber);color:var(--amber-hi)}
+  .mode .modehint{font-family:var(--mono);font-size:.7rem;color:var(--faint)}
+
+  .playbtn{display:inline-flex;align-items:center;gap:.6rem;background:var(--amber);color:#1a1205;
+    font-weight:700;font-size:1.05rem;padding:.85rem 1.7rem;border-radius:12px;border:0;cursor:pointer;
+    transition:transform .12s ease,background .12s ease}
+  .playbtn:hover{background:var(--amber-hi);transform:translateY(-1px)}
+  .playbtn:active{transform:translateY(0)}
+  .playbtn.small{background:var(--raise-2);color:var(--paper);border:1px solid var(--line-2);
+    font-family:var(--mono);font-size:.82rem;font-weight:500;padding:.55rem 1.1rem}
+  .playbtn.small:hover{border-color:var(--amber);background:var(--raise);transform:none}
+
+  .prompt{font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;color:var(--muted);margin:18px 0 6px;min-height:1.2em}
+
+  .options{display:grid;gap:10px;margin:22px 0 0}
+  .opt{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--raise);border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+    color:var(--paper);font-size:1.05rem;font-weight:650;cursor:pointer;text-align:left;
+    transition:border-color .12s ease,background .12s ease}
+  .opt:hover:not(:disabled){border-color:var(--amber)}
+  .opt:disabled{cursor:default}
+  .opt .chips{display:flex;gap:4px;flex-wrap:wrap;opacity:0;transition:opacity .25s ease}
+  .opt.revealed .chips{opacity:1}
+  .opt .chips span{font-family:var(--mono);font-size:.66rem;color:var(--faint);
+    border:1px solid var(--line-2);border-radius:5px;padding:.1rem .34rem}
+  .opt.correct{border-color:var(--good);background:rgba(127,176,105,.08)}
+  .opt.correct .tick{color:var(--good)}
+  .opt.wrong{border-color:var(--bad);background:rgba(200,103,79,.07)}
+  .opt.wrong .tick{color:var(--bad)}
+  .opt .tick{font-family:var(--mono);font-weight:700;font-size:.95rem}
+  .opt .name{flex:1}
+
+  .after{margin:22px 0 0;min-height:2.4em}
+  .after .verdict{font-weight:700;font-size:1.05rem}
+  .after .verdict.good{color:var(--good)} .after .verdict.bad{color:var(--bad)}
+  .after .learn{font-size:.92rem;color:var(--muted);margin-top:4px}
+  .after .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+
+  .foot{font-family:var(--mono);font-size:.72rem;color:var(--faint);text-align:center;
+    border-top:1px solid var(--line);margin-top:40px;padding:22px 0 40px;line-height:1.6}
+  .foot a{color:var(--muted)} .foot a:hover{color:var(--paper)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="top">
+    <a class="brand" href="../" aria-label="twelveswaras home">
+      <svg viewBox="0 0 256 256" aria-hidden="true">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#b45309"/></linearGradient></defs>
+        <rect width="256" height="256" rx="60" fill="url(#g)"/>
+        <g fill="#fff">
+          <rect x="40" y="140" width="12" height="60" rx="6"/><rect x="60" y="104" width="12" height="96" rx="6"/>
+          <rect x="80" y="150" width="12" height="50" rx="6"/><rect x="100" y="76" width="12" height="124" rx="6"/>
+          <rect x="120" y="118" width="12" height="82" rx="6"/><rect x="140" y="92" width="12" height="108" rx="6"/>
+          <rect x="160" y="60" width="12" height="140" rx="6"/><rect x="180" y="128" width="12" height="72" rx="6"/>
+          <rect x="200" y="100" width="12" height="100" rx="6"/></g>
+      </svg>
+      <span><span class="a">twelve</span><span class="b">swaras</span></span>
+    </a>
+    <a class="gh" href="../raaga/">browse raagas ↗</a>
+  </nav>
+
+  <header class="hero">
+    <p class="eyebrow">Train your ear</p>
+    <h1>Guess the raaga</h1>
+    <p class="sub">Hear a raaga's notes rise and fall, then pick which one it is. Everything plays in your browser: no recording, no sign-up.</p>
+  </header>
+
+  <div class="game" id="game" aria-live="polite">
+    <div class="scorebar">
+      <span>score <b id="score">0</b></span>
+      <span>round <b id="round">0</b></span>
+      <span>streak <b id="streak">0</b></span>
+    </div>
+    <div class="mode" role="group" aria-label="difficulty">
+      <button id="m-easy" type="button" class="on" aria-pressed="true">easy</button>
+      <button id="m-hard" type="button" aria-pressed="false">hard</button>
+      <span class="modehint" id="modehint">3 choices, clearly different notes</span>
+    </div>
+    <button class="playbtn" id="start" type="button">▶ Play a mystery raaga</button>
+    <p class="prompt" id="prompt"></p>
+    <div class="options" id="options"></div>
+    <div class="after" id="after"></div>
+  </div>
+</div>
+
+<p class="foot">
+  Notes are synthesized from each raaga's swara set (from our
+  <a href="../data/raagas.json">open CC-BY data</a>). A synthesized scale can't carry gamaka, so
+  choices always differ in their actual notes: the fair, hearable difference. ·
+  <a href="../">identify a live raaga →</a>
+</p>
+
+<script>
+(function () {
+  var SWARA = ["S","R1","R2","G2","G3","M1","M2","P","D1","D2","N2","N3"];
+  var el = function (id) { return document.getElementById(id); };
+  var pool = [], score = 0, roundN = 0, streak = 0, target = null, locked = false, HARD = false;
+
+  // ---- Web Audio: a formant-based vocal "aah" synth (a glottal-ish sawtooth through vowel
+  // formant filters + vibrato), warmer than a beep. A swara = a pitch relative to Sa. No samples,
+  // no backend. NB a synthesized scale still can't carry gamaka; a real sung rendition is future
+  // work (the audio commons), which is also why "hard mode" stays note-set-based, not gamaka-based.
+  var SA_HZ = 174.61, ctx = null;
+  function audio(){ if(!ctx){ var AC = window.AudioContext||window.webkitAudioContext; ctx = AC ? new AC() : null; } return ctx; }
+  function voice(semi, when, dur){
+    var ac = audio(); if(!ac) return;
+    var t0 = when, d = dur||0.6, f0 = SA_HZ * Math.pow(2, semi/12);
+    var src = ac.createOscillator(); src.type = 'sawtooth'; src.frequency.value = f0;
+    var vib = ac.createOscillator(); vib.frequency.value = 5.4;
+    var vibg = ac.createGain(); vibg.gain.value = f0*0.011; vib.connect(vibg).connect(src.frequency);
+    var out = ac.createGain();
+    out.gain.setValueAtTime(0.0001, t0);
+    out.gain.exponentialRampToValueAtTime(0.5, t0+0.06);
+    out.gain.exponentialRampToValueAtTime(0.0001, t0+d);
+    [[720,1.0,80],[1150,0.55,90],[2600,0.22,120]].forEach(function(f){
+      var bp = ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=f[0]; bp.Q.value=f[0]/f[2];
+      var gg = ac.createGain(); gg.gain.value=f[1]; src.connect(bp).connect(gg).connect(out);
+    });
+    var lp = ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3200;
+    out.connect(lp).connect(ac.destination);
+    src.start(t0); src.stop(t0+d+0.05); vib.start(t0); vib.stop(t0+d+0.05);
+  }
+  // play a raaga's note-set as a plain arc: ascending (+ upper Sa) then descending.
+  function playScale(semis){
+    var ac = audio(); if(!ac) return;
+    if (ac.state === 'suspended') ac.resume();
+    var asc = semis.slice().sort(function(a,b){return a-b;}).concat([12]);
+    var seq = asc.concat(asc.slice(0,-1).reverse());
+    var step = 0.46, t = ac.currentTime + 0.06;
+    seq.forEach(function(s, k){ voice(s, t + k*step, step*0.95); });
+  }
+
+  // ---- quiz construction: distractors must differ from the target in >=3 note-positions,
+  // so the synthesized scales are genuinely distinguishable by ear (not a gamaka call we can't render).
+  function setKey(a){ return a.slice().sort(function(x,y){return x-y;}).join(','); }
+  function symDiff(a, b){
+    var A = {}, B = {}, n = 0, i;
+    for (i=0;i<a.length;i++) A[a[i]]=1;
+    for (i=0;i<b.length;i++) B[b[i]]=1;
+    for (i=0;i<12;i++){ if ((A[i]?1:0) !== (B[i]?1:0)) n++; }
+    return n;
+  }
+  function shuffle(arr){ for (var i=arr.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=arr[i];arr[i]=arr[j];arr[j]=t; } return arr; }
+  function sample(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function newRound(){
+    locked = false;
+    el('after').innerHTML = '';
+    target = sample(pool);
+    var scored = pool.filter(function(r){ return r.slug !== target.slug; })
+      .map(function(r){ return { r: r, d: symDiff(r.swara_semitones, target.swara_semitones) }; })
+      .filter(function(x){ return x.d >= 1; });   // d>=1 so the scale is always audibly different
+    var distract;
+    if (HARD){
+      scored.sort(function(a, b){ return a.d - b.d; });        // closest note-sets = hardest to tell apart
+      distract = shuffle(scored.slice(0, Math.min(7, scored.length))).slice(0, 3).map(function(x){ return x.r; });
+    } else {
+      distract = shuffle(scored.filter(function(x){ return x.d >= 3; }).map(function(x){ return x.r; })).slice(0, 2);
+    }
+    var opts = shuffle([target].concat(distract));
+    roundN++; el('round').textContent = roundN;
+    el('prompt').textContent = 'Which raaga is this? (tap ▶ to replay)';
+    var box = el('options'); box.innerHTML = '';
+    opts.forEach(function(r){
+      var b = document.createElement('button');
+      b.className = 'opt'; b.type = 'button';
+      b.innerHTML = '<span class="name">' + r.name + '</span>' +
+                    '<span class="tick" aria-hidden="true"></span>' +
+                    '<span class="chips">' + r.swara_semitones.map(function(s){return '<span>'+SWARA[s]+'</span>';}).join('') + '</span>';
+      b.addEventListener('click', function(){ guess(r, b); });
+      box.appendChild(b);
+    });
+    el('start').textContent = '▶ Replay';
+    playScale(target.swara_semitones);
+  }
+
+  function guess(r, btn){
+    if (locked) return;
+    locked = true;
+    var right = r.slug === target.slug;
+    if (right){ score++; streak++; } else { streak = 0; }
+    el('score').textContent = score; el('streak').textContent = streak;
+
+    Array.prototype.forEach.call(el('options').children, function(b){
+      b.classList.add('revealed'); b.disabled = true;
+      var nm = b.querySelector('.name').textContent;
+      if (nm === target.name){ b.classList.add('correct'); b.querySelector('.tick').textContent = '✓'; }
+      else if (b === btn){ b.classList.add('wrong'); b.querySelector('.tick').textContent = '✗'; }
+    });
+
+    var verdict = right ? '<span class="verdict good">Correct: that\'s ' + target.name + '.</span>'
+                        : '<span class="verdict bad">Not quite: that was ' + target.name + '.</span>';
+    el('after').innerHTML = verdict +
+      '<div class="learn">Compare the note-sets above: that\'s the difference your ear is learning.</div>' +
+      '<div class="row">' +
+        '<button class="playbtn small" id="again" type="button">▶ Hear ' + target.name + ' again</button>' +
+        '<a class="playbtn small" href="../raaga/' + target.slug + '.html">explore ' + target.name + ' →</a>' +
+        '<button class="playbtn" id="next" type="button">Next →</button>' +
+      '</div>';
+    el('again').addEventListener('click', function(){ playScale(target.swara_semitones); });
+    el('next').addEventListener('click', newRound);
+  }
+
+  // difficulty toggle: applies from the next round (doesn't disrupt the one you're hearing)
+  var mE = el('m-easy'), mH = el('m-hard'), mHint = el('modehint');
+  function setMode(hard){
+    HARD = hard;
+    mE.classList.toggle('on', !hard); mE.setAttribute('aria-pressed', String(!hard));
+    mH.classList.toggle('on', hard); mH.setAttribute('aria-pressed', String(hard));
+    mHint.textContent = hard ? '4 choices, closely related notes' : '3 choices, clearly different notes';
+  }
+  mE.addEventListener('click', function(){ setMode(false); });
+  mH.addEventListener('click', function(){ setMode(true); });
+
+  el('start').addEventListener('click', function(){
+    if (!pool.length) return;
+    if (!target) newRound(); else playScale(target.swara_semitones);
+  });
+
+  // load our own open data; keep only raagas that have a note-set
+  var url = '../data/raagas.json';
+  fetch(url).then(function(r){ return r.json(); }).then(function(d){
+    pool = (d.raagas || []).filter(function(r){ return r.swara_semitones && r.swara_semitones.length >= 4; });
+    if (!pool.length){ el('prompt').textContent = 'No raaga data available.'; el('start').disabled = true; }
+  }).catch(function(){
+    el('prompt').textContent = 'Could not load raaga data.'; el('start').disabled = true;
+  });
+})();
+</script>
+</body>
+</html>

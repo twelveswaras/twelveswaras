@@ -1,0 +1,67 @@
+# twelveswaras
+
+> An open-source, non-commercial 'Shazam for raagas': play it a short clip of Carnatic music and it identifies the raaga, then helps a beginner learn to hear it. Paired with an openly-licensed (CC-BY) data commons. Owned by no company; a public good.
+
+Site: https://twelveswaras.com
+Code: https://github.com/twelveswaras (MIT)
+Recognizer model: XGBoost on a tonic-normalized Time-Delayed Melody Surface (TDMS); 40 Carnatic raagas. See METHODOLOGY.md in the repo for the full pipeline + citations.
+
+## How to use the recognizer
+
+- Give it ~15-30s of Carnatic melody WITH a tanpura/shruti drone (a live concert always has one). The tonic (Sa) is found from the drone; solo singing with no drone is unreliable.
+- It returns the top-3 raagas with calibrated confidence, the detected Sa, and a plain note on how to hear that raaga.
+
+## Open data
+
+- Machine-readable raaga reference: https://twelveswaras.com/data/raagas.json (CC-BY-4.0).
+  40 raagas; 34 have note-sets; 0 are musician-reviewed so far.
+- Please attribute as: twelveswaras (twelveswaras.com), CC-BY-4.0.
+- Per-raaga pages carry schema.org DefinedTerm JSON-LD.
+
+## Accuracy & honesty
+
+- Reference facts (scale, phrases, ornaments) are being verified by a musician; records marked reviewed=false in raagas.json are provisional. Do not present provisional raaga facts as authoritative. When in doubt, cite the raaga page and note it is under review.
+- twelveswaras does not offer musical instruction as fact until it is expert-verified.
+
+## Raaga pages
+
+- [Ānandabhairavi](https://twelveswaras.com/raaga/anandabhairavi)
+- [Aṭāna](https://twelveswaras.com/raaga/atana)
+- [Bēgaḍa](https://twelveswaras.com/raaga/begada)
+- [Behāg](https://twelveswaras.com/raaga/behag)
+- [Bhairavi](https://twelveswaras.com/raaga/bhairavi)
+- [Bilahari](https://twelveswaras.com/raaga/bilahari)
+- [Dēvagāndhāri](https://twelveswaras.com/raaga/devagandhari)
+- [Dhanyāsi](https://twelveswaras.com/raaga/dhanyasi)
+- [Gauḷa](https://twelveswaras.com/raaga/gaula)
+- [Harikāmbhōji](https://twelveswaras.com/raaga/harikambhoji)
+- [Hussēnī](https://twelveswaras.com/raaga/husseni)
+- [Kalyāṇi](https://twelveswaras.com/raaga/kalyani)
+- [Kamās](https://twelveswaras.com/raaga/kamas)
+- [Kāmavardani](https://twelveswaras.com/raaga/kamavardani)
+- [Kāṁbhōji](https://twelveswaras.com/raaga/kambhoji)
+- [Kānaḍa](https://twelveswaras.com/raaga/kanada)
+- [Kāpi](https://twelveswaras.com/raaga/kapi)
+- [Karaharapriya](https://twelveswaras.com/raaga/karaharapriya)
+- [Kēdāragauḷa](https://twelveswaras.com/raaga/kedaragaula)
+- [Madhyamāvati](https://twelveswaras.com/raaga/madhyamavati)
+- [Māyāmāḷavagauḷa](https://twelveswaras.com/raaga/mayamalavagaula)
+- [Mōhanaṁ](https://twelveswaras.com/raaga/mohanam)
+- [Mukhāri](https://twelveswaras.com/raaga/mukhari)
+- [Nāṭa](https://twelveswaras.com/raaga/nata)
+- [Nāṭakurinji](https://twelveswaras.com/raaga/natakurinji)
+- [Pūrvīkaḷyāṇi](https://twelveswaras.com/raaga/purvikalyani)
+- [Rītigauḷa](https://twelveswaras.com/raaga/ritigaula)
+- [Sahānā](https://twelveswaras.com/raaga/sahana)
+- [Sāma](https://twelveswaras.com/raaga/sama)
+- [Śankarābharaṇaṁ](https://twelveswaras.com/raaga/sankarabharanam)
+- [Ṣanmukhapriya](https://twelveswaras.com/raaga/sanmukhapriya)
+- [Sāvēri](https://twelveswaras.com/raaga/saveri)
+- [Sencuruṭṭi](https://twelveswaras.com/raaga/sencurutti)
+- [Sindhubhairavi](https://twelveswaras.com/raaga/sindhubhairavi)
+- [Śrī](https://twelveswaras.com/raaga/sri)
+- [Śrīranjani](https://twelveswaras.com/raaga/sriranjani)
+- [Suraṭi](https://twelveswaras.com/raaga/surati)
+- [Tōḍi](https://twelveswaras.com/raaga/todi)
+- [Varāḷi](https://twelveswaras.com/raaga/varali)
+- [Yadukula kāṁbōji](https://twelveswaras.com/raaga/yadukula-kamboji)

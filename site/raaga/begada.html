@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bēgaḍa: a Carnatic raaga, and how to hear it · twelveswaras</title>
+<meta name="description" content="Bēgaḍa: a bhashanga Carnatic raaga. Its swaras, how to hear it, allied raagas, and kritis to listen for.">
+<link rel="canonical" href="https://twelveswaras.com/raaga/begada">
+<meta name="theme-color" content="#0b0a08">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DefinedTerm",
+  "name": "Bēgaḍa",
+  "inDefinedTermSet": {
+    "@type": "DefinedTermSet",
+    "name": "Carnatic raagas",
+    "url": "https://twelveswaras.com/raaga/"
+  },
+  "description": "Bēgaḍa: a bhashanga Carnatic raaga. Its swaras, how to hear it, allied raagas, and kritis to listen for.",
+  "url": "https://twelveswaras.com/raaga/begada"
+}
+</script>
+<style>
+  :root{
+    --ink:#0b0a08; --raise:#16130f; --raise-2:#1c1811; --line:#2a241c; --line-2:#39301f;
+    --paper:#f2ece2; --muted:#a89e8e; --faint:#6f6656;
+    --amber:#f59e0b; --amber-lo:#d97706; --amber-hi:#fbbf24;
+    --sans:"SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,monospace;
+    --measure:64ch;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--sans);
+    line-height:1.62;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:var(--amber-hi);text-decoration:none} a:hover{color:#fff}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
+  .wrap{width:100%;max-width:780px;margin:0 auto;padding:0 22px}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 0}
+  .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
+  .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
+  .brand svg{width:26px;height:26px;flex:0 0 auto}
+  .top .gh{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
+  .top .gh:hover{color:var(--paper)}
+  .crumb{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);padding:20px 0 0}
+  .crumb a{color:var(--muted)} .crumb a:hover{color:var(--paper)}
+  .hero{padding:14px 0 8px}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--amber);margin:0 0 12px}
+  .title{font-size:clamp(2.4rem,10vw,4rem);font-weight:800;letter-spacing:-.03em;line-height:1.02;margin:0}
+  .thesis{color:var(--paper);font-size:clamp(1.02rem,3.4vw,1.18rem);max-width:52ch;margin:14px 0 0;text-wrap:balance}
+  .mood{font-family:var(--mono);font-size:.76rem;letter-spacing:.06em;color:var(--amber-hi);margin:12px 0 0}
+  .struct{color:var(--muted);font-size:.98rem;max-width:46ch;margin:8px 0 0}
+  .wheelwrap{display:flex;flex-direction:column;align-items:center;margin:30px 0 6px}
+  .wheel{width:min(360px,86vw);height:auto;display:block}
+  .wheel text{font-family:var(--mono);font-size:12px;fill:var(--faint)}
+  .wheel text.on{fill:var(--paper)}
+  .wheel text.jeeva{fill:var(--amber-hi);font-weight:700}
+  .legend{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:12px;
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.02em;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:.5rem}
+  .legend i{width:14px;height:14px;border-radius:50%;display:inline-block}
+  .lg-on{background:var(--amber)}
+  .lg-jeeva{background:var(--amber-hi);box-shadow:0 0 0 3px rgba(251,191,36,.22)}
+  .lg-nyasa{background:transparent;border:2px solid var(--amber-hi)}
+  .wheel .node{cursor:pointer}
+  .play{display:flex;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap;justify-content:center}
+  .play button{display:inline-flex;align-items:center;gap:.5rem;background:var(--raise-2);
+    border:1px solid var(--line-2);color:var(--paper);font-family:var(--mono);font-size:.8rem;
+    letter-spacing:.02em;padding:.6rem 1rem;border-radius:999px;cursor:pointer;
+    transition:border-color .12s ease,background .12s ease}
+  .play button:hover{border-color:var(--amber);background:var(--raise)}
+  .play button[aria-pressed="true"]{border-color:var(--amber);color:var(--amber-hi)}
+  .play .hint{font-family:var(--mono);font-size:.72rem;color:var(--faint)}
+  .scale{display:grid;grid-template-columns:1fr;gap:10px;margin:26px 0 0}
+  @media(min-width:520px){.scale{grid-template-columns:1fr 1fr}}
+  .scale .cell{background:var(--raise);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .scale .k{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 6px}
+  .scale .v{font-family:var(--mono);font-size:1.06rem;letter-spacing:.05em;color:var(--paper);margin:0}
+  .scale .v.pending{color:var(--faint);letter-spacing:0}
+  section{padding:36px 0;border-top:1px solid var(--line)}
+  h2{font-size:clamp(1.2rem,4.5vw,1.5rem);font-weight:800;letter-spacing:-.02em;margin:0 0 1rem;text-wrap:balance}
+  p{color:var(--muted);max-width:var(--measure)}
+  .hear dl{margin:0;display:grid;gap:18px}
+  .hear dt{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin:0 0 5px}
+  .hear dd{margin:0;color:var(--paper)}
+  .cards{display:grid;gap:10px;margin-top:4px}
+  .card{background:var(--raise);border:1px solid var(--line);border-radius:12px;padding:13px 16px;color:var(--paper);font-size:.98rem}
+  ul.listen{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:10px}
+  ul.listen li{display:flex;gap:.7rem;align-items:baseline;color:var(--paper)}
+  ul.listen li::before{content:"\25b8";color:var(--amber);flex:0 0 auto}
+  .facts{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 0}
+  .chip{font-family:var(--mono);font-size:.74rem;letter-spacing:.03em;color:var(--muted);
+    background:var(--raise);border:1px solid var(--line);border-radius:999px;padding:.42rem .8rem}
+  .chip b{color:var(--amber);font-weight:600}
+  .cta-row{margin:34px 0 6px}
+  .cta{display:inline-flex;align-items:center;gap:.55rem;background:var(--amber);color:#1a1205;
+    font-weight:700;font-size:1rem;padding:.8rem 1.5rem;border-radius:11px;border:0;
+    transition:transform .12s ease,background .12s ease}
+  .cta:hover{background:var(--amber-hi);color:#1a1205;transform:translateY(-1px)}
+  .draftbar{font-family:var(--mono);font-size:.72rem;color:var(--faint);border:1px dashed var(--line-2);
+    border-radius:10px;padding:12px 14px;margin:14px 0 0;line-height:1.5}
+  footer{border-top:1px solid var(--line);padding:30px 0 46px;text-align:center}
+  footer .tagline{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);
+    max-width:48ch;margin:0 auto;text-wrap:balance}
+  footer .links{margin-top:.7rem;font-size:.9rem;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="top">
+    <a class="brand" href="../" aria-label="twelveswaras home">
+      <svg viewBox="0 0 256 256" aria-hidden="true">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#b45309"/></linearGradient></defs>
+        <rect width="256" height="256" rx="60" fill="url(#g)"/>
+        <g fill="#fff">
+          <rect x="40" y="140" width="12" height="60" rx="6"/><rect x="60" y="104" width="12" height="96" rx="6"/>
+          <rect x="80" y="150" width="12" height="50" rx="6"/><rect x="100" y="76" width="12" height="124" rx="6"/>
+          <rect x="120" y="118" width="12" height="82" rx="6"/><rect x="140" y="92" width="12" height="108" rx="6"/>
+          <rect x="160" y="60" width="12" height="140" rx="6"/><rect x="180" y="128" width="12" height="72" rx="6"/>
+          <rect x="200" y="100" width="12" height="100" rx="6"/></g>
+      </svg>
+      <span><span class="a">twelve</span><span class="b">swaras</span></span>
+    </a>
+    <a class="gh" href="./">all raagas</a>
+  </nav>
+  <p class="crumb"><a href="../">home</a> / <a href="./">raagas</a> / Bēgaḍa</p>
+
+  <header class="hero">
+    <p class="eyebrow">Bhashanga Carnatic raaga</p>
+    <h1 class="title">Bēgaḍa</h1>
+    <p class="thesis">A gently smiling, majestic raaga of winding zig-zag phrases, heard in Tyagaraja&#x27;s &#x27;Nadopasana&#x27;; graceful rather than grave.</p>
+    <p class="mood">serene joy, grace, gentle majesty</p>
+    <p class="struct">Bēgaḍa is a bhashanga raaga in the Carnatic tradition.</p>
+
+    <div class="wheelwrap">
+      <svg class="wheel" viewBox="0 0 300 300" role="img" aria-label="Swara wheel for Bēgaḍa: S R2 G3 M1 P D2 N2 N3.">
+        <g id="wheel"></g>
+      </svg>
+      <div class="legend">
+        <span><i class="lg-on"></i> in the raaga</span>
+        <span><i class="lg-jeeva"></i> jeeva (life note)</span>
+        <span><i class="lg-nyasa"></i> nyasa (resting note)</span>
+      </div>
+      <div class="play">
+        <button id="playScale" type="button" aria-pressed="false">▶ play the scale</button>
+        <span class="hint">or tap any lit note to hear it</span>
+      </div>
+    </div>
+
+    <div class="scale">
+      <div class="cell"><p class="k">arohana / ascending</p><p class="v">S G3 R2 G3 M1 P D2 N2 D2 P S (ragasurabhi gives shorter S G3 R2 G3 M1 P D2 P S)</p></div>
+      <div class="cell"><p class="k">avarohana / descending</p><p class="v">S N3 D2 P M1 G3 R2 S</p></div>
+    </div>
+  </header>
+
+  <section class="hear">
+    <h2>How to hear it</h2>
+    <dl>
+      <div><dt>Life notes / jeeva</dt><dd>Dhaivata (D2) emphasised as the life/defining note, secondary source</dd></div>
+      <div><dt>Resting notes / nyasa</dt><dd>N (nishada) is an important resting point, with a characteristic resting gamaka at N in phrases like pdp N, D, p and N dpmgr.</dd></div>
+      <div><dt>Signature phrases / prayoga</dt><dd>Ancient prayogas per the Sangita Sampradaya Pradarsini: S G M P D N D P N S, S N DN S, N S D R S. Muthuswami Dikshitar added SMGRS, SGM, SNDNS; Subbarama Dikshitar added PNDDRS and SGRGMP. Also SNDPS, DNSRS, PDPNDDP. Many Tyagaraja kritis open with G,MPDP or MGMGD,P. Scale is vakra shadava (ascent) to sampurna.</dd></div>
+      <div><dt>Ornament / gamaka</dt><dd>Signature nishada gamaka: in the prayoga p d n d p the kakali nishadam is slightly flattened but does not become kaishiki nishadam, sitting between the two. The dhaivata is rarely a straight note. The madhyama (M1) is idiosyncratic and highly expressive.</dd></div>
+    </dl>
+  </section>
+  <section>
+    <h2>Easy to confuse with</h2>
+    <div class="cards">
+      <div class="card">Shankarabharanam (same parent mela</div>
+      <div class="card">beginners slide into it if the P D N D P phrase is not kept crisp)</div>
+    </div>
+  </section>
+  <section>
+    <h2>Listen for it</h2>
+    <ul class="listen">
+      <li>Nadopasana (Tyagaraja)</li>
+      <li>Vallabha Nayakasya (Muthuswami Dikshitar)</li>
+      <li>Gajavadana Beduve (Purandara Dasa)</li>
+      <li>Poonilave (listed on ragasurabhi) <small style="color:var(--faint);font-family:var(--mono);font-size:.72rem">film</small></li>
+    </ul>
+  </section>
+  <div class="cta-row"><a class="cta" href="../#try">Identify a raaga →</a></div>
+  <p class="draftbar">◐ Draft: the reference facts on this page are compiled from public sources and are pending review by a musician. Corrections welcome via GitHub.</p>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p class="tagline">a non-commercial, open-source public good, Carnatic first, CC-BY data commons</p>
+    <div class="links"><a href="../listen/">train your ear</a><a href="https://github.com/twelveswaras">github.com/twelveswaras</a></div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var LABELS = ["S","R1","R2","G2","G3","M1","M2","P","D1","D2","N2","N3"];
+  var IN = [0, 2, 4, 5, 7, 9, 10, 11], JEEVA = [9], NYASA = [9];
+  var cx=150, cy=150, rNode=104, rLabel=132, nodes={};
+  var g = document.getElementById('wheel'), NS='http://www.w3.org/2000/svg';
+  function el(t,a){ var e=document.createElementNS(NS,t); for(var k in a) e.setAttribute(k,a[k]); return e; }
+  function pt(i,r){ var a=(-90+i*30)*Math.PI/180; return [cx+r*Math.cos(a), cy+r*Math.sin(a)]; }
+  g.appendChild(el('circle',{cx:cx,cy:cy,r:rNode,fill:'none',stroke:'#2a241c','stroke-width':1}));
+  if (IN.length>1){
+    var poly = IN.map(function(i){ var p=pt(i,rNode); return p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' ');
+    g.appendChild(el('polygon',{points:poly,fill:'rgba(245,158,11,.09)',stroke:'#d97706','stroke-width':1.5,'stroke-linejoin':'round'}));
+  }
+  function has(arr,i){ return arr.indexOf(i)>=0; }
+  for (var i=0;i<12;i++){
+    var p=pt(i,rNode), lp=pt(i,rLabel), on=has(IN,i), je=has(JEEVA,i), ny=has(NYASA,i);
+    if (ny) g.appendChild(el('circle',{cx:p[0],cy:p[1],r:9,fill:'none',stroke:'#fbbf24','stroke-width':2}));
+    if (je) g.appendChild(el('circle',{cx:p[0],cy:p[1],r:11,fill:'rgba(251,191,36,.20)'}));
+    var node=el('circle',{cx:p[0],cy:p[1],r:on?5:3,fill:on?(je?'#fbbf24':'#f59e0b'):'#39301f'});
+    if (on){ node.setAttribute('class','node'); nodes[i]=node;
+             node.addEventListener('click',(function(s){return function(){ voice(s); pulse(nodes[s]); };})(i)); }
+    g.appendChild(node);
+    var t=el('text',{x:lp[0],y:lp[1],'text-anchor':'middle','dominant-baseline':'middle'});
+    t.setAttribute('class', je?'jeeva':(on?'on':'')); t.textContent=LABELS[i]; g.appendChild(t);
+  }
+
+  // formant-based vocal "aah" synth: a glottal-ish sawtooth through vowel formant filters +
+  // vibrato. Warmer than a beep; a real sung rendition with gamaka is future work.
+  var SA_HZ = 174.61, ctx = null;                             // Sa ~ F3, a vocal register
+  function audio(){ if(!ctx){ var AC=window.AudioContext||window.webkitAudioContext; ctx=AC?new AC():null; } return ctx; }
+  function voice(semi, when, dur){
+    var ac=audio(); if(!ac) return;
+    var t0=(when==null?ac.currentTime:when), d=dur||0.62, f0=SA_HZ*Math.pow(2,semi/12);
+    var src=ac.createOscillator(); src.type='sawtooth'; src.frequency.value=f0;
+    var vib=ac.createOscillator(); vib.frequency.value=5.4;
+    var vibg=ac.createGain(); vibg.gain.value=f0*0.011; vib.connect(vibg).connect(src.frequency);
+    var out=ac.createGain();
+    out.gain.setValueAtTime(0.0001,t0);
+    out.gain.exponentialRampToValueAtTime(0.5,t0+0.06);
+    out.gain.exponentialRampToValueAtTime(0.0001,t0+d);
+    [[720,1.0,80],[1150,0.55,90],[2600,0.22,120]].forEach(function(f){
+      var bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=f[0]; bp.Q.value=f[0]/f[2];
+      var gg=ac.createGain(); gg.gain.value=f[1]; src.connect(bp).connect(gg).connect(out);
+    });
+    var lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3200;
+    out.connect(lp).connect(ac.destination);
+    src.start(t0); src.stop(t0+d+0.05); vib.start(t0); vib.stop(t0+d+0.05);
+  }
+  function pulse(n){ if(!n) return; var r0=+n.getAttribute('r'); n.setAttribute('r',r0+3); setTimeout(function(){ n.setAttribute('r',r0); },180); }
+
+  var ASC = IN.slice().sort(function(a,b){return a-b;}).concat([12]);
+  var SCALE = ASC.concat(ASC.slice(0,-1).reverse());
+  var btn=document.getElementById('playScale'), playing=false;
+  btn.addEventListener('click',function(){
+    var ac=audio(); if(!ac||IN.length<1) return;
+    if (ac.state==='suspended') ac.resume();
+    if (playing) return; playing=true; btn.setAttribute('aria-pressed','true');
+    var step=0.46, t=ac.currentTime+0.05;
+    SCALE.forEach(function(semi,k){
+      voice(semi, t+k*step, step*0.95);
+      var idx=semi%12;
+      if (nodes[idx]) setTimeout(function(){ pulse(nodes[idx]); }, (t+k*step-ac.currentTime)*1000);
+    });
+    setTimeout(function(){ playing=false; btn.setAttribute('aria-pressed','false'); }, (SCALE.length*step+0.2)*1000);
+  });
+})();
+</script>
+</body>
+</html>
