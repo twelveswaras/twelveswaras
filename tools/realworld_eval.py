@@ -35,6 +35,7 @@ class Clip:
     license: str
     drone: bool | None
     notes: str = ""
+    instrument: str = ""      # vocal | violin | veena | flute | nadaswaram | ... (optional)
 
 
 @dataclass
@@ -51,6 +52,7 @@ class Result:
     top3: bool | None
     rank: int | None
     drone: bool | None = None
+    instrument: str = ""
 
 
 def _parse_drone(v: str) -> bool | None:
@@ -80,7 +82,8 @@ def parse_clip_list(rows, vocab) -> tuple[list[Clip], list[Skipped]]:
             continue
         clips.append(Clip(file=f, raga=canon, source=(row.get("source") or "").strip(),
                           license=(row.get("license") or "").strip(),
-                          drone=_parse_drone(row.get("drone", "")), notes=(row.get("notes") or "").strip()))
+                          drone=_parse_drone(row.get("drone", "")), notes=(row.get("notes") or "").strip(),
+                          instrument=(row.get("instrument") or "").strip().lower()))
     return clips, skipped
 
 
@@ -105,9 +108,14 @@ def summarize(results: list[Result]) -> dict:
         grp = [r for r in scored if r.drone is want]
         if grp:
             by_drone[key] = {"n": len(grp), "top1": rate(grp, "top1"), "top3": rate(grp, "top3")}
+    by_instrument = {}
+    for lab in sorted({(r.instrument or "unspecified") for r in scored}):
+        grp = [r for r in scored if (r.instrument or "unspecified") == lab]
+        by_instrument[lab] = {"n": len(grp), "top1": rate(grp, "top1"), "top3": rate(grp, "top3")}
     return {
         "n": len(results), "scored": len(scored), "no_prediction": len(no_pred),
-        "top1": rate(scored, "top1"), "top3": rate(scored, "top3"), "by_drone": by_drone,
+        "top1": rate(scored, "top1"), "top3": rate(scored, "top3"),
+        "by_drone": by_drone, "by_instrument": by_instrument,
     }
 
 
@@ -156,13 +164,13 @@ def main() -> None:
             continue
         windows, tonic, _, _ = pitch_extract.audio_to_features(y, sr)
         if not windows:
-            results.append(Result(c.file, c.raga, None, None, None, drone=c.drone))
+            results.append(Result(c.file, c.raga, None, None, None, drone=c.drone, instrument=c.instrument))
             print(f"  {c.file:32s} -> NO PREDICTION (no tonic/melody)   true={c.raga}", flush=True)
             continue
         import numpy as np
         preds = model.aggregate_top_k(np.vstack(windows), k=TOP_K)
         t1, t3, rank = score_clip(preds, c.raga)
-        results.append(Result(c.file, c.raga, t1, t3, rank, drone=c.drone))
+        results.append(Result(c.file, c.raga, t1, t3, rank, drone=c.drone, instrument=c.instrument))
         mark = "✓" if t1 else ("·3" if t3 else "✗")
         print(f"  {c.file:32s} -> {preds[0].raaga:18s} {mark}  true={c.raga} "
               f"(rank {rank}, Sa≈{tonic:.0f})", flush=True)
@@ -172,6 +180,8 @@ def main() -> None:
     print(f"  top1={s['top1']:.3f}  top3={s['top3']:.3f}   (studio frozen: top1 0.798 / top3 0.938)")
     for k, v in s["by_drone"].items():
         print(f"  drone={k:7s} n={v['n']:2d}  top1={v['top1']:.3f}  top3={v['top3']:.3f}")
+    for k, v in s.get("by_instrument", {}).items():
+        print(f"  instrument={k:12s} n={v['n']:2d}  top1={v['top1']:.3f}  top3={v['top3']:.3f}")
 
 
 if __name__ == "__main__":

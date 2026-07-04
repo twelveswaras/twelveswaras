@@ -26,6 +26,7 @@ models/
 # The schema template (clips.example.csv) and the harness ARE tracked.
 benchmark/realworld/audio/
 benchmark/realworld/clips.csv
+benchmark/realworld/links.csv
 *.pkl
 *.parquet
 *.pt

@@ -1,0 +1,11 @@
+raga,url,drone,instrument,start,notes
+# Copy this to links.csv (gitignored) and add one row per clip. Only raga + url are required.
+# raga       = true raaga (any spelling / diacritics; folded to the 40-raaga vocab; out-of-vocab rows are skipped by the eval)
+# url        = YouTube (or any yt-dlp-supported) link
+# drone      = yes | no | unknown   (breaks accuracy down by drone presence)
+# instrument = vocal | violin | veena | flute | nadaswaram | ...   (breaks accuracy down by instrument)
+# start      = OPTIONAL start second to grab from (default 30, to skip intros); a &t= in the url is honored
+# notes      = kriti / artist / anything
+# --- example rows (delete; a leading # in the raga column marks a comment) ---
+# Tōḍi,https://youtu.be/x1pbtvX89Bk,yes,vocal,,Thaaye Yashoda
+# Kalyani,https://youtu.be/XXXX,yes,violin,90,Lalgudi, start mid-alapana
