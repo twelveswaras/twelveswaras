@@ -50,7 +50,10 @@ Needs a drone: concert/TV audio works; solo voice with no drone is unreliable.
 Trained on openly-available research corpora — **attribution required by their licenses**:
 
 - **Saraga Carnatic** (CompMusic / MTG-UPF) — CC-BY-**NC-SA**. Predominant pitch + tonic annotations.
-- **IAMRRD / CompMusic Raga** (Gulati's Carnatic Music Dataset), via `mirdata`.
+- **Indian Art Music Raga Recognition Dataset — Carnatic Music Dataset (CMD)** (CompMusic /
+  MTG-UPF; Gulati et al.) — CC-BY-**NC-ND** 3.0, [Zenodo](https://doi.org/10.5281/zenodo.7278510),
+  accessed via `mirdata` (`compmusic_raga`). Its paired **Hindustani dataset (HMD)** is the
+  training data for the planned Hindustani fast-follow.
 
 Built with **essentia** and **compiam** (both **AGPL** — the deployed Space carries AGPL
 obligations, satisfied by publishing all source), plus librosa, xgboost, and gradio.

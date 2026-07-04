@@ -116,6 +116,8 @@ phrase-matching work.
    idea is worth revisiting for our **tonic/drone-robustness** work — it targets the exact failure
    mode (drone-less audio) where our explicit tonic estimation breaks.
 6. M. Müller. *Fundamentals of Music Processing.* Springer, 2016. (chroma, CENS, STFT).
-7. **Datasets:** Saraga Carnatic (CompMusic / MTG-UPF, CC-BY-NC-SA); IAMRRD / CompMusic Raga
-   (Gulati's Carnatic Music Dataset), accessed via `mirdata`.
+7. **Datasets:** Saraga Carnatic (CompMusic / MTG-UPF, CC-BY-NC-SA); *Indian Art Music Raga
+   Recognition Dataset* — Carnatic Music Dataset (CMD) (CompMusic, CC-BY-NC-ND 3.0,
+   doi:10.5281/zenodo.7278510), accessed via `mirdata` (`compmusic_raga`). The paired Hindustani
+   dataset (HMD) is the corpus for the planned Hindustani fast-follow.
 8. **Libraries:** essentia, compiam (both AGPL); librosa; xgboost; gradio.
