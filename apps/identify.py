@@ -63,8 +63,9 @@ footer { display: none !important; }
    footer, and the drone tip (the page already carries all three) so it fits without scrolling */
 body.embed #ts-title, body.embed #ts-footer, body.embed #ts-drone { display: none !important; }
 body.embed .gap, body.embed .contain { gap: 10px !important; }
-body.embed .gradio-container { padding-top: 2px !important; overflow: hidden !important;
-  max-width: 100% !important; }  /* fill the page width when embedded (640px cap is for standalone) */
+body.embed .gradio-container { padding-top: 2px !important; padding-bottom: 0 !important;
+  overflow: hidden !important; max-width: 100% !important; }  /* fill page width; no bottom slack
+  so the auto-resized frame ends right at the content (640px cap is for standalone) */
 /* breathing room around the status line so Gradio's progress bar doesn't crowd the "Listening…" text */
 #ts-status { margin-top: 10px !important; }
 #ts-status p { padding-top: 6px !important; }

@@ -40,6 +40,10 @@ TDMS_DELAY = 0.3           # seconds; the (pitch(t), pitch(t+delay)) lag that ex
 TDMS_WINDOW_S = 30.0       # 30 s windows — dense enough to fill the surface (10 s was too sparse)
 TDMS_HOP_S = 30.0
 TDMS_MAX_WINDOWS = 20      # cap windows/track in training (20 x 30 s = 600 s, matches the gate)
+# Junk gate (D6/D8): drop windows whose predominant-melody pitch is voiced less than this fraction
+# of the time — i.e. percussion solos, speech, applause, long silences, where there's no stable
+# melody for Melodia to track. Real melody is voiced most of the window; junk is mostly unvoiced.
+MIN_VOICED_FRAC = 0.5
 
 # Verification (D13). Configurable; these are the v0 defaults.
 PROMOTE_MIN_VOTES = 3

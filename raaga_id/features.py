@@ -10,7 +10,14 @@ from __future__ import annotations
 
 import numpy as np
 
-from .config import CLIP_SECONDS, MIN_CLIP_SECONDS, SAMPLE_RATE
+from .config import CLIP_SECONDS, MIN_CLIP_SECONDS, MIN_VOICED_FRAC, SAMPLE_RATE
+
+
+def _voiced_fraction(seg) -> float:
+    """Fraction of a window's predominant-melody frames that carry a pitch (f0>0). Low for
+    percussion/speech/applause/silence (the junk gate, D6/D8); high for real melody."""
+    seg = np.asarray(seg, dtype=float)
+    return float((seg > 0).mean()) if seg.size else 0.0
 
 
 def load_audio(path: str, sr: int = SAMPLE_RATE, duration: float | None = None) -> np.ndarray:
@@ -132,10 +139,12 @@ def tdms_windows(
     max_windows: int | None = None,
     delay: float = 0.3,
     n_bins: int = 48,
+    min_voiced: float = MIN_VOICED_FRAC,
 ) -> list[np.ndarray]:
     """Slide a window over a predominant-melody pitch track -> one TDMS surface per window
     (the delay-surface analog of pitch_windows, D28). Slices identically to pitch_windows so
-    surfaces aggregate exactly like PCD windows; windows with too few voiced pairs are skipped.
+    surfaces aggregate exactly like PCD windows. Windows voiced less than `min_voiced` of the
+    time are dropped (junk gate, D6/D8 — percussion/speech/silence, no stable melody to track).
     """
     times = np.asarray(times, dtype=float)
     f0 = np.asarray(f0_hz, dtype=float)
@@ -148,9 +157,10 @@ def tdms_windows(
         if min(start + window_s, end) - start < MIN_CLIP_SECONDS:
             break
         mask = (times >= start) & (times < start + window_s)
-        surf = tdms(times[mask], f0[mask], tonic_hz, delay=delay, n_bins=n_bins)
-        if surf.sum() > 0:
-            out.append(surf)
+        if _voiced_fraction(f0[mask]) >= min_voiced:
+            surf = tdms(times[mask], f0[mask], tonic_hz, delay=delay, n_bins=n_bins)
+            if surf.sum() > 0:
+                out.append(surf)
         if max_windows and len(out) >= max_windows:
             break
         start += hop_s
@@ -237,11 +247,12 @@ def pitch_windows(
     hop_s: float = CLIP_SECONDS,
     max_windows: int | None = None,
     n_bins: int = 120,
+    min_voiced: float = MIN_VOICED_FRAC,
 ) -> list[np.ndarray]:
     """Slide a window over a predominant-melody pitch track -> one tonic-normalized PCD
-    per window (the pitch-track analog of window_vectors, D7). Windows with no voiced
-    pitch are skipped; a trailing window >= MIN_CLIP_SECONDS is kept. Works on any
-    (pitch, tonic) source, so Saraga and IAMRRD share this path.
+    per window (the pitch-track analog of window_vectors, D7). Windows that are voiced less
+    than `min_voiced` of the time are dropped (junk gate, D6/D8 — percussion/speech/silence);
+    a trailing window >= MIN_CLIP_SECONDS is kept. Works on any (pitch, tonic) source.
     """
     times = np.asarray(times, dtype=float)
     f0 = np.asarray(f0_hz, dtype=float)
@@ -254,9 +265,10 @@ def pitch_windows(
         if min(start + window_s, end) - start < MIN_CLIP_SECONDS:
             break
         seg = f0[(times >= start) & (times < start + window_s)]
-        hist = pitch_class_histogram(seg, tonic_hz, n_bins)
-        if hist.sum() > 0:
-            out.append(hist)
+        if _voiced_fraction(seg) >= min_voiced:
+            hist = pitch_class_histogram(seg, tonic_hz, n_bins)
+            if hist.sum() > 0:
+                out.append(hist)
         if max_windows and len(out) >= max_windows:
             break
         start += hop_s

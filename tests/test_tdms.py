@@ -75,11 +75,24 @@ def test_tdms_windows_match_pitch_windows():
         assert w.shape == (N * N,) and np.isclose(w.sum(), 1.0)
 
 
+def test_junk_gate_drops_low_voiced_windows():
+    # 60 s track: window 1 is percussion-like (20% voiced), window 2 is melody (90% voiced).
+    t = np.arange(6000) * HOP           # 60 s at 10 ms frames
+    f0 = np.zeros(6000)
+    f0[0:600] = TONIC                   # window 1: 600/3000 = 20% voiced -> below the 0.5 gate
+    f0[3000:5700] = TONIC               # window 2: 2700/3000 = 90% voiced -> kept
+    gated = features.tdms_windows(t, f0, TONIC, window_s=30, hop_s=30, n_bins=N, min_voiced=0.5)
+    assert len(gated) == 1              # junk window dropped, melody kept
+    ungated = features.tdms_windows(t, f0, TONIC, window_s=30, hop_s=30, n_bins=N, min_voiced=0.0)
+    assert len(ungated) == 2            # the gate — not "no voiced pairs" — is what dropped it
+
+
 if __name__ == "__main__":
     test_shape_and_normalization()
     test_steady_note_is_pure_diagonal()
     test_movement_lands_off_diagonal()
     test_unvoiced_frames_are_skipped()
     test_tdms_windows_match_pitch_windows()
+    test_junk_gate_drops_low_voiced_windows()
     print("TDMS OK — shape/normalize, steady=diagonal, movement=off-diagonal, unvoiced-skip, "
-          "windowed-count pass")
+          "windowed-count, junk-gate pass")
