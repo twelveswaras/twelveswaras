@@ -17,6 +17,8 @@ from raaga_id import pitch_extract
 from raaga_id.config import MODELS_DIR, TOP_K
 from raaga_id.model import RaagaXGB
 
+from apps import usage_log
+
 ASSETS = Path(__file__).resolve().parent.parent / "assets"
 MODEL_PATH = MODELS_DIR / "raaga_xgb.json"
 
@@ -54,6 +56,9 @@ CSS = """
 .gradio-container { max-width: 640px !important; margin: 0 auto !important; }
 footer { display: none !important; }
 #ts-footer { text-align:center; color:#9ca3af; opacity:.7; font-size:.78rem; margin:1rem 0 .3rem; }
+/* privacy reassurance shown right above the recorder (visible in the embed too) */
+#ts-privacy { text-align:center; color:#9ca3af; font-size:.82rem; margin:.1rem 0 .3rem; }
+#ts-privacy p { margin:0; }
 /* confidence bars in the brand amber */
 .gradio-container .label span.text + div, .gradio-container .fill { background: #f59e0b !important; }
 /* audio player: keep the seek bar from covering the 0:00 / total time read-outs */
@@ -162,6 +167,7 @@ def identify(audio, model: RaagaXGB):
     t0 = time.perf_counter()
     windows, tonic, heard, display_pcd = pitch_extract.audio_to_features(wav, sr)
     if not windows:
+        usage_log.record(no_prediction=True, tonic_hz=tonic, heard_seconds=heard)
         yield {}, "🤔 Couldn't find a clear melody + tonic — try a longer, cleaner clip with a drone.", None, ""
         return
     X = np.vstack(windows)
@@ -169,6 +175,9 @@ def identify(audio, model: RaagaXGB):
     elapsed = time.perf_counter() - t0
     print(f"[identify] {preds[0].raaga} ({preds[0].confidence:.0%}) · Sa≈{tonic:.0f}Hz · "
           f"heard {_mmss(heard)} · {elapsed:.1f}s", flush=True)
+    usage_log.record(top1=preds[0].raaga, confidence=preds[0].confidence,
+                     top3=[{"raaga": p.raaga, "conf": round(float(p.confidence), 3)} for p in preds],
+                     tonic_hz=tonic, heard_seconds=heard, elapsed_s=elapsed)
 
     from raaga_id.calibrate import confidence_state
     labels = {p.raaga: float(p.confidence) for p in preds}
@@ -261,6 +270,8 @@ def build_ui():
 
     with gr.Blocks(title="twelveswaras", theme=_theme(), css=CSS, head=EMBED_HEAD) as demo:
         gr.HTML(TITLE_HTML)
+        gr.Markdown("🔒 Your recording is **never stored** — it is analyzed to find the raaga, then discarded.",
+                    elem_id="ts-privacy")
         # buttons=["download"] drops Gradio's built-in "share": it re-uploads the raw clip to HF's
         # MIME-restricted uploader (rejects m4a/aac/flac/…) and shares the *input*, not the result
         # — confusing + flaky. A real "share this raga" is an Explorer feature (D29). Keep download.
