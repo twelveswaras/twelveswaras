@@ -144,12 +144,6 @@
   .drone{display:flex;gap:.5rem;align-items:flex-start;font-size:.9rem;color:var(--muted);
     max-width:560px;margin:0 auto 16px}
   .drone b{color:var(--paper);font-weight:650}
-  /* iOS Safari blocks mic in a cross-origin iframe; on touch devices, offer a first-party record
-     path (opens the recognizer full screen, where the mic works). Hidden on desktop. */
-  .mobile-rec{display:none;gap:.5rem;align-items:flex-start;font-size:.88rem;color:var(--muted);
-    max-width:560px;margin:0 auto 14px;padding:10px 12px;border:1px solid var(--line-2);border-radius:10px}
-  .mobile-rec b{color:var(--paper);font-weight:650}
-  @media (pointer:coarse){.mobile-rec{display:flex}}
   /* no border/shadow/radius: the recognizer blends into the page instead of reading as a boxed
      widget. Background matches the page ground, so the iframe edge disappears. */
   .embed{position:relative;background:transparent;border:0;border-radius:0;overflow:hidden}
@@ -249,9 +243,6 @@
   <section id="try">
     <p class="drone"><span aria-hidden="true">🎚️</span>
       <span>Works best with a <b>tanpura or shruti-box drone</b> under the melody, which a live concert always has. The tonic (Sa) is found from it.</span></p>
-    <p class="mobile-rec"><span aria-hidden="true">📱</span>
-      <span>On iPhone, Safari blocks recording inside an embed. You can still <b>upload</b> a clip below, or
-      <a href="https://twelveswaras-twelveswaras.hf.space" target="_blank" rel="noopener">open the recognizer full screen to record →</a></span></p>
     <div class="embed">
       <div class="slot" id="slot">
         <div class="swaras" aria-hidden="true">

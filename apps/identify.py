@@ -229,14 +229,25 @@ EMBED_HEAD = """
       try { window.parent.postMessage({ twelveswaras_height: h }, '*'); } catch (er) {}
     }
   }
-  function tick() { hideChrome(); reportHeight(); }
+  function hideDeadMic() {
+    // Gradio's audio device <select> shows a misleading "No microphone found" before mic permission
+    // is granted, even though recording works fine on the default device. Hide that control while it
+    // shows the dead label, and restore ONLY the ones we hid once a real device name appears.
+    var L = 'No microphone found';
+    document.querySelectorAll('select, button').forEach(function (el) {
+      var t = (el.textContent || '').replace(/\\s+/g, ' ').trim();
+      if (t === L) { el.style.display = 'none'; el.dataset.tsDeadmic = '1'; }
+      else if (el.dataset.tsDeadmic === '1') { el.style.display = ''; delete el.dataset.tsDeadmic; }
+    });
+  }
+  function tick() { hideChrome(); hideDeadMic(); reportHeight(); }
   if (document.readyState !== 'loading') tick();
   document.addEventListener('DOMContentLoaded', tick);
   [150, 400, 900, 1800].forEach(function (t) { setTimeout(tick, t); });
   window.addEventListener('resize', reportHeight);
   // Gradio's body is pinned to 100vh, so opening the accordion / getting a result overflows it
   // WITHOUT changing its size — ResizeObserver never fires. So poll the sentinel (deduped, cheap).
-  setInterval(reportHeight, 300);
+  setInterval(tick, 300);
 })();
 </script>
 """
