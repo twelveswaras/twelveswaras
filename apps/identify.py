@@ -157,7 +157,7 @@ def identify(audio, model: RaagaXGB):
     state first (so the app is visibly working before it answers — D24), then the final
     (labels, info, plot, learn_md). The info line names the segment it actually heard."""
     if audio is None:
-        yield {}, "Upload or record ~10 s+ of melody — a clear line with a drone works best.", None, ""
+        yield {}, "Upload or record ~10 s+ of melody. A clear line with a drone works best.", None, ""
         return
     # Show that we're listening BEFORE the ~3.5 s of pitch+tonic extraction, and clear any
     # previous result, so the answer never appears to precede the analysis.
@@ -168,7 +168,7 @@ def identify(audio, model: RaagaXGB):
     windows, tonic, heard, display_pcd = pitch_extract.audio_to_features(wav, sr)
     if not windows:
         usage_log.record(no_prediction=True, tonic_hz=tonic, heard_seconds=heard)
-        yield {}, "🤔 Couldn't find a clear melody + tonic — try a longer, cleaner clip with a drone.", None, ""
+        yield {}, "🤔 Couldn't find a clear melody + tonic. Try a longer, cleaner clip with a drone.", None, ""
         return
     X = np.vstack(windows)
     preds = model.aggregate_top_k(X, k=TOP_K)
@@ -270,7 +270,7 @@ def build_ui():
 
     with gr.Blocks(title="twelveswaras", theme=_theme(), css=CSS, head=EMBED_HEAD) as demo:
         gr.HTML(TITLE_HTML)
-        gr.Markdown("🔒 Your recording is **never stored** — it is analyzed to find the raaga, then discarded.",
+        gr.Markdown("🔒 Your recording is **never stored**. It is analyzed to find the raaga, then discarded.",
                     elem_id="ts-privacy")
         # buttons=["download"] drops Gradio's built-in "share": it re-uploads the raw clip to HF's
         # MIME-restricted uploader (rejects m4a/aac/flac/…) and shares the *input*, not the result
