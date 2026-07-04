@@ -1,23 +1,24 @@
 # twelveswaras
 
-An open-source "Shazam for raagas" — listen to a clip of Indian classical music and identify
-its **raaga** — paired with a community-contributed, openly-licensed **data commons** that lets
-the model improve over time.
+An open-source "Shazam for raagas" — play it a clip of Carnatic music and it identifies the
+**raaga**, shows the top-3 with honest confidence and the tonic (Sa) it found, and helps you
+learn to hear that raaga. Paired with a planned community-contributed, openly-licensed **data
+commons** so the model improves over time.
 
-> **Status:** Planning / pre-v0. Implementation starting.
-> **Focus:** Carnatic first — but the name, schema, and pipeline are **tradition-neutral** by
-> design, with Hindustani planned as a fast-follow once the Carnatic v0 proves out.
-> **Scope:** Non-commercial, open-source only (never commercial). A public good stewarded in
-> the neutral [`twelveswaras`](https://github.com/twelveswaras) GitHub + HF org — not a
-> commercial product, and not owned by any company.
-> The detailed product spec, background, tech stack, and decisions log live in
-> `supporting-docs/PRD.md` (local only — gitignored, not published).
+**Live:** [twelveswaras.com](https://twelveswaras.com) · recognizer on a
+[Hugging Face Space](https://huggingface.co/spaces/twelveswaras/twelveswaras)
+
+> **Status:** v0 shipped — 40 Carnatic raagas, live and recognizing.
+> **Focus:** Carnatic first — the name, schema, and pipeline are **tradition-neutral** by
+> design, with Hindustani planned as a fast-follow.
+> **Scope:** Non-commercial, open-source only. A public good stewarded in the neutral
+> [`twelveswaras`](https://github.com/twelveswaras) GitHub + HF org — not owned by any company.
 
 ## Why "twelveswaras"?
 
 The twelve swaras are the twelve note-positions of the octave — the shared alphabet of **both**
 Carnatic and Hindustani music. The name is tradition-neutral on purpose: Carnatic is where we
-start, but nothing in the name, the schema, or the pipeline locks us to one tradition.
+start, but nothing in the name, schema, or pipeline locks us to one tradition.
 
 ## Why this is different from Shazam
 
@@ -25,28 +26,64 @@ Shazam does audio *fingerprinting* — it matches a specific recording. twelvesw
 *classification* — it infers the musical structure (the raaga) of **any** performance, including
 one it has never heard. That's a Music Information Retrieval problem, not a lookup.
 
+## How it works
+
+Fully automatic, no user input beyond the audio (see [`METHODOLOGY.md`](METHODOLOGY.md) for the
+full detail and citations):
+
+1. **Predominant-melody pitch** from the audio (essentia `PredominantPitchMelodia`).
+2. **Tonic (Sa)** from the tanpura drone (compiam / essentia, the Salamon–Gulati–Serra
+   multipitch method). *Tonic-normalization — heard relative to Sa — is the key unlock the
+   Harvard reference thesis skipped.*
+3. **Feature:** a tonic-normalized, windowed **Time-Delayed Melody Surface (TDMS)** — a 2-D
+   histogram of `(pitch(t), pitch(t+delay))` that captures **gamaka** (the *movement* between
+   notes), not just which notes occur.
+4. **Classifier:** XGBoost over the surfaces, window-aggregated, with **temperature-calibrated**
+   confidences (a shown "70%" is right ~70% of the time).
+
+**Accuracy (frozen 129-track benchmark, 40 raagas):** top-1 **0.798**, top-3 **0.938**
+(~32× / 12× chance). Full progression in [`benchmark/leaderboard.md`](benchmark/leaderboard.md).
+Needs a drone: concert/TV audio works; solo voice with no drone is unreliable.
+
+## Data & attribution
+
+Trained on openly-available research corpora — **attribution required by their licenses**:
+
+- **Saraga Carnatic** (CompMusic / MTG-UPF) — CC-BY-**NC-SA**. Predominant pitch + tonic annotations.
+- **IAMRRD / CompMusic Raga** (Gulati's Carnatic Music Dataset), via `mirdata`.
+
+Built with **essentia** and **compiam** (both **AGPL** — the deployed Space carries AGPL
+obligations, satisfied by publishing all source), plus librosa, xgboost, and gradio.
+
+## Prior work we build on
+
+- **S. Gulati et al.**, *Time-Delayed Melody Surfaces for Rāga Recognition* (ISMIR 2016) — the
+  TDMS feature at the heart of our model.
+- **S. Gulati**, *Computational Approaches for Melodic Description in Indian Art Music Corpora*
+  (PhD thesis, UPF 2016) — the definitive reference; tonic + melody methods.
+- **H. Narayanan**, *Classifying Ragams in Carnatic Music with Machine Learning* (Harvard, 2024)
+  — the "Shazam for ragas" reference implementation; we improve on it with tonic-normalization
+  and TDMS, and adopt its data-augmentation idea (see METHODOLOGY.md).
+- **Madhusudhan & Beigi**, *DEEPSRGM* — sequence-model benchmark target.
+
+Full bibliography in [`METHODOLOGY.md`](METHODOLOGY.md).
+
 ## Roadmap
 
-- **v0 — proof:** identify only. Seed model (~12 raagas, **tonic-normalized**, trained on
-  Saraga) + a demo. A shareable "Shazam for raagas" with no contribution loop yet.
-- **v1 — commons:** add contribute + verify loop, publish the open dataset, consolidation job.
-- **v2 — quality:** gamaka-aware features, retraining pipeline, public benchmark/leaderboard,
-  expert-annotation tier, and Hindustani.
-
-## Public artifacts (when released)
-
-- **Code** (this repo, GitHub) — MIT
-- **Model** — HF Hub (weights + model card)
-- **Dataset** — HF Hub (the commons; CC-BY-4.0)
-- **Live demo** — HF Space (identify + contribute + verify)
+- **v0 — proof (shipped):** identify only. 40-raaga tonic-normalized TDMS model + live demo +
+  learner panel. No contribution loop yet.
+- **v0.5 — trust (shipped):** legible recognition, calibrated confidence, gamaka features.
+- **v1 — commons:** contribute + verify loop, publish the open dataset, consolidation job.
+- **v2 — quality:** TDMS→CNN, phrase/gamaka disambiguation of allied raagas, retraining
+  pipeline, expert-annotation tier, and Hindustani.
 
 ## Licensing
 
-- **Code:** MIT (open source).
-- **Contributor dataset (the commons):** CC-BY-4.0 — kept **separate** from any non-commercial
-  source data so it stays cleanly reusable.
-- **Seed model:** trained on Saraga (which is CC-BY-**NC-SA**), so the seed weights carry
-  **CC-BY-NC-SA**; a later model retrained purely on the contributor commons can be clean CC-BY.
+- **Code:** MIT.
+- **Contributor dataset (the commons):** CC-BY-4.0 — kept **separate** from non-commercial source
+  data so it stays cleanly reusable.
+- **Seed model:** trained on Saraga (CC-BY-**NC-SA**), so the seed weights carry CC-BY-NC-SA; a
+  later model retrained purely on the contributor commons can be clean CC-BY.
 
-This is a non-commercial, open-source project. See `supporting-docs/PRD.md` for the full plan
-and the decisions log.
+This is a non-commercial, open-source public good. See [`GOVERNANCE.md`](GOVERNANCE.md) for
+stewardship and [`METHODOLOGY.md`](METHODOLOGY.md) for the full method + references.
