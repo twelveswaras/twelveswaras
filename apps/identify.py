@@ -65,6 +65,9 @@ body.embed #ts-title, body.embed #ts-footer, body.embed #ts-drone { display: non
 body.embed .gap, body.embed .contain { gap: 10px !important; }
 body.embed .gradio-container { padding-top: 2px !important; overflow: hidden !important;
   max-width: 100% !important; }  /* fill the page width when embedded (640px cap is for standalone) */
+/* breathing room around the status line so Gradio's progress bar doesn't crowd the "Listening…" text */
+#ts-status { margin-top: 10px !important; }
+#ts-status p { padding-top: 6px !important; }
 /* frame is sized to content -> the iframe itself never scrolls; the page does. Kills Gradio's
    always-on scrollbar track. (overflow only — no height changes, which would blank the app.) */
 html:has(body.embed), body.embed { overflow: hidden !important; }
@@ -243,13 +246,14 @@ def build_ui():
         # buttons=["download"] drops Gradio's built-in "share": it re-uploads the raw clip to HF's
         # MIME-restricted uploader (rejects m4a/aac/flac/…) and shares the *input*, not the result
         # — confusing + flaky. A real "share this raga" is an Explorer feature (D29). Keep download.
-        audio = gr.Audio(sources=["microphone", "upload"], type="numpy",
+        audio = gr.Audio(sources=["microphone", "upload"], type="numpy", autoplay=True,
                          label="Upload or record ~15–30 s", buttons=["download"])
         gr.Markdown("🎚️ **For best accuracy, include a tanpura / shruti-box drone.** A live "
                     "concert always has one — the tonic (Sa) is found from it, so solo voice "
                     "without a drone is unreliable.", elem_id="ts-drone")
         result = gr.Label(num_top_classes=TOP_K, label="Raaga")
-        info = gr.Markdown("_Recognition runs automatically when you upload or finish recording._")
+        info = gr.Markdown("_Recognition runs automatically when you upload or finish recording._",
+                           elem_id="ts-status")
         with gr.Accordion("🎓 How to hear this raaga", open=False):
             learn_plot = gr.Plot(label="Typical shape from recordings (gold) vs your clip (grey)")
             learn_md = gr.Markdown()
@@ -267,6 +271,12 @@ def build_ui():
         # No button: auto-identify when a file is uploaded or a recording stops.
         audio.upload(on_audio, audio, outs)
         audio.stop_recording(on_audio, audio, outs)
+
+        # Clearing the audio (Gradio's ✕) must also reset the result/Sa/panels below — otherwise
+        # the previous clip's raaga lingers under an empty input.
+        def clear_panels():
+            return {}, "_Recognition runs automatically when you upload or finish recording._", None, ""
+        audio.clear(clear_panels, None, outs)
     return demo
 
 
