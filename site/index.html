@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>twelveswaras — identify the raaga (Shazam for Carnatic music)</title>
-<meta name="description" content="Point your phone at a Carnatic performance and identify the raaga. A free, open-source 'Shazam for raagas' — with an open CC-BY data commons. Carnatic first; Hindustani planned.">
+<meta name="description" content="Point your phone at a Carnatic performance and identify the raaga (raga). A free, open-source 'Shazam for raagas' — a raga identifier with an open CC-BY data commons. Carnatic first; Hindustani planned.">
 <link rel="canonical" href="https://twelveswaras.com/">
 <meta name="theme-color" content="#0b0a08">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -90,7 +90,9 @@
 
   /* ---- hero ---- */
   .hero{padding:40px 0 8px;text-align:center}
-  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;
+  /* text-indent = letter-spacing: re-centers letter-spaced text (the trailing letter-space
+     after the last glyph otherwise pushes centered text left). Applied to every centered one. */
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.28em;text-indent:.28em;text-transform:uppercase;
     color:var(--muted);margin:0 0 20px}
   .title{font-size:clamp(2.1rem,8.5vw,3.6rem);font-weight:800;letter-spacing:-.03em;line-height:1.05;
     margin:0;text-wrap:balance}
@@ -106,7 +108,7 @@
     animation:listen 3.4s ease-in-out infinite;animation-delay:var(--d)}
   @keyframes listen{0%,100%{transform:scaleY(.86)}50%{transform:scaleY(1.06)}}
   @media (prefers-reduced-motion:reduce){.swaras b{animation:none}}
-  .swaras-cap{font-family:var(--mono);font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;
+  .swaras-cap{font-family:var(--mono);font-size:.7rem;letter-spacing:.22em;text-indent:.22em;text-transform:uppercase;
     color:var(--faint);text-align:center;margin:0 0 4px}
 
   .cta-row{display:flex;flex-direction:column;align-items:center;gap:12px;margin:26px 0 2px}
@@ -115,7 +117,7 @@
     transition:transform .12s ease,background .12s ease}
   .cta:hover{background:var(--amber-hi);color:#1a1205;transform:translateY(-1px)}
   .cta:active{transform:translateY(0)}
-  .ghost{font-family:var(--mono);font-size:.74rem;letter-spacing:.05em;color:var(--faint)}
+  .ghost{font-family:var(--mono);font-size:.74rem;letter-spacing:.05em;text-indent:.05em;color:var(--faint)}
 
   /* ---- sections ---- */
   section{padding:52px 0;border-top:1px solid var(--line);margin-top:52px}
@@ -140,7 +142,7 @@
   .slot{min-height:clamp(560px,82vh,760px);display:flex;flex-direction:column;align-items:center;
     justify-content:center;gap:20px;padding:24px;text-align:center}
   .slot .swaras{margin:0}
-  .slot .k{font-family:var(--mono);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .slot .k{font-family:var(--mono);font-size:.78rem;letter-spacing:.18em;text-indent:.18em;text-transform:uppercase;color:var(--muted)}
   .note{font-family:var(--mono);font-size:.74rem;color:var(--faint);margin:.7rem auto 0;
     max-width:560px;text-align:center}
 
@@ -176,7 +178,7 @@
 
   /* ---- footer ---- */
   footer{border-top:1px solid var(--line);margin-top:52px;padding:30px 0 46px;text-align:center}
-  footer .tagline{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint)}
+  footer .tagline{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;text-indent:.04em;color:var(--faint)}
   footer .links{margin-top:.7rem;font-size:.9rem;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
 </style>
 </head>
@@ -202,9 +204,9 @@
   </nav>
 
   <header class="hero">
-    <p class="eyebrow">Shazam · for Carnatic ragas</p>
-    <h1 class="title">Name the raga.<br><span class="b">Learn to hear it.</span></h1>
-    <p class="thesis">Play it a few seconds of Carnatic music — it names the raga, and shows you how to recognise it yourself.</p>
+    <p class="eyebrow">Shazam for raagas</p>
+    <h1 class="title">Name the raaga.<br><span class="b">Learn to hear it.</span></h1>
+    <p class="thesis">Play it a few seconds of Carnatic music — it names the raaga, and shows you how to recognise it yourself.</p>
 
     <p class="swaras-cap" aria-hidden="true">the twelve swaras</p>
     <div class="swaras" role="img" aria-label="twelve swaras, listening">
@@ -215,7 +217,7 @@
     </div>
 
     <div class="cta-row">
-      <button class="cta" id="launch" type="button">Identify a raga →</button>
+      <button class="cta" id="launch" type="button">Identify a raaga →</button>
       <span class="ghost">free · open source · no sign-up</span>
     </div>
   </header>
@@ -231,11 +233,11 @@
           <b style="--h:100;--d:-1.2s"></b><b style="--h:52;--d:-2.6s"></b><b style="--h:74;--d:-0.2s"></b>
           <b style="--h:60;--d:-1.9s"></b><b style="--h:84;--d:-3.3s"></b><b style="--h:46;--d:-0.7s"></b>
         </div>
-        <span class="k">Tap “Identify a raga” to begin</span>
+        <span class="k">Tap “Identify a raaga” to begin</span>
       </div>
       <noscript>
         <iframe class="noscript-frame" src="https://twelveswaras-twelveswaras.hf.space/?embed=1"
-                title="twelveswaras raga recognizer" allow="microphone"></iframe>
+                title="twelveswaras raaga recognizer" allow="microphone"></iframe>
       </noscript>
     </div>
     <p class="note">runs in your browser · give it a moment to wake on first use</p>
@@ -256,8 +258,8 @@
       </div>
       <div class="stepp">
         <span class="dot">03</span>
-        <div><span class="lab">Name it</span><h3>The raga, with the runners-up</h3>
-          <p>The top three ragas with honest confidence, the Sa it heard, and a plain-language note on how to hear that raga.</p></div>
+        <div><span class="lab">Name it</span><h3>The raaga, with the runners-up</h3>
+          <p>The top three raagas with honest confidence, the Sa it heard, and a plain-language note on how to hear that raaga.</p></div>
       </div>
     </div>
   </section>
@@ -265,12 +267,12 @@
   <section id="about">
     <h2>An open public good</h2>
     <p class="lead">twelveswaras is non-commercial and open source — never a product, owned by no company.
-      It pairs a raga-recognition model with a community-built, openly-licensed data commons, so it keeps getting better.</p>
+      It pairs a raaga-recognition model with a community-built, openly-licensed data commons, so it keeps getting better.</p>
     <p>The <b style="color:var(--paper);font-weight:600">twelve swaras</b> are the twelve note-positions of the octave — the
       shared alphabet of Carnatic and Hindustani music. Carnatic is where we start; the name, schema and pipeline are
       tradition-neutral by design, with Hindustani planned as a fast-follow.</p>
     <div class="facts">
-      <span class="chip"><b>40</b> ragas</span>
+      <span class="chip"><b>40</b> raagas</span>
       <span class="chip">code · <b>MIT</b></span>
       <span class="chip">data · <b>CC-BY-4.0</b></span>
       <span class="chip">Carnatic first</span>
@@ -284,8 +286,8 @@
       <p>Yes — a concert has a tanpura drone, which is exactly what it needs to find the tonic. Point your phone at the stage for about 30 seconds. Solo singing with no drone is unreliable.</p></details>
     <details><summary>Is it really free, with no account?</summary>
       <p>Yes. Non-commercial, MIT-licensed code, a CC-BY-4.0 data commons, and no sign-up. It is a public good, not a product.</p></details>
-    <details><summary>Which ragas does it know?</summary>
-      <p>40 Carnatic ragas in this version — a mix of the common melakarta and janya ragas you hear in concerts. Hindustani is planned.</p></details>
+    <details><summary>Which raagas does it know?</summary>
+      <p>40 Carnatic raagas in this version — a mix of the common melakarta and janya raagas you hear in concerts. Hindustani is planned.</p></details>
     <details><summary>Do I need to install anything?</summary>
       <p>No — it runs in your browser. On a phone, use “Add to Home Screen” for a full-screen, app-like experience.</p></details>
   </section>
@@ -315,7 +317,7 @@
       loaded = true;
       frame = document.createElement('iframe');
       frame.src = base + '/?embed=1';
-      frame.title = 'twelveswaras raga recognizer';
+      frame.title = 'twelveswaras raaga recognizer';
       frame.setAttribute('allow', 'microphone');
       slot.replaceWith(frame);
     }
