@@ -72,7 +72,7 @@ def _theme():
         font=["system-ui", "ui-sans-serif", "-apple-system", "Segoe UI", "sans-serif"],
         font_mono=["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
     ).set(
-        body_background_fill="#0a0a0a",
+        body_background_fill="#0b0a08",   # match the twelveswaras.com page ground (no seam)
         body_text_color="#ededed",
         body_text_color_subdued="#9ca3af",
         background_fill_primary="#15151a",
@@ -170,6 +170,16 @@ def identify(audio, model: RaagaXGB):
     yield labels, info, _learn_plot(top, user_profile), learn.summary_md(top, user_profile)
 
 
+def is_embedded(query_params) -> bool:
+    """True when the app is loaded inside the twelveswaras.com page iframe (src has ?embed=1).
+    In that case the app hides its own logo + footer so it reads as part of the page, not a
+    separate site."""
+    try:
+        return str(query_params.get("embed", "")) == "1"
+    except AttributeError:
+        return False
+
+
 def build_ui():
     import gradio as gr
 
@@ -177,7 +187,7 @@ def build_ui():
     pitch_extract.warmup()          # pay the essentia/compiam import cost once, up front
 
     with gr.Blocks(title="twelveswaras", theme=_theme(), css=CSS) as demo:
-        gr.HTML(TITLE_HTML)
+        title = gr.HTML(TITLE_HTML)
         # buttons=["download"] drops Gradio's built-in "share": it re-uploads the raw clip to HF's
         # MIME-restricted uploader (rejects m4a/aac/flac/…) and shares the *input*, not the result
         # — confusing + flaky. A real "share this raga" is an Explorer feature (D29). Keep download.
@@ -191,7 +201,7 @@ def build_ui():
         with gr.Accordion("🎓 How to hear this raaga", open=False):
             learn_plot = gr.Plot(label="Typical shape from recordings (gold) vs your clip (grey)")
             learn_md = gr.Markdown()
-        gr.HTML(FOOTER_HTML)
+        footer = gr.HTML(FOOTER_HTML)
 
         outs = [result, info, learn_plot, learn_md]
 
@@ -201,6 +211,11 @@ def build_ui():
         # No button: auto-identify when a file is uploaded or a recording stops.
         audio.upload(on_audio, audio, outs)
         audio.stop_recording(on_audio, audio, outs)
+
+        def _on_load(request: gr.Request):
+            hide = not is_embedded(request.query_params)  # keep logo/footer only when standalone
+            return gr.update(visible=hide), gr.update(visible=hide)
+        demo.load(_on_load, None, [title, footer])
     return demo
 
 

@@ -129,7 +129,7 @@
     background:var(--raise);border:1px solid var(--line);border-left:2px solid var(--amber);
     border-radius:10px;padding:.7rem .9rem;margin:0 0 14px;max-width:var(--measure)}
   .drone b{color:var(--paper);font-weight:650}
-  .embed{position:relative;background:var(--raise);border:1px solid var(--line-2);border-radius:16px;
+  .embed{position:relative;background:var(--ink);border:1px solid var(--line-2);border-radius:16px;
     overflow:hidden;box-shadow:0 24px 60px -30px rgba(0,0,0,.9)}
   .embed iframe{width:100%;height:clamp(560px,82vh,760px);border:0;display:block;background:var(--ink)}
   /* skeleton shown until the recognizer streams in */
@@ -303,7 +303,7 @@
       if (loaded) return;
       loaded = true;
       var f = document.createElement('iframe');
-      f.src = 'https://twelveswaras-twelveswaras.hf.space';
+      f.src = 'https://twelveswaras-twelveswaras.hf.space/?embed=1';
       f.title = 'twelveswaras raga recognizer';
       f.setAttribute('allow', 'microphone');
       slot.replaceWith(f);
