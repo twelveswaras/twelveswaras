@@ -3,7 +3,7 @@
 How twelveswaras identifies the raaga of a Carnatic clip, why each choice was made, and the
 literature it builds on. Results and the full progression live in
 [`benchmark/leaderboard.md`](benchmark/leaderboard.md); the private product spec + decisions log
-(D1–D31) live in `supporting-docs/PRD.md`.
+live in `supporting-docs/PRD.md`.
 
 ## The problem
 
@@ -37,13 +37,18 @@ Fully automatic; the only input is audio.
    it says. A **confidence state** turns a tight top-2 into an honest *"close call: X vs Y"*
    instead of a false-precise single answer.
 
+A **junk gate** (D6/D8, `config.MIN_VOICED_FRAC = 0.5`) drops any window whose predominant melody
+is voiced less than half the time (percussion solos, speech, applause, long silences), in both
+training and inference, so only windows with a trackable melody reach the feature step. It lifts
+the frozen benchmark 0.798 → 0.806 / 0.938 → 0.946, and is expected to help more on real-world clips.
+
 ## Feature evolution (why TDMS)
 
 | feature | what it captures | frozen top-1 |
 |---------|------------------|--------------|
 | librosa chroma + MFCC | absolute pitch class + timbre | ≈ chance (overfit / track-memorization) |
 | tonic-normalized PCD (120-bin) | *which* notes, relative to Sa | strong lift |
-| **windowed TDMS (48×48)** | *how* notes move (gamaka) | **0.798 / top-3 0.938** |
+| **windowed TDMS (48×48)** | *how* notes move (gamaka) | **0.806 / top-3 0.946** (0.798 pre-junk-gate) |
 | CNN on TDMS (spike, not shipped) | spatial gamaka structure | 0.868 (held behind the real-world benchmark) |
 
 We deliberately **exclude timbre features (MFCC, spectral, ZCR)**: they encode instrument /
@@ -54,7 +59,8 @@ relevant, corroborating the pitch-focused choice.
 ## Evaluation
 
 - **Frozen benchmark**: a fixed held-out set of 129 tracks across 40 raagas, split **by track**
-  (no window leakage). Reported: top-1 **0.798**, top-3 **0.938** (chance 0.025 / 0.075).
+  (no window leakage). Reported: top-1 **0.806**, top-3 **0.946** with the junk gate
+  (0.798 / 0.938 without; chance 0.025 / 0.075).
 - **k-fold track-level cross-validation** (`tools/cross_validate.py`) for lower-variance estimates.
 - **Real-world benchmark harness** (`tools/realworld_eval.py`): scores the model on
   concert/phone clips broken down **by drone presence**, to measure the studio→real-world gap the

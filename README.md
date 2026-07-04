@@ -41,8 +41,9 @@ full detail and citations):
 4. **Classifier:** XGBoost over the surfaces, window-aggregated, with **temperature-calibrated**
    confidences (a shown "70%" is right ~70% of the time).
 
-**Accuracy (frozen 129-track benchmark, 40 raagas):** top-1 **0.798**, top-3 **0.938**
-(~32× / 12× chance). Full progression in [`benchmark/leaderboard.md`](benchmark/leaderboard.md).
+**Accuracy (frozen 129-track benchmark, 40 raagas):** top-1 **0.806**, top-3 **0.946**
+(~32× / 13× chance), after a D6/D8 junk gate that drops non-melodic windows (percussion, speech,
+silence). Full progression in [`benchmark/leaderboard.md`](benchmark/leaderboard.md).
 Needs a drone: concert/TV audio works; solo voice with no drone is unreliable.
 
 ## Data & attribution
@@ -75,8 +76,12 @@ Full bibliography in [`METHODOLOGY.md`](METHODOLOGY.md).
 
 - **v0 (proof, shipped):** identify only. 40-raaga tonic-normalized TDMS model + live demo +
   learner panel. No contribution loop yet.
-- **v0.5 (trust, shipped):** legible recognition, calibrated confidence, gamaka features.
-- **v1 (commons):** contribute + verify loop, publish the open dataset, consolidation job.
+- **v0.5 (trust, shipped):** legible recognition, calibrated confidence, gamaka features, junk gate.
+- **Raaga Explorer (shipped):** a browsable reference for all 40 raagas grouped by melakarta, each
+  with a beginner "tell", how-to-hear notes, a playable swara wheel, and allied / graha-bhedam
+  links; an ear-trainer; and open data (`/data/raagas.json`, CC-BY-4.0) plus `/llms.txt` and
+  per-page JSON-LD. Reference facts are draft, pending expert review.
+- **v1 (commons):** contribute + verify loop, publish the contributor audio dataset, consolidation job.
 - **v2 (quality):** TDMS→CNN, phrase/gamaka disambiguation of allied raagas, retraining
   pipeline, expert-annotation tier, and Hindustani.
 
