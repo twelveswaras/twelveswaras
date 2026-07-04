@@ -125,19 +125,24 @@
 
   /* ---- the recognizer ---- */
   #try{border-top:0;margin-top:34px;padding-top:0}
-  .drone{display:flex;gap:.6rem;align-items:flex-start;font-size:.92rem;color:var(--muted);
-    background:var(--raise);border:1px solid var(--line);border-left:2px solid var(--amber);
-    border-radius:10px;padding:.7rem .9rem;margin:0 0 14px;max-width:var(--measure)}
+  /* a plain, quiet guidance line — no card, no accent rail (that reads as AI-slop) */
+  .drone{display:flex;gap:.5rem;align-items:flex-start;font-size:.9rem;color:var(--muted);
+    max-width:560px;margin:0 auto 16px}
   .drone b{color:var(--paper);font-weight:650}
-  .embed{position:relative;background:var(--ink);border:1px solid var(--line-2);border-radius:16px;
-    overflow:hidden;box-shadow:0 24px 60px -30px rgba(0,0,0,.9)}
-  .embed iframe{width:100%;height:clamp(560px,82vh,760px);border:0;display:block;background:var(--ink)}
+  /* no border/shadow/radius: the recognizer blends into the page instead of reading as a boxed
+     widget. Background matches the page ground, so the iframe edge disappears. */
+  .embed{position:relative;background:transparent;border:0;border-radius:0;overflow:hidden}
+  /* the recognizer's iframe auto-resizes to its content height (see the script), so the PAGE
+     scrolls and the frame never shows its own scrollbar. Its own logo/footer/drone are hidden
+     inside via embed mode. Height is set by JS; this is just the initial value. */
+  .embed iframe{width:100%;height:620px;border:0;display:block;background:var(--ink)}
   /* skeleton shown until the recognizer streams in */
   .slot{min-height:clamp(560px,82vh,760px);display:flex;flex-direction:column;align-items:center;
     justify-content:center;gap:20px;padding:24px;text-align:center}
   .slot .swaras{margin:0}
   .slot .k{font-family:var(--mono);font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
-  .note{font-family:var(--mono);font-size:.74rem;color:var(--faint);margin:.7rem 0 0;text-align:center}
+  .note{font-family:var(--mono);font-size:.74rem;color:var(--faint);margin:.7rem auto 0;
+    max-width:560px;text-align:center}
 
   /* ---- how it works: a real 3-step sequence, connected ---- */
   .flow{display:grid;gap:0;margin-top:22px}
@@ -228,9 +233,12 @@
         </div>
         <span class="k">Tap “Identify a raga” to begin</span>
       </div>
+      <noscript>
+        <iframe class="noscript-frame" src="https://twelveswaras-twelveswaras.hf.space/?embed=1"
+                title="twelveswaras raga recognizer" allow="microphone"></iframe>
+      </noscript>
     </div>
-    <p class="note">runs in your browser · the recognizer wakes on a Hugging&nbsp;Face Space ·
-      <a href="https://twelveswaras-twelveswaras.hf.space">open it directly ↗</a></p>
+    <p class="note">runs in your browser · give it a moment to wake on first use</p>
   </section>
 
   <section id="how">
@@ -288,26 +296,38 @@
     <p class="tagline">a non-commercial, open-source public good · Carnatic first · CC-BY data commons</p>
     <div class="links">
       <a href="https://github.com/twelveswaras">github.com/twelveswaras</a>
-      <a href="https://twelveswaras-twelveswaras.hf.space">open the recognizer ↗</a>
     </div>
   </div>
 </footer>
 
 <script>
-  // Lazy-load the recognizer: the page paints instantly; the iframe streams in when the
-  // "Try it" panel scrolls into view, or immediately when the user taps the CTA. No framework.
+  // Lazy-load the recognizer: the page paints instantly (18 KB, no framework); the iframe streams
+  // in when the "Try it" panel scrolls into view, or when you tap the CTA. The iframe then AUTO-
+  // RESIZES to the recognizer's content height (it posts its height back), so the page scrolls and
+  // the frame never shows its own scrollbar — it reads as one page. No third-party branding shown.
   (function () {
+    var SPACE = 'https://twelveswaras-twelveswaras.hf.space';
     var slot = document.getElementById('slot');
-    var loaded = false;
+    var base = new URLSearchParams(location.search).get('recognizer') || SPACE;
+    var frame = null, loaded = false;
     function load() {
       if (loaded) return;
       loaded = true;
-      var f = document.createElement('iframe');
-      f.src = 'https://twelveswaras-twelveswaras.hf.space/?embed=1';
-      f.title = 'twelveswaras raga recognizer';
-      f.setAttribute('allow', 'microphone');
-      slot.replaceWith(f);
+      frame = document.createElement('iframe');
+      frame.src = base + '/?embed=1';
+      frame.title = 'twelveswaras raga recognizer';
+      frame.setAttribute('allow', 'microphone');
+      slot.replaceWith(frame);
     }
+    // grow the iframe to the recognizer's reported content height -> no nested scrollbar
+    window.addEventListener('message', function (e) {
+      var ok;
+      try { ok = e.origin === base || /(^|\.)hf\.space$/.test(new URL(e.origin).hostname); }
+      catch (err) { ok = false; }
+      var h = e.data && e.data.twelveswaras_height;
+      // clamp: never smaller than 320 or larger than 6000 (a runaway guard, belt-and-suspenders)
+      if (ok && typeof h === 'number' && frame) { frame.style.height = Math.min(6000, Math.max(320, h)) + 'px'; }
+    });
     var launch = document.getElementById('launch');
     launch.addEventListener('click', function () {
       load();

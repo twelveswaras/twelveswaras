@@ -37,7 +37,7 @@ _TILE = """
 """
 
 TITLE_HTML = f"""
-<div style="display:flex; align-items:center; justify-content:center; gap:.65rem; margin:.4rem 0 .2rem">
+<div id="ts-title" style="display:flex; align-items:center; justify-content:center; gap:.65rem; margin:.4rem 0 .2rem">
   {_TILE}
   <div style="text-align:left; line-height:1.05">
     <div style="font-size:clamp(1.4rem,6.5vw,2.1rem); font-weight:800; letter-spacing:-1px"><span style="color:#ededed">twelve</span><span style="color:#f59e0b">swaras</span></div>
@@ -59,6 +59,15 @@ footer { display: none !important; }
 /* audio player: keep the seek bar from covering the 0:00 / total time read-outs */
 .gradio-container .timestamps { position: relative; z-index: 3; margin-top: 4px; }
 .gradio-container .timestamps time { background: #0a0a0a; padding: 0 3px; border-radius: 3px; }
+/* embed mode (loaded in the twelveswaras.com iframe via ?embed=1): hide the app's own logo,
+   footer, and the drone tip (the page already carries all three) so it fits without scrolling */
+body.embed #ts-title, body.embed #ts-footer, body.embed #ts-drone { display: none !important; }
+body.embed .gap, body.embed .contain { gap: 10px !important; }
+body.embed .gradio-container { padding-top: 2px !important; overflow: hidden !important;
+  max-width: 100% !important; }  /* fill the page width when embedded (640px cap is for standalone) */
+/* frame is sized to content -> the iframe itself never scrolls; the page does. Kills Gradio's
+   always-on scrollbar track. (overflow only — no height changes, which would blank the app.) */
+html:has(body.embed), body.embed { overflow: hidden !important; }
 """
 
 
@@ -170,14 +179,57 @@ def identify(audio, model: RaagaXGB):
     yield labels, info, _learn_plot(top, user_profile), learn.summary_md(top, user_profile)
 
 
-def is_embedded(query_params) -> bool:
-    """True when the app is loaded inside the twelveswaras.com page iframe (src has ?embed=1).
-    In that case the app hides its own logo + footer so it reads as part of the page, not a
-    separate site."""
-    try:
-        return str(query_params.get("embed", "")) == "1"
-    except AttributeError:
-        return False
+# When the recognizer is loaded inside the twelveswaras.com page (i.e. in an iframe), hide its
+# own logo/footer/drone-tip so it reads as part of the page. Injected in <head> so it always
+# runs; detects embedding by iframe (window.self !== window.top) — no query-param dependency —
+# and hides elements DIRECTLY by id, re-applying on a few timers because Gradio renders its
+# components asynchronously after first paint. Standalone (hf.space direct) keeps full branding.
+EMBED_HEAD = """
+<script>
+(function () {
+  function embedded() { try { return window.self !== window.top; } catch (e) { return true; } }
+  function hideChrome() {
+    if (!embedded()) return;
+    document.body.classList.add('embed');
+    // The frame is sized to content, so the recognizer never needs to scroll itself — the PAGE
+    // scrolls. Hide the iframe's own overflow so Gradio's always-on scrollbar track disappears.
+    // (Only overflow — no height/min-height changes, which would collapse the layout.)
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    ['ts-title', 'ts-drone', 'ts-footer'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) { el.style.display = 'none'; }
+    });
+  }
+  // Tell the parent page our content height so it can grow the iframe to fit — the PAGE scrolls,
+  // the frame never gets its own scrollbar. Fires on load, timers, window resize, and (via
+  // ResizeObserver) whenever the content changes — a result appears, the accordion opens, etc.
+  var lastH = 0;
+  function reportHeight() {
+    if (!embedded()) return;
+    // Gradio stretches every CONTAINER to fill the viewport (= the frame height), so measuring any
+    // of them loops the auto-resize to infinity ("grows like a worm"). The #ts-end sentinel is a
+    // plain marker that flows right after the last component, so its bottom is the TRUE content
+    // height and can't stretch. absolute = rect.bottom + scrollY. +10px breathing room.
+    var end = document.getElementById('ts-end');
+    if (!end) return;
+    var h = Math.ceil(end.getBoundingClientRect().bottom + window.scrollY) + 10;
+    if (h > 0 && h !== lastH) {
+      lastH = h;
+      try { window.parent.postMessage({ twelveswaras_height: h }, '*'); } catch (er) {}
+    }
+  }
+  function tick() { hideChrome(); reportHeight(); }
+  if (document.readyState !== 'loading') tick();
+  document.addEventListener('DOMContentLoaded', tick);
+  [150, 400, 900, 1800].forEach(function (t) { setTimeout(tick, t); });
+  window.addEventListener('resize', reportHeight);
+  // Gradio's body is pinned to 100vh, so opening the accordion / getting a result overflows it
+  // WITHOUT changing its size — ResizeObserver never fires. So poll the sentinel (deduped, cheap).
+  setInterval(reportHeight, 300);
+})();
+</script>
+"""
 
 
 def build_ui():
@@ -186,8 +238,8 @@ def build_ui():
     model = _load_model()
     pitch_extract.warmup()          # pay the essentia/compiam import cost once, up front
 
-    with gr.Blocks(title="twelveswaras", theme=_theme(), css=CSS) as demo:
-        title = gr.HTML(TITLE_HTML)
+    with gr.Blocks(title="twelveswaras", theme=_theme(), css=CSS, head=EMBED_HEAD) as demo:
+        gr.HTML(TITLE_HTML)
         # buttons=["download"] drops Gradio's built-in "share": it re-uploads the raw clip to HF's
         # MIME-restricted uploader (rejects m4a/aac/flac/…) and shares the *input*, not the result
         # — confusing + flaky. A real "share this raga" is an Explorer feature (D29). Keep download.
@@ -195,13 +247,17 @@ def build_ui():
                          label="Upload or record ~15–30 s", buttons=["download"])
         gr.Markdown("🎚️ **For best accuracy, include a tanpura / shruti-box drone.** A live "
                     "concert always has one — the tonic (Sa) is found from it, so solo voice "
-                    "without a drone is unreliable.")
+                    "without a drone is unreliable.", elem_id="ts-drone")
         result = gr.Label(num_top_classes=TOP_K, label="Raaga")
         info = gr.Markdown("_Recognition runs automatically when you upload or finish recording._")
         with gr.Accordion("🎓 How to hear this raaga", open=False):
             learn_plot = gr.Plot(label="Typical shape from recordings (gold) vs your clip (grey)")
             learn_md = gr.Markdown()
-        footer = gr.HTML(FOOTER_HTML)
+        gr.HTML(FOOTER_HTML)
+        # Sentinel at the very end of the content. Gradio stretches every CONTAINER to fill the
+        # viewport (so measuring any of them loops the auto-resize), but this plain marker just
+        # flows after the last component — its position IS the true content height.
+        gr.HTML('<div id="ts-end" style="height:1px"></div>')
 
         outs = [result, info, learn_plot, learn_md]
 
@@ -211,11 +267,6 @@ def build_ui():
         # No button: auto-identify when a file is uploaded or a recording stops.
         audio.upload(on_audio, audio, outs)
         audio.stop_recording(on_audio, audio, outs)
-
-        def _on_load(request: gr.Request):
-            hide = not is_embedded(request.query_params)  # keep logo/footer only when standalone
-            return gr.update(visible=hide), gr.update(visible=hide)
-        demo.load(_on_load, None, [title, footer])
     return demo
 
 
