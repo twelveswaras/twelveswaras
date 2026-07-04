@@ -52,10 +52,24 @@ def test_comparison_md_same_set_defers_to_gamaka():
         learn._SEED_OVERRIDE = None
 
 
+def test_bhashanga_both_varieties():
+    # A bhashanga raaga (X) uses BOTH dhaivatas; Y uses only one. Must say "both das", and must
+    # NOT wrongly claim Y "leaves out" da (Y has D2) — the base-by-base comparison handles this.
+    learn._SEED_OVERRIDE = {"X": ["S", "R2", "G2", "M1", "P", "D1", "D2", "N2"],
+                            "Y": ["S", "R2", "G2", "M1", "P", "D2", "N2"]}
+    try:
+        md = learn.comparison_md("X", "Y").lower()
+        assert "both da" in md
+        assert "leaves out" not in md
+    finally:
+        learn._SEED_OVERRIDE = None
+
+
 if __name__ == "__main__":
     test_distinguish_by_missing_notes()
     test_distinguish_by_swara_variety()
     test_missing_data_returns_none()
     test_comparison_md_is_plain_and_names_the_notes()
     test_comparison_md_same_set_defers_to_gamaka()
-    print("COMPARE OK — distinguish by set-diff, plain-language, same-set defers to gamaka")
+    test_bhashanga_both_varieties()
+    print("COMPARE OK — set-diff, plain-language, same-set→gamaka, bhashanga both-variety")

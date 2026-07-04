@@ -5,7 +5,16 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2",
+      "N3"
+    ]
   },
   "Behāg": {
     "arohana": "",
@@ -21,7 +30,16 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G2",
+      "M1",
+      "P",
+      "D1",
+      "D2",
+      "N2"
+    ]
   },
   "Bilahari": {
     "arohana": "",
@@ -45,7 +63,16 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2",
+      "N3"
+    ]
   },
   "Dhanyāsi": {
     "arohana": "",
@@ -53,7 +80,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R1",
+      "G2",
+      "M1",
+      "P",
+      "D1",
+      "N2"
+    ]
   },
   "Dēvagāndhāri": {
     "arohana": "",
@@ -61,7 +96,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N3"
+    ]
   },
   "Gauḷa": {
     "arohana": "",
@@ -69,7 +112,14 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R1",
+      "G3",
+      "M1",
+      "P",
+      "N3"
+    ]
   },
   "Harikāmbhōji": {
     "arohana": "",
@@ -93,7 +143,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G2",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
   },
   "Kalyāṇi": {
     "arohana": "",
@@ -117,7 +175,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
   },
   "Karaharapriya": {
     "arohana": "",
@@ -157,7 +223,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G2",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
   },
   "Kāpi": {
     "arohana": "",
@@ -173,7 +247,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
   },
   "Kēdāragauḷa": {
     "arohana": "",
@@ -181,7 +263,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
   },
   "Madhyamāvati": {
     "arohana": "",
@@ -203,7 +293,16 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G2",
+      "M1",
+      "P",
+      "D1",
+      "D2",
+      "N2"
+    ]
   },
   "Māyāmāḷavagauḷa": {
     "arohana": "",
@@ -249,7 +348,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
   },
   "Pūrvīkaḷyāṇi": {
     "arohana": "",
@@ -257,7 +364,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R1",
+      "G3",
+      "M2",
+      "P",
+      "D2",
+      "N3"
+    ]
   },
   "Rītigauḷa": {
     "arohana": "",
@@ -265,7 +380,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G2",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
   },
   "Sahānā": {
     "arohana": "",
@@ -273,7 +396,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
   },
   "Sencuruṭṭi": {
     "arohana": "",
@@ -281,7 +412,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
   },
   "Sindhubhairavi": {
     "arohana": "",
@@ -297,7 +436,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
   },
   "Sāma": {
     "arohana": "",
@@ -305,7 +452,14 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2"
+    ]
   },
   "Sāvēri": {
     "arohana": "",
@@ -353,7 +507,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
   },
   "Ānandabhairavi": {
     "arohana": "",
@@ -385,7 +547,15 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G2",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
   },
   "Śrīranjani": {
     "arohana": "",
@@ -393,7 +563,14 @@
     "pakad": "",
     "listen_for": "",
     "vs": "",
-    "swaras": []
+    "swaras": [
+      "S",
+      "R2",
+      "G2",
+      "M1",
+      "D2",
+      "N2"
+    ]
   },
   "Ṣanmukhapriya": {
     "arohana": "",

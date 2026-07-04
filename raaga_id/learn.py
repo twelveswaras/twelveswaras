@@ -84,30 +84,47 @@ def distinguish(a: str, b: str):
             "same": A == B}
 
 
+_ORDER7 = ["sa", "ri", "ga", "ma", "pa", "da", "ni"]
+
+
 def _join(names) -> str:
     names = list(dict.fromkeys(names))  # dedupe, keep order
-    return names[0] if len(names) == 1 else " and ".join([", ".join(names[:-1]), names[-1]]) \
-        if len(names) > 2 else " and ".join(names)
+    if len(names) <= 2:
+        return " and ".join(names)
+    return ", ".join(names[:-1]) + " and " + names[-1]
+
+
+def _variety_desc(labels) -> str:
+    """Describe the varieties of ONE base note a raaga uses (e.g. both dhaivatas, or the sharp ni)."""
+    return f"both {_BASE[labels[0]]}s" if len(labels) >= 2 else _VARIETY[labels[0]]
 
 
 def comparison_md(a: str, b: str) -> str:
-    """A plain-language 'how to tell them apart' line for a close call, or '' if no data."""
-    d = distinguish(a, b)
-    if d is None:
+    """A plain-language 'how to tell them apart' line for a close call, or '' if no data.
+    Compares base note by base note so it stays correct for bhashanga raagas that use *both*
+    varieties of a note (e.g. Bhairavi's two dhaivatas)."""
+    sa, sb = swaras(a), swaras(b)
+    if not sa or not sb:
         return ""
-    if d["same"]:
+    A, B = set(sa), set(sb)
+    if A == B:
         return (f"**Telling {a} from {b}:** they use the **same notes** — the difference is in the "
                 f"*gamaka* (how each note is shaken and slid) and the phrasing, not the scale. "
                 f"(Phrase guidance coming soon.)")
-    a_only, b_only = d["a_only"], d["b_only"]
-    a_bases, b_bases = {_BASE[x] for x in a_only}, {_BASE[x] for x in b_only}
-    parts = []
-    for base in sorted(a_bases & b_bases):  # same note, different variety
-        av = next(_VARIETY[x] for x in a_only if _BASE[x] == base)
-        bv = next(_VARIETY[x] for x in b_only if _BASE[x] == base)
-        parts.append(f"the **{base}** differs — {a} uses {av}, {b} uses {bv}")
-    b_extra = [_BASE[x] for x in b_only if _BASE[x] not in a_bases]
-    a_extra = [_BASE[x] for x in a_only if _BASE[x] not in b_bases]
+    a_extra, b_extra, variety = [], [], []
+    for base in _ORDER7:
+        av = [x for x in A if _BASE[x] == base]
+        bv = [x for x in B if _BASE[x] == base]
+        if set(av) == set(bv):
+            continue
+        if av and not bv:
+            a_extra.append(base)          # a has this note entirely, b doesn't
+        elif bv and not av:
+            b_extra.append(base)
+        else:                              # both have the note but in different varieties
+            variety.append((base, av, bv))
+    parts = [f"the **{base}** differs — {a} uses {_variety_desc(av)}, {b} uses {_variety_desc(bv)}"
+             for base, av, bv in variety]
     if b_extra:
         parts.append(f"{b} uses **{_join(b_extra)}**, which {a} leaves out")
     if a_extra:
