@@ -1,282 +1,414 @@
 {
- "Aṭāna": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Behāg": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Bhairavi": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Bilahari": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Bēgaḍa": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Dhanyāsi": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Dēvagāndhāri": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Gauḷa": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Harikāmbhōji": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Hussēnī": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Kalyāṇi": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Kamās": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Karaharapriya": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Kāmavardani": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Kānaḍa": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Kāpi": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Kāṁbhōji": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Kēdāragauḷa": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Madhyamāvati": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Mukhāri": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Māyāmāḷavagauḷa": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Mōhanaṁ": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Nāṭa": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Nāṭakurinji": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Pūrvīkaḷyāṇi": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Rītigauḷa": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Sahānā": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Sencuruṭṭi": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Sindhubhairavi": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Suraṭi": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Sāma": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Sāvēri": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Tōḍi": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Varāḷi": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Yadukula kāṁbōji": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Ānandabhairavi": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Śankarābharaṇaṁ": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Śrī": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Śrīranjani": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- },
- "Ṣanmukhapriya": {
-  "arohana": "",
-  "avarohana": "",
-  "pakad": "",
-  "listen_for": "",
-  "vs": ""
- }
+  "Aṭāna": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Behāg": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Bhairavi": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Bilahari": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N3"
+    ]
+  },
+  "Bēgaḍa": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Dhanyāsi": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Dēvagāndhāri": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Gauḷa": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Harikāmbhōji": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
+  },
+  "Hussēnī": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Kalyāṇi": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M2",
+      "P",
+      "D2",
+      "N3"
+    ]
+  },
+  "Kamās": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Karaharapriya": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": [
+      "S",
+      "R2",
+      "G2",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
+  },
+  "Kāmavardani": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": [
+      "S",
+      "R1",
+      "G3",
+      "M2",
+      "P",
+      "D1",
+      "N3"
+    ]
+  },
+  "Kānaḍa": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Kāpi": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Kāṁbhōji": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Kēdāragauḷa": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Madhyamāvati": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": [
+      "S",
+      "R2",
+      "M1",
+      "P",
+      "N2"
+    ]
+  },
+  "Mukhāri": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Māyāmāḷavagauḷa": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": [
+      "S",
+      "R1",
+      "G3",
+      "M1",
+      "P",
+      "D1",
+      "N3"
+    ]
+  },
+  "Mōhanaṁ": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "P",
+      "D2"
+    ]
+  },
+  "Nāṭa": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Nāṭakurinji": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Pūrvīkaḷyāṇi": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Rītigauḷa": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Sahānā": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Sencuruṭṭi": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Sindhubhairavi": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Suraṭi": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Sāma": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Sāvēri": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": [
+      "S",
+      "R1",
+      "G3",
+      "M1",
+      "P",
+      "D1",
+      "N3"
+    ]
+  },
+  "Tōḍi": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": [
+      "S",
+      "R1",
+      "G2",
+      "M1",
+      "P",
+      "D1",
+      "N2"
+    ]
+  },
+  "Varāḷi": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Yadukula kāṁbōji": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Ānandabhairavi": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Śankarābharaṇaṁ": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N3"
+    ]
+  },
+  "Śrī": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Śrīranjani": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": []
+  },
+  "Ṣanmukhapriya": {
+    "arohana": "",
+    "avarohana": "",
+    "pakad": "",
+    "listen_for": "",
+    "vs": "",
+    "swaras": [
+      "S",
+      "R2",
+      "G2",
+      "M2",
+      "P",
+      "D1",
+      "N2"
+    ]
+  }
 }

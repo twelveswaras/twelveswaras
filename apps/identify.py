@@ -171,7 +171,7 @@ def identify(audio, model: RaagaXGB):
 
     from raaga_id.calibrate import confidence_state
     labels = {p.raaga: float(p.confidence) for p in preds}
-    _, note = confidence_state(preds)     # calibrated top-2 -> "✓ confident" / "close call" / "not sure"
+    state, note = confidence_state(preds)   # calibrated top-2 -> "confident" / "close" / "unsure"
     info = (f"**Sa ≈ {tonic:.0f} Hz**  ·  heard **0:00–{_mmss(heard)}**  ·  "
             f"recognized in **{elapsed:.1f} s**  ·  {note}")
 
@@ -179,7 +179,13 @@ def identify(audio, model: RaagaXGB):
     from raaga_id.features import pcd_to_swaras
     top = preds[0].raaga
     user_profile = pcd_to_swaras(display_pcd)   # human-readable swaras from the PCD, not the TDMS surface
-    yield labels, info, _learn_plot(top, user_profile), learn.summary_md(top, user_profile)
+    learn_md = learn.summary_md(top, user_profile)
+    # On a close call, lead the learner panel with how to tell the top two apart (D29 Explorer).
+    if state == "close":
+        cmp = learn.comparison_md(preds[0].raaga, preds[1].raaga)
+        if cmp:
+            learn_md = cmp + "\n\n---\n\n" + learn_md
+    yield labels, info, _learn_plot(top, user_profile), learn_md
 
 
 # When the recognizer is loaded inside the twelveswaras.com page (i.e. in an iframe), hide its

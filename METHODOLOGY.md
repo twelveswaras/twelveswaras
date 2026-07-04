@@ -109,6 +109,12 @@ phrase-matching work.
    South Indian Classical Music.* B.A. thesis, Harvard University, 2024. — reference implementation.
 5. S. Madhusudhan, T. Beigi. *DEEPSRGM — Sequence Classification for Rāga Identification.* 2019.
    — sequence-model benchmark target.
+5a. S. Natesan, H. Beigi. *Carnatic Raga Identification System using Rigorous Time-Delay Neural
+   Network.* Recognition Technologies Inc. Technical Report RTI-20240524-01, 2024. — a TDNN+LSTM
+   hybrid with **attention over *relative* frequency changes for shruti-invariance** (no explicit
+   tonic estimation). Preliminary (676 recordings, no reported metrics), but the relative-pitch
+   idea is worth revisiting for our **tonic/drone-robustness** work — it targets the exact failure
+   mode (drone-less audio) where our explicit tonic estimation breaks.
 6. M. Müller. *Fundamentals of Music Processing.* Springer, 2016. (chroma, CENS, STFT).
 7. **Datasets:** Saraga Carnatic (CompMusic / MTG-UPF, CC-BY-NC-SA); IAMRRD / CompMusic Raga
    (Gulati's Carnatic Music Dataset), accessed via `mirdata`.

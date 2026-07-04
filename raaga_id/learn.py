@@ -49,6 +49,72 @@ def guide(raaga: str) -> dict:
     return {k: v for k, v in _guide().get(raaga, {}).items() if v}
 
 
+# --- Allied-raaga comparison (D29 Explorer): how to tell two close-call raagas apart, from their
+# swara SETS (which of the 12 notes each uses — a documented fact). Seed sets live in
+# raaga_guide.json["swaras"]; empty until seeded/expert-filled. Beginner-friendly note names below;
+# a variety qualifier is only added when two raagas share a base note but differ in its variety.
+from .features import SWARA_LABELS  # noqa: E402
+
+_BASE = {"S": "sa", "R1": "ri", "R2": "ri", "G2": "ga", "G3": "ga", "M1": "ma", "M2": "ma",
+         "P": "pa", "D1": "da", "D2": "da", "N2": "ni", "N3": "ni"}
+_VARIETY = {"R1": "the lower ri", "R2": "ri", "G2": "the lower ga", "G3": "ga",
+            "M1": "the natural ma", "M2": "the sharp ma (prati-madhyama)", "D1": "the lower da",
+            "D2": "da", "N2": "ni", "N3": "the sharp ni"}
+_SEED_OVERRIDE = None  # tests inject swara sets here without touching the guide file
+
+
+def swaras(raaga: str):
+    """The raaga's swara set (12-position labels), or None if not seeded/filled."""
+    if _SEED_OVERRIDE is not None and raaga in _SEED_OVERRIDE:
+        return _SEED_OVERRIDE[raaga]
+    s = _guide().get(raaga, {}).get("swaras")
+    return s or None
+
+
+def distinguish(a: str, b: str):
+    """Set-difference of two raagas' swaras, or None if either lacks data. Returns which notes
+    each has that the other doesn't (ordered), and whether the sets are identical."""
+    sa, sb = swaras(a), swaras(b)
+    if not sa or not sb:
+        return None
+    order = {lab: i for i, lab in enumerate(SWARA_LABELS)}
+    A, B = set(sa), set(sb)
+    return {"a_only": sorted(A - B, key=lambda x: order.get(x, 99)),
+            "b_only": sorted(B - A, key=lambda x: order.get(x, 99)),
+            "same": A == B}
+
+
+def _join(names) -> str:
+    names = list(dict.fromkeys(names))  # dedupe, keep order
+    return names[0] if len(names) == 1 else " and ".join([", ".join(names[:-1]), names[-1]]) \
+        if len(names) > 2 else " and ".join(names)
+
+
+def comparison_md(a: str, b: str) -> str:
+    """A plain-language 'how to tell them apart' line for a close call, or '' if no data."""
+    d = distinguish(a, b)
+    if d is None:
+        return ""
+    if d["same"]:
+        return (f"**Telling {a} from {b}:** they use the **same notes** — the difference is in the "
+                f"*gamaka* (how each note is shaken and slid) and the phrasing, not the scale. "
+                f"(Phrase guidance coming soon.)")
+    a_only, b_only = d["a_only"], d["b_only"]
+    a_bases, b_bases = {_BASE[x] for x in a_only}, {_BASE[x] for x in b_only}
+    parts = []
+    for base in sorted(a_bases & b_bases):  # same note, different variety
+        av = next(_VARIETY[x] for x in a_only if _BASE[x] == base)
+        bv = next(_VARIETY[x] for x in b_only if _BASE[x] == base)
+        parts.append(f"the **{base}** differs — {a} uses {av}, {b} uses {bv}")
+    b_extra = [_BASE[x] for x in b_only if _BASE[x] not in a_bases]
+    a_extra = [_BASE[x] for x in a_only if _BASE[x] not in b_bases]
+    if b_extra:
+        parts.append(f"{b} uses **{_join(b_extra)}**, which {a} leaves out")
+    if a_extra:
+        parts.append(f"{a} uses **{_join(a_extra)}**, which {b} leaves out")
+    return f"**Telling {a} from {b}:** " + "; ".join(parts) + ". Listen for those notes."
+
+
 def summary_md(raaga: str, user_profile=None) -> str:
     """A warm, plain-language 'how to hear this raaga' note for someone new to Carnatic music —
     which of the seven swaras the raaga rests on, what their clip leaned on, and (when an expert
