@@ -26,7 +26,7 @@ AUDIO = RW / "audio"
 LINKS = RW / "links.csv"
 CLIPS = RW / "clips.csv"
 DEFAULT_START = 30       # skip typical intros / tuning
-DEFAULT_DUR = 150        # > 90 s so the pipeline's first-90s analysis lands squarely on music
+DEFAULT_DUR = 360        # ~6 min span so section_eval can sample across the performance, not one spot
 FIELDS = ["file", "raga", "source", "license", "drone", "instrument", "notes"]
 
 
