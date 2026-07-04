@@ -50,8 +50,7 @@ def main() -> None:
     pitch_extract.warmup()
     audio_dir = Path(args.audio_dir)
 
-    maj_ok = any_ok = scored = 0
-    consist = []
+    records = []   # (instrument, maj_correct, any_correct, consistency) per scored clip
     for c in clips:
         path = audio_dir / c.file
         if not path.exists():
@@ -73,23 +72,27 @@ def main() -> None:
         if not names:
             print(f"  {c.file:20s} true={c.raga:16s} NO PREDICTION in any section")
             continue
-        scored += 1
         maj, maj_n = Counter(names).most_common(1)[0]
         cons = maj_n / len(names)
-        consist.append(cons)
         maj_correct = maj == c.raga
         any_correct = c.raga in names
-        maj_ok += maj_correct
-        any_ok += any_correct
+        records.append((c.instrument or "unspecified", maj_correct, any_correct, cons))
         cells = "  ".join(f"{n[:9]}" + (f" {int(p*100)}%" if p else "") for n, p in picks)
         flag = "✓maj" if maj_correct else ("·any" if any_correct else "✗")
         print(f"  {c.file:20s} true={c.raga:16s} [{flag}] cons={cons:.0%}  |  {cells}")
 
-    print(f"\nSECTION EVAL  ({args.sections}×{args.secs:.0f}s per clip)  scored={scored}")
-    if scored:
-        print(f"  majority-correct   {maj_ok}/{scored} = {maj_ok/scored:.3f}   (best-of-N user)")
-        print(f"  any-section-correct{any_ok}/{scored} = {any_ok/scored:.3f}   (raaga reachable)")
-        print(f"  mean consistency   {sum(consist)/len(consist):.3f}          (sections agreeing)")
+    def block(recs, label):
+        n = len(recs)
+        if not n:
+            return
+        print(f"  {label:22s} n={n:2d}  majority={sum(r[1] for r in recs)/n:.3f}  "
+              f"any={sum(r[2] for r in recs)/n:.3f}  consistency={sum(r[3] for r in recs)/n:.3f}")
+
+    print(f"\nSECTION EVAL  ({args.sections}×{args.secs:.0f}s per clip)  scored={len(records)}"
+          f"   (majority = best-of-N; any = raaga reachable; consistency = sections agreeing)")
+    block(records, "OVERALL")
+    for inst in sorted({r[0] for r in records}):
+        block([r for r in records if r[0] == inst], f"instrument={inst}")
 
 
 if __name__ == "__main__":
