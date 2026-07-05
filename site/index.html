@@ -296,7 +296,7 @@
 
   <section id="about">
     <h2>An open public good</h2>
-    <p class="lead">twelveswaras is non-commercial and open source, never a product, owned by no company.
+    <p class="lead">twelveswaras is non-commercial and open source, never a product, built by Sathya Sankaran (<a href="https://www.sathyasankaran.com" style="text-decoration:underline;text-underline-offset:2px">www.sathyasankaran.com</a>), owned by no company.
       It pairs a raaga-recognition model with a community-built, openly-licensed data commons, so it keeps getting better.</p>
     <p>The <b style="color:var(--paper);font-weight:600">twelve swaras</b> are the twelve note-positions of the octave, the
       shared alphabet of Carnatic and Hindustani music. Carnatic is where we start; the name, schema and pipeline are
@@ -418,7 +418,9 @@
       if(!top3.length) return noRes();
       lockName=top3[0].raaga; lockConf=conf; var sure=lockConf>=0.6;
       statusEl.textContent=sure?'Confident':'Best guess'; statusEl.className='rec-status '+(sure?'done':'warm');
-      leadEl.textContent=sure?('Heard for '+elapsed.toFixed(0)+'s'):('Heard '+elapsed.toFixed(0)+'s. A longer, closer listen helps.');
+      leadEl.textContent = source==='file'
+        ? (sure ? 'From your recording.' : 'From your clip. A longer or clearer recording helps.')
+        : (sure ? ('Heard for '+elapsed.toFixed(0)+'s') : ('Heard '+elapsed.toFixed(0)+'s. A longer, closer listen helps.'));
       ragaEl.textContent=lockName; ragaEl.className='rec-raga show'+(sure?' done':'');
       top3El.classList.toggle('done',sure); rows(top3,true); guides.className='rec-guides hide';
       setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Listen again</button>'
