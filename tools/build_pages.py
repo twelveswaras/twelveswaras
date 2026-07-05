@@ -176,7 +176,7 @@ __JSONLD__
   .top .gh{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
   .top .gh:hover{color:var(--paper)}
   .crumb{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);padding:20px 0 0}
-  .crumb a{color:var(--muted)} .crumb a:hover{color:var(--paper)}
+  .crumb a{color:var(--muted);text-decoration:underline;text-underline-offset:2px} .crumb a:hover{color:var(--paper)}
   .hero{padding:14px 0 8px}
   .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
     color:var(--amber);margin:0 0 12px}
@@ -669,6 +669,17 @@ def main() -> None:
         (OUT / f"{slug(nm)}.html").write_text(page)
         n += 1
     (OUT / "index.html").write_text(build_index(guide, ref))
+
+    # sitemap.xml — landing, ear-trainer, raaga index, every raaga (clean URLs, as Pages serves them)
+    base = "https://twelveswaras.com"
+    urls = [f"{base}/", f"{base}/listen", f"{base}/raaga/"]
+    urls += [f"{base}/raaga/{slug(nm)}" for nm in guide]
+    sitemap = ('<?xml version="1.0" encoding="UTF-8"?>\n'
+               '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+               + "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls)
+               + "</urlset>\n")
+    (ROOT / "site" / "sitemap.xml").write_text(sitemap)
+
     linked = sum(1 for v in cousins_of.values() if v)
     print(f"wrote {n} raaga pages + grouped index to {OUT.relative_to(ROOT)}/ "
           f"({linked} have graha-bhedam cousins)")
