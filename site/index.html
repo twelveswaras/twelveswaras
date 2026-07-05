@@ -122,7 +122,7 @@
   .thesis{color:var(--muted);font-size:clamp(1.02rem,3.4vw,1.22rem);line-height:1.72;max-width:34ch;margin:16px auto 0;text-wrap:balance}
 
   .ghost{font-family:var(--mono);font-size:.74rem;letter-spacing:.05em;text-indent:.05em;color:var(--faint);
-    display:block;text-align:center;margin-top:14px}
+    display:block;text-align:center;margin:14px auto 0}
 
   /* ---- sections ---- */
   /* border + padding do the separating; no extra margin (52+52 doubled up = dead space) */
@@ -174,11 +174,11 @@
   .rec-status.warm{color:var(--amber-hi)} .rec-status.done{color:#74c69d}
   .rec-orb{appearance:none;border:0;background:transparent;padding:0;margin:6px auto 0;display:block;cursor:pointer;border-radius:50%;line-height:0}
   .rec-orb canvas{display:block;width:248px;height:248px;touch-action:manipulation}
-  .rec-meta{min-height:24px;display:flex;justify-content:center;align-items:center;margin-top:4px}
+  .rec-meta{min-height:24px;display:flex;justify-content:center;align-items:center;margin-top:10px}
   .rec-sa{font-family:var(--mono);font-size:.72rem;color:var(--amber-hi);background:#f59e0b1a;border:1px solid #f59e0b33;
     border-radius:999px;padding:.2rem .55rem;opacity:0;transition:opacity .35s}
   .rec-sa.show{opacity:1}
-  .rec-say{text-align:center;min-height:2.4rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;margin-top:2px}
+  .rec-say{text-align:center;min-height:2.4rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin-top:12px}
   .rec-lead{font-size:.98rem;color:var(--muted);text-wrap:balance}
   .rec-raga{font-size:2.1rem;font-weight:800;letter-spacing:-.02em;line-height:1.04;color:var(--paper);
     opacity:0;transform:translateY(6px);transition:opacity .45s,transform .45s}
@@ -190,7 +190,7 @@
   .rec-row .rp{font-family:var(--mono);font-size:.76rem;color:var(--faint);font-variant-numeric:tabular-nums}
   .rec-row.lead .rp{color:var(--amber-hi)}
   .rec-tr{grid-column:1 / -1;height:6px;border-radius:3px;background:#ffffff12;overflow:hidden}
-  .rec-fl{height:100%;width:0;border-radius:3px;background:var(--amber);transition:width .35s}
+  .rec-fl{display:block;height:100%;width:0;border-radius:3px;background:var(--amber);transition:width .35s}
   .rec-row.lead .rec-fl{background:linear-gradient(90deg,var(--amber),var(--amber-hi));box-shadow:0 0 8px rgba(251,191,36,.5)}
   .rec-top3.done .rec-row.lead .rec-fl{background:linear-gradient(90deg,#5aa87f,#74c69d);box-shadow:0 0 8px rgba(116,198,157,.5)}
   .rec-controls{margin-top:16px;min-height:46px;display:flex;justify-content:center;align-items:center}
@@ -404,8 +404,8 @@
       if(source==='file'){ s = conf<0.6?'Analysing…' : conf<0.9?'Almost there…' : 'Got it'; }
       else{ if(elapsed>=nextTip && elapsed<MAX_S-3){ tipUntil=elapsed+2.6; nextTip+=7; tipIdx=(tipIdx+1)%TIPS.length; }
         if(elapsed<tipUntil) s=TIPS[tipIdx];
-        else if(conf>0&&(held>=HOLD*0.7||conf>=0.85)) s='Locking it in…';
-        else s=conf>0?VERBS[Math.floor(elapsed/2.6)%VERBS.length]:'Finding the swaras…'; }
+        else if(conf>0&&elapsed>=MIN_LISTEN&&held>=HOLD*0.85) s='Locking it in…';
+        else s=VERBS[Math.floor(elapsed/2.6)%VERBS.length]; }
       if(s!==phase){phase=s; leadEl.innerHTML=s;}
       var ready = conf>0&&leader&&(elapsed-leaderSince)>=HOLD&&elapsed>=MIN_LISTEN&&conf>=0.55;
       if(ready||elapsed>=MAX_S) finish();
