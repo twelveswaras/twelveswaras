@@ -76,6 +76,16 @@ def test_site_hosts_first_party_recognizer():
     assert "<iframe" not in site                  # nothing embedded to resize away
 
 
+def test_api_base_uses_worker_off_production():
+    # /api is same-origin ONLY on the real domain. On localhost / *.pages.dev previews a static server
+    # has no /api, so the wheel must hit the workers.dev URL directly — otherwise the fetch 404s and
+    # the upload path reads it as "That file could not be analysed."
+    site = _site()
+    assert "twelveswaras-api.knerav.workers.dev" in site        # the off-production backend
+    assert "host === 'twelveswaras.com'" in site                # /api reserved for the canonical host
+    assert "host === 'www.twelveswaras.com'" in site
+
+
 def test_no_huggingface_in_user_copy():
     # Hugging Face is plumbing — never named to users, no "open it directly" link.
     site = _site()
@@ -90,5 +100,6 @@ if __name__ == "__main__":
     test_build_ui_wires_head_and_element_ids()
     test_reports_height_for_auto_resize()
     test_site_hosts_first_party_recognizer()
+    test_api_base_uses_worker_off_production()
     test_no_huggingface_in_user_copy()
     print("EMBED OK — iframe-detect + hide chrome, auto-resize (no nested scroll), no HF in copy")

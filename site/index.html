@@ -119,7 +119,7 @@
   .title{font-size:clamp(2.1rem,8.5vw,3.6rem);font-weight:800;letter-spacing:-.03em;line-height:1.05;
     margin:0;text-wrap:balance}
   .title .b{color:var(--amber)}
-  .thesis{color:var(--muted);font-size:clamp(1.02rem,3.4vw,1.22rem);max-width:34ch;margin:16px auto 0;text-wrap:balance}
+  .thesis{color:var(--muted);font-size:clamp(1.02rem,3.4vw,1.22rem);line-height:1.72;max-width:34ch;margin:16px auto 0;text-wrap:balance}
 
   .ghost{font-family:var(--mono);font-size:.74rem;letter-spacing:.05em;text-indent:.05em;color:var(--faint);
     display:block;text-align:center;margin-top:14px}
@@ -189,10 +189,10 @@
   .rec-row .rn{font-size:.96rem;color:var(--muted)} .rec-row.lead .rn{color:var(--paper);font-weight:650}
   .rec-row .rp{font-family:var(--mono);font-size:.76rem;color:var(--faint);font-variant-numeric:tabular-nums}
   .rec-row.lead .rp{color:var(--amber-hi)}
-  .rec-tr{grid-column:1 / -1;height:4px;border-radius:3px;background:#ffffff10;overflow:hidden}
-  .rec-fl{height:100%;width:0;border-radius:3px;background:linear-gradient(90deg,var(--amber-lo),var(--amber-hi));transition:width .35s}
-  .rec-row.lead .rec-fl{background:linear-gradient(90deg,var(--amber),var(--amber-hi))}
-  .rec-top3.done .rec-row.lead .rec-fl{background:linear-gradient(90deg,#5aa87f,#74c69d)}
+  .rec-tr{grid-column:1 / -1;height:6px;border-radius:3px;background:#ffffff12;overflow:hidden}
+  .rec-fl{height:100%;width:0;border-radius:3px;background:var(--amber);transition:width .35s}
+  .rec-row.lead .rec-fl{background:linear-gradient(90deg,var(--amber),var(--amber-hi));box-shadow:0 0 8px rgba(251,191,36,.5)}
+  .rec-top3.done .rec-row.lead .rec-fl{background:linear-gradient(90deg,#5aa87f,#74c69d);box-shadow:0 0 8px rgba(116,198,157,.5)}
   .rec-controls{margin-top:16px;min-height:46px;display:flex;justify-content:center;align-items:center}
   .rec-entry{display:flex;flex-direction:column;align-items:center;gap:8px}
   .rbtn{appearance:none;font-family:var(--sans);font-weight:700;font-size:1rem;cursor:pointer;border-radius:12px;
@@ -335,10 +335,13 @@
 <script>
   // First-party recognizer: capture mic, send the growing buffer to the API every few seconds, and
   // draw the swara wheel from the returned pitch-class distribution. Locks on a STABLE answer (not
-  // an early confidence spike). Same-origin /api on the live domain; the workers.dev URL on *.pages.dev.
+  // an early confidence spike). Same-origin /api on the live domain; the workers.dev URL everywhere
+  // else (pages.dev previews, localhost dev) — a static local server has no /api. ?api= overrides.
   (function(){
+    var host = location.hostname;
     var API = new URLSearchParams(location.search).get('api')
-      || (/\.pages\.dev$/.test(location.hostname) ? 'https://twelveswaras-api.knerav.workers.dev' : '/api');
+      || ((host === 'twelveswaras.com' || host === 'www.twelveswaras.com')
+            ? '/api' : 'https://twelveswaras-api.knerav.workers.dev');
     function g(x){return document.getElementById(x);}
     var cv=g('rec-cv'), ctx=cv.getContext('2d'), reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
     var statusEl=g('rec-status'), saEl=g('rec-sa'), leadEl=g('rec-lead'), ragaEl=g('rec-raga'),

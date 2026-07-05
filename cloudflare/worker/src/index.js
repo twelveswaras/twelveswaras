@@ -15,7 +15,7 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    if (request.method === 'OPTIONS') return cors(new Response(null, { status: 204 }), env);
+    if (request.method === 'OPTIONS') return cors(new Response(null, { status: 204 }), env, request);
 
     // match /identify and /health with or without the /api prefix, so the same worker serves both
     // same-origin (twelveswaras.com/api/identify) and the direct staging URL (…workers.dev/identify)
@@ -25,18 +25,33 @@ export default {
     if (url.pathname.endsWith('/health')) {
       try {
         const r = await fetch(env.SPACE_URL + '/health');
-        return cors(json(await r.json()), env);
+        return cors(json(await r.json()), env, request);
       } catch {
-        return cors(json({ status: 'backend unavailable' }, 502), env);
+        return cors(json({ status: 'backend unavailable' }, 502), env, request);
       }
     }
-    return cors(json({ error: 'not found', path: url.pathname }, 404), env);
+    return cors(json({ error: 'not found', path: url.pathname }, 404), env, request);
   },
 };
 
-function cors(resp, env) {
+// Reflect the request Origin when it's one of ours (production, *.pages.dev previews, or localhost
+// dev), otherwise fall back to the primary origin. This lets the wheel be tested from a local static
+// server or a preview deploy without opening the API to arbitrary sites.
+function allowedOrigin(origin, env) {
+  const primary = env.ALLOW_ORIGIN || '*';
+  if (!origin) return primary;
+  let host;
+  try { host = new URL(origin).hostname; } catch { return primary; }
+  if (
+    host === 'twelveswaras.com' || host === 'www.twelveswaras.com' ||
+    host === 'localhost' || host === '127.0.0.1' || host.endsWith('.pages.dev')
+  ) return origin;
+  return primary;
+}
+
+function cors(resp, env, request) {
   const h = new Headers(resp.headers);
-  h.set('Access-Control-Allow-Origin', env.ALLOW_ORIGIN || '*');
+  h.set('Access-Control-Allow-Origin', allowedOrigin(request && request.headers.get('Origin'), env));
   h.set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
   h.set('Access-Control-Allow-Headers', 'content-type');
   h.set('Vary', 'Origin');
@@ -52,10 +67,10 @@ async function handleIdentify(request, env, ctx) {
   try {
     form = await request.formData();
   } catch {
-    return cors(json({ error: 'expected multipart/form-data with an "audio" field' }, 400), env);
+    return cors(json({ error: 'expected multipart/form-data with an "audio" field' }, 400), env, request);
   }
   const audio = form.get('audio');
-  if (!audio || typeof audio === 'string') return cors(json({ error: 'no audio' }, 400), env);
+  if (!audio || typeof audio === 'string') return cors(json({ error: 'no audio' }, 400), env, request);
 
   // forward to the headless recognizer
   const fwd = new FormData();
@@ -65,10 +80,10 @@ async function handleIdentify(request, env, ctx) {
     const r = await fetch(env.SPACE_URL + '/identify', { method: 'POST', body: fwd });
     data = await r.json();
   } catch {
-    return cors(json({ error: 'recognizer unavailable' }, 502), env);
+    return cors(json({ error: 'recognizer unavailable' }, 502), env, request);
   }
 
-  if (!data || data.error) return cors(json(data || { error: 'bad response' }, 502), env);
+  if (!data || data.error) return cors(json(data || { error: 'bad response' }, 502), env, request);
 
   // result-metadata logging (no audio) — never block the response on it
   if (env.DB) ctx.waitUntil(logToD1(env, data, request));
@@ -78,7 +93,7 @@ async function handleIdentify(request, env, ctx) {
     ctx.waitUntil(storeContribution(env, audio, data));
   }
 
-  return cors(json(data), env);
+  return cors(json(data), env, request);
 }
 
 async function logToD1(env, data, request) {
