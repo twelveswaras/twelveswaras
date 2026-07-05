@@ -38,6 +38,7 @@
     --ink:#0b0a08; --raise:#16130f; --raise-2:#1c1811; --line:#2a241c; --line-2:#39301f;
     --paper:#f2ece2; --muted:#a89e8e; --faint:#8b8173;
     --amber:#f59e0b; --amber-lo:#d97706; --amber-hi:#fbbf24;
+    --jade:#5aa87f; --jade-hi:#74c69d;   /* secondary accent: resting notes, the learning section */
     --sans:"SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,monospace;
     --measure:64ch;
@@ -76,7 +77,7 @@
   .legend i{width:14px;height:14px;border-radius:50%;display:inline-block}
   .lg-on{background:var(--amber)}
   .lg-jeeva{background:var(--amber-hi);box-shadow:0 0 0 3px rgba(251,191,36,.22)}
-  .lg-nyasa{background:transparent;border:2px solid var(--amber-hi)}
+  .lg-nyasa{background:transparent;border:2px solid var(--jade-hi)}
   .wheel .node{cursor:pointer}
   .play{display:flex;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap;justify-content:center}
   .play button{display:inline-flex;align-items:center;gap:.5rem;background:var(--raise-2);
@@ -96,7 +97,7 @@
   h2{font-size:clamp(1.2rem,4.5vw,1.5rem);font-weight:800;letter-spacing:-.02em;margin:0 0 1rem;text-wrap:balance}
   p{color:var(--muted);max-width:var(--measure)}
   .hear dl{margin:0;display:grid;gap:18px}
-  .hear dt{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin:0 0 5px}
+  .hear dt{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--jade-hi);margin:0 0 5px}
   .hear dd{margin:0;color:var(--paper)}
   .cards{display:grid;gap:10px;margin-top:4px}
   .card{background:var(--raise);border:1px solid var(--line);border-radius:12px;padding:13px 16px;color:var(--paper);font-size:.98rem}
@@ -231,7 +232,7 @@
   function has(arr,i){ return arr.indexOf(i)>=0; }
   for (var i=0;i<12;i++){
     var p=pt(i,rNode), lp=pt(i,rLabel), on=has(IN,i), je=has(JEEVA,i), ny=has(NYASA,i);
-    if (ny) g.appendChild(el('circle',{cx:p[0],cy:p[1],r:9,fill:'none',stroke:'#fbbf24','stroke-width':2}));
+    if (ny) g.appendChild(el('circle',{cx:p[0],cy:p[1],r:9,fill:'none',stroke:'#74c69d','stroke-width':2}));
     if (je) g.appendChild(el('circle',{cx:p[0],cy:p[1],r:11,fill:'rgba(251,191,36,.20)'}));
     var node=el('circle',{cx:p[0],cy:p[1],r:on?5:3,fill:on?(je?'#fbbf24':'#f59e0b'):'#39301f'});
     if (on){ node.setAttribute('class','node'); nodes[i]=node;

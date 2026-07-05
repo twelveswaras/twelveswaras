@@ -75,6 +75,7 @@
     --ink:#0b0a08; --raise:#16130f; --raise-2:#1c1811; --line:#2a241c; --line-2:#39301f;
     --paper:#f2ece2; --muted:#a89e8e; --faint:#8b8173;
     --amber:#f59e0b; --amber-lo:#d97706; --amber-hi:#fbbf24;
+    --jade:#5aa87f; --jade-hi:#74c69d;   /* secondary accent: the answer / settled / learning */
     --sans:"SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,monospace;
     --measure:64ch;
@@ -138,6 +139,7 @@
   .stepp .dot{width:38px;height:38px;border-radius:10px;background:var(--raise-2);
     border:1px solid var(--line-2);display:flex;align-items:center;justify-content:center;
     font-family:var(--mono);font-size:.82rem;color:var(--amber);z-index:1;position:relative}
+  .stepp:last-child .dot{color:var(--jade-hi);border-color:#5aa87f55;background:#5aa87f14}  /* the answer */
   /* connector spans from below the dot to the bottom of the step (variable content height) */
   .stepp:not(:last-child)::before{content:"";position:absolute;left:19px;top:42px;bottom:4px;
     width:1px;background:linear-gradient(var(--line-2),transparent 94%)}
@@ -149,7 +151,7 @@
   .facts{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0}
   .chip{font-family:var(--mono);font-size:.74rem;letter-spacing:.03em;color:var(--muted);
     background:var(--raise);border:1px solid var(--line);border-radius:999px;padding:.42rem .8rem}
-  .chip b{color:var(--amber);font-weight:600}
+  .chip b{color:var(--jade-hi);font-weight:600}
 
   /* ---- faq ---- */
   details{border-bottom:1px solid var(--line)}
@@ -203,7 +205,7 @@
   .rbtn.cancel{background:transparent;color:var(--muted);border-color:var(--line-2)}
   .rghost{appearance:none;background:transparent;border:0;cursor:pointer;font-family:var(--mono);font-size:.76rem;color:var(--amber-hi);padding:.3rem .5rem;border-radius:8px}
   .rghost:hover{color:#fff;text-decoration:underline}
-  .rlearn{font-family:var(--mono);font-size:.78rem;color:#74c69d;text-decoration:none;padding:.3rem} .rlearn:hover{text-decoration:underline}
+  .rlearn{font-family:var(--mono);font-size:.78rem;color:var(--jade-hi);text-decoration:none;padding:.3rem} .rlearn:hover{text-decoration:underline}
   .rhint{font-family:var(--mono);font-size:.74rem;color:var(--faint);text-align:center}
   .rec-guides{display:flex;flex-direction:column;gap:8px;margin:16px auto 0;max-width:400px;text-align:left}
   .rec-guide{display:flex;gap:.45rem;align-items:flex-start;margin:0;font-size:.82rem;line-height:1.5;color:var(--muted)}
