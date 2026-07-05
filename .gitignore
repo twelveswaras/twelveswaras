@@ -38,6 +38,11 @@ benchmark/realworld/links.csv
 .env.local
 *.hf_token
 
+# Local tool caches / state (never publish)
+.wrangler/
+**/.wrangler/
+.playwright-mcp/
+
 # OS / editor
 .DS_Store
 .idea/

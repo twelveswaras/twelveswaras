@@ -50,7 +50,9 @@ def test_window_vectors_shape():
     assert not any(np.isnan(v).any() for v in vecs)
 
 
-def test_split_no_leak():
+def test_split_no_leak(monkeypatch, tmp_path):
+    # isolate from the real frozen benchmark split: use a fresh path so the split is computed here
+    monkeypatch.setattr(data, "FROZEN_TEST_PATH", tmp_path / "frozen.json")
     clips = [Clip(f"t{i}", Path("x"), raaga=("A" if i % 2 else "B")) for i in range(8)]
     train, test = data.split_by_track(clips, test_frac=0.5, seed=1)
     assert train and test

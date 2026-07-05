@@ -273,44 +273,60 @@
   cv.width=size*dpr; cv.height=size*dpr; ctx.scale(dpr,dpr);
   const cx=size/2, cy=size/2, ring=98, innerR=52, bars=12;
   function draw(now){
-    const t=now/1000, active=mode!=='idle', locked=mode==='locked';
+    const t=now/1000, active=mode!=='idle', locked=mode==='locked', listening=mode==='listening';
     ctx.clearRect(0,0,size,size);
-    const pulse=reduce?0.5:(0.5+0.5*Math.sin(t*(active?3.2:1.4)));
+    const pulse=reduce?0.6:(0.5+0.5*Math.sin(t*(listening?3.4:1.4)));
     const gc=locked?'116,198,157':'245,158,11';
     const glow=ctx.createRadialGradient(cx,cy,4,cx,cy,ring);
-    glow.addColorStop(0,'rgba('+gc+','+(0.14+0.14*pulse)+')'); glow.addColorStop(1,'rgba(0,0,0,0)');
+    glow.addColorStop(0,'rgba('+gc+','+(active?0.22+0.16*pulse:0.10)+')'); glow.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(cx,cy,ring,0,7); ctx.fill();
-    ctx.lineWidth=5; ctx.lineCap='round'; ctx.strokeStyle='rgba(255,255,255,0.06)';
+    ctx.lineWidth=5; ctx.lineCap='round'; ctx.strokeStyle='rgba(255,255,255,0.08)';
     ctx.beginPath(); ctx.arc(cx,cy,ring,0,Math.PI*2); ctx.stroke();
     const shown=active?(locked?lockConf:conf):0;
     if(shown>0.001){ const a0=-Math.PI/2, a1=a0+shown*Math.PI*2;
       const gr=ctx.createLinearGradient(cx-ring,cy,cx+ring,cy);
       if(locked){gr.addColorStop(0,'#5aa87f');gr.addColorStop(1,'#74c69d');}else{gr.addColorStop(0,'#d97706');gr.addColorStop(1,'#fbbf24');}
-      ctx.strokeStyle=gr; ctx.lineWidth=6; ctx.shadowBlur=16; ctx.shadowColor=locked?'rgba(116,198,157,.5)':'rgba(245,158,11,.5)';
+      ctx.strokeStyle=gr; ctx.lineWidth=6; ctx.shadowBlur=16; ctx.shadowColor=locked?'rgba(116,198,157,.55)':'rgba(245,158,11,.55)';
       ctx.beginPath(); ctx.arc(cx,cy,ring,a0,a1); ctx.stroke(); ctx.shadowBlur=0; }
-    const mx=Math.max(0.001,...swaraAct);
+    // rotating "listening" sweep — always moving, so it never looks frozen between server updates
+    if(listening && !reduce){ const sw=(-Math.PI/2)+(t*1.7)%(Math.PI*2);
+      const g2=ctx.createLinearGradient(cx+Math.cos(sw-0.6)*ring,cy+Math.sin(sw-0.6)*ring,cx+Math.cos(sw)*ring,cy+Math.sin(sw)*ring);
+      g2.addColorStop(0,'rgba(251,191,36,0)'); g2.addColorStop(1,'rgba(251,191,36,.95)');
+      ctx.strokeStyle=g2; ctx.lineWidth=6; ctx.lineCap='round';
+      ctx.beginPath(); ctx.arc(cx,cy,ring,sw-0.6,sw); ctx.stroke(); }
+    // swara bars: a lively animated base (never frozen) with the real raaga swaras pushed up, brighter
+    const mx=Math.max(0.02,...swaraAct);
     for(let i=0;i<bars;i++){
       const ang=(i/bars)*Math.PI*2-Math.PI/2;
-      const shimmer=reduce?0.7:(0.6+0.4*Math.sin(t*3.2+i*0.9));
-      let a = active ? (swaraAct[i]/mx) : 0.3*shimmer;      // real note activation when live/locked
-      if(active && a>0.05) a*=(0.86+0.14*shimmer);
-      const len=8+(innerR*0.72)*Math.max(0.06,a);
+      const wave=0.4+0.6*Math.abs(Math.sin(t*3.0+i*0.7));
+      const real=active?swaraAct[i]/mx:0;
+      const a = reduce ? Math.max(0.35, real) : Math.max((active?0.6:0.4)*wave, real);
+      const len=10+(innerR*0.72)*Math.max(0.1,a);
       const x0=cx+Math.cos(ang)*innerR, y0=cy+Math.sin(ang)*innerR, x1=cx+Math.cos(ang)*(innerR+len), y1=cy+Math.sin(ang)*(innerR+len);
-      const lit=!active||a>0.18; let c0,c1;
-      if(locked){c0=lit?'#3f7a5c':'#241f18';c1=lit?'#74c69d':'#332b1d';}
-      else{c0=lit?'#b45309':'#2a241c';c1=lit?'#fbbf24':'#39301f';}
+      let c0,c1;
+      if(locked){ const lit=real>0.22; c0=lit?'#3f7a5c':'#2a3a30'; c1=lit?'#9fe0bd':'#4b7a63'; }
+      else{ c0='#d97706'; c1='#fde68a'; }
       const bg=ctx.createLinearGradient(x0,y0,x1,y1); bg.addColorStop(0,c0); bg.addColorStop(1,c1);
-      ctx.globalAlpha= active ? (0.3+0.7*Math.min(1,a*1.4)) : 0.7;
+      ctx.globalAlpha=active?(0.6+0.4*Math.min(1,a)):0.5;
       ctx.strokeStyle=bg; ctx.lineWidth=6; ctx.lineCap='round';
       ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
     }
     ctx.globalAlpha=1;
-    if(mode==='idle'){ ctx.save(); ctx.translate(cx,cy); ctx.strokeStyle='rgba(242,236,226,0.8)'; ctx.fillStyle='rgba(242,236,226,0.8)';
+    // center: seconds while listening (your idea), a check when locked, the mic when idle
+    ctx.save(); ctx.translate(cx,cy); ctx.textAlign='center'; ctx.textBaseline='middle';
+    if(listening){
+      ctx.fillStyle='#fde68a'; ctx.font='600 27px ui-monospace, Menlo, monospace';
+      ctx.fillText(elapsed.toFixed(1)+'s', 0, 1);
+    } else if(locked){
+      ctx.strokeStyle='#74c69d'; ctx.lineWidth=4; ctx.lineCap='round'; ctx.lineJoin='round';
+      ctx.beginPath(); ctx.moveTo(-11,1); ctx.lineTo(-3,10); ctx.lineTo(13,-9); ctx.stroke();
+    } else {
+      ctx.strokeStyle='rgba(242,236,226,0.85)'; ctx.fillStyle='rgba(242,236,226,0.85)';
       ctx.lineWidth=3; ctx.lineCap='round'; ctx.beginPath(); ctx.roundRect(-7,-18,14,24,7); ctx.fill();
       ctx.beginPath(); ctx.arc(0,-2,13,0.15*Math.PI,0.85*Math.PI); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(0,11); ctx.lineTo(0,18); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-8,18); ctx.lineTo(8,18); ctx.stroke(); ctx.restore(); }
-    else if(locked){ ctx.save(); ctx.translate(cx,cy); ctx.strokeStyle='#74c69d'; ctx.lineWidth=4; ctx.lineCap='round'; ctx.lineJoin='round';
-      ctx.beginPath(); ctx.moveTo(-11,1); ctx.lineTo(-3,10); ctx.lineTo(13,-9); ctx.stroke(); ctx.restore(); }
+      ctx.beginPath(); ctx.moveTo(0,11); ctx.lineTo(0,18); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-8,18); ctx.lineTo(8,18); ctx.stroke();
+    }
+    ctx.restore();
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
@@ -318,6 +334,7 @@
   function slug(s){ return (s||'').replace(/ṁ/g,'m').normalize('NFKD').replace(/[̀-ͯ]/g,'')
       .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
 
+  timerEl.style.display='none';   // seconds are drawn inside the wheel now
   id('file').onchange=e=>{ const f=e.target.files&&e.target.files[0]; if(f) startFile(f); e.target.value=''; };
   orb.addEventListener('click',()=>{ if(mode==='idle'||mode==='locked') startLive(); });
   toIdle();

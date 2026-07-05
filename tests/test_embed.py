@@ -65,11 +65,15 @@ def _site():
     return (Path(__file__).resolve().parent.parent / "site" / "index.html").read_text()
 
 
-def test_site_listens_and_resizes():
+def test_site_hosts_first_party_recognizer():
+    # The wheel is first-party now (no Gradio iframe): the page captures mic audio,
+    # posts it to /identify, and lights swaras from the response on its own canvas.
     site = _site()
-    assert "twelveswaras_height" in site          # listens for the height message
-    assert "frame.style.height" in site           # and resizes the iframe to it
-    assert "Math.min(6000" in site                # runaway clamp (belt-and-suspenders)
+    assert "<canvas" in site                      # the wheel is drawn in-page
+    assert "MediaRecorder" in site                # mic capture lives in the page itself
+    assert "/identify" in site                    # posts audio to the recognizer API
+    assert "swara_activation" in site             # and lights swaras from the response
+    assert "<iframe" not in site                  # nothing embedded to resize away
 
 
 def test_no_huggingface_in_user_copy():
@@ -85,6 +89,6 @@ if __name__ == "__main__":
     test_retries_for_async_render()
     test_build_ui_wires_head_and_element_ids()
     test_reports_height_for_auto_resize()
-    test_site_listens_and_resizes()
+    test_site_hosts_first_party_recognizer()
     test_no_huggingface_in_user_copy()
     print("EMBED OK — iframe-detect + hide chrome, auto-resize (no nested scroll), no HF in copy")

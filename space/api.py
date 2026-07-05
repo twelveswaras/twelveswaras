@@ -21,8 +21,8 @@ runnable anywhere. Requires the numpy<2 inference stack (see requirements-api.tx
 """
 from __future__ import annotations
 
-import io
 import os
+import tempfile
 
 import numpy as np
 from fastapi import FastAPI, File, Form, UploadFile
@@ -80,10 +80,20 @@ async def identify(audio: UploadFile = File(...), contribute: str = Form("no")):
 
     m = model()
     raw = await audio.read()
+    # Write to a temp file so librosa can fall back to ffmpeg (audioread) for compressed formats
+    # (webm/opus from the browser, m4a/mp3 from uploads); soundfile-on-BytesIO can't read those.
+    suffix = os.path.splitext(audio.filename or "")[1] or ".webm"
+    tmp = tempfile.NamedTemporaryFile(suffix=suffix, delete=False)
     try:
-        y, sr = librosa.load(io.BytesIO(raw), sr=None, mono=True)
+        tmp.write(raw); tmp.flush(); tmp.close()
+        y, sr = librosa.load(tmp.name, sr=None, mono=True)
     except Exception as e:  # noqa: BLE001
         return JSONResponse({"error": "could not decode audio", "detail": str(e)[:200]}, status_code=400)
+    finally:
+        try:
+            os.unlink(tmp.name)
+        except OSError:
+            pass
 
     windows, tonic, heard, pcd = pitch_extract.audio_to_features(y, sr)
     if not windows:

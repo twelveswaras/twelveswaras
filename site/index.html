@@ -72,7 +72,7 @@
   :root{
     /* warm-biased dark; neutrals chosen toward the amber accent, not default cool grey */
     --ink:#0b0a08; --raise:#16130f; --raise-2:#1c1811; --line:#2a241c; --line-2:#39301f;
-    --paper:#f2ece2; --muted:#a89e8e; --faint:#6f6656;
+    --paper:#f2ece2; --muted:#a89e8e; --faint:#8b8173;
     --amber:#f59e0b; --amber-lo:#d97706; --amber-hi:#fbbf24;
     --sans:"SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,monospace;
@@ -120,25 +120,8 @@
   .title .b{color:var(--amber)}
   .thesis{color:var(--muted);font-size:clamp(1.02rem,3.4vw,1.22rem);max-width:34ch;margin:16px auto 0;text-wrap:balance}
 
-  /* the twelve swaras, made visible: a living pitch motif (the page's thesis) */
-  .swaras{--n:12;display:flex;align-items:flex-end;justify-content:center;gap:clamp(6px,2.2vw,12px);
-    height:96px;margin:8px auto 4px;max-width:440px}
-  .swaras b{flex:1;display:block;border-radius:6px 6px 2px 2px;
-    background:linear-gradient(180deg,var(--amber-hi),var(--amber-lo));
-    height:calc(var(--h) * 1%);transform-origin:bottom;
-    animation:listen 3.4s ease-in-out infinite;animation-delay:var(--d)}
-  @keyframes listen{0%,100%{transform:scaleY(.86)}50%{transform:scaleY(1.06)}}
-  @media (prefers-reduced-motion:reduce){.swaras b{animation:none}}
-  .swaras-cap{font-family:var(--mono);font-size:.7rem;letter-spacing:.22em;text-indent:.22em;text-transform:uppercase;
-    color:var(--faint);text-align:center;max-width:none;margin:40px auto 6px}
-
-  .cta-row{display:flex;flex-direction:column;align-items:center;gap:12px;margin:26px 0 2px}
-  .cta{display:inline-flex;align-items:center;gap:.55rem;background:var(--amber);color:#1a1205;
-    font-weight:700;font-size:1.05rem;padding:.85rem 1.7rem;border-radius:11px;border:0;cursor:pointer;
-    transition:transform .12s ease,background .12s ease}
-  .cta:hover{background:var(--amber-hi);color:#1a1205;transform:translateY(-1px)}
-  .cta:active{transform:translateY(0)}
-  .ghost{font-family:var(--mono);font-size:.74rem;letter-spacing:.05em;text-indent:.05em;color:var(--faint)}
+  .ghost{font-family:var(--mono);font-size:.74rem;letter-spacing:.05em;text-indent:.05em;color:var(--faint);
+    display:block;text-align:center;margin-top:14px}
 
   /* ---- sections ---- */
   /* border + padding do the separating; no extra margin (52+52 doubled up = dead space) */
@@ -146,27 +129,6 @@
   h2{font-size:clamp(1.25rem,4.5vw,1.6rem);font-weight:800;letter-spacing:-.02em;margin:0 0 .5rem;text-wrap:balance}
   .lead{color:var(--paper);max-width:var(--measure)}
   p{color:var(--muted);max-width:var(--measure)}
-
-  /* ---- the recognizer ---- */
-  #try{border-top:0;margin-top:22px;padding:0 0 6px}
-  /* a plain, quiet guidance line: no card, no accent rail (that reads as AI-slop) */
-  .drone{display:flex;gap:.5rem;align-items:flex-start;font-size:.9rem;color:var(--muted);
-    max-width:560px;margin:0 auto 16px}
-  .drone b{color:var(--paper);font-weight:650}
-  /* no border/shadow/radius: the recognizer blends into the page instead of reading as a boxed
-     widget. Background matches the page ground, so the iframe edge disappears. */
-  .embed{position:relative;background:transparent;border:0;border-radius:0;overflow:hidden}
-  /* the recognizer's iframe auto-resizes to its content height (see the script), so the PAGE
-     scrolls and the frame never shows its own scrollbar. Its own logo/footer/drone are hidden
-     inside via embed mode. Height is set by JS; this is just the initial value. */
-  .embed iframe{width:100%;height:620px;border:0;display:block;background:var(--ink)}
-  /* skeleton shown until the recognizer streams in */
-  .slot{min-height:clamp(560px,82vh,760px);display:flex;flex-direction:column;align-items:center;
-    justify-content:center;gap:20px;padding:24px;text-align:center}
-  .slot .swaras{margin:0}
-  .slot .k{font-family:var(--mono);font-size:.78rem;letter-spacing:.18em;text-indent:.18em;text-transform:uppercase;color:var(--muted)}
-  .note{font-family:var(--mono);font-size:.74rem;color:var(--faint);margin:.7rem auto 0;
-    max-width:560px;text-align:center}
 
   /* ---- how it works: a real 3-step sequence, connected ---- */
   .flow{display:grid;gap:0;margin-top:22px}
@@ -203,6 +165,56 @@
   footer .tagline{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);
     max-width:48ch;margin:0 auto;text-wrap:balance}
   footer .links{margin-top:.7rem;font-size:.9rem;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+
+  /* ---- the recognizer (first-party wheel, hero) ---- */
+  .rec{display:flex;flex-direction:column;align-items:center;margin:14px auto 0;max-width:420px}
+  .rec-status{font-family:var(--mono);font-size:.7rem;letter-spacing:.26em;text-indent:.26em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 4px;transition:color .3s}
+  .rec-status.warm{color:var(--amber-hi)} .rec-status.done{color:#74c69d}
+  .rec-orb{appearance:none;border:0;background:transparent;padding:0;margin:6px auto 0;display:block;cursor:pointer;border-radius:50%;line-height:0}
+  .rec-orb canvas{display:block;width:248px;height:248px;touch-action:manipulation}
+  .rec-meta{min-height:24px;display:flex;justify-content:center;align-items:center;margin-top:4px}
+  .rec-sa{font-family:var(--mono);font-size:.72rem;color:var(--amber-hi);background:#f59e0b1a;border:1px solid #f59e0b33;
+    border-radius:999px;padding:.2rem .55rem;opacity:0;transition:opacity .35s}
+  .rec-sa.show{opacity:1}
+  .rec-say{text-align:center;min-height:2.4rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;margin-top:2px}
+  .rec-lead{font-size:.98rem;color:var(--muted);text-wrap:balance}
+  .rec-raga{font-size:2.1rem;font-weight:800;letter-spacing:-.02em;line-height:1.04;color:var(--paper);
+    opacity:0;transform:translateY(6px);transition:opacity .45s,transform .45s}
+  .rec-raga.show{opacity:1;transform:none} .rec-raga.done{color:#fff}
+  .rec-top3{list-style:none;margin:12px 0 0;padding:0;width:100%;max-width:320px;display:flex;flex-direction:column;gap:8px;opacity:0;transition:opacity .4s}
+  .rec-top3.show{opacity:1}
+  .rec-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:5px 10px}
+  .rec-row .rn{font-size:.96rem;color:var(--muted)} .rec-row.lead .rn{color:var(--paper);font-weight:650}
+  .rec-row .rp{font-family:var(--mono);font-size:.76rem;color:var(--faint);font-variant-numeric:tabular-nums}
+  .rec-row.lead .rp{color:var(--amber-hi)}
+  .rec-tr{grid-column:1 / -1;height:4px;border-radius:3px;background:#ffffff10;overflow:hidden}
+  .rec-fl{height:100%;width:0;border-radius:3px;background:linear-gradient(90deg,var(--amber-lo),var(--amber-hi));transition:width .35s}
+  .rec-row.lead .rec-fl{background:linear-gradient(90deg,var(--amber),var(--amber-hi))}
+  .rec-top3.done .rec-row.lead .rec-fl{background:linear-gradient(90deg,#5aa87f,#74c69d)}
+  .rec-controls{margin-top:16px;min-height:46px;display:flex;justify-content:center;align-items:center}
+  .rec-entry{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .rbtn{appearance:none;font-family:var(--sans);font-weight:700;font-size:1rem;cursor:pointer;border-radius:12px;
+    padding:.8rem 1.6rem;border:1px solid transparent;transition:transform .12s,border-color .15s,background .15s}
+  .rbtn:active{transform:translateY(1px)}
+  .rbtn.stop{background:transparent;color:var(--paper);border-color:var(--line-2)} .rbtn.stop:hover{border-color:var(--amber);color:var(--amber-hi)}
+  .rbtn.again{background:#ffffff0d;color:var(--paper);border-color:var(--line-2)} .rbtn.again:hover{border-color:#74c69d;color:#fff}
+  .rbtn.cancel{background:transparent;color:var(--muted);border-color:var(--line-2)}
+  .rghost{appearance:none;background:transparent;border:0;cursor:pointer;font-family:var(--mono);font-size:.76rem;color:var(--amber-hi);padding:.3rem .5rem;border-radius:8px}
+  .rghost:hover{color:#fff;text-decoration:underline}
+  .rlearn{font-family:var(--mono);font-size:.78rem;color:#74c69d;text-decoration:none;padding:.3rem} .rlearn:hover{text-decoration:underline}
+  .rhint{font-family:var(--mono);font-size:.74rem;color:var(--faint);text-align:center}
+  .rec-guides{display:flex;flex-direction:column;gap:8px;margin:16px auto 0;max-width:400px;text-align:left}
+  .rec-guide{display:flex;gap:.45rem;align-items:flex-start;margin:0;font-size:.82rem;line-height:1.5;color:var(--muted)}
+  .rec-guide b{color:var(--paper);font-weight:600}
+  .rec-guide.privacy{color:var(--faint);font-size:.78rem} .rec-guide.privacy b{color:var(--muted)}
+  .rec-guides.hide{display:none} .rec-guides.recording .drone{display:none}
+  .rerr{color:#e6a15a;font-size:.85rem;text-align:center;max-width:32ch;margin:0 auto}
+  /* amber line-icons (no emoji) */
+  .rec-guide .ic{width:16px;height:16px;flex:0 0 auto;margin-top:2px;fill:none;stroke:var(--amber-hi);
+    stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .rec-lead .tic{width:14px;height:14px;fill:none;stroke:var(--amber-hi);stroke-width:1.9;
+    stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;margin-right:.4rem}
 </style>
 </head>
 <body>
@@ -237,39 +249,26 @@
     <h1 class="title">Name the raaga.<br><span class="b">Learn to hear it.</span></h1>
     <p class="thesis">Play it a few seconds of Carnatic music: it names the raaga, and shows you how to recognise it yourself.</p>
 
-    <p class="swaras-cap" aria-hidden="true">the twelve swaras</p>
-    <div class="swaras" role="img" aria-label="twelve swaras, listening">
-      <b style="--h:44;--d:-2.9s"></b><b style="--h:70;--d:-0.4s"></b><b style="--h:38;--d:-1.7s"></b>
-      <b style="--h:92;--d:-2.3s"></b><b style="--h:58;--d:-0.9s"></b><b style="--h:78;--d:-3.1s"></b>
-      <b style="--h:100;--d:-1.2s"></b><b style="--h:52;--d:-2.6s"></b><b style="--h:74;--d:-0.2s"></b>
-      <b style="--h:60;--d:-1.9s"></b><b style="--h:84;--d:-3.3s"></b><b style="--h:46;--d:-0.7s"></b>
-    </div>
-
-    <div class="cta-row">
-      <button class="cta" id="launch" type="button">Identify a raaga →</button>
-      <span class="ghost">free · open source · no sign-up</span>
-    </div>
-  </header>
-
-  <section id="try">
-    <p class="drone"><span aria-hidden="true">🎚️</span>
-      <span>Works best with a <b>tanpura or shruti-box drone</b> under the melody, which a live concert always has. The tonic (Sa) is found from it.</span></p>
-    <div class="embed">
-      <div class="slot" id="slot">
-        <div class="swaras" aria-hidden="true">
-          <b style="--h:44;--d:-2.9s"></b><b style="--h:70;--d:-0.4s"></b><b style="--h:38;--d:-1.7s"></b>
-          <b style="--h:92;--d:-2.3s"></b><b style="--h:58;--d:-0.9s"></b><b style="--h:78;--d:-3.1s"></b>
-          <b style="--h:100;--d:-1.2s"></b><b style="--h:52;--d:-2.6s"></b><b style="--h:74;--d:-0.2s"></b>
-          <b style="--h:60;--d:-1.9s"></b><b style="--h:84;--d:-3.3s"></b><b style="--h:46;--d:-0.7s"></b>
-        </div>
-        <span class="k">Tap “Identify a raaga” to begin</span>
+    <div class="rec" id="rec">
+      <p class="rec-status" id="rec-status" aria-live="polite">Identify a raaga</p>
+      <button class="rec-orb" id="rec-orb" aria-label="Tap to identify the raaga">
+        <canvas id="rec-cv" width="248" height="248"></canvas>
+      </button>
+      <div class="rec-meta"><span class="rec-sa" id="rec-sa"></span></div>
+      <div class="rec-say">
+        <span class="rec-lead" id="rec-lead">Tap and hold your phone to the music. It names the raaga when it's sure.</span>
+        <span class="rec-raga" id="rec-raga"></span>
       </div>
-      <noscript>
-        <iframe class="noscript-frame" src="https://twelveswaras-twelveswaras.hf.space/?embed=1"
-                title="twelveswaras raaga recognizer" allow="microphone; autoplay"></iframe>
-      </noscript>
+      <ul class="rec-top3" id="rec-top3" aria-live="polite"></ul>
+      <div class="rec-controls" id="rec-controls"></div>
+      <div class="rec-guides" id="rec-guides">
+        <p class="rec-guide drone"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10v4M9.5 6.5v11M14 4v16M18.5 9v6"/></svg><span>Works best with a <b>tanpura or shruti-box drone</b> under the melody. The tonic (Sa) is found from it.</span></p>
+        <p class="rec-guide privacy"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Your recording is <b>never stored</b>. It's analysed to find the raaga, then discarded.</span></p>
+      </div>
+      <input type="file" id="rec-file" accept="audio/*" hidden>
     </div>
-  </section>
+    <p class="ghost">free · open source · no sign-up</p>
+  </header>
 
   <section id="how">
     <h2>How it works</h2>
@@ -333,44 +332,189 @@
 </footer>
 
 <script>
-  // Lazy-load the recognizer: the page paints instantly (18 KB, no framework); the iframe streams
-  // in when the "Try it" panel scrolls into view, or when you tap the CTA. The iframe then AUTO-
-  // RESIZES to the recognizer's content height (it posts its height back), so the page scrolls and
-  // the frame never shows its own scrollbar; it reads as one page. No third-party branding shown.
-  (function () {
-    var SPACE = 'https://twelveswaras-twelveswaras.hf.space';
-    var slot = document.getElementById('slot');
-    var base = new URLSearchParams(location.search).get('recognizer') || SPACE;
-    var frame = null, loaded = false;
-    function load() {
-      if (loaded) return;
-      loaded = true;
-      frame = document.createElement('iframe');
-      frame.src = base + '/?embed=1';
-      frame.title = 'twelveswaras raaga recognizer';
-      frame.setAttribute('allow', 'microphone; autoplay');
-      slot.replaceWith(frame);
+  // First-party recognizer: capture mic, send the growing buffer to the API every few seconds, and
+  // draw the swara wheel from the returned pitch-class distribution. Locks on a STABLE answer (not
+  // an early confidence spike). Same-origin /api on the live domain; the workers.dev URL on *.pages.dev.
+  (function(){
+    var API = new URLSearchParams(location.search).get('api')
+      || (/\.pages\.dev$/.test(location.hostname) ? 'https://twelveswaras-api.knerav.workers.dev' : '/api');
+    function g(x){return document.getElementById(x);}
+    var cv=g('rec-cv'), ctx=cv.getContext('2d'), reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+    var statusEl=g('rec-status'), saEl=g('rec-sa'), leadEl=g('rec-lead'), ragaEl=g('rec-raga'),
+        top3El=g('rec-top3'), controls=g('rec-controls'), orb=g('rec-orb'), guides=g('rec-guides');
+    var HOLD=3.0, MIN_LISTEN=8, MAX_S=45, SEND_EVERY=3500, FIRST_SEND=4500;
+    var VERBS=['Tracing the swaras…','Listening for the phrases…','Following the gamaka…','Weighing the raagas…'];
+    var TI='class="tic" viewBox="0 0 24 24" aria-hidden="true"';
+    var TIPS=[
+      '<svg '+TI+'><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/></svg>A little louder, or move closer',
+      '<svg '+TI+'><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/></svg>Aim at the main voice or instrument',
+      '<svg '+TI+'><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M22 9l-5 6M17 9l5 6"/></svg>A quieter spot helps'];
+    var mode='idle', source='live', t0=0, elapsed=0, conf=0, top3=[], swaraAct=new Array(12).fill(0);
+    var leader='', leaderSince=0, phase='', nextTip=6, tipUntil=0, tipIdx=-1;
+    var stream=null, rec=null, chunks=[], sendTimer=null, uiTimer=null, sending=false, lockName='', lockConf=0;
+
+    function pickMime(){ var c=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg'];
+      return c.find(function(t){return window.MediaRecorder && MediaRecorder.isTypeSupported(t);})||''; }
+    function setC(h){ controls.innerHTML=h; }
+    function reset(src){ source=src; mode='listening'; elapsed=0; conf=0; top3=[]; swaraAct=new Array(12).fill(0);
+      leader=''; leaderSince=0; phase=''; nextTip=6; tipUntil=0; tipIdx=-1;
+      saEl.className='rec-sa'; ragaEl.className='rec-raga'; ragaEl.textContent=''; }
+
+    async function startLive(){
+      reset('live'); statusEl.textContent='Identifying'; statusEl.className='rec-status warm';
+      guides.className='rec-guides recording'; leadEl.textContent='Finding the swaras…'; top3El.className='rec-top3 show';
+      setC('<button class="rbtn stop" id="r-stop">Stop now</button>'); g('r-stop').onclick=function(){finish();};
+      try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }
+      catch(e){ return fail('Microphone access is needed to identify live. You can also upload a recording.'); }
+      var mime=pickMime(); rec=new MediaRecorder(stream, mime?{mimeType:mime}:undefined); chunks=[];
+      rec.ondataavailable=function(e){ if(e.data&&e.data.size) chunks.push(e.data); };
+      rec.start(1000); t0=performance.now();
+      uiTimer=setInterval(tick,33); sendTimer=setInterval(function(){maybeSend(mime);}, SEND_EVERY);
     }
-    // grow the iframe to the recognizer's reported content height -> no nested scrollbar
-    window.addEventListener('message', function (e) {
-      var ok;
-      try { ok = e.origin === base || /(^|\.)hf\.space$/.test(new URL(e.origin).hostname); }
-      catch (err) { ok = false; }
-      var h = e.data && e.data.twelveswaras_height;
-      // clamp: never smaller than 320 or larger than 6000 (a runaway guard, belt-and-suspenders)
-      if (ok && typeof h === 'number' && frame) { frame.style.height = Math.min(6000, Math.max(320, h)) + 'px'; }
-    });
-    var launch = document.getElementById('launch');
-    launch.addEventListener('click', function () {
-      load();
-      document.getElementById('try').scrollIntoView({behavior: 'smooth', block: 'start'});
-    });
-    if ('IntersectionObserver' in window) {
-      var io = new IntersectionObserver(function (es) {
-        es.forEach(function (e) { if (e.isIntersecting) { load(); io.disconnect(); } });
-      }, {rootMargin: '300px'});
-      io.observe(slot);
-    } else { load(); }
+    async function maybeSend(mime){
+      if(mode!=='listening'||sending||elapsed<FIRST_SEND/1000||!chunks.length) return;
+      sending=true;
+      try{ var fd=new FormData(); fd.append('audio', new Blob(chunks,{type:mime||'audio/webm'}), 'clip.webm');
+        var r=await fetch(API+'/identify',{method:'POST',body:fd}); var d=await r.json();
+        if(mode==='listening') apply(d);
+      }catch(e){} finally{ sending=false; }
+    }
+    async function startFile(file){
+      reset('file'); statusEl.textContent='Analysing recording'; statusEl.className='rec-status warm';
+      guides.className='rec-guides recording'; leadEl.textContent='Reading '+file.name.slice(0,28)+'…'; top3El.className='rec-top3 show';
+      setC('<button class="rbtn cancel" id="r-cancel">Cancel</button>'); g('r-cancel').onclick=toIdle;
+      t0=performance.now(); uiTimer=setInterval(tick,33);
+      try{ var fd=new FormData(); fd.append('audio', file, file.name);
+        var r=await fetch(API+'/identify',{method:'POST',body:fd}); var d=await r.json(); apply(d); finish();
+      }catch(e){ fail('That file could not be analysed. Try a clear clip with a drone.'); }
+    }
+    function apply(d){
+      if(d&&Array.isArray(d.swara_activation)) swaraAct=d.swara_activation;
+      if(d&&d.tonic_hz){ saEl.textContent='Sa · '+Math.round(d.tonic_hz)+' Hz'; saEl.className='rec-sa show'; }
+      if(d&&d.top3&&d.top3.length){ top3=d.top3; conf=d.top3[0].confidence||0;
+        var ld=d.top3[0].raaga; if(ld!==leader){leader=ld; leaderSince=elapsed;} rows(top3); }
+    }
+    function tick(){
+      elapsed=(performance.now()-t0)/1000; if(mode!=='listening') return;
+      var held=elapsed-leaderSince, s;
+      if(source==='file'){ s = conf<0.6?'Analysing…' : conf<0.9?'Almost there…' : 'Got it'; }
+      else{ if(elapsed>=nextTip && elapsed<MAX_S-3){ tipUntil=elapsed+2.6; nextTip+=7; tipIdx=(tipIdx+1)%TIPS.length; }
+        if(elapsed<tipUntil) s=TIPS[tipIdx];
+        else if(conf>0&&(held>=HOLD*0.7||conf>=0.85)) s='Locking it in…';
+        else s=conf>0?VERBS[Math.floor(elapsed/2.6)%VERBS.length]:'Finding the swaras…'; }
+      if(s!==phase){phase=s; leadEl.innerHTML=s;}
+      var ready = conf>0&&leader&&(elapsed-leaderSince)>=HOLD&&elapsed>=MIN_LISTEN&&conf>=0.55;
+      if(ready||elapsed>=MAX_S) finish();
+    }
+    function finish(){
+      if(mode!=='listening') return; mode='locked'; stopCap();
+      clearInterval(uiTimer); clearInterval(sendTimer);
+      if(!top3.length) return noRes();
+      lockName=top3[0].raaga; lockConf=conf; var sure=lockConf>=0.6;
+      statusEl.textContent=sure?'Confident':'Best guess'; statusEl.className='rec-status '+(sure?'done':'warm');
+      leadEl.textContent=sure?('Heard for '+elapsed.toFixed(0)+'s'):('Heard '+elapsed.toFixed(0)+'s. A longer, closer listen helps.');
+      ragaEl.textContent=lockName; ragaEl.className='rec-raga show'+(sure?' done':'');
+      top3El.classList.toggle('done',sure); rows(top3,true); guides.className='rec-guides hide';
+      setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Listen again</button>'
+        +'<a class="rlearn" id="r-learn" href="raaga/'+slug(lockName)+'.html">↗ How to hear '+lockName+'</a>'
+        +'<button class="rghost" id="r-up2">or upload a recording ↑</button></div>');
+      g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
+    }
+    function noRes(){
+      statusEl.textContent='No raaga yet'; statusEl.className='rec-status';
+      leadEl.textContent='No clear melody or drone was heard. Move closer, or upload a clip with a tanpura.'; guides.className='rec-guides';
+      setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Try again</button>'
+        +'<button class="rghost" id="r-up2">or upload a recording ↑</button></div>');
+      g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
+    }
+    function fail(msg){
+      stopCap(); clearInterval(uiTimer); clearInterval(sendTimer); mode='idle';
+      statusEl.textContent='Identify a raaga'; statusEl.className='rec-status';
+      leadEl.innerHTML='<span class="rerr">'+msg+'</span>'; guides.className='rec-guides';
+      setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Try again</button>'
+        +'<button class="rghost" id="r-up2">upload a recording ↑</button></div>');
+      g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
+    }
+    function stopCap(){ try{ if(rec&&rec.state!=='inactive') rec.stop(); }catch(e){}
+      if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; } }
+    function toIdle(){
+      stopCap(); clearInterval(uiTimer); clearInterval(sendTimer);
+      mode='idle'; source='live'; elapsed=0; conf=0; top3=[]; swaraAct=new Array(12).fill(0); leader=''; phase='';
+      statusEl.textContent='Identify a raaga'; statusEl.className='rec-status';
+      saEl.className='rec-sa'; saEl.textContent=''; ragaEl.className='rec-raga'; ragaEl.textContent='';
+      leadEl.textContent="Tap and hold your phone to the music. It names the raaga when it's sure.";
+      top3El.className='rec-top3'; top3El.innerHTML=''; guides.className='rec-guides';
+      setC('<div class="rec-entry"><span class="rhint">Point your phone at the music, then tap</span>'
+        +'<button class="rghost" id="r-up">or upload a recording ↑</button></div>');
+      g('r-up').onclick=function(){g('rec-file').click();};
+      orb.setAttribute('aria-label','Tap to identify the raaga');
+    }
+    var rowEls={};
+    function rows(list,done){
+      var key=list.slice(0,3).map(function(r){return r.raaga;}).join('|');
+      if(key!==rows._k){ rows._k=key; top3El.innerHTML=''; rowEls={};
+        list.slice(0,3).forEach(function(r,i){ var li=document.createElement('li'); li.className='rec-row'+(i===0?' lead':'');
+          li.innerHTML='<span class="rn">'+r.raaga+'</span><span class="rp">0%</span><span class="rec-tr"><span class="rec-fl"></span></span>';
+          top3El.appendChild(li); rowEls[r.raaga]=li; }); }
+      list.slice(0,3).forEach(function(r,i){ var li=rowEls[r.raaga]; if(!li)return; li.classList.toggle('lead',i===0);
+        li.querySelector('.rp').textContent=Math.round((r.confidence||0)*100)+'%';
+        li.querySelector('.rec-fl').style.width=Math.min(100,(r.confidence||0)*100)+'%'; });
+    }
+    function slug(s){ return (s||'').replace(/ṁ/g,'m').normalize('NFKD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+
+    var size=248, dpr=Math.min(2,devicePixelRatio||1); cv.width=size*dpr; cv.height=size*dpr; ctx.scale(dpr,dpr);
+    var cx=size/2, cy=size/2, ring=98, innerR=52, bars=12;
+    function draw(now){
+      var t=now/1000, active=mode!=='idle', locked=mode==='locked', listening=mode==='listening';
+      ctx.clearRect(0,0,size,size);
+      var pulse=reduce?0.6:(0.5+0.5*Math.sin(t*(listening?3.4:1.4)));
+      var gc=locked?'116,198,157':'245,158,11';
+      var glow=ctx.createRadialGradient(cx,cy,4,cx,cy,ring);
+      glow.addColorStop(0,'rgba('+gc+','+(active?0.22+0.16*pulse:0.10)+')'); glow.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(cx,cy,ring,0,7); ctx.fill();
+      ctx.lineWidth=5; ctx.lineCap='round'; ctx.strokeStyle='rgba(255,255,255,0.08)';
+      ctx.beginPath(); ctx.arc(cx,cy,ring,0,Math.PI*2); ctx.stroke();
+      var shown=active?(locked?lockConf:conf):0;
+      if(shown>0.001){ var a0=-Math.PI/2, a1=a0+shown*Math.PI*2;
+        var gr=ctx.createLinearGradient(cx-ring,cy,cx+ring,cy);
+        if(locked){gr.addColorStop(0,'#5aa87f');gr.addColorStop(1,'#74c69d');}else{gr.addColorStop(0,'#d97706');gr.addColorStop(1,'#fbbf24');}
+        ctx.strokeStyle=gr; ctx.lineWidth=6; ctx.shadowBlur=16; ctx.shadowColor=locked?'rgba(116,198,157,.55)':'rgba(245,158,11,.55)';
+        ctx.beginPath(); ctx.arc(cx,cy,ring,a0,a1); ctx.stroke(); ctx.shadowBlur=0; }
+      if(listening && !reduce){ var sw=(-Math.PI/2)+(t*1.7)%(Math.PI*2);
+        var g2=ctx.createLinearGradient(cx+Math.cos(sw-0.6)*ring,cy+Math.sin(sw-0.6)*ring,cx+Math.cos(sw)*ring,cy+Math.sin(sw)*ring);
+        g2.addColorStop(0,'rgba(251,191,36,0)'); g2.addColorStop(1,'rgba(251,191,36,.95)');
+        ctx.strokeStyle=g2; ctx.lineWidth=6; ctx.lineCap='round'; ctx.beginPath(); ctx.arc(cx,cy,ring,sw-0.6,sw); ctx.stroke(); }
+      var mx=Math.max(0.02,Math.max.apply(null,swaraAct));
+      for(var i=0;i<bars;i++){
+        var ang=(i/bars)*Math.PI*2-Math.PI/2;
+        var wave=0.4+0.6*Math.abs(Math.sin(t*3.0+i*0.7));
+        var real=active?swaraAct[i]/mx:0;
+        var a = reduce ? Math.max(0.35, real) : Math.max((active?0.6:0.4)*wave, real);
+        var len=10+(innerR*0.72)*Math.max(0.1,a);
+        var x0=cx+Math.cos(ang)*innerR, y0=cy+Math.sin(ang)*innerR, x1=cx+Math.cos(ang)*(innerR+len), y1=cy+Math.sin(ang)*(innerR+len);
+        var c0,c1;
+        if(locked){ var lit=real>0.22; c0=lit?'#3f7a5c':'#2a3a30'; c1=lit?'#9fe0bd':'#4b7a63'; } else { c0='#d97706'; c1='#fde68a'; }
+        var bg=ctx.createLinearGradient(x0,y0,x1,y1); bg.addColorStop(0,c0); bg.addColorStop(1,c1);
+        ctx.globalAlpha=active?(0.6+0.4*Math.min(1,a)):0.5; ctx.strokeStyle=bg; ctx.lineWidth=6; ctx.lineCap='round';
+        ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+      }
+      ctx.globalAlpha=1;
+      ctx.save(); ctx.translate(cx,cy); ctx.textAlign='center'; ctx.textBaseline='middle';
+      if(listening){ ctx.fillStyle='#fde68a'; ctx.font='600 27px ui-monospace, Menlo, monospace'; ctx.fillText(elapsed.toFixed(1)+'s',0,1); }
+      else if(locked){ ctx.strokeStyle='#74c69d'; ctx.lineWidth=4; ctx.lineCap='round'; ctx.lineJoin='round';
+        ctx.beginPath(); ctx.moveTo(-11,1); ctx.lineTo(-3,10); ctx.lineTo(13,-9); ctx.stroke(); }
+      else { ctx.strokeStyle='rgba(242,236,226,0.85)'; ctx.fillStyle='rgba(242,236,226,0.85)'; ctx.lineWidth=3; ctx.lineCap='round';
+        ctx.beginPath(); ctx.roundRect(-7,-18,14,24,7); ctx.fill();
+        ctx.beginPath(); ctx.arc(0,-2,13,0.15*Math.PI,0.85*Math.PI); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0,11); ctx.lineTo(0,18); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-8,18); ctx.lineTo(8,18); ctx.stroke(); }
+      ctx.restore();
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+
+    g('rec-file').onchange=function(e){ var f=e.target.files&&e.target.files[0]; if(f) startFile(f); e.target.value=''; };
+    orb.addEventListener('click',function(){ if(mode==='idle'||mode==='locked') startLive(); });
+    toIdle();
   })();
 </script>
 

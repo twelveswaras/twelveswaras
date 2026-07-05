@@ -17,10 +17,12 @@ export default {
 
     if (request.method === 'OPTIONS') return cors(new Response(null, { status: 204 }), env);
 
-    if (url.pathname === '/api/identify' && request.method === 'POST') {
+    // match /identify and /health with or without the /api prefix, so the same worker serves both
+    // same-origin (twelveswaras.com/api/identify) and the direct staging URL (…workers.dev/identify)
+    if (request.method === 'POST' && url.pathname.endsWith('/identify')) {
       return handleIdentify(request, env, ctx);
     }
-    if (url.pathname === '/api/health') {
+    if (url.pathname.endsWith('/health')) {
       try {
         const r = await fetch(env.SPACE_URL + '/health');
         return cors(json(await r.json()), env);
@@ -28,7 +30,7 @@ export default {
         return cors(json({ status: 'backend unavailable' }, 502), env);
       }
     }
-    return cors(json({ error: 'not found' }, 404), env);
+    return cors(json({ error: 'not found', path: url.pathname }, 404), env);
   },
 };
 

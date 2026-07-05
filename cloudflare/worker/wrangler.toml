@@ -1,25 +1,23 @@
 name = "twelveswaras-api"
 main = "src/index.js"
 compatibility_date = "2026-06-01"
+workers_dev = true          # publish to *.workers.dev until the custom-domain route is enabled
 
-# The headless recognizer. Point this at the HF Docker Space (or wherever the API is hosted).
+# The headless recognizer (the HF Docker Space that serves /identify).
 [vars]
-SPACE_URL = "https://twelveswaras-twelveswaras.hf.space"
+SPACE_URL = "https://twelveswaras-recognizer-api.hf.space"
 ALLOW_ORIGIN = "https://twelveswaras.com"
 
-# Route the worker under the apex domain so the browser calls same-origin: /api/*
-# (set up after `wrangler deploy`; requires the zone to be on Cloudflare).
+# Same-origin route: twelveswaras.com/api/* -> this worker (Pages serves everything else).
 [[routes]]
 pattern = "twelveswaras.com/api/*"
 zone_name = "twelveswaras.com"
 
-# Usage logs (result metadata only, never audio). Create with:
-#   wrangler d1 create twelveswaras
-# then paste the returned database_id below and run schema.sql (see DEPLOY.md).
+# Usage logs (result metadata only, never audio).
 [[d1_databases]]
 binding = "DB"
 database_name = "twelveswaras"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "c54d011a-1086-4618-a4e2-28d57cb1c0b6"
 
 # Opt-in CC-BY contributed clips for the commons. Create with:
 #   wrangler r2 bucket create twelveswaras-clips

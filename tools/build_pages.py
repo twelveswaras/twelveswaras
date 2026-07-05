@@ -155,7 +155,7 @@ __JSONLD__
 <style>
   :root{
     --ink:#0b0a08; --raise:#16130f; --raise-2:#1c1811; --line:#2a241c; --line-2:#39301f;
-    --paper:#f2ece2; --muted:#a89e8e; --faint:#6f6656;
+    --paper:#f2ece2; --muted:#a89e8e; --faint:#8b8173;
     --amber:#f59e0b; --amber-lo:#d97706; --amber-hi:#fbbf24;
     --sans:"SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,monospace;
@@ -208,7 +208,7 @@ __JSONLD__
   .scale{display:grid;grid-template-columns:1fr;gap:10px;margin:26px 0 0}
   @media(min-width:520px){.scale{grid-template-columns:1fr 1fr}}
   .scale .cell{background:var(--raise);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-  .scale .k{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 6px}
+  .scale .k{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 6px}
   .scale .v{font-family:var(--mono);font-size:1.06rem;letter-spacing:.05em;color:var(--paper);margin:0}
   .scale .v.pending{color:var(--faint);letter-spacing:0}
   section{padding:36px 0;border-top:1px solid var(--line)}
@@ -286,7 +286,7 @@ __JSONLD__
     </div>
   </header>
 __HEAR____CONFUSE____LISTEN____COUSINS__
-  <div class="cta-row"><a class="cta" href="../#try">Identify a raaga →</a></div>
+  <div class="cta-row"><a class="cta" href="../">Identify a raaga →</a></div>
   <p class="draftbar">◐ Draft: the reference facts on this page are compiled from public sources and are pending review by a musician. Corrections welcome via GitHub.</p>
 </div>
 
@@ -556,7 +556,7 @@ INDEX_TEMPLATE = """<!doctype html>
 <style>
   :root{
     --ink:#0b0a08; --raise:#16130f; --raise-2:#1c1811; --line:#2a241c; --line-2:#39301f;
-    --paper:#f2ece2; --muted:#a89e8e; --faint:#6f6656;
+    --paper:#f2ece2; --muted:#a89e8e; --faint:#8b8173;
     --amber:#f59e0b; --amber-lo:#d97706; --amber-hi:#fbbf24;
     --sans:"SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,monospace;
@@ -592,12 +592,12 @@ INDEX_TEMPLATE = """<!doctype html>
   .card:hover{border-color:var(--amber);transform:translateY(-1px)}
   .card .cn{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .card .name{font-size:1.08rem;font-weight:700;letter-spacing:-.01em;color:var(--paper)}
-  .card .tag{font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;
+  .card .tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
     border-radius:5px;padding:.1rem .34rem}
   .card .tag.mela{color:var(--amber-hi);border:1px solid var(--line-2)}
   .card .tag.q{color:var(--faint);border:1px dashed var(--line-2)}
   .card .chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:9px}
-  .card .chips span{font-family:var(--mono);font-size:.64rem;color:var(--muted);
+  .card .chips span{font-family:var(--mono);font-size:.7rem;color:var(--muted);
     border:1px solid var(--line-2);border-radius:5px;padding:.12rem .34rem}
   .card .chips span.empty{color:var(--faint);border-style:dashed}
   .foot{font-family:var(--mono);font-size:.72rem;color:var(--faint);text-align:center;
