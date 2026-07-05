@@ -1,0 +1,11 @@
+# Headless inference API deps (numpy<2 for essentia's C-array bridge). Same core as the Gradio
+# Space, minus gradio, plus fastapi/uvicorn/python-multipart.
+numpy<2
+essentia
+compiam
+librosa
+soundfile
+xgboost
+fastapi
+uvicorn[standard]
+python-multipart
