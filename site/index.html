@@ -403,7 +403,7 @@
     function tick(){
       elapsed=(performance.now()-t0)/1000; if(mode!=='listening') return;
       var held=elapsed-leaderSince, s;
-      if(source==='file'){ s = conf<0.6?'Analysing…' : conf<0.9?'Almost there…' : 'Got it'; }
+      if(source==='file'){ s = VERBS[Math.floor(elapsed/1.8)%VERBS.length]; }
       else{ if(elapsed>=nextTip && elapsed<MAX_S-3){ tipUntil=elapsed+2.6; nextTip+=7; tipIdx=(tipIdx+1)%TIPS.length; }
         if(elapsed<tipUntil) s=TIPS[tipIdx];
         else if(conf>0&&elapsed>=MIN_LISTEN&&held>=HOLD*0.85) s='Locking it in…';
