@@ -93,19 +93,28 @@
   .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
   .brand svg{width:26px;height:26px;flex:0 0 auto}
-  .top .nav{display:inline-flex;align-items:center;gap:16px}
+  .top .nav{display:inline-flex;align-items:center;gap:12px}
   .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
   .top .nav a:hover{color:var(--paper)}
+  /* faint middots so the links read as separate nav items, not one running phrase */
+  .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
   .top .gh{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
   .top .gh:hover{color:var(--paper)}
-  @media (max-width:460px){.top .nav{gap:12px} .top .nav a{font-size:.72rem}}
+  /* mobile: the three links won't fit on the brand's row, so drop them to their own
+     centered row instead of letting "train your ear" wrap mid-label */
+  @media (max-width:560px){
+    .top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:16px}
+    .top .nav{flex-basis:100%;justify-content:center;gap:14px}
+    .top .nav a,.top .gh{white-space:nowrap}
+  }
+  @media (max-width:400px){.top .nav{gap:11px} .top .nav a,.top .gh{font-size:.72rem}}
 
   /* ---- hero ---- */
   .hero{padding:40px 0 8px;text-align:center}
   /* text-indent = letter-spacing: re-centers letter-spaced text (the trailing letter-space
      after the last glyph otherwise pushes centered text left). Applied to every centered one. */
   .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.28em;text-indent:.28em;text-transform:uppercase;
-    color:var(--muted);margin:0 0 20px}
+    color:var(--muted);max-width:none;margin:0 auto 20px}
   .title{font-size:clamp(2.1rem,8.5vw,3.6rem);font-weight:800;letter-spacing:-.03em;line-height:1.05;
     margin:0;text-wrap:balance}
   .title .b{color:var(--amber)}
@@ -113,7 +122,7 @@
 
   /* the twelve swaras, made visible: a living pitch motif (the page's thesis) */
   .swaras{--n:12;display:flex;align-items:flex-end;justify-content:center;gap:clamp(6px,2.2vw,12px);
-    height:96px;margin:30px auto 4px;max-width:440px}
+    height:96px;margin:8px auto 4px;max-width:440px}
   .swaras b{flex:1;display:block;border-radius:6px 6px 2px 2px;
     background:linear-gradient(180deg,var(--amber-hi),var(--amber-lo));
     height:calc(var(--h) * 1%);transform-origin:bottom;
@@ -121,7 +130,7 @@
   @keyframes listen{0%,100%{transform:scaleY(.86)}50%{transform:scaleY(1.06)}}
   @media (prefers-reduced-motion:reduce){.swaras b{animation:none}}
   .swaras-cap{font-family:var(--mono);font-size:.7rem;letter-spacing:.22em;text-indent:.22em;text-transform:uppercase;
-    color:var(--faint);text-align:center;margin:0 0 4px}
+    color:var(--faint);text-align:center;max-width:none;margin:40px auto 6px}
 
   .cta-row{display:flex;flex-direction:column;align-items:center;gap:12px;margin:26px 0 2px}
   .cta{display:inline-flex;align-items:center;gap:.55rem;background:var(--amber);color:#1a1205;
@@ -216,7 +225,9 @@
     </span>
     <span class="nav">
       <a href="raaga/">raagas</a>
+      <span class="sep" aria-hidden="true">·</span>
       <a href="listen/">train your ear</a>
+      <span class="sep" aria-hidden="true">·</span>
       <a class="gh" href="https://github.com/twelveswaras">github ↗</a>
     </span>
   </nav>
