@@ -348,7 +348,11 @@
     var cv=g('rec-cv'), ctx=cv.getContext('2d'), reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
     var statusEl=g('rec-status'), saEl=g('rec-sa'), leadEl=g('rec-lead'), ragaEl=g('rec-raga'),
         top3El=g('rec-top3'), controls=g('rec-controls'), orb=g('rec-orb'), guides=g('rec-guides');
-    var HOLD=3.0, MIN_LISTEN=8, MAX_S=45, SEND_EVERY=3500, FIRST_SEND=4500;
+    // Listen long: in-the-wild accuracy is monotonic in listening time (benchmark: 0.33@45s ->
+    // 0.46@90s) and the old snappy 15s lock scored 0.215 (below baseline). Conservative lock —
+    // don't commit before MIN_LISTEN, need a long stable hold + high confidence — else run to MAX_S.
+    // MAX_S=90 matches the backend INFER_SECONDS cap. Confirmed 0.450 top-1 (lockpoint sim).
+    var HOLD=10.0, MIN_LISTEN=45, MAX_S=90, SEND_EVERY=3500, FIRST_SEND=4500;
     var VERBS=['Tracing the swaras…','Listening for the phrases…','Following the gamaka…','Weighing the raagas…'];
     var TI='class="tic" viewBox="0 0 24 24" aria-hidden="true"';
     var TIPS=[
@@ -409,7 +413,7 @@
         else if(conf>0&&elapsed>=MIN_LISTEN&&held>=HOLD*0.85) s='Locking it in…';
         else s=VERBS[Math.floor(elapsed/2.6)%VERBS.length]; }
       if(s!==phase){phase=s; leadEl.innerHTML=s;}
-      var ready = conf>0&&leader&&(elapsed-leaderSince)>=HOLD&&elapsed>=MIN_LISTEN&&conf>=0.55;
+      var ready = conf>0&&leader&&(elapsed-leaderSince)>=HOLD&&elapsed>=MIN_LISTEN&&conf>=0.80;
       if(ready||elapsed>=MAX_S) finish();
     }
     function finish(){
