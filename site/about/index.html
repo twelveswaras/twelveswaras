@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>About twelveswaras: an open tool and commons for Carnatic raagas</title>
+<meta name="description" content="What twelveswaras is, who is behind it, and exactly what happens to your recording. A free, non-commercial 'Shazam for raagas' with an open CC-BY data commons, owned by no company.">
+<link rel="canonical" href="https://twelveswaras.com/about/">
+<meta name="theme-color" content="#0b0a08">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="../favicon-16.png" sizes="16x16" type="image/png">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="manifest" href="../manifest.webmanifest">
+
+<!-- Open Graph / Twitter -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="twelveswaras">
+<meta property="og:url" content="https://twelveswaras.com/about/">
+<meta property="og:title" content="About twelveswaras: an open tool and commons for the raagas">
+<meta property="og:description" content="Who is behind it, how it works, and exactly what happens to your recording. Free, non-commercial, owned by no company.">
+<meta property="og:image" content="https://twelveswaras.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="twelveswaras: identify the raaga, a Shazam for Carnatic music">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="About twelveswaras">
+<meta name="twitter:description" content="A free, open 'Shazam for raagas' with a CC-BY data commons. Who is behind it, and what happens to your recording.">
+<meta name="twitter:image" content="https://twelveswaras.com/og.png">
+
+<!-- Entity data: the project, its steward, and this page -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "twelveswaras",
+  "url": "https://twelveswaras.com/",
+  "logo": "https://twelveswaras.com/icon-512.png",
+  "description": "A free, non-commercial, open-source 'Shazam for raagas' that identifies the raaga of a Carnatic music performance from audio, paired with an openly-licensed community data commons.",
+  "sameAs": [
+    "https://github.com/twelveswaras",
+    "https://huggingface.co/twelveswaras"
+  ],
+  "founder": {
+    "@type": "Person",
+    "name": "Sathya Sankaran",
+    "url": "https://www.sathyasankaran.com",
+    "sameAs": ["https://www.sathyasankaran.com", "https://github.com/twelveswaras"]
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About twelveswaras",
+  "url": "https://twelveswaras.com/about/",
+  "description": "What twelveswaras is, who is behind it, how it works, what happens to your recording, and how the commons is licensed.",
+  "isPartOf": {"@type": "WebSite", "name": "twelveswaras", "url": "https://twelveswaras.com/"},
+  "about": {"@type": "Organization", "name": "twelveswaras", "url": "https://twelveswaras.com/"}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Is twelveswaras really free, with no account?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Yes. Non-commercial, open-source code, an open CC-BY data commons, and no sign-up. It is a public good, not a product."}},
+    {"@type": "Question", "name": "Which raagas does it know?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Forty Carnatic raagas in this version, a mix of common melakarta and janya raagas you hear in concerts. Hindustani is planned as a fast-follow."}},
+    {"@type": "Question", "name": "What happens to my recording?",
+     "acceptedAnswer": {"@type": "Answer", "text": "If you are only identifying a raaga, your audio is analysed and then discarded, never stored. A clip is kept only if you choose to contribute it, and it is made public only if you also choose to release it under CC-BY."}},
+    {"@type": "Question", "name": "Can I reuse the data or the model?",
+     "acceptedAnswer": {"@type": "Answer", "text": "The code is MIT and the community data commons is CC-BY-4.0, both freely reusable with attribution. The current model carries a non-commercial licence because of the research recordings it learned from; a future model trained only on the community commons can be cleanly reusable."}}
+  ]
+}
+</script>
+
+<style>
+  :root{
+    --ink:#0b0a08; --raise:#16130f; --raise-2:#1c1811; --line:#2a241c; --line-2:#39301f;
+    --paper:#f2ece2; --muted:#a89e8e; --faint:#8b8173;
+    --amber:#f59e0b; --amber-lo:#d97706; --amber-hi:#fbbf24;
+    --jade:#5aa87f; --jade-hi:#74c69d;
+    --sans:"SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,monospace;
+    --measure:64ch;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--sans);
+    line-height:1.62;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:var(--amber-hi);text-decoration:none}
+  a:hover{color:#fff}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
+  .wrap{width:100%;max-width:780px;margin:0 auto;padding:0 22px}
+
+  /* topbar */
+  .top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 0}
+  .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
+  .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
+  .brand svg{width:26px;height:26px;flex:0 0 auto}
+  .top .nav{display:inline-flex;align-items:center;gap:12px}
+  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
+  .top .nav a:hover{color:var(--paper)}
+  .top .nav a.here{color:var(--paper)}
+  .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
+  @media (max-width:560px){
+    .top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:16px}
+    .top .nav{flex-basis:100%;justify-content:center;gap:14px}
+    .top .nav a{white-space:nowrap}
+  }
+  @media (max-width:400px){.top .nav{gap:11px} .top .nav a{font-size:.72rem}}
+
+  /* page head */
+  .page-head{padding:40px 0 8px;text-align:center}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.28em;text-indent:.28em;text-transform:uppercase;
+    color:var(--muted);margin:0 auto 18px}
+  .page-head h1{font-size:clamp(1.9rem,6.8vw,2.9rem);font-weight:800;letter-spacing:-.03em;line-height:1.08;
+    margin:0;text-wrap:balance}
+  .page-head .thesis{color:var(--muted);font-size:clamp(1rem,3.2vw,1.18rem);line-height:1.7;max-width:46ch;
+    margin:16px auto 0;text-wrap:balance}
+
+  /* sections + prose */
+  section{padding:40px 0;border-top:1px solid var(--line)}
+  section:first-of-type{border-top:0}
+  h2{font-size:clamp(1.2rem,4.2vw,1.5rem);font-weight:800;letter-spacing:-.02em;margin:0 0 .6rem;text-wrap:balance}
+  p{color:var(--muted);max-width:var(--measure);margin:0 0 .9rem}
+  p:last-child{margin-bottom:0}
+  .lead{color:var(--paper)}
+  b{color:var(--paper);font-weight:600}
+  .prose ul{margin:.4rem 0 0;padding-left:0;list-style:none;display:grid;gap:12px}
+  .prose li{color:var(--muted);position:relative;padding-left:1.4rem;max-width:var(--measure)}
+  .prose li::before{content:"";position:absolute;left:2px;top:.62em;width:7px;height:7px;border-radius:50%;
+    background:var(--jade)}
+  .prose li b{color:var(--paper)}
+
+  /* facts chips */
+  .facts{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0}
+  .chip{font-family:var(--mono);font-size:.74rem;letter-spacing:.03em;color:var(--muted);
+    background:var(--raise);border:1px solid var(--line);border-radius:999px;padding:.42rem .8rem}
+  .chip b{color:var(--jade-hi);font-weight:600}
+
+  /* "what happens to your recording" cards */
+  .handle{display:grid;gap:12px;margin:16px 0 14px}
+  .handle .item{background:var(--raise);border:1px solid var(--line);border-left:2px solid var(--jade);
+    border-radius:0 12px 12px 0;padding:13px 16px}
+  .handle .item.keep{border-left-color:var(--amber)}
+  .handle .item h3{margin:0 0 4px;font-size:1rem;font-weight:650;color:var(--paper);letter-spacing:-.01em}
+  .handle .item p{margin:0;font-size:.93rem;max-width:60ch}
+
+  /* faq */
+  details{border-bottom:1px solid var(--line)}
+  details summary{cursor:pointer;list-style:none;font-weight:650;padding:15px 0;display:flex;
+    align-items:center;gap:.7rem;color:var(--paper)}
+  details summary::-webkit-details-marker{display:none}
+  details summary::before{content:"+";font-family:var(--mono);color:var(--amber);font-weight:700;
+    font-size:1.05rem;line-height:1;transition:transform .15s ease}
+  details[open] summary::before{content:"–"}
+  details p{margin:0 0 16px;font-size:.95rem;padding-left:1.6rem}
+
+  /* back-to-action strip */
+  .cta{margin:6px 0 0;text-align:center}
+  .cta a.act{display:inline-block;font-family:var(--sans);font-weight:700;font-size:1rem;color:#07130c;
+    background:var(--jade);border:1px solid var(--jade);border-radius:12px;padding:.72rem 1.5rem}
+  .cta a.act:hover{background:var(--jade-hi);border-color:var(--jade-hi);color:#07130c}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:30px 0 46px;text-align:center;margin-top:8px}
+  footer .tagline{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);
+    max-width:48ch;margin:0 auto;text-wrap:balance}
+  footer .links{margin-top:.7rem;font-size:.9rem;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="top">
+    <a class="brand" href="../" aria-label="twelveswaras home">
+      <svg viewBox="0 0 256 256" aria-hidden="true">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#b45309"/></linearGradient></defs>
+        <rect width="256" height="256" rx="60" fill="url(#g)"/>
+        <g fill="#fff">
+          <rect x="40" y="140" width="12" height="60" rx="6"/><rect x="60" y="104" width="12" height="96" rx="6"/>
+          <rect x="80" y="150" width="12" height="50" rx="6"/><rect x="100" y="76" width="12" height="124" rx="6"/>
+          <rect x="120" y="118" width="12" height="82" rx="6"/><rect x="140" y="92" width="12" height="108" rx="6"/>
+          <rect x="160" y="60" width="12" height="140" rx="6"/><rect x="180" y="128" width="12" height="72" rx="6"/>
+          <rect x="200" y="100" width="12" height="100" rx="6"/></g>
+      </svg>
+      <span><span class="a">twelve</span><span class="b">swaras</span></span>
+    </a>
+    <span class="nav">
+      <a href="../raaga/">raagas</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="../listen/">train your ear</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a class="here" href="./" aria-current="page">about</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="https://github.com/twelveswaras">github ↗</a>
+    </span>
+  </nav>
+
+  <header class="page-head">
+    <p class="eyebrow">About the project</p>
+    <h1>An open tool, and an open commons, for the raagas</h1>
+    <p class="thesis">twelveswaras names the raaga in a piece of Carnatic music, and turns what it hears into open data that makes it better for everyone. It is free, and it belongs to no company.</p>
+  </header>
+
+  <section>
+    <h2>What this is</h2>
+    <p class="lead">Play it a few seconds of Carnatic music and it names the raaga, tells you how sure it is, and shows you how to hear that raaga yourself. It is a non-commercial public good: no company owns it, there is no login, no ads, and nothing about you is sold.</p>
+    <p>The <b>twelve swaras</b> are the twelve note-positions of the octave, the shared alphabet of Carnatic and Hindustani music. That is the name, and the intent. Carnatic is where we begin; the name, the design and the method are tradition-neutral on purpose, with Hindustani planned.</p>
+    <div class="facts">
+      <span class="chip"><b>40</b> raagas</span>
+      <span class="chip">code · <b>MIT</b></span>
+      <span class="chip">data · <b>CC-BY-4.0</b></span>
+      <span class="chip">Carnatic first</span>
+      <span class="chip">no login</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Who is behind it</h2>
+    <p>twelveswaras is built and maintained by <a href="https://www.sathyasankaran.com" target="_blank" rel="noopener">Sathya Sankaran</a>, and kept in a neutral organisation on GitHub and Hugging Face rather than a personal or company account. That choice is deliberate. A public good should outlast any one person, and a data commons only earns trust if people can see it will not be quietly turned into a product one day.</p>
+  </section>
+
+  <section>
+    <h2>What happens to your recording</h2>
+    <p>This is the part that matters most, so here it is plainly.</p>
+    <div class="handle">
+      <div class="item keep">
+        <h3>When you identify a raaga</h3>
+        <p>Your audio is analysed to find the melody and the tonic, then discarded. It is never stored. The only thing kept is the anonymous result, which raaga and how confident, never the sound.</p>
+      </div>
+      <div class="item">
+        <h3>When you choose to contribute a clip</h3>
+        <p>You are donating it to make the recogniser better. The clip is stored privately and used to check the label and train improved models. We publish the model and the features we learn from it, not your recording.</p>
+      </div>
+      <div class="item">
+        <h3>If you release a clip publicly</h3>
+        <p>Only when you tick "release under CC-BY", and not otherwise, does your clip join a public, openly-licensed dataset, with credit to you. That choice is always yours.</p>
+      </div>
+    </div>
+    <p>You only contribute clips that are your own performance, or that you have the right to share. You decide whether the audio is ever made public. To have a contributed clip removed, email <a href="mailto:sathya@urbanmorph.com">sathya@urbanmorph.com</a> and it will be removed.</p>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <p>There is nothing to set up beyond the audio. It follows the main melody, finds the tonic (Sa) from the drone, and builds a picture of how the melody moves between notes, the gamaka, not just which notes are sung. A model then names the raaga with an honest confidence, so a shown "70 percent" is right about 70 percent of the time. It needs a drone: a concert or a broadcast works well, a solo voice with no tanpura is unreliable. The full method, with citations, is on <a href="https://github.com/twelveswaras/twelveswaras/blob/main/METHODOLOGY.md">GitHub</a>.</p>
+  </section>
+
+  <section>
+    <h2>What it can and cannot do yet</h2>
+    <p>Forty Carnatic raagas today, a mix of the melakarta and janya raagas you hear most often in concerts. It is accurate on clean studio recordings and less so in the wild, and closing that gap is exactly what the commons is for: every clip people contribute helps. The "how to hear it" notes on each raaga page are a first draft, and we are looking for Carnatic musicians and teachers to help refine them. We would rather tell you this than overclaim.</p>
+  </section>
+
+  <section>
+    <h2>How the licensing works</h2>
+    <p>The code is open source under the MIT licence. The community data commons is CC-BY-4.0, kept separate from the non-commercial research recordings the first model learned from, so the commons stays cleanly reusable by anyone. Because that first model learned partly from non-commercial research corpora, the current model carries a non-commercial licence; a future model trained only on the community commons can be freely reusable. Full detail is in the <a href="https://github.com/twelveswaras/twelveswaras/blob/main/GOVERNANCE.md">Governance</a> and <a href="https://github.com/twelveswaras/twelveswaras/blob/main/METHODOLOGY.md">Methodology</a> on GitHub.</p>
+  </section>
+
+  <section class="prose">
+    <h2>How to help</h2>
+    <ul>
+      <li><b>Contribute a clip</b> after you identify a raaga. It is the single most useful thing, and it makes the tool better for everyone.</li>
+      <li><b>Review the raaga reference</b> if you teach or perform, so the learning notes become trustworthy.</li>
+      <li><b>Contribute code or ideas</b> on <a href="https://github.com/twelveswaras">GitHub</a>, where the whole project is open.</li>
+    </ul>
+  </section>
+
+  <section id="faq">
+    <h2>Questions</h2>
+    <details open><summary>Is it really free, with no account?</summary>
+      <p>Yes. Non-commercial, open-source code, an open CC-BY data commons, and no sign-up. It is a public good, not a product.</p></details>
+    <details><summary>Which raagas does it know?</summary>
+      <p>Forty Carnatic raagas in this version, a mix of common melakarta and janya raagas you hear in concerts. Hindustani is planned.</p></details>
+    <details><summary>What happens to my recording?</summary>
+      <p>If you are only identifying, it is analysed and discarded, never stored. A clip is kept only if you choose to contribute it, and made public only if you also choose to release it. The section above has the full detail.</p></details>
+    <details><summary>Can I reuse the data or the model?</summary>
+      <p>The code is MIT and the community data commons is CC-BY-4.0, both freely reusable with attribution. The current model carries a non-commercial licence because of the research recordings it learned from.</p></details>
+  </section>
+
+  <section class="cta">
+    <a class="act" href="../">Identify a raaga</a>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p class="tagline">a non-commercial, open-source public good · Carnatic first · CC-BY data commons</p>
+    <div class="links">
+      <a href="../">identify a raaga</a>
+      <a href="../raaga/">browse the raagas</a>
+      <a href="../listen/">train your ear</a>
+      <a href="https://github.com/twelveswaras">github.com/twelveswaras</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

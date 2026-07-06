@@ -22,6 +22,9 @@ export default {
     if (request.method === 'POST' && url.pathname.endsWith('/identify')) {
       return handleIdentify(request, env, ctx);
     }
+    if (request.method === 'POST' && url.pathname.endsWith('/contribute')) {
+      return handleContribute(request, env, ctx);
+    }
     if (url.pathname.endsWith('/health')) {
       try {
         const r = await fetch(env.SPACE_URL + '/health');
@@ -88,11 +91,6 @@ async function handleIdentify(request, env, ctx) {
   // result-metadata logging (no audio) — never block the response on it
   if (env.DB) ctx.waitUntil(logToD1(env, data, request));
 
-  // opt-in contribution to the CC-BY commons: ONLY when the client explicitly consented
-  if (env.CLIPS && form.get('contribute') === 'yes' && data.top3 && data.top3[0]) {
-    ctx.waitUntil(storeContribution(env, audio, data));
-  }
-
   return cors(json(data), env, request);
 }
 
@@ -117,18 +115,60 @@ async function logToD1(env, data, request) {
   }
 }
 
-async function storeContribution(env, audio, data) {
+// POST /contribute — an explicit, opt-in donation to the commons. The rights gate is enforced
+// HERE (server-side), not just in the UI. The clip is stored privately in R2 (to improve the model
+// and for human verification); we publish the model + non-reconstructable features, not the audio,
+// unless release_public=1. Row lands split='pending' and never trains until verified.
+async function handleContribute(request, env, ctx) {
+  let form;
+  try { form = await request.formData(); }
+  catch { return cors(json({ error: 'expected multipart/form-data' }, 400), env, request); }
+
+  const audio = form.get('audio');
+  const raaga = (form.get('raaga') || '').toString().trim();
+  const isOwn = form.get('is_own') === 'true' || form.get('is_own') === '1';
+  if (!audio || typeof audio === 'string') return cors(json({ error: 'no audio' }, 400), env, request);
+  if (!isOwn) return cors(json({ error: 'rights not attested' }, 403), env, request);
+  if (!raaga) return cors(json({ error: 'no raaga' }, 400), env, request);
+
+  const bytes = await audio.arrayBuffer();
+  const sha = await sha256hex(bytes);
+  const key = `contrib/${new Date().toISOString().slice(0, 10)}/${sha.slice(0, 20)}.webm`;
+  const modelPred = (form.get('model_pred') || '').toString() || null;
+  const meta = {
+    key, sha, raaga, model_pred: modelPred,
+    confidence: numOrNull(form.get('confidence')),
+    tonic_hz: numOrNull(form.get('tonic_hz')),
+    instrument: (form.get('instrument') || '').toString().slice(0, 40) || null,
+    release_public: (form.get('release_public') === 'true' || form.get('release_public') === '1') ? 1 : 0,
+    label_source: modelPred && modelPred === raaga ? 'model_confirmed' : 'contributor_declared',
+    consent_version: (form.get('consent_version') || '').toString().slice(0, 40) || null,
+    country: (request.cf && request.cf.country) || null,
+  };
+  if (env.CLIPS) ctx.waitUntil(env.CLIPS.put(key, bytes, { httpMetadata: { contentType: audio.type || 'audio/webm' } }));
+  if (env.DB) ctx.waitUntil(insertContribution(env, meta));
+  return cors(json({ ok: true, status: 'queued' }), env, request);
+}
+
+function numOrNull(v) { const n = parseFloat(v); return Number.isFinite(n) ? n : null; }
+
+async function sha256hex(buf) {
+  const h = await crypto.subtle.digest('SHA-256', buf);
+  return [...new Uint8Array(h)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function insertContribution(env, m) {
   try {
-    const key = `contrib/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.webm`;
-    await env.CLIPS.put(key, await audio.arrayBuffer(), {
-      httpMetadata: { contentType: audio.type || 'audio/webm' },
-    });
-    if (env.DB) {
-      await env.DB.prepare(
-        `INSERT INTO contributions (ts, r2_key, declared_raaga, confidence) VALUES (?, ?, ?, ?)`
-      ).bind(new Date().toISOString(), key, data.top3[0].raaga, data.top3[0].confidence).run();
-    }
-  } catch {
-    /* contribution is best-effort */
-  }
+    const dup = await env.DB.prepare('SELECT 1 FROM contributions WHERE audio_sha256 = ? LIMIT 1').bind(m.sha).first();
+    if (dup) return;                                         // idempotent: same clip donated twice
+    await env.DB.prepare(
+      `INSERT INTO contributions
+         (ts, r2_key, audio_sha256, raaga, label_source, model_pred, confidence, tonic_hz,
+          instrument, is_own, license, release_public, consent_version, country, split)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'CC-BY-4.0', ?, ?, ?, 'pending')`
+    ).bind(
+      new Date().toISOString(), m.key, m.sha, m.raaga, m.label_source, m.model_pred,
+      m.confidence, m.tonic_hz, m.instrument, m.release_public, m.consent_version, m.country
+    ).run();
+  } catch { /* contribution is best-effort; never break the UX */ }
 }

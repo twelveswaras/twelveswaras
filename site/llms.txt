@@ -3,6 +3,7 @@
 > An open-source, non-commercial 'Shazam for raagas': play it a short clip of Carnatic music and it identifies the raaga, then helps a beginner learn to hear it. Paired with an openly-licensed (CC-BY) data commons. Owned by no company; a public good.
 
 Site: https://twelveswaras.com
+About: https://twelveswaras.com/about/ (what it is, who is behind it, exactly what happens to your recording, and how it is licensed)
 Code: https://github.com/twelveswaras (MIT)
 Recognizer model: XGBoost on a tonic-normalized Time-Delayed Melody Surface (TDMS); 40 Carnatic raagas. See METHODOLOGY.md in the repo for the full pipeline + citations.
 

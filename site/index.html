@@ -19,6 +19,7 @@
 
 <!-- Open Graph / Twitter -->
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="twelveswaras">
 <meta property="og:url" content="https://twelveswaras.com/">
 <meta property="og:title" content="twelveswaras: identify the raaga">
 <meta property="og:description" content="A free, open-source 'Shazam for raagas'. Point your phone at a Carnatic performance; it names the raaga.">
@@ -66,6 +67,35 @@
     {"@type": "Question", "name": "Do I need to install an app?",
      "acceptedAnswer": {"@type": "Answer", "text": "No. It runs in your browser. On a phone you can 'Add to Home Screen' for an app-like, full-screen experience, with no App Store or Play Store needed."}}
   ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "twelveswaras",
+  "url": "https://twelveswaras.com/",
+  "description": "A free, open-source 'Shazam for raagas' that identifies the raaga of a Carnatic performance from audio."
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "twelveswaras",
+  "url": "https://twelveswaras.com/",
+  "logo": "https://twelveswaras.com/icon-512.png",
+  "description": "A free, non-commercial, open-source 'Shazam for raagas' that identifies the raaga of a Carnatic music performance from audio, paired with an openly-licensed community data commons.",
+  "sameAs": [
+    "https://github.com/twelveswaras",
+    "https://huggingface.co/twelveswaras"
+  ],
+  "founder": {
+    "@type": "Person",
+    "name": "Sathya Sankaran",
+    "url": "https://www.sathyasankaran.com",
+    "sameAs": ["https://www.sathyasankaran.com", "https://github.com/twelveswaras"]
+  }
 }
 </script>
 
@@ -207,6 +237,36 @@
   .rghost:hover{color:#fff;text-decoration:underline}
   .rlearn{font-family:var(--mono);font-size:.78rem;color:var(--jade-hi);text-decoration:none;padding:.3rem} .rlearn:hover{text-decoration:underline}
   .rhint{font-family:var(--mono);font-size:.74rem;color:var(--faint);text-align:center}
+  /* contribute-to-commons card — jade "learning" motif; opt-in, never shown until a raaga is named */
+  .rec-contrib{margin:14px auto 0;max-width:412px}
+  .rec-contrib:empty{margin:0}
+  .contrib-open{appearance:none;background:transparent;border:0;cursor:pointer;display:block;margin:0 auto;
+    font-family:var(--mono);font-size:.75rem;letter-spacing:.02em;color:var(--jade-hi);padding:.35rem .5rem;border-radius:8px}
+  .contrib-open:hover{text-decoration:underline;color:#fff}
+  .contrib-card{text-align:left;background:var(--raise-2);border:1px solid #5aa87f33;border-radius:14px;
+    padding:16px 16px 14px;margin-top:4px}
+  .cc-q{font-size:.92rem;color:var(--paper);margin:0 0 10px} .cc-q b{color:var(--jade-hi);font-weight:600}
+  .cc-choices{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .cc-yes{appearance:none;font-family:var(--sans);font-weight:600;font-size:.82rem;cursor:pointer;border-radius:9px;
+    padding:.42rem .9rem;border:1px solid #5aa87f55;background:#5aa87f14;color:var(--jade-hi)}
+  .cc-yes.on{background:var(--jade);border-color:var(--jade);color:#07130c}
+  .cc-sel{font-family:var(--sans);font-size:.82rem;background:var(--raise);color:var(--paper);
+    border:1px solid var(--line-2);border-radius:9px;padding:.42rem .5rem;max-width:100%}
+  .cc-lab{display:flex;gap:.5rem;align-items:flex-start;font-size:.8rem;line-height:1.45;color:var(--muted);
+    cursor:pointer;margin:0 0 10px}
+  .cc-lab input{margin:.15rem 0 0;flex:0 0 auto;accent-color:var(--jade)}
+  .cc-lab.req{color:var(--paper)} .cc-lab.req b{color:var(--jade-hi);font-weight:600}
+  .cc-note{font-size:.76rem;line-height:1.5;color:var(--faint);margin:0 0 12px} .cc-note b{color:var(--muted);font-weight:600}
+  .cc-inst{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+  .cc-chip{appearance:none;cursor:pointer;font-family:var(--mono);font-size:.72rem;color:var(--muted);
+    background:transparent;border:1px solid var(--line-2);border-radius:20px;padding:.28rem .7rem}
+  .cc-chip.on{color:var(--jade-hi);border-color:#5aa87f66;background:#5aa87f14}
+  .cc-send{appearance:none;width:100%;font-family:var(--sans);font-weight:700;font-size:.92rem;cursor:pointer;
+    border-radius:11px;padding:.7rem 1rem;border:1px solid var(--jade);background:var(--jade);color:#07130c;transition:opacity .15s}
+  .cc-send:disabled{opacity:.4;cursor:not-allowed}
+  .cc-done{font-size:.88rem;line-height:1.5;color:var(--jade-hi);text-align:center;margin:2px 0 0}
+  .cc-done b{color:#fff;font-weight:600}
+  .cc-err{color:#e6a15a;font-size:.78rem;margin:8px 0 0;text-align:center}
   .rec-guides{display:flex;flex-direction:column;gap:8px;margin:16px auto 0;max-width:400px;text-align:left}
   .rec-guide{display:flex;gap:.45rem;align-items:flex-start;margin:0;font-size:.82rem;line-height:1.5;color:var(--muted)}
   .rec-guide b{color:var(--paper);font-weight:600}
@@ -243,6 +303,8 @@
       <span class="sep" aria-hidden="true">·</span>
       <a href="listen/">train your ear</a>
       <span class="sep" aria-hidden="true">·</span>
+      <a href="about/">about</a>
+      <span class="sep" aria-hidden="true">·</span>
       <a class="gh" href="https://github.com/twelveswaras">github ↗</a>
     </span>
   </nav>
@@ -264,6 +326,7 @@
       </div>
       <ul class="rec-top3" id="rec-top3" aria-live="polite"></ul>
       <div class="rec-controls" id="rec-controls"></div>
+      <div class="rec-contrib" id="rec-contrib"></div>
       <div class="rec-guides" id="rec-guides">
         <p class="rec-guide drone"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10v4M9.5 6.5v11M14 4v16M18.5 9v6"/></svg><span>Works best with a <b>tanpura or shruti-box drone</b> under the melody. The tonic (Sa) is found from it.</span></p>
         <p class="rec-guide privacy"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>Your recording is <b>never stored</b>. It's analysed to find the raaga, then discarded.</span></p>
@@ -294,32 +357,14 @@
     </div>
   </section>
 
-  <section id="about">
-    <h2>An open public good</h2>
-    <p class="lead">twelveswaras is non-commercial and open source, never a product, built by <a href="https://www.sathyasankaran.com" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:2px">Sathya Sankaran</a>, owned by no company.
-      It pairs a raaga-recognition model with a community-built, openly-licensed data commons, so it keeps getting better.</p>
-    <p>The <b style="color:var(--paper);font-weight:600">twelve swaras</b> are the twelve note-positions of the octave, the
-      shared alphabet of Carnatic and Hindustani music. Carnatic is where we start; the name, schema and pipeline are
-      tradition-neutral by design, with Hindustani planned as a fast-follow.</p>
-    <div class="facts">
-      <span class="chip"><b>40</b> raagas</span>
-      <span class="chip">code · <b>MIT</b></span>
-      <span class="chip">data · <b>CC-BY-4.0</b></span>
-      <span class="chip">Carnatic first</span>
-      <span class="chip">no login</span>
-    </div>
-  </section>
-
   <section id="faq">
     <h2>Questions</h2>
     <details open><summary>Does it work at a live concert?</summary>
       <p>Yes, a concert has a tanpura drone, which is exactly what it needs to find the tonic. Point your phone at the stage for about 30 seconds. Solo singing with no drone is unreliable.</p></details>
-    <details><summary>Is it really free, with no account?</summary>
-      <p>Yes. Non-commercial, MIT-licensed code, a CC-BY-4.0 data commons, and no sign-up. It is a public good, not a product.</p></details>
-    <details><summary>Which raagas does it know?</summary>
-      <p>40 Carnatic raagas in this version, a mix of the common melakarta and janya raagas you hear in concerts. Hindustani is planned.</p></details>
     <details><summary>Do I need to install anything?</summary>
       <p>No, it runs in your browser. On a phone, use “Add to Home Screen” for a full-screen, app-like experience.</p></details>
+    <details><summary>Is it really free, with no account?</summary>
+      <p>Yes. Non-commercial, MIT-licensed code, a CC-BY-4.0 data commons, and no sign-up. It is a public good, not a product, owned by no company. <a href="about/">About the project, and what happens to your recording →</a></p></details>
   </section>
 </div>
 
@@ -329,6 +374,7 @@
     <div class="links">
       <a href="raaga/">browse the raagas</a>
       <a href="listen/">train your ear</a>
+      <a href="about/">about</a>
       <a href="https://github.com/twelveswaras">github.com/twelveswaras</a>
     </div>
   </div>
@@ -362,12 +408,19 @@
     var mode='idle', source='live', t0=0, elapsed=0, conf=0, top3=[], swaraAct=new Array(12).fill(0);
     var leader='', leaderSince=0, phase='', nextTip=6, tipUntil=0, tipIdx=-1;
     var stream=null, rec=null, chunks=[], sendTimer=null, uiTimer=null, sending=false, lastSent=0, lockName='', lockConf=0;
+    // contribute-to-commons: the clip + tonic that produced the last result, so a donation sends the
+    // exact audio the model heard. Nothing is captured or sent until the listener taps Donate.
+    var contribEl=g('rec-contrib'), curMime='', curFile=null, curTonic=null, CONSENT='2026-07-06-own-v1';
+    // Commons contribute flow is built + tested but stays OFF until the D1 schema migration + worker
+    // /contribute deploy land (a production DB change that needs explicit sign-off). Flip to true then.
+    var CONTRIB_ENABLED=false;
+    var RAAGAS=["Aṭāna","Behāg","Bhairavi","Bilahari","Bēgaḍa","Dhanyāsi","Dēvagāndhāri","Gauḷa","Harikāmbhōji","Hussēnī","Kalyāṇi","Kamās","Karaharapriya","Kāmavardani","Kānaḍa","Kāpi","Kāṁbhōji","Kēdāragauḷa","Madhyamāvati","Mukhāri","Māyāmāḷavagauḷa","Mōhanaṁ","Nāṭa","Nāṭakurinji","Pūrvīkaḷyāṇi","Rītigauḷa","Sahānā","Sencuruṭṭi","Sindhubhairavi","Suraṭi","Sāma","Sāvēri","Tōḍi","Varāḷi","Yadukula kāṁbōji","Ānandabhairavi","Śankarābharaṇaṁ","Śrī","Śrīranjani","Ṣanmukhapriya"];
 
     function pickMime(){ var c=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg'];
       return c.find(function(t){return window.MediaRecorder && MediaRecorder.isTypeSupported(t);})||''; }
     function setC(h){ controls.innerHTML=h; }
     function reset(src){ source=src; mode='listening'; elapsed=0; conf=0; top3=[]; swaraAct=new Array(12).fill(0);
-      leader=''; leaderSince=0; lastSent=0; phase=''; nextTip=6; tipUntil=0; tipIdx=-1;
+      leader=''; leaderSince=0; lastSent=0; phase=''; nextTip=6; tipUntil=0; tipIdx=-1; curTonic=null; contribEl.innerHTML='';
       saEl.className='rec-sa'; ragaEl.className='rec-raga'; ragaEl.textContent=''; }
 
     async function startLive(){
@@ -376,7 +429,7 @@
       setC('<button class="rbtn stop" id="r-stop">Stop now</button>'); g('r-stop').onclick=function(){finish();};
       try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }
       catch(e){ return fail('Microphone access is needed to identify live. You can also upload a recording.'); }
-      var mime=pickMime(); rec=new MediaRecorder(stream, mime?{mimeType:mime}:undefined); chunks=[];
+      var mime=pickMime(); curMime=mime; curFile=null; rec=new MediaRecorder(stream, mime?{mimeType:mime}:undefined); chunks=[];
       rec.ondataavailable=function(e){ if(e.data&&e.data.size) chunks.push(e.data); };
       rec.start(1000); t0=performance.now();
       uiTimer=setInterval(tick,33); sendTimer=setInterval(function(){maybeSend(mime);}, SEND_EVERY);
@@ -396,7 +449,7 @@
       }catch(e){} finally{ sending=false; }
     }
     async function startFile(file){
-      reset('file'); statusEl.textContent='Analysing recording'; statusEl.className='rec-status warm';
+      reset('file'); curFile=file; curMime=file.type||''; statusEl.textContent='Analysing recording'; statusEl.className='rec-status warm';
       guides.className='rec-guides recording'; leadEl.textContent='Reading '+file.name.slice(0,28)+'…'; top3El.className='rec-top3 show';
       setC('<button class="rbtn cancel" id="r-cancel">Cancel</button>'); g('r-cancel').onclick=toIdle;
       t0=performance.now(); uiTimer=setInterval(tick,33);
@@ -406,7 +459,7 @@
     }
     function apply(d){
       if(d&&Array.isArray(d.swara_activation)) swaraAct=d.swara_activation;
-      if(d&&d.tonic_hz){ saEl.textContent='Sa · '+Math.round(d.tonic_hz)+' Hz'; saEl.className='rec-sa show'; }
+      if(d&&d.tonic_hz){ curTonic=d.tonic_hz; saEl.textContent='Sa · '+Math.round(d.tonic_hz)+' Hz'; saEl.className='rec-sa show'; }
       if(d&&d.top3&&d.top3.length){ top3=d.top3; conf=d.top3[0].confidence||0;
         var ld=d.top3[0].raaga; if(ld!==leader){leader=ld; leaderSince=elapsed;} rows(top3); }
     }
@@ -437,6 +490,7 @@
         +'<a class="rlearn" id="r-learn" href="raaga/'+slug(lockName)+'.html">↗ How to hear '+lockName+'</a>'
         +'<button class="rghost" id="r-up2">or upload a recording ↑</button></div>');
       g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
+      mountContrib();
     }
     function noRes(){
       statusEl.textContent='No raaga yet'; statusEl.className='rec-status';
@@ -461,11 +515,77 @@
       statusEl.textContent='Identify a raaga'; statusEl.className='rec-status';
       saEl.className='rec-sa'; saEl.textContent=''; ragaEl.className='rec-raga'; ragaEl.textContent='';
       leadEl.textContent="Tap and hold your phone to the music. It names the raaga when it's sure.";
-      top3El.className='rec-top3'; top3El.innerHTML=''; guides.className='rec-guides';
+      top3El.className='rec-top3'; top3El.innerHTML=''; guides.className='rec-guides'; contribEl.innerHTML='';
       setC('<div class="rec-entry"><span class="rhint">Point your phone at the music, then tap</span>'
         +'<button class="rghost" id="r-up">or upload a recording ↑</button></div>');
       g('r-up').onclick=function(){g('rec-file').click();};
       orb.setAttribute('aria-label','Tap to identify the raaga');
+    }
+    // ---- contribute to the commons (opt-in) ---------------------------------------------------
+    // Features-first: the default ask is to improve the recognizer; the audio stays private and is
+    // used only to verify the label. Rights are attested here AND re-checked in the worker. The
+    // exact clip that produced the result is sent, so the label matches what the model heard.
+    function clipBlob(){ return curFile ? curFile
+      : (chunks.length ? new Blob(chunks, {type: curMime || 'audio/webm'}) : null); }
+    function contribHTML(r){
+      var opts = RAAGAS.map(function(n){ return '<option'+(n===r?' selected':'')+'>'+n+'</option>'; }).join('');
+      var chips = ['Vocal','Violin','Veena','Flute','Nadaswaram','Other'].map(function(n){
+        return '<button type="button" class="cc-chip" data-inst="'+n+'">'+n+'</button>'; }).join('');
+      return '<button type="button" class="contrib-open" id="cc-open">+ Help improve the recognizer</button>'
+        + '<div class="contrib-card" id="cc-card" hidden>'
+        +   '<p class="cc-q">We heard <b>'+r+'</b>. Is that right?</p>'
+        +   '<div class="cc-choices"><button type="button" class="cc-yes on" id="cc-yes">Yes, '+r+'</button>'
+        +     '<select class="cc-sel" id="cc-sel" aria-label="Correct the raaga">'+opts+'</select></div>'
+        +   '<label class="cc-lab req"><input type="checkbox" id="cc-own">'
+        +     '<span>This is <b>my own performance</b>, or I have the rights to share it publicly.</span></label>'
+        +   '<p class="cc-note">We learn from your clip to <b>improve the recognizer</b>. We publish the model, '
+        +     'not your recording: the audio stays private and is used only to check the label. '
+        +     '<a href="about/#faq" style="color:var(--jade-hi)">How we handle your clip &rarr;</a></p>'
+        +   '<div class="cc-inst" role="group" aria-label="Instrument (optional)">'+chips+'</div>'
+        +   '<label class="cc-lab"><input type="checkbox" id="cc-pub">'
+        +     '<span>Also release this clip publicly under CC-BY (optional).</span></label>'
+        +   '<button type="button" class="cc-send" id="cc-send" disabled>Donate this clip</button>'
+        +   '<p class="cc-err" id="cc-err" hidden></p></div>';
+    }
+    function mountContrib(){
+      if(!CONTRIB_ENABLED){ contribEl.innerHTML=''; return; }            // commons not live yet
+      if(!lockName || !clipBlob()){ contribEl.innerHTML=''; return; }   // nothing to donate
+      contribEl.innerHTML = contribHTML(lockName);
+      var open=g('cc-open'), card=g('cc-card'), yes=g('cc-yes'), sel=g('cc-sel'), own=g('cc-own'), send=g('cc-send');
+      open.onclick=function(){ card.hidden=!card.hidden;
+        open.textContent = card.hidden ? '+ Help improve the recognizer' : 'Never mind'; };
+      yes.onclick=function(){ sel.value=lockName; yes.classList.add('on'); };
+      sel.onchange=function(){ yes.classList.toggle('on', sel.value===lockName); };
+      own.onchange=function(){ send.disabled=!own.checked; };
+      var inst='', chips=card.querySelectorAll('.cc-chip');
+      chips.forEach(function(b){ b.onclick=function(){ var was=b.classList.contains('on');
+        chips.forEach(function(x){x.classList.remove('on');});
+        if(was){ inst=''; } else { b.classList.add('on'); inst=b.getAttribute('data-inst'); } }; });
+      send.onclick=function(){ submitContrib(sel.value, own.checked, inst, g('cc-pub').checked, send); };
+    }
+    async function submitContrib(raaga, isOwn, inst, pub, send){
+      var blob=clipBlob(), err=g('cc-err');
+      if(!blob){ err.textContent='The clip is no longer available. Identify again to donate.'; err.hidden=false; return; }
+      if(!isOwn){ err.textContent='Please confirm you have the rights to share this clip.'; err.hidden=false; return; }
+      err.hidden=true; send.disabled=true; send.textContent='Sending…';
+      try{
+        var fd=new FormData();
+        fd.append('audio', blob, 'contrib.webm');
+        fd.append('raaga', raaga);
+        fd.append('is_own', 'true');
+        fd.append('model_pred', lockName);
+        fd.append('confidence', String(lockConf||''));
+        if(curTonic) fd.append('tonic_hz', String(curTonic));
+        if(inst) fd.append('instrument', inst);
+        fd.append('release_public', pub ? 'true' : 'false');
+        fd.append('consent_version', CONSENT);
+        var res=await fetch(API+'/contribute',{method:'POST',body:fd}); var d=await res.json();
+        if(!res.ok || (d&&d.error)) throw new Error((d&&d.error)||'failed');
+        g('cc-card').innerHTML='<p class="cc-done"><b>Thank you.</b> Your clip is queued for community '
+          +'verification. It helps the recognizer learn '+raaga+'.</p>';
+        g('cc-open').style.display='none';
+      }catch(e){ err.textContent='Could not send just now. Please try again.'; err.hidden=false;
+        send.disabled=false; send.textContent='Donate this clip'; }
     }
     var rowEls={};
     function rows(list,done){
