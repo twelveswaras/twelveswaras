@@ -63,8 +63,8 @@ Until DNS is on Cloudflare you can test against the `*.workers.dev` URL by loadi
 ## 3. Cloudflare Pages (the wheel front end)
 
 ```bash
-# publish cloudflare/pages/ as a Pages project (dashboard: Pages -> create -> direct upload,
-# or `wrangler pages deploy cloudflare/pages --project-name twelveswaras-app`)
+# publish site/ as a Pages project (dashboard: Pages -> create -> direct upload,
+# or `wrangler pages deploy site --project-name twelveswaras-app`)
 ```
 
 The front end calls `/api/identify` same-origin, so serve it under the same zone as the Worker route

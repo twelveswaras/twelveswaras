@@ -2,8 +2,7 @@
 
 How twelveswaras identifies the raaga of a Carnatic clip, why each choice was made, and the
 literature it builds on. Results and the full progression live in
-[`benchmark/leaderboard.md`](benchmark/leaderboard.md); the private product spec + decisions log
-live in `supporting-docs/PRD.md`.
+[`benchmark/leaderboard.md`](benchmark/leaderboard.md).
 
 ## The problem
 
@@ -37,7 +36,7 @@ Fully automatic; the only input is audio.
    it says. A **confidence state** turns a tight top-2 into an honest *"close call: X vs Y"*
    instead of a false-precise single answer.
 
-A **junk gate** (D6/D8, `config.MIN_VOICED_FRAC = 0.5`) drops any window whose predominant melody
+A **junk gate** (`config.MIN_VOICED_FRAC = 0.5`) drops any window whose predominant melody
 is voiced less than half the time (percussion solos, speech, applause, long silences), in both
 training and inference, so only windows with a trackable melody reach the feature step. It lifts
 the frozen benchmark 0.798 → 0.806 / 0.938 → 0.946, and is expected to help more on real-world clips.
@@ -82,7 +81,7 @@ relevant, corroborating the pitch-focused choice.
   held pending the real-world benchmark and the cost of a torch dependency.
 - **Phrase / sañcāra matching**: mine characteristic gamaka-laden motifs to disambiguate allied
   raagas (the musician's own method) and power the "how to hear this raaga" learner panel.
-- **Data augmentation** (adopted from the Harvard thesis; see PRD D31): augment raw audio with
+- **Data augmentation** (adopted from the Harvard thesis): augment raw audio with
   **background noise** (first, to attack the domain gap), speed, and light pitch jitter, then
   re-extract pitch+tonic and retrain.
 
@@ -94,7 +93,7 @@ relevant, corroborating the pitch-focused choice.
 | gamaka | MFCC timbre + spectral bandwidth (indirect) | TDMS pitch-trajectory (direct) |
 | model | ANN / LSTM / CNN / BERT on 50-dim vectors or mel-spectrograms | XGBoost on TDMS |
 | timbre features | included (MFCC, spectral, ZCR) | excluded (avoid track-memorization) |
-| augmentation | 4 kinds, 9× data | none yet, adopting (D31) |
+| augmentation | 4 kinds, 9× data | none yet, adopting |
 | scope | up to 15 raagas (86%) | 40 raagas (0.798) |
 
 The thesis's headline results (its BERT failed at 10 raagas; its simple ANN beat CNN/LSTM at
@@ -115,15 +114,17 @@ phrase-matching work.
    South Indian Classical Music.* B.A. thesis, Harvard University, 2024. Reference implementation.
 5. S. Madhusudhan, T. Beigi. *DEEPSRGM: Sequence Classification for Rāga Identification.* 2019.
    Sequence-model benchmark target.
-5a. S. Natesan, H. Beigi. *Carnatic Raga Identification System using Rigorous Time-Delay Neural
+6. S. Natesan, H. Beigi. *Carnatic Raga Identification System using Rigorous Time-Delay Neural
    Network.* Recognition Technologies Inc. Technical Report RTI-20240524-01, 2024. A TDNN+LSTM
    hybrid with **attention over *relative* frequency changes for shruti-invariance** (no explicit
    tonic estimation). Preliminary (676 recordings, no reported metrics), but the relative-pitch
    idea is worth revisiting for our **tonic/drone-robustness** work; it targets the exact failure
    mode (drone-less audio) where our explicit tonic estimation breaks.
-6. M. Müller. *Fundamentals of Music Processing.* Springer, 2016. (chroma, CENS, STFT).
-7. **Datasets:** Saraga Carnatic (CompMusic / MTG-UPF, CC-BY-NC-SA); *Indian Art Music Raga
+7. M. Müller. *Fundamentals of Music Processing.* Springer, 2016. (chroma, CENS, STFT).
+8. **Datasets:** Saraga Carnatic (CompMusic / MTG-UPF, CC-BY-NC-SA); *Indian Art Music Raga
    Recognition Dataset*: Carnatic Music Dataset (CMD) (CompMusic, CC-BY-NC-ND 3.0,
    doi:10.5281/zenodo.7278510), accessed via `mirdata` (`compmusic_raga`). The paired Hindustani
-   dataset (HMD) is the corpus for the planned Hindustani fast-follow.
-8. **Libraries:** essentia, compiam (both AGPL); librosa; xgboost; gradio.
+   dataset (HMD) is the corpus for the planned Hindustani fast-follow. Because the seed model is
+   trained on this CC-BY-NC-SA and CC-BY-NC-ND 3.0 material, the released seed weights are treated
+   as non-commercial; a model retrained purely on the CC-BY contributor commons can be cleanly CC-BY.
+9. **Libraries:** essentia, compiam (both AGPL); librosa; xgboost; gradio.

@@ -1,16 +1,16 @@
 # Leaderboard: frozen benchmark
 
-Test set: `benchmark/test_track_ids.json`, 12 held-out Saraga Carnatic 1.5 tracks
-(1 per raaga), track-level split (no window leakage). 12-way raaga ID, track-level
-top-k with window probabilities averaged (D7). **Chance: top1 = 0.083, top3 = 0.250.**
+Test set: `benchmark/test_track_ids.json`, 129 held-out Saraga Carnatic tracks across
+40 raagas, track-level split (no window leakage). 40-way raaga ID, track-level
+top-k with window probabilities averaged. **Chance: top1 = 0.025, top3 = 0.075.**
 
 | date | features | model | top1 | top3 | notes |
 |------|----------|-------|------|------|-------|
 | 2026-07-03 | chroma + MFCC + spectral (raw, no tonic) | XGBoost | 0.083 | 0.250 | **at chance**: train top1=1.0 (overfit); model memorized recording timbre, not raaga |
-| 2026-07-03 | tonic-relative pitch-class histogram, **drone-argmax** tonic (D5/D16) | XGBoost | 0.167 | 0.583 | Sa estimated from the drone, chroma shifted to Sa; timbre features dropped. Above chance. |
-| 2026-07-03 | tonic-relative chroma, **precise Saraga ctonic** (D5, Phase 2) | XGBoost | 0.417 | 0.583 | per-track ground-truth tonic; drone-argmax was wrong on 7/12 clips. |
-| 2026-07-03 | tonic-normalized PCD, 120-bin, from pitch tracks (D16) | XGBoost | 0.500 | 0.833 | predominant-melody pitch (not audio chroma), the actual raaga fingerprint. |
-| 2026-07-03 | **PCD + IAMRRD pooled** (Saraga 45 + IAMRRD 131 train tracks, D10) | XGBoost | **0.667** | **0.917** | cross-dataset: train includes IAMRRD, test = held-out Saraga. More data on top of the feature win. |
+| 2026-07-03 | tonic-relative pitch-class histogram, **drone-argmax** tonic | XGBoost | 0.167 | 0.583 | Sa estimated from the drone, chroma shifted to Sa; timbre features dropped. Above chance. |
+| 2026-07-03 | tonic-relative chroma, **precise Saraga ctonic** | XGBoost | 0.417 | 0.583 | per-track ground-truth tonic; drone-argmax was wrong on 7/12 clips. |
+| 2026-07-03 | tonic-normalized PCD, 120-bin, from pitch tracks | XGBoost | 0.500 | 0.833 | predominant-melody pitch (not audio chroma), the actual raaga fingerprint. |
+| 2026-07-03 | **PCD + IAMRRD pooled** (Saraga 45 + IAMRRD 131 train tracks) | XGBoost | **0.667** | **0.917** | cross-dataset: train includes IAMRRD, test = held-out Saraga. More data on top of the feature win. |
 
 **Cross-validated (the reliable estimate).** 4-fold track-level CV, every track held out
 once, reproduce with `python -m tools.cross_validate [--datasets ...]`:
@@ -37,8 +37,8 @@ predominant-pitch extraction + tonic** (not yet wired; the demo still runs the o
 model). That's the next gap to close.
 
 **Next levers (expected to move these):**
-- More data: CMD / IAMRRD to grow per-raaga track counts (D4/D10), now the top limiter.
-- Richer features: TDMS, then CNN on tonic-normalized mel/CQT (D16); gamaka-aware feats.
+- More data: CMD / IAMRRD to grow per-raaga track counts, now the top limiter.
+- Richer features: TDMS, then CNN on tonic-normalized mel/CQT; gamaka-aware feats.
 - Robust inference-time tonic (tune essentia params, or a better heuristic).
 
 ---
@@ -63,7 +63,7 @@ PCD → model; the demo (`apps/identify`) runs this. **Needs a drone**: drone-le
 (isolated vocal) collapses tonic 0.67→0.33 and top1 0.73→0.33, so a-cappella is
 unreliable, but concert/TV audio (has a tanpura) is fine.
 
-### Calibration (D25, 2026-07-03)
+### Calibration (2026-07-03)
 
 Window-averaging left the softmax **under-confident**, so displayed %s read as falsely flat.
 Temperature scaling (one scalar, fit on 4-fold OOF predictions; `tools/calibrate.py`):
@@ -78,9 +78,9 @@ Temperature scaling (one scalar, fit on 4-fold OOF predictions; `tools/calibrate
 **T = 0.448** (< 1 ⇒ sharpen). Stored in `models/raaga_xgb.calib.json`, applied in
 `RaagaXGB._decode`. Accuracy is untouched; only the confidence numbers become honest
 (a "70%" is now right ~70% of the time). Allied raagas (Mōhanaṁ/Bilahari/Bēgaḍa) stay
-relatively close because PCD is blind to gamaka; that's the next lever (TDMS, refines D16).
+relatively close because PCD is blind to gamaka; that's the next lever (TDMS).
 
-### Gamaka feature: TDMS vs PCD (D28, 2026-07-03)
+### Gamaka feature: TDMS vs PCD (2026-07-03)
 
 Track-level 4-fold CV (567 tracks, 40 raagas; `tools/tdms_experiment.py`): does the
 Time-Delayed Melody Surface (Gulati et al., ISMIR 2016; `features.tdms`, 48×48, delay 0.3 s)
@@ -98,7 +98,7 @@ pitch marginal, so PCD is redundant). NB these are *track-level*; production PCD
 aggregated (0.780), so the next step is a windowed-TDMS run on the frozen set before swapping the
 inference feature. Then TDMS→CNN.
 
-### Windowed TDMS is now the production feature (D28, 2026-07-03)
+### Windowed TDMS is now the production feature (2026-07-03)
 
 Windowing lifted TDMS the same way it lifted PCD. Aggregated 4-fold CV (matches production,
 `tools/tdms_benchmark.py`) and the frozen 129-track benchmark:
@@ -113,11 +113,11 @@ delay 0.3 s, 48×48 surface (`features.model_windows`, the single feature used b
 evaluate / calibrate / inference, so it can't drift). Model shrank 57 MB → 20 MB. Next rung:
 TDMS → 2-D CNN (the surface is an image).
 
-Calibration (D25) refit on the TDMS model: **T = 0.475, ECE 0.356 → 0.062, NLL 0.978 → 0.647,
+Calibration refit on the TDMS model: **T = 0.475, ECE 0.356 → 0.062, NLL 0.978 → 0.647,
 mean top-1 confidence 0.510 → 0.810** (accuracy unchanged, argmax-preserving). Same story as
 PCD; window-averaging left it under-confident.
 
-### CNN on the TDMS surface beats the XGBoost floor (spike, D30, 2026-07-03)
+### CNN on the TDMS surface beats the XGBoost floor (spike, 2026-07-03)
 
 The 48×48 TDMS surface is an image, so a small 2-D CNN can learn spatial gamaka structure the
 flat-vector XGBoost can't (`tools/cnn_spike.py`; same frozen split, same per-track mean-softmax
@@ -136,7 +136,7 @@ a val-split checkpoint + seed-averaging + calibration refit. Decision gated behi
 benchmark: if real-world is limited by tonic/domain not model capacity, the torch weight isn't
 worth it yet.
 
-### Junk gate: drop non-melodic windows (D6/D8, 2026-07-04)
+### Junk gate: drop non-melodic windows (2026-07-04)
 
 Added a **voiced-fraction gate** (`config.MIN_VOICED_FRAC = 0.5`): a window whose predominant
 melody is voiced <50% of the time (percussion solos, speech/applause, long silences, no stable

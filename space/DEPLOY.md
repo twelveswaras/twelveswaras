@@ -1,10 +1,10 @@
 # Deploy the recognizer to a Hugging Face Space
 
 The recognizer is a Gradio app that needs a Python backend (essentia + compiam + numpy<2
-+ the model) — so it runs on **Hugging Face Spaces**, not a static host. A Space is a
++ the model), so it runs on **Hugging Face Spaces**, not a static host. A Space is a
 fresh Linux env, so the numpy<2 constraint is no problem.
 
-## One-time (you — needs your HF account)
+## One-time (you, needs your HF account)
 
 ```bash
 pip install -U "huggingface_hub[cli]"
@@ -33,4 +33,4 @@ First build takes a few minutes (compiling deps). Then it's live at
 - The model (`models/raaga_xgb.json`, ~few MB) is bundled into the Space. To keep the
   Space lean later, host the model on the HF Hub and download at startup instead.
 - Mic works on the Space (HTTPS) given the browser/OS mic permissions.
-- `space_build/` is gitignored in this repo — it's a throwaway staging dir.
+- `space_build/` is gitignored in this repo, a throwaway staging dir.

@@ -1,5 +1,8 @@
 # twelveswaras
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Live at twelveswaras.com](https://img.shields.io/badge/live-twelveswaras.com-brightgreen.svg)](https://twelveswaras.com)
+
 An open-source "Shazam for raagas": play it a clip of Carnatic music and it identifies the
 **raaga**, shows the top-3 with honest confidence and the tonic (Sa) it found, and helps you
 learn to hear that raaga. Paired with a planned community-contributed, openly-licensed **data
@@ -46,6 +49,10 @@ full detail and citations):
 silence). Full progression in [`benchmark/leaderboard.md`](benchmark/leaderboard.md).
 Needs a drone: concert/TV audio works; solo voice with no drone is unreliable.
 
+Honest caveat: this number is cross-validation on curated research audio. Accuracy **in the
+wild** (arbitrary recordings, varied mics, background noise) is **lower**, and closing that
+gap is exactly what the contributor data commons exists to do.
+
 ## Data & attribution
 
 Trained on openly-available research corpora, **attribution required by their licenses**:
@@ -84,6 +91,54 @@ Full bibliography in [`METHODOLOGY.md`](METHODOLOGY.md).
 - **v1 (commons):** contribute + verify loop, publish the contributor audio dataset, consolidation job.
 - **v2 (quality):** TDMS→CNN, phrase/gamaka disambiguation of allied raagas, retraining
   pipeline, expert-annotation tier, and Hindustani.
+
+## Getting started (developers)
+
+The project uses **two conda environments** (the audio-to-pitch path needs `numpy < 2`,
+training uses `numpy 2.x`, so they are kept separate):
+
+```bash
+# 1. Training + features + benchmark + most tests
+conda env create -f environment.yml
+conda activate twelveswaras
+
+# 2. Inference + demo (essentia pitch + compiam tonic, the audio -> raaga path)
+conda env create -f environment-inference.yml
+conda activate twelveswaras-infer
+python -m apps.identify
+```
+
+On Linux (for example the Hugging Face Space) install from `requirements.txt` instead of
+`environment.yml`. Run the tests from the `twelveswaras` env at the repo root:
+
+```bash
+pytest tests/
+```
+
+Top-level layout: `raaga_id/` (core library: pitch, TDMS features, model, training,
+evaluation), `apps/` (identify / contribute / verify entry points), `space/` (the Hugging
+Face Space), `cloudflare/` (the Worker API, D1 schema, Pages), `site/` (the website),
+`tools/` (dev + data scripts), `pipeline/` (consolidate + retrain jobs), and `benchmark/`
+(the frozen evaluation set + leaderboard).
+
+## Contributing
+
+Contributions are very welcome. For most people the single most valuable one is not code:
+**contribute an audio clip** at [twelveswaras.com](https://twelveswaras.com) after
+identifying a raaga, which grows the openly-licensed data commons and improves the model.
+Carnatic musicians can also review the raaga reference, and everyone can report issues or
+send code.
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) for details and
+[`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) for community standards. Code contributions are
+under MIT; data contributions under CC-BY-4.0. Security reports go to the private channel
+in [`SECURITY.md`](SECURITY.md), not a public issue.
+
+## Citing this work
+
+If you use twelveswaras in your research, please cite it. Machine-readable metadata is in
+[`CITATION.cff`](CITATION.cff) (GitHub renders a "Cite this repository" button from it),
+which also lists the key prior work the model builds on.
 
 ## Licensing
 
