@@ -47,3 +47,6 @@ benchmark/realworld/links.csv
 .DS_Store
 .idea/
 .vscode/
+
+# site audio assets are part of the published site
+!site/swara-aa.mp3
