@@ -233,14 +233,30 @@
     t.setAttribute('class', je?'jeeva':(on?'on':'')); t.textContent=LABELS[i]; g.appendChild(t);
   }
 
-  // formant-based vocal "aah" synth: a glottal-ish sawtooth through vowel formant filters +
-  // vibrato. Warmer than a beep; a real sung rendition with gamaka is future work.
-  var SA_HZ = 174.61, ctx = null;                             // Sa ~ F3, a vocal register
-  function audio(){ if(!ctx){ var AC=window.AudioContext||window.webkitAudioContext; ctx=AC?new AC():null; } return ctx; }
+  // A real sung "aah" (Freesound #764329 by ShangusBurger, CC0) tuned to Sa (F3) and pitch-shifted
+  // per swara. Falls back to a formant-synth "aah" if the sample can't load or Web Audio is absent.
+  var SA_HZ = 174.61, SAMPLE_HZ = 176.64, ctx = null, aaBuf = null, aaRaw = null, aaDecoding = false;
+  try { fetch('../swara-aa.mp3').then(function(r){ return r.arrayBuffer(); })
+          .then(function(b){ aaRaw = b; }).catch(function(){}); } catch(e){}
+  function audio(){
+    if(!ctx){ var AC=window.AudioContext||window.webkitAudioContext; ctx=AC?new AC():null; }
+    if(ctx && aaRaw && !aaBuf && !aaDecoding){ aaDecoding=true;
+      ctx.decodeAudioData(aaRaw.slice(0)).then(function(buf){ aaBuf=buf; }).catch(function(){}); }
+    return ctx;
+  }
   function voice(semi, when, dur){
     var ac=audio(); if(!ac) return;
     var t0=(when==null?ac.currentTime:when), d=dur||0.62, f0=SA_HZ*Math.pow(2,semi/12);
-    var src=ac.createOscillator(); src.type='sawtooth'; src.frequency.value=f0;
+    if(aaBuf){                                                  // sampled voice, pitch-shifted to f0
+      var s=ac.createBufferSource(); s.buffer=aaBuf; s.playbackRate.value=f0/SAMPLE_HZ;
+      var g=ac.createGain();
+      g.gain.setValueAtTime(0.0001,t0);
+      g.gain.exponentialRampToValueAtTime(0.85,t0+0.04);
+      g.gain.setValueAtTime(0.85,t0+Math.max(0.06,d-0.16));
+      g.gain.exponentialRampToValueAtTime(0.0001,t0+d);
+      s.connect(g).connect(ac.destination); s.start(t0); s.stop(t0+d+0.05); return;
+    }
+    var src=ac.createOscillator(); src.type='sawtooth'; src.frequency.value=f0;   // synth fallback
     var vib=ac.createOscillator(); vib.frequency.value=5.4;
     var vibg=ac.createGain(); vibg.gain.value=f0*0.011; vib.connect(vibg).connect(src.frequency);
     var out=ac.createGain();
