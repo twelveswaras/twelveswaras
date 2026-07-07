@@ -411,9 +411,8 @@
     // contribute-to-commons: the clip + tonic that produced the last result, so a donation sends the
     // exact audio the model heard. Nothing is captured or sent until the listener taps Donate.
     var contribEl=g('rec-contrib'), curMime='', curFile=null, curTonic=null, CONSENT='2026-07-06-own-v1';
-    // Commons contribute flow is built + tested but stays OFF until the D1 schema migration + worker
-    // /contribute deploy land (a production DB change that needs explicit sign-off). Flip to true then.
-    var CONTRIB_ENABLED=false;
+    // Commons contribute flow: live as of 2026-07-07 (D1 schema migrated, worker /contribute deployed).
+    var CONTRIB_ENABLED=true;
     var RAAGAS=["Aṭāna","Behāg","Bhairavi","Bilahari","Bēgaḍa","Dhanyāsi","Dēvagāndhāri","Gauḷa","Harikāmbhōji","Hussēnī","Kalyāṇi","Kamās","Karaharapriya","Kāmavardani","Kānaḍa","Kāpi","Kāṁbhōji","Kēdāragauḷa","Madhyamāvati","Mukhāri","Māyāmāḷavagauḷa","Mōhanaṁ","Nāṭa","Nāṭakurinji","Pūrvīkaḷyāṇi","Rītigauḷa","Sahānā","Sencuruṭṭi","Sindhubhairavi","Suraṭi","Sāma","Sāvēri","Tōḍi","Varāḷi","Yadukula kāṁbōji","Ānandabhairavi","Śankarābharaṇaṁ","Śrī","Śrīranjani","Ṣanmukhapriya"];
 
     function pickMime(){ var c=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg'];
