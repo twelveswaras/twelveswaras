@@ -72,6 +72,52 @@ def test_frontend_features_first_framing():
     assert ("not your recording" in site) or ("not your voice" in site)
 
 
+# --- the dedicated /contribute page (for people who already know the raaga) -------------------
+
+def _contribute() -> str:
+    return (ROOT / "site" / "contribute" / "index.html").read_text()
+
+
+def test_contribute_page_records_and_uploads():
+    c = _contribute()
+    # both entry paths exist: a live recording (MediaRecorder) and a file upload
+    assert "MediaRecorder" in c
+    assert 'type="file"' in c and 'accept="audio/' in c
+
+
+def test_contribute_page_posts_and_gates():
+    c = _contribute()
+    assert "/contribute" in c                              # the clip is stored via the endpoint
+    assert "is_own" in c                                   # server-side rights flag
+    assert "my own performance" in c.lower()               # the rights-gate wording
+
+
+def test_contribute_page_survives_phone_sleep():
+    # a screen wake lock keeps the phone from locking mid-recording (the main mobile pitfall)
+    assert "wakeLock" in _contribute()
+
+
+def test_contribute_page_has_recording_instructions():
+    c = _contribute().lower()
+    assert "20 to 45 seconds" in c                          # how much to record
+    assert "drone" in c                                     # needs a drone for the tonic
+
+
+def test_contribute_quality_check_is_throwaway_identify_not_store():
+    # the clip is run through /identify only to read the tonic + a drone signal (throw-away, never
+    # stored or logged), and is stored ONLY via /contribute. Both endpoints are called from the page.
+    c = _contribute()
+    assert "/identify" in c and "/contribute" in c
+
+
+def test_contribute_release_is_opt_in():
+    assert "release_public" in _contribute()
+
+
+def test_landing_links_to_contribute_page():
+    assert "contribute/" in _site()                        # the landing surfaces the dedicated flow
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):

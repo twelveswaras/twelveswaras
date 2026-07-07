@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Contribute a recording to twelveswaras (the open raaga commons)</title>
+<meta name="description" content="Already know the raaga? Record or upload a short clip over a drone and add it to the open, CC-BY Carnatic music commons that helps the recognizer learn.">
+<link rel="canonical" href="https://twelveswaras.com/contribute/">
+<meta name="theme-color" content="#0b0a08">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon-32.png" sizes="32x32" type="image/png">
+<link rel="alternate icon" href="../favicon.ico">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="twelveswaras">
+<meta property="og:url" content="https://twelveswaras.com/contribute/">
+<meta property="og:title" content="Contribute a recording to the open raaga commons">
+<meta property="og:description" content="Know the raaga? Add a short clip over a drone to the open, CC-BY Carnatic music commons.">
+<meta property="og:image" content="https://twelveswaras.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Contribute a recording to twelveswaras">
+<meta name="twitter:description" content="Know the raaga? Add a clip to the open Carnatic commons.">
+<meta name="twitter:image" content="https://twelveswaras.com/og.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Contribute a recording",
+  "url": "https://twelveswaras.com/contribute/",
+  "description": "Record or upload a short Carnatic clip over a drone and add it, with the raaga you know it to be, to the open CC-BY commons that improves the recognizer.",
+  "isPartOf": {"@type": "WebSite", "name": "twelveswaras", "url": "https://twelveswaras.com/"}
+}
+</script>
+<style>
+  :root{
+    --ink:#0b0a08; --raise:#16130f; --raise-2:#1c1811; --line:#2a241c; --line-2:#39301f;
+    --paper:#f2ece2; --muted:#a89e8e; --faint:#8b8173;
+    --amber:#f59e0b; --amber-hi:#fbbf24; --jade:#5aa87f; --jade-hi:#74c69d;
+    --sans:"SF Pro Display",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,monospace;
+    --measure:64ch;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--sans);
+    line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:var(--amber-hi);text-decoration:none} a:hover{color:#fff}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
+  .wrap{width:100%;max-width:640px;margin:0 auto;padding:0 22px}
+  /* nav */
+  .top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 0}
+  .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
+  .brand .a{color:var(--paper)} .brand .b{color:var(--amber)} .brand svg{width:26px;height:26px;flex:0 0 auto}
+  .top .nav{display:inline-flex;align-items:center;gap:12px}
+  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
+  .top .nav a:hover,.top .nav a.here{color:var(--paper)}
+  .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
+  @media (max-width:560px){.top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:16px}
+    .top .nav{flex-basis:100%;justify-content:center;gap:14px} .top .nav a{white-space:nowrap}}
+  @media (max-width:400px){.top .nav{gap:11px} .top .nav a{font-size:.72rem}}
+  /* head */
+  .page-head{padding:38px 0 4px;text-align:center}
+  .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.28em;text-indent:.28em;text-transform:uppercase;
+    color:var(--jade-hi);margin:0 auto 16px}
+  h1{font-size:clamp(1.8rem,6vw,2.6rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin:0;text-wrap:balance}
+  .lead{color:var(--muted);font-size:clamp(1rem,3vw,1.14rem);line-height:1.65;max-width:48ch;margin:14px auto 0;text-wrap:balance}
+  /* the flow card */
+  main{padding:26px 0 10px}
+  .card{background:var(--raise-2);border:1px solid var(--line);border-radius:16px;padding:20px 18px}
+  .steps{display:flex;flex-direction:column;gap:8px;margin:0 0 18px;padding:14px 16px;background:var(--raise);
+    border:1px solid var(--line);border-radius:12px}
+  .steps h2{font-size:.82rem;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:0 0 4px;font-weight:700}
+  .steps li{list-style:none;color:var(--muted);font-size:.9rem;line-height:1.5;position:relative;padding-left:1.3rem}
+  .steps ul{margin:0;padding:0;display:grid;gap:6px}
+  .steps li::before{content:"";position:absolute;left:3px;top:.6em;width:6px;height:6px;border-radius:50%;background:var(--jade)}
+  .steps b{color:var(--paper);font-weight:600}
+  /* buttons */
+  .row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+  .btn{appearance:none;font-family:var(--sans);font-weight:700;font-size:1rem;cursor:pointer;border-radius:12px;
+    padding:.8rem 1.4rem;border:1px solid var(--line-2);background:#ffffff0d;color:var(--paper);
+    display:inline-flex;align-items:center;gap:.5rem;transition:transform .12s,border-color .15s,background .15s}
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{background:var(--jade);border-color:var(--jade);color:#07130c}
+  .btn.primary:hover{background:var(--jade-hi);border-color:var(--jade-hi)}
+  .btn.primary:disabled{opacity:.4;cursor:not-allowed;background:var(--jade);border-color:var(--jade)}
+  .btn.stop{background:transparent;border-color:#e0574a;color:#ff8a7a}
+  .btn.ghost{background:transparent;border:0;color:var(--muted);font-weight:600;font-size:.9rem;padding:.5rem}
+  .btn.ghost:hover{color:var(--paper)}
+  .btn .dot{width:9px;height:9px;border-radius:50%;background:#ff5a4d;display:inline-block}
+  /* recording state */
+  .rec-live{text-align:center}
+  .rec-live .timer{font-family:var(--mono);font-size:2.4rem;font-weight:700;color:var(--paper);letter-spacing:.02em;margin:6px 0}
+  .rec-live .pulse{width:14px;height:14px;border-radius:50%;background:#ff5a4d;display:inline-block;margin-right:.5rem;
+    animation:pulse 1.1s ease-in-out infinite;vertical-align:middle}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+  @media (prefers-reduced-motion:reduce){.rec-live .pulse{animation:none}}
+  .rec-live .hint{color:var(--muted);font-size:.9rem;margin:4px 0 16px}
+  .rec-live .wake{font-family:var(--mono);font-size:.72rem;color:var(--jade-hi);margin-top:12px}
+  .rec-live .wake.off{color:var(--faint)}
+  /* review form */
+  .field{margin:0 0 14px} .field:last-child{margin-bottom:0}
+  .lab{display:block;font-size:.9rem;color:var(--paper);font-weight:600;margin:0 0 6px}
+  audio{width:100%;margin:2px 0 2px;filter:saturate(.85)}
+  .quality{font-size:.85rem;margin:8px 0 2px;padding:8px 12px;border-radius:9px;border:1px solid var(--line);background:var(--raise)}
+  .quality.good{color:var(--jade-hi);border-color:#5aa87f44}
+  .quality.warn{color:var(--amber-hi);border-color:#f59e0b44}
+  .quality.checking{color:var(--muted)}
+  select,input[type=text]{width:100%;font-family:var(--sans);font-size:1rem;background:var(--raise);color:var(--paper);
+    border:1px solid var(--line-2);border-radius:10px;padding:.6rem .6rem}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{appearance:none;cursor:pointer;font-family:var(--mono);font-size:.74rem;color:var(--muted);background:transparent;
+    border:1px solid var(--line-2);border-radius:20px;padding:.32rem .75rem}
+  .chip.on{color:var(--jade-hi);border-color:#5aa87f66;background:#5aa87f14}
+  .cb{display:flex;gap:.55rem;align-items:flex-start;font-size:.9rem;line-height:1.45;color:var(--muted);cursor:pointer;margin:0}
+  .cb input{margin:.15rem 0 0;flex:0 0 auto;accent-color:var(--jade)}
+  .cb.req{color:var(--paper)} .cb.req b{color:var(--jade-hi);font-weight:600}
+  .note{font-size:.82rem;line-height:1.5;color:var(--faint);margin:0} .note b{color:var(--muted);font-weight:600}
+  .err{color:#e6a15a;font-size:.85rem;margin:10px 0 0;text-align:center}
+  .done{text-align:center;padding:16px 4px}
+  .done h2{font-size:1.4rem;font-weight:800;color:#fff;margin:0 0 8px}
+  .done p{color:var(--muted);max-width:44ch;margin:0 auto 16px}
+  .divider{display:flex;align-items:center;gap:10px;color:var(--faint);font-family:var(--mono);font-size:.72rem;margin:14px 0}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+  hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:28px 0 46px;text-align:center;margin-top:22px}
+  footer .tagline{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);max-width:48ch;margin:0 auto;text-wrap:balance}
+  footer .links{margin-top:.7rem;font-size:.9rem;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="top">
+    <a class="brand" href="../" aria-label="twelveswaras home">
+      <svg viewBox="0 0 256 256" aria-hidden="true">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#b45309"/></linearGradient></defs>
+        <rect width="256" height="256" rx="60" fill="url(#g)"/>
+        <g fill="#fff">
+          <rect x="40" y="140" width="12" height="60" rx="6"/><rect x="60" y="104" width="12" height="96" rx="6"/>
+          <rect x="80" y="150" width="12" height="50" rx="6"/><rect x="100" y="76" width="12" height="124" rx="6"/>
+          <rect x="120" y="118" width="12" height="82" rx="6"/><rect x="140" y="92" width="12" height="108" rx="6"/>
+          <rect x="160" y="60" width="12" height="140" rx="6"/><rect x="180" y="128" width="12" height="72" rx="6"/>
+          <rect x="200" y="100" width="12" height="100" rx="6"/></g>
+      </svg>
+      <span><span class="a">twelve</span><span class="b">swaras</span></span>
+    </a>
+    <span class="nav">
+      <a href="../">identify</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="../raaga/">raagas</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a class="here" href="./" aria-current="page">contribute</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="../about/">about</a>
+    </span>
+  </nav>
+
+  <header class="page-head">
+    <p class="eyebrow">Build the commons</p>
+    <h1>Contribute a recording</h1>
+    <p class="lead">Already know the raaga? Add a short clip to an open, freely-licensed collection of Carnatic music. Every clip helps the tool learn to hear better.</p>
+  </header>
+
+  <main>
+    <div class="card" id="cx"><noscript><p class="note">This needs JavaScript. You can also email a clip, see the About page.</p></noscript></div>
+    <input type="file" id="cx-file" accept="audio/*" hidden>
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p class="tagline">a non-commercial, open-source public good · your clip stays private unless you release it</p>
+    <div class="links">
+      <a href="../">identify a raaga</a>
+      <a href="../raaga/">browse the raagas</a>
+      <a href="../about/">about</a>
+      <a href="https://github.com/twelveswaras">github</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  function g(x){return document.getElementById(x);}
+  var host=location.hostname;
+  var API=new URLSearchParams(location.search).get('api')
+    || ((host==='twelveswaras.com'||host==='www.twelveswaras.com') ? '/api' : 'https://twelveswaras-api.knerav.workers.dev');
+  var CONSENT='2026-07-07-contribute-v1';
+  var MAXREC=60, MINREC=8, MAXFILE=25*1024*1024;
+  var RAAGAS=["Aṭāna","Behāg","Bhairavi","Bilahari","Bēgaḍa","Dhanyāsi","Dēvagāndhāri","Gauḷa","Harikāmbhōji","Hussēnī","Kalyāṇi","Kamās","Karaharapriya","Kāmavardani","Kānaḍa","Kāpi","Kāṁbhōji","Kēdāragauḷa","Madhyamāvati","Mukhāri","Māyāmāḷavagauḷa","Mōhanaṁ","Nāṭa","Nāṭakurinji","Pūrvīkaḷyāṇi","Rītigauḷa","Sahānā","Sencuruṭṭi","Sindhubhairavi","Suraṭi","Sāma","Sāvēri","Tōḍi","Varāḷi","Yadukula kāṁbōji","Ānandabhairavi","Śankarābharaṇaṁ","Śrī","Śrīranjani","Ṣanmukhapriya"];
+
+  var cx=g('cx'), fileEl=g('cx-file');
+  var clip=null, clipMime='', rec=null, stream=null, chunks=[], wake=null, t0=0, recTimer=null;
+  var meta={tonic:null, model_pred:'', conf:'', checked:false, drone:null};
+  var canRecord = !!(window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+
+  function fmt(s){ s=Math.max(0,Math.floor(s)); return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2); }
+  function pickMime(){ var c=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg'];
+    return c.find(function(t){return MediaRecorder.isTypeSupported(t);})||''; }
+
+  // ---- wake lock (keep the screen on while recording) ----
+  async function reqWake(){ try{ if('wakeLock' in navigator){ wake=await navigator.wakeLock.request('screen'); wake.addEventListener('release',function(){ setWakeUI(false); }); setWakeUI(true); } }catch(e){ setWakeUI(false); } }
+  function relWake(){ try{ if(wake){ wake.release(); wake=null; } }catch(e){} }
+  function setWakeUI(on){ var w=g('cx-wake'); if(w){ w.textContent = on ? 'Screen kept awake while recording' : 'Keep the screen on so recording is not cut off'; w.className='wake'+(on?'':' off'); } }
+  document.addEventListener('visibilitychange', function(){ if(rec && rec.state==='recording' && document.visibilityState==='visible' && !wake) reqWake(); });
+
+  // ---- idle ----
+  function renderIdle(){
+    cx.innerHTML =
+      '<div class="steps"><h2>Before you record</h2><ul>'
+      + '<li>Record about <b>20 to 45 seconds</b> of the raaga.</li>'
+      + '<li>Have a <b>tanpura or shruti drone</b> under the melody, it is what lets the tonic (Sa) be found.</li>'
+      + '<li><b>Keep the screen on</b> while recording so a phone lock does not cut it off.</li>'
+      + '<li>Only share clips that are <b>your own performance</b>, or that you have the rights to.</li>'
+      + '</ul></div>'
+      + '<div class="row">'
+      + (canRecord ? '<button class="btn primary" id="cx-rec"><span class="dot"></span> Record now</button>' : '')
+      + '<button class="btn" id="cx-up">Upload a file</button>'
+      + '</div>'
+      + (canRecord ? '' : '<p class="note" style="text-align:center;margin-top:12px">Your browser can not record here, so please upload a clip.</p>');
+    if(canRecord) g('cx-rec').onclick=startRec;
+    g('cx-up').onclick=function(){ fileEl.click(); };
+  }
+
+  // ---- record ----
+  async function startRec(){
+    try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }
+    catch(e){ return renderIdleWithError('Microphone access is needed to record. You can upload a file instead.'); }
+    var mime=pickMime(); clipMime=mime||'audio/webm';
+    try{ rec=new MediaRecorder(stream, mime?{mimeType:mime}:undefined); }
+    catch(e){ stopStream(); return renderIdleWithError('Recording is not supported here. Please upload a file.'); }
+    chunks=[];
+    rec.ondataavailable=function(e){ if(e.data&&e.data.size) chunks.push(e.data); };
+    rec.onstop=function(){
+      clearInterval(recTimer); relWake(); stopStream();
+      var secs=(Date.now()-t0)/1000;
+      clip=new Blob(chunks,{type:clipMime});
+      if(secs<MINREC){ clip=null; return renderIdleWithError('That was very short ('+Math.round(secs)+'s). Try 20 to 45 seconds so there is enough to hear.'); }
+      renderReview();
+    };
+    rec.onerror=function(){ try{ rec.stop(); }catch(e){} };
+    rec.start(); t0=Date.now();
+    reqWake();
+    renderRecording();
+    recTimer=setInterval(tickRec,250);
+  }
+  function tickRec(){ var s=(Date.now()-t0)/1000; var t=g('cx-timer'); if(t) t.textContent=fmt(s);
+    if(s>=MAXREC) stopRec(); }
+  function stopRec(){ try{ if(rec&&rec.state!=='inactive') rec.stop(); }catch(e){} }
+  function stopStream(){ if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; } }
+  function renderRecording(){
+    cx.innerHTML =
+      '<div class="rec-live"><p style="margin:0;color:var(--muted);font-size:.9rem"><span class="pulse"></span>Recording</p>'
+      + '<div class="timer" id="cx-timer">0:00</div>'
+      + '<p class="hint">Sing or play over the drone. Stops on its own at ' + MAXREC + 's.</p>'
+      + '<button class="btn primary" id="cx-stop">Stop and review</button>'
+      + '<p class="wake off" id="cx-wake">Keep the screen on so recording is not cut off</p></div>';
+    g('cx-stop').onclick=stopRec;
+  }
+
+  // ---- upload ----
+  fileEl.onchange=function(e){ var f=e.target.files&&e.target.files[0]; e.target.value='';
+    if(!f) return;
+    if(f.size>MAXFILE) return renderIdleWithError('That file is over 25 MB. Please share a shorter clip.');
+    clip=f; clipMime=f.type||'audio/webm'; renderReview();
+  };
+
+  // ---- review + submit ----
+  function renderReview(){
+    meta={tonic:null, model_pred:'', conf:'', checked:false, drone:null};
+    var opts='<option value="" selected disabled>Select the raaga</option>'
+      + RAAGAS.map(function(n){return '<option>'+n+'</option>';}).join('')
+      + '<option value="__other__">Another raaga (not listed)</option>';
+    var chips=['Vocal','Violin','Veena','Flute','Nadaswaram','Other'].map(function(n){
+      return '<button type="button" class="chip" data-inst="'+n+'">'+n+'</button>';}).join('');
+    cx.innerHTML =
+      '<div class="field"><span class="lab">Your clip</span>'
+      + '<audio controls id="cx-audio"></audio>'
+      + '<div class="quality checking" id="cx-quality">Checking the clip…</div></div>'
+      + '<hr class="sep">'
+      + '<div class="field"><label class="lab" for="cx-raaga">Which raaga is this?</label>'
+      + '<select id="cx-raaga">'+opts+'</select>'
+      + '<input type="text" id="cx-other" placeholder="Type the raaga name" style="display:none;margin-top:8px"></div>'
+      + '<div class="field"><span class="lab">Instrument or voice (optional)</span><div class="chips" id="cx-inst">'+chips+'</div></div>'
+      + '<div class="field"><label class="cb req"><input type="checkbox" id="cx-own"><span>This is <b>my own performance</b>, or I have the rights to share it publicly.</span></label></div>'
+      + '<div class="field"><label class="cb"><input type="checkbox" id="cx-pub"><span>Also release this clip publicly under CC-BY. If unchecked, the clip stays private and only the model learns from it.</span></label></div>'
+      + '<button class="btn primary" id="cx-send" style="width:100%" disabled>Contribute this clip</button>'
+      + '<p class="err" id="cx-err" style="display:none"></p>'
+      + '<div class="divider">or</div>'
+      + '<div class="row"><button class="btn ghost" id="cx-redo">Start over</button></div>';
+    try{ g('cx-audio').src=URL.createObjectURL(clip); }catch(e){}
+    var raaga=g('cx-raaga'), other=g('cx-other'), own=g('cx-own'), send=g('cx-send');
+    var inst='';
+    raaga.onchange=function(){ other.style.display = raaga.value==='__other__' ? 'block' : 'none'; syncSend(); };
+    other.oninput=syncSend; own.onchange=syncSend;
+    var chipEls=cx.querySelectorAll('.chip');
+    chipEls.forEach(function(b){ b.onclick=function(){ var was=b.classList.contains('on');
+      chipEls.forEach(function(x){x.classList.remove('on');});
+      if(was){inst='';}else{b.classList.add('on'); inst=b.getAttribute('data-inst');} }; });
+    function chosenRaaga(){ return raaga.value==='__other__' ? (other.value||'').trim() : raaga.value; }
+    function syncSend(){ send.disabled = !(own.checked && chosenRaaga()); }
+    send.onclick=function(){ submit(chosenRaaga(), own.checked, inst, g('cx-pub').checked, send); };
+    g('cx-redo').onclick=renderIdle;
+    checkClip();
+  }
+
+  // quiet quality check: run the clip through the recognizer once for the tonic + a drone signal,
+  // and stash the model's guess for training. We never show the guess (the contributor's label wins).
+  async function checkClip(){
+    var q=g('cx-quality'); if(!q) return;
+    try{
+      var fd=new FormData(); fd.append('audio', clip, 'clip');
+      var r=await fetch(API+'/identify',{method:'POST',body:fd}); var d=await r.json();
+      meta.checked=true;
+      if(d){ if(d.tonic_hz) meta.tonic=d.tonic_hz;
+        if(d.top3&&d.top3.length){ meta.model_pred=d.top3[0].raaga; meta.conf=d.top3[0].confidence; }
+        meta.drone = !d.no_prediction && !!d.tonic_hz; }
+      var q2=g('cx-quality'); if(!q2) return;
+      if(meta.drone){ q2.className='quality good'; q2.textContent='Clear drone detected (Sa ≈ '+Math.round(meta.tonic)+' Hz). This is a useful clip.'; }
+      else { q2.className='quality warn'; q2.textContent='We could not hear a clear drone, so this clip may be less useful for training. You can still contribute it, but a tanpura or shruti under the melody helps a lot.'; }
+    }catch(e){ var q3=g('cx-quality'); if(q3){ q3.className='quality'; q3.textContent='Could not check the clip just now, that is fine, you can still contribute it.'; } }
+  }
+
+  async function submit(raaga, isOwn, inst, pub, send){
+    var err=g('cx-err');
+    if(!clip){ err.textContent='The clip is no longer available. Please record or upload again.'; err.style.display='block'; return; }
+    if(!isOwn){ err.textContent='Please confirm you have the rights to share this clip.'; err.style.display='block'; return; }
+    if(!raaga){ err.textContent='Please choose the raaga.'; err.style.display='block'; return; }
+    err.style.display='none'; send.disabled=true; send.textContent='Sending…';
+    try{
+      var fd=new FormData();
+      fd.append('audio', clip, 'contrib');
+      fd.append('raaga', raaga);
+      fd.append('is_own','true');
+      if(inst) fd.append('instrument', inst);
+      fd.append('release_public', pub ? 'true' : 'false');
+      if(meta.model_pred) fd.append('model_pred', meta.model_pred);
+      if(meta.conf!=='' && meta.conf!=null) fd.append('confidence', String(meta.conf));
+      if(meta.tonic) fd.append('tonic_hz', String(meta.tonic));
+      fd.append('consent_version', CONSENT);
+      var res=await fetch(API+'/contribute',{method:'POST',body:fd}); var d=await res.json();
+      if(!res.ok || (d&&d.error)) throw new Error((d&&d.error)||'failed');
+      renderDone(raaga);
+    }catch(e){ err.textContent='Could not send just now. Please try again.'; err.style.display='block';
+      send.disabled=false; send.textContent='Contribute this clip'; }
+  }
+
+  function renderDone(raaga){
+    relWake();
+    cx.innerHTML =
+      '<div class="done"><h2>Thank you.</h2>'
+      + '<p>Your clip is queued for community verification. It helps the recognizer learn '+raaga+', and joins an open commons anyone can build on.</p>'
+      + '<div class="row"><button class="btn primary" id="cx-again">Contribute another</button>'
+      + '<a class="btn" href="../">Back to identify</a></div></div>';
+    clip=null; g('cx-again').onclick=renderIdle;
+  }
+
+  function renderIdleWithError(msg){ renderIdle(); var d=document.createElement('p'); d.className='err'; d.textContent=msg; cx.appendChild(d); }
+
+  renderIdle();
+})();
+</script>
+</body>
+</html>
