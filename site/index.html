@@ -404,6 +404,11 @@
     // don't commit before MIN_LISTEN, need a long stable hold + high confidence — else run to MAX_S.
     // MAX_S=90 matches the backend INFER_SECONDS cap. Confirmed 0.450 top-1 (lockpoint sim).
     var HOLD=10.0, MIN_LISTEN=45, MAX_S=90, SEND_EVERY=3500, FIRST_SEND=4500;
+    // Abstention: below this calibrated confidence, do not present a confident raaga name; say the
+    // model is not sure (it may be a raaga outside the 40, or the audio lacks a clear drone). The
+    // threshold is from a wild-set experiment: ~0.45 lifts shown-accuracy 0.46 -> 0.54 while
+    // abstaining on ~19% of clips (catches many wrong answers for few correct ones).
+    var ABSTAIN_CONF=0.45;
     var VERBS=['Tracing the swaras…','Listening for the phrases…','Following the gamaka…','Weighing the raagas…'];
     var TI='class="tic" viewBox="0 0 24 24" aria-hidden="true"';
     var TIPS=[
@@ -483,7 +488,19 @@
       if(mode!=='listening') return; mode='locked'; stopCap();
       clearInterval(uiTimer); clearInterval(sendTimer);
       if(!top3.length) return noRes();
-      lockName=top3[0].raaga; lockConf=conf; var sure=lockConf>=0.6;
+      lockName=top3[0].raaga; lockConf=conf;
+      var abstain=lockConf<ABSTAIN_CONF, sure=lockConf>=0.6;
+      if(abstain){
+        statusEl.textContent='Not sure'; statusEl.className='rec-status';
+        leadEl.textContent="I couldn't place this confidently. It may be a raaga I don't know yet, or the audio needs a clearer drone. Closest guesses:";
+        ragaEl.textContent=''; ragaEl.className='rec-raga';
+        top3El.classList.remove('done'); rows(top3,true); guides.className='rec-guides hide';
+        setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Try again</button>'
+          +'<button class="rghost" id="r-up2">or upload a recording ↑</button></div>');
+        g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
+        mountContrib(); logResult();
+        return;
+      }
       statusEl.textContent=sure?'Confident':'Best guess'; statusEl.className='rec-status '+(sure?'done':'warm');
       leadEl.textContent = source==='file'
         ? (sure ? 'From your recording.' : 'From your clip. A longer or clearer recording helps.')

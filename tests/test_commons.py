@@ -150,6 +150,18 @@ def test_sitemap_includes_about_contribute_and_slashed_listen():
     assert "twelveswaras.com/listen/" in sm
 
 
+# --- abstention / open-set: don't confidently name a raaga the model probably got wrong ---------
+
+def test_recognizer_abstains_below_a_confidence_threshold():
+    site = _site()
+    # a tunable threshold exists, validated on the wild set (~0.45): below it the wheel says it is
+    # not sure and does not present a confident raaga name.
+    assert "ABSTAIN_CONF" in site
+    assert "a raaga I don't know" in site
+    # and it must not offer a "how to hear <raaga>" link when it is not sure the raaga is right
+    assert "r-learn" in site  # the confident-path learn link still exists for confident results
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):
