@@ -244,7 +244,7 @@
         <p>Only when you tick "release under CC-BY", and not otherwise, does your clip join a public, openly-licensed dataset, with credit to you. That choice is always yours.</p>
       </div>
     </div>
-    <p>You only contribute clips that are your own performance, or that you have the right to share. You decide whether the audio is ever made public. To have a contributed clip removed, email <a href="mailto:sathya@urbanmorph.com">sathya@urbanmorph.com</a> and it will be removed.</p>
+    <p>You only contribute clips that are your own performance, or that you have the right to share. You decide whether the audio is ever made public. To have a contributed clip removed, email <a class="cmail" data-u="hello" data-d="twelveswaras.com" href="#" aria-label="contact by email">us</a> and it will be removed.</p>
   </section>
 
   <section>
@@ -299,5 +299,16 @@
     </div>
   </div>
 </footer>
+<script>
+  // Assemble the contact address at runtime so the raw string is never in the page source
+  // (reduces email-harvesting spam). Split across data attributes, joined here.
+  (function () {
+    var a = document.querySelector('.cmail');
+    if (!a) return;
+    var e = a.getAttribute('data-u') + '@' + a.getAttribute('data-d');
+    a.href = 'mailto:' + e;
+    a.textContent = e;
+  })();
+</script>
 </body>
 </html>

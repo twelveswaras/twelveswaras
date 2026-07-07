@@ -9,7 +9,7 @@ reports made in good faith.
 **Please do not open a public GitHub issue for security reports.** Public disclosure
 before a fix puts users at risk.
 
-Instead, email **sathya@urbanmorph.com** with:
+Instead, email **security@twelveswaras.com** with:
 
 - a description of the vulnerability and its impact,
 - the steps to reproduce it (a proof of concept helps),
@@ -53,7 +53,7 @@ Please give us reasonable time to fix an issue before any public disclosure.
 Because the project accepts user-submitted audio, you may want a clip removed, for example
 if it was contributed in error or you have changed your mind about sharing it.
 
-Email **sathya@urbanmorph.com** with enough detail to identify the clip (an approximate
+Email **hello@twelveswaras.com** with enough detail to identify the clip (an approximate
 date and time of contribution, the handle used if any, or the raaga and any details you
 remember). We will remove it from the active dataset and from future published releases of
 the commons. Note that already-published, openly-licensed snapshots that others have
