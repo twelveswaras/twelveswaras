@@ -88,8 +88,21 @@ Full bibliography in [`METHODOLOGY.md`](METHODOLOGY.md).
   with a beginner "tell", how-to-hear notes, a playable swara wheel, and allied / graha-bhedam
   links; an ear-trainer; and open data (`/data/raagas.json`, CC-BY-4.0) plus `/llms.txt` and
   per-page JSON-LD. Reference facts are draft, pending expert review.
-- **v1 (commons):** contribute + verify loop, publish the contributor audio dataset, consolidation job.
-- **v2 (quality):** TDMS→CNN, phrase/gamaka disambiguation of allied raagas, retraining
+- **v1 (commons, contribute loop shipped):** the opt-in contribute flow is live: rights-gated,
+  quarantined as `pending`, audio kept private unless the contributor releases it CC-BY. Next in
+  this phase: community verification of pending clips, the consolidation job, and publishing the
+  CC-BY contributor dataset.
+- **Grow the commons deliberately (deepen before widen):** the measured highest-value contribution
+  is more varied, in-the-wild audio of the *current* 40 raagas, which sharply improves real-world
+  accuracy, so steer contributors toward the weakest and most-confusable of the 40 (a targeted
+  commons). Raagas beyond the 40 are pooled toward a per-raaga threshold and only trained in once
+  one reaches critical mass, never one clip at a time, and always in a quarantine separate from the
+  40 (a clip of an unknown raaga can never be model-confirmed).
+- **Abstention / open-set recognition:** teach the model to say "I don't recognise this raaga yet"
+  instead of silently returning the closest of the 40. This is both an honesty fix and the natural
+  funnel for vocabulary growth: when the tool abstains, it can invite the listener to help it learn
+  that raaga.
+- **v2 (quality):** TDMS to CNN, phrase/gamaka disambiguation of allied raagas, retraining
   pipeline, expert-annotation tier, and Hindustani.
 
 ## Getting started (developers)
