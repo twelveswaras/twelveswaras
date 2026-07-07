@@ -133,7 +133,8 @@ async function handleContribute(request, env, ctx) {
 
   const bytes = await audio.arrayBuffer();
   const sha = await sha256hex(bytes);
-  const key = `contrib/${new Date().toISOString().slice(0, 10)}/${sha.slice(0, 20)}.webm`;
+  const mime = audio.type || 'audio/webm';
+  const key = `contrib/${new Date().toISOString().slice(0, 10)}/${sha.slice(0, 20)}.${extForType(mime)}`;
   const modelPred = (form.get('model_pred') || '').toString() || null;
   const meta = {
     key, sha, raaga, model_pred: modelPred,
@@ -145,12 +146,27 @@ async function handleContribute(request, env, ctx) {
     consent_version: (form.get('consent_version') || '').toString().slice(0, 40) || null,
     country: (request.cf && request.cf.country) || null,
   };
-  if (env.CLIPS) ctx.waitUntil(env.CLIPS.put(key, bytes, { httpMetadata: { contentType: audio.type || 'audio/webm' } }));
+  if (env.CLIPS) ctx.waitUntil(env.CLIPS.put(key, bytes, { httpMetadata: { contentType: mime } }));
   if (env.DB) ctx.waitUntil(insertContribution(env, meta));
   return cors(json({ ok: true, status: 'queued' }), env, request);
 }
 
 function numOrNull(v) { const n = parseFloat(v); return Number.isFinite(n) ? n : null; }
+
+// Map an audio MIME type to a file extension, so a stored clip is named for what it actually is
+// (an MP3 upload is saved .mp3, not .webm). ffmpeg reads by content, so this is just for a tidy,
+// honestly-named commons dataset. Unknown types fall back to webm (the browser mic default).
+function extForType(t) {
+  const m = (t || '').split(';')[0].trim().toLowerCase();
+  return {
+    'audio/webm': 'webm', 'audio/ogg': 'ogg', 'audio/opus': 'opus',
+    'audio/mp4': 'm4a', 'audio/x-m4a': 'm4a', 'audio/aac': 'aac',
+    'audio/mpeg': 'mp3', 'audio/mp3': 'mp3',
+    'audio/wav': 'wav', 'audio/x-wav': 'wav', 'audio/wave': 'wav', 'audio/vnd.wave': 'wav',
+    'audio/flac': 'flac', 'audio/x-flac': 'flac',
+    'audio/3gpp': '3gp', 'audio/amr': 'amr',
+  }[m] || 'webm';
+}
 
 async function sha256hex(buf) {
   const h = await crypto.subtle.digest('SHA-256', buf);
