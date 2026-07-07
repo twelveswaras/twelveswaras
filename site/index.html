@@ -490,6 +490,7 @@
         +'<button class="rghost" id="r-up2">or upload a recording ↑</button></div>');
       g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
       mountContrib();
+      logResult();
     }
     function noRes(){
       statusEl.textContent='No raaga yet'; statusEl.className='rec-status';
@@ -497,6 +498,17 @@
       setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Try again</button>'
         +'<button class="rghost" id="r-up2">or upload a recording ↑</button></div>');
       g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
+      logResult();
+    }
+    // Log one row per finished session (the locked result, or a no-prediction), posted to the
+    // worker /result endpoint at lock time. /identify is not logged (the wheel polls it every few
+    // seconds, which over-counted usage). No audio is sent, only the result metadata.
+    function logResult(){
+      try{
+        var body=JSON.stringify({ top3: top3, tonic_hz: curTonic, heard_seconds: elapsed,
+          no_prediction: top3.length ? 0 : 1 });
+        fetch(API+'/result',{method:'POST',headers:{'content-type':'application/json'},body:body,keepalive:true}).catch(function(){});
+      }catch(e){}
     }
     function fail(msg){
       stopCap(); clearInterval(uiTimer); clearInterval(sendTimer); mode='idle';

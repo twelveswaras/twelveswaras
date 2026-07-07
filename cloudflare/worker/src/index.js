@@ -25,6 +25,10 @@ export default {
     if (request.method === 'POST' && url.pathname.endsWith('/contribute')) {
       return handleContribute(request, env, ctx);
     }
+    // one row per finished session: the wheel posts the final (locked) result here when it stops
+    if (request.method === 'POST' && url.pathname.endsWith('/result')) {
+      return handleResult(request, env, ctx);
+    }
     if (url.pathname.endsWith('/health')) {
       try {
         const r = await fetch(env.SPACE_URL + '/health');
@@ -88,10 +92,21 @@ async function handleIdentify(request, env, ctx) {
 
   if (!data || data.error) return cors(json(data || { error: 'bad response' }, 502), env, request);
 
-  // result-metadata logging (no audio) — never block the response on it
-  if (env.DB) ctx.waitUntil(logToD1(env, data, request));
-
+  // NB: identify is NOT logged. The wheel polls /identify every few seconds while listening, so
+  // logging here over-counted usage many times over. The browser posts the final locked result to
+  // /result once per session instead (handleResult).
   return cors(json(data), env, request);
+}
+
+// POST /result — log ONE row per finished session (the locked result, or a no-prediction). The
+// browser sends the same result-metadata shape /identify returns (top3, tonic_hz, heard_seconds,
+// no_prediction). No audio, never PII.
+async function handleResult(request, env, ctx) {
+  let data;
+  try { data = await request.json(); }
+  catch { return cors(json({ error: 'expected json' }, 400), env, request); }
+  if (env.DB) ctx.waitUntil(logToD1(env, data, request));
+  return cors(json({ ok: true }), env, request);
 }
 
 async function logToD1(env, data, request) {
