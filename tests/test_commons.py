@@ -162,6 +162,14 @@ def test_recognizer_abstains_below_a_confidence_threshold():
     assert "r-learn" in site  # the confident-path learn link still exists for confident results
 
 
+def test_abstain_offers_a_teach_me_contribution_funnel():
+    site = _site().lower()
+    # when it abstains, the contribute card reframes as "teach me / learn this raaga"...
+    assert "learn this raaga" in site or "teach me" in site
+    # ...and lets the contributor name a raaga outside the 40 (the vocabulary-growth path)
+    assert "another raaga" in site
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):

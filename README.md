@@ -105,10 +105,11 @@ Full bibliography in [`METHODOLOGY.md`](METHODOLOGY.md).
   commons). Raagas beyond the 40 are pooled toward a per-raaga threshold and only trained in once
   one reaches critical mass, never one clip at a time, and always in a quarantine separate from the
   40 (a clip of an unknown raaga can never be model-confirmed).
-- **Abstention / open-set recognition:** teach the model to say "I don't recognise this raaga yet"
-  instead of silently returning the closest of the 40. This is both an honesty fix and the natural
-  funnel for vocabulary growth: when the tool abstains, it can invite the listener to help it learn
-  that raaga.
+- **Abstention / open-set recognition (v1 shipped):** below a calibrated-confidence threshold the
+  tool now says "not sure" and shows tentative closest guesses instead of confidently naming the
+  nearest of the 40, and it invites the listener to contribute the clip and teach it the raaga
+  (the vocabulary-growth funnel). Next: an out-of-distribution detector to also catch the
+  confident-but-wrong cases, and re-tuning the threshold on the confidences now logged from real use.
 - **v2 (quality):** TDMS to CNN, phrase/gamaka disambiguation of allied raagas, retraining
   pipeline, expert-annotation tier, and Hindustani.
 

@@ -255,6 +255,8 @@
   .cc-yes.on{background:var(--jade);border-color:var(--jade);color:#07130c}
   .cc-sel{font-family:var(--sans);font-size:.82rem;background:var(--raise);color:var(--paper);
     border:1px solid var(--line-2);border-radius:9px;padding:.42rem .5rem;max-width:100%}
+  #cc-other{font-family:var(--sans);font-size:.82rem;background:var(--raise);color:var(--paper);
+    border:1px solid var(--line-2);border-radius:9px;padding:.42rem .5rem}
   .cc-lab{display:flex;gap:.5rem;align-items:flex-start;font-size:.8rem;line-height:1.45;color:var(--muted);
     cursor:pointer;margin:0 0 10px}
   .cc-lab input{margin:.15rem 0 0;flex:0 0 auto;accent-color:var(--jade)}
@@ -498,7 +500,7 @@
         setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Try again</button>'
           +'<button class="rghost" id="r-up2">or upload a recording ↑</button></div>');
         g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
-        mountContrib(); logResult();
+        mountContrib(true); logResult();
         return;
       }
       statusEl.textContent=sure?'Confident':'Best guess'; statusEl.className='rec-status '+(sure?'done':'warm');
@@ -560,15 +562,24 @@
     // exact clip that produced the result is sent, so the label matches what the model heard.
     function clipBlob(){ return curFile ? curFile
       : (chunks.length ? new Blob(chunks, {type: curMime || 'audio/webm'}) : null); }
-    function contribHTML(r){
-      var opts = RAAGAS.map(function(n){ return '<option'+(n===r?' selected':'')+'>'+n+'</option>'; }).join('');
+    function contribHTML(r, abstain){
+      var opts = (abstain ? '<option value="" selected disabled>Select the raaga</option>' : '')
+        + RAAGAS.map(function(n){ return '<option'+(!abstain && n===r?' selected':'')+'>'+n+'</option>'; }).join('')
+        + '<option value="__other__">Another raaga (not listed)</option>';
       var chips = ['Vocal','Violin','Veena','Flute','Nadaswaram','Other'].map(function(n){
         return '<button type="button" class="cc-chip" data-inst="'+n+'">'+n+'</button>'; }).join('');
-      return '<button type="button" class="contrib-open" id="cc-open">+ Help improve the recognizer</button>'
+      var openTxt = abstain ? '+ Help me learn this raaga' : '+ Help improve the recognizer';
+      var q = abstain ? "I couldn't place this one. If you know the raaga, add it and teach me:"
+                      : 'We heard <b>'+r+'</b>. Is that right?';
+      var choices = abstain
+        ? '<div class="cc-choices"><select class="cc-sel" id="cc-sel" aria-label="What raaga is it?">'+opts+'</select></div>'
+        : '<div class="cc-choices"><button type="button" class="cc-yes on" id="cc-yes">Yes, '+r+'</button>'
+          + '<select class="cc-sel" id="cc-sel" aria-label="Correct the raaga">'+opts+'</select></div>';
+      return '<button type="button" class="contrib-open" id="cc-open">'+openTxt+'</button>'
         + '<div class="contrib-card" id="cc-card" hidden>'
-        +   '<p class="cc-q">We heard <b>'+r+'</b>. Is that right?</p>'
-        +   '<div class="cc-choices"><button type="button" class="cc-yes on" id="cc-yes">Yes, '+r+'</button>'
-        +     '<select class="cc-sel" id="cc-sel" aria-label="Correct the raaga">'+opts+'</select></div>'
+        +   '<p class="cc-q">'+q+'</p>'
+        +   choices
+        +   '<input type="text" id="cc-other" placeholder="Type the raaga name" style="display:none;margin:0 0 12px;width:100%">'
         +   '<label class="cc-lab req"><input type="checkbox" id="cc-own">'
         +     '<span>This is <b>my own performance</b>, or I have the rights to share it publicly.</span></label>'
         +   '<p class="cc-note">We learn from your clip to <b>improve the recognizer</b>. We publish the model, '
@@ -580,21 +591,25 @@
         +   '<button type="button" class="cc-send" id="cc-send" disabled>Donate this clip</button>'
         +   '<p class="cc-err" id="cc-err" hidden></p></div>';
     }
-    function mountContrib(){
+    function mountContrib(abstain){
       if(!CONTRIB_ENABLED){ contribEl.innerHTML=''; return; }            // commons not live yet
       if(!lockName || !clipBlob()){ contribEl.innerHTML=''; return; }   // nothing to donate
-      contribEl.innerHTML = contribHTML(lockName);
-      var open=g('cc-open'), card=g('cc-card'), yes=g('cc-yes'), sel=g('cc-sel'), own=g('cc-own'), send=g('cc-send');
-      open.onclick=function(){ card.hidden=!card.hidden;
-        open.textContent = card.hidden ? '+ Help improve the recognizer' : 'Never mind'; };
-      yes.onclick=function(){ sel.value=lockName; yes.classList.add('on'); };
-      sel.onchange=function(){ yes.classList.toggle('on', sel.value===lockName); };
-      own.onchange=function(){ send.disabled=!own.checked; };
+      contribEl.innerHTML = contribHTML(lockName, abstain);
+      var open=g('cc-open'), card=g('cc-card'), yes=g('cc-yes'), sel=g('cc-sel'),
+          other=g('cc-other'), own=g('cc-own'), send=g('cc-send');
+      var openTxt = abstain ? '+ Help me learn this raaga' : '+ Help improve the recognizer';
+      open.onclick=function(){ card.hidden=!card.hidden; open.textContent = card.hidden ? openTxt : 'Never mind'; };
+      function chosen(){ return sel.value==='__other__' ? (other.value||'').trim() : sel.value; }
+      function sync(){ send.disabled = !(own.checked && chosen()); }
+      sel.onchange=function(){ other.style.display = sel.value==='__other__' ? 'block' : 'none';
+        if(yes) yes.classList.toggle('on', sel.value===lockName); sync(); };
+      other.oninput=sync; own.onchange=sync;
+      if(yes) yes.onclick=function(){ sel.value=lockName; other.style.display='none'; yes.classList.add('on'); sync(); };
       var inst='', chips=card.querySelectorAll('.cc-chip');
       chips.forEach(function(b){ b.onclick=function(){ var was=b.classList.contains('on');
         chips.forEach(function(x){x.classList.remove('on');});
         if(was){ inst=''; } else { b.classList.add('on'); inst=b.getAttribute('data-inst'); } }; });
-      send.onclick=function(){ submitContrib(sel.value, own.checked, inst, g('cc-pub').checked, send); };
+      send.onclick=function(){ submitContrib(chosen(), own.checked, inst, g('cc-pub').checked, send); };
     }
     async function submitContrib(raaga, isOwn, inst, pub, send){
       var blob=clipBlob(), err=g('cc-err');
