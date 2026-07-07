@@ -95,6 +95,8 @@
     line-height:1.62;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   a{color:var(--amber-hi);text-decoration:none}
   a:hover{color:#fff}
+  /* inline links in prose must not rely on colour alone (WCAG) */
+  section p a, .prose li a, .handle .item p a{text-decoration:underline;text-underline-offset:2px}
   :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
   .wrap{width:100%;max-width:780px;margin:0 auto;padding:0 22px}
 
@@ -244,7 +246,7 @@
         <p>Only when you tick "release under CC-BY", and not otherwise, does your clip join a public, openly-licensed dataset, with credit to you. That choice is always yours.</p>
       </div>
     </div>
-    <p>You only contribute clips that are your own performance, or that you have the right to share. You decide whether the audio is ever made public. To have a contributed clip removed, email <a class="cmail" data-u="hello" data-d="twelveswaras.com" href="#" aria-label="contact by email">us</a> and it will be removed.</p>
+    <p>You only contribute clips that are your own performance, or that you have the right to share. You decide whether the audio is ever made public. To have a contributed clip removed, email <a class="cmail" data-u="hello" data-d="twelveswaras.com" href="#">us</a> and it will be removed.</p>
   </section>
 
   <section>
