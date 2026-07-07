@@ -175,6 +175,13 @@ __JSONLD__
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
   .brand svg{width:26px;height:26px;flex:0 0 auto}
   .top .gh{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
+  .top .nav{display:inline-flex;align-items:center;gap:12px}
+  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
+  .top .nav a:hover,.top .nav a.here{color:var(--paper)}
+  .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
+  @media (max-width:560px){.top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:16px}
+    .top .nav{flex-basis:100%;justify-content:center;gap:14px} .top .nav a{white-space:nowrap}}
+  @media (max-width:400px){.top .nav{gap:11px} .top .nav a{font-size:.72rem}}
   .top .gh:hover{color:var(--paper)}
   .crumb{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);padding:20px 0 0}
   .crumb a{color:var(--muted);text-decoration:underline;text-underline-offset:2px} .crumb a:hover{color:var(--paper)}
@@ -257,7 +264,15 @@ __JSONLD__
       </svg>
       <span><span class="a">twelve</span><span class="b">swaras</span></span>
     </a>
-    <a class="gh" href="./">all raagas</a>
+    <span class="nav">
+      <a href="./">raagas</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="../listen/">train your ear</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="../contribute/">contribute</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="../about/">about</a>
+    </span>
   </nav>
   <p class="crumb"><a href="../">home</a> / <a href="./">raagas</a> / __CRUMB__</p>
 
@@ -591,6 +606,13 @@ INDEX_TEMPLATE = """<!doctype html>
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
   .brand svg{width:26px;height:26px;flex:0 0 auto}
   .top .gh{font-family:var(--mono);font-size:.76rem;color:var(--muted)}
+  .top .nav{display:inline-flex;align-items:center;gap:12px}
+  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
+  .top .nav a:hover,.top .nav a.here{color:var(--paper)}
+  .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
+  @media (max-width:560px){.top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:16px}
+    .top .nav{flex-basis:100%;justify-content:center;gap:14px} .top .nav a{white-space:nowrap}}
+  @media (max-width:400px){.top .nav{gap:11px} .top .nav a{font-size:.72rem}}
   .top .gh:hover{color:var(--paper)}
   header.hero{padding:26px 0 6px}
   .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin:0 0 10px}
@@ -640,7 +662,15 @@ INDEX_TEMPLATE = """<!doctype html>
       </svg>
       <span><span class="a">twelve</span><span class="b">swaras</span></span>
     </a>
-    <a class="gh" href="../listen/">train your ear ↗</a>
+    <span class="nav">
+      <a class="here" href="./" aria-current="page">raagas</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="../listen/">train your ear</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="../contribute/">contribute</a>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="../about/">about</a>
+    </span>
   </nav>
 
   <header class="hero">
@@ -690,7 +720,7 @@ def main() -> None:
 
     # sitemap.xml — landing, ear-trainer, raaga index, every raaga (clean URLs, as Pages serves them)
     base = "https://twelveswaras.com"
-    urls = [f"{base}/", f"{base}/listen", f"{base}/raaga/"]
+    urls = [f"{base}/", f"{base}/about/", f"{base}/contribute/", f"{base}/listen/", f"{base}/raaga/"]
     urls += [f"{base}/raaga/{slug(nm)}" for nm in guide]
     sitemap = ('<?xml version="1.0" encoding="UTF-8"?>\n'
                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'

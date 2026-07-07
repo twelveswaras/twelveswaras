@@ -7,6 +7,7 @@ test_embed, these are structural assertions over the source, not a live-DB test.
     python tests/test_commons.py
 """
 from __future__ import annotations
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -116,6 +117,37 @@ def test_contribute_release_is_opt_in():
 
 def test_landing_links_to_contribute_page():
     assert "contribute/" in _site()                        # the landing surfaces the dedicated flow
+
+
+# --- unified navigation across every page (main + generated) ----------------------------------
+
+def _nav_block(path: str) -> str:
+    m = re.search(r'<nav class="top">(.*?)</nav>', (ROOT / path).read_text(), re.S)
+    return m.group(1) if m else ""
+
+
+ALL_PAGES = [
+    "site/index.html", "site/about/index.html", "site/contribute/index.html",
+    "site/listen/index.html", "site/raaga/index.html", "site/raaga/kalyani.html",
+]
+
+
+def test_nav_is_unified_across_all_pages():
+    # every page (including the generated raaga pages + index + the listen page) carries the same
+    # top nav: raagas, train your ear, contribute, about.
+    for p in ALL_PAGES:
+        nav = _nav_block(p)
+        assert nav, f'{p}: no <nav class="top"> found'
+        for item in ["train your ear", ">contribute<", ">about<"]:
+            assert item in nav, f"{p} nav is missing '{item}'"
+
+
+def test_sitemap_includes_about_contribute_and_slashed_listen():
+    # the generator must not drop the hand-added directory pages when it rewrites the sitemap
+    sm = (ROOT / "site" / "sitemap.xml").read_text()
+    assert "twelveswaras.com/about/" in sm
+    assert "twelveswaras.com/contribute/" in sm
+    assert "twelveswaras.com/listen/" in sm
 
 
 if __name__ == "__main__":
