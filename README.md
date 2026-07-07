@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/banner.png" alt="twelveswaras, a Shazam for raagas" width="820"></p>
+
 # twelveswaras
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -5,17 +7,20 @@
 
 An open-source "Shazam for raagas": play it a clip of Carnatic music and it identifies the
 **raaga**, shows the top-3 with honest confidence and the tonic (Sa) it found, and helps you
-learn to hear that raaga. Paired with a planned community-contributed, openly-licensed **data
-commons** so the model improves over time.
+learn to hear that raaga. Paired with a community-contributed, openly-licensed **data commons**
+(now live) so the model improves over time.
 
 **Live:** [twelveswaras.com](https://twelveswaras.com) · recognizer on a
 [Hugging Face Space](https://huggingface.co/spaces/twelveswaras/twelveswaras)
 
-> **Status:** v0 shipped: 40 Carnatic raagas, live and recognizing.
+> **Status:** live and recognizing 40 Carnatic raagas. The opt-in **contribute-to-the-commons**
+> loop is now live (identify then donate, or contribute a recording directly).
 > **Focus:** Carnatic first; the name, schema, and pipeline are **tradition-neutral** by
 > design, with Hindustani planned as a fast-follow.
 > **Scope:** Non-commercial, open-source only. A public good stewarded in the neutral
 > [`twelveswaras`](https://github.com/twelveswaras) GitHub + HF org, not owned by any company.
+
+<p align="center"><img src="assets/screenshot.png" alt="The recognizer naming a raaga, with a confidence bar chart and the detected tonic (Sa)" width="340"></p>
 
 ## Why "twelveswaras"?
 
@@ -44,10 +49,12 @@ full detail and citations):
 4. **Classifier:** XGBoost over the surfaces, window-aggregated, with **temperature-calibrated**
    confidences (a shown "70%" is right ~70% of the time).
 
-**Accuracy (frozen 129-track benchmark, 40 raagas):** top-1 **0.806**, top-3 **0.946**
-(~32× / 13× chance), after a D6/D8 junk gate that drops non-melodic windows (percussion, speech,
-silence). Full progression in [`benchmark/leaderboard.md`](benchmark/leaderboard.md).
-Needs a drone: concert/TV audio works; solo voice with no drone is unreliable.
+**Accuracy (cross-validated on the frozen 129-track benchmark, 40 raagas):** top-1 **0.806**,
+top-3 **0.946** (~32× / 13× chance), after a junk gate that drops non-melodic windows (percussion,
+speech, silence). That figure is on studio recordings; **accuracy in the wild is lower**, which is
+exactly what the data commons exists to close. Full progression in
+[`benchmark/leaderboard.md`](benchmark/leaderboard.md). Needs a drone: concert/TV audio works;
+solo voice with no drone is unreliable.
 
 Honest caveat: this number is cross-validation on curated research audio. Accuracy **in the
 wild** (arbitrary recordings, varied mics, background noise) is **lower**, and closing that
