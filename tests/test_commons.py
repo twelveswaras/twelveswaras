@@ -170,6 +170,16 @@ def test_abstain_offers_a_teach_me_contribution_funnel():
     assert "another raaga" in site
 
 
+def test_recognizer_start_scrolls_into_view_and_clears_stale_results():
+    """Reported UX: on mobile the locked result renders below the fold (the user has to scroll to
+    see it), and starting a new listen left the PREVIOUS top-3 on screen (mistaken for a
+    recognition of the current clip). Starting a listen must scroll the recognizer into view and
+    blank the previous top-3 (reset clears the big raaga name already; it must clear the list too)."""
+    site = _site()
+    assert "scrollIntoView" in site                          # bring the recognizer into view on start
+    assert re.search(r"top3El\.innerHTML\s*=\s*''", site)    # clear the previous top-3, not just the raaga name
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):

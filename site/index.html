@@ -432,10 +432,16 @@
     function setC(h){ controls.innerHTML=h; }
     function reset(src){ source=src; mode='listening'; elapsed=0; conf=0; top3=[]; swaraAct=new Array(12).fill(0);
       leader=''; leaderSince=0; lastSent=0; phase=''; nextTip=6; tipUntil=0; tipIdx=-1; curTonic=null; contribEl.innerHTML='';
-      saEl.className='rec-sa'; ragaEl.className='rec-raga'; ragaEl.textContent=''; }
+      saEl.className='rec-sa'; saEl.textContent=''; ragaEl.className='rec-raga'; ragaEl.textContent='';
+      top3El.innerHTML=''; top3El.classList.remove('done'); }
+    // Bring the recognizer into view when a listen starts. On mobile the locked result renders
+    // below the fold, so without this the listener has to scroll to see it. Only scroll when the
+    // card is not already fully in view, to avoid a jarring jump on desktop.
+    function showRec(){ try{ var el=g('rec'), r=el.getBoundingClientRect();
+      if(r.top<0 || r.bottom>innerHeight) el.scrollIntoView({behavior: reduce?'auto':'smooth', block:'start'}); }catch(e){} }
 
     async function startLive(){
-      reset('live'); statusEl.textContent='Identifying'; statusEl.className='rec-status warm';
+      reset('live'); showRec(); statusEl.textContent='Identifying'; statusEl.className='rec-status warm';
       guides.className='rec-guides recording'; leadEl.textContent='Finding the swaras…'; top3El.className='rec-top3 show';
       setC('<button class="rbtn stop" id="r-stop">Stop now</button>'); g('r-stop').onclick=function(){finish();};
       try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }
@@ -460,7 +466,7 @@
       }catch(e){} finally{ sending=false; }
     }
     async function startFile(file){
-      reset('file'); curFile=file; curMime=file.type||''; statusEl.textContent='Analysing recording'; statusEl.className='rec-status warm';
+      reset('file'); showRec(); curFile=file; curMime=file.type||''; statusEl.textContent='Analysing recording'; statusEl.className='rec-status warm';
       guides.className='rec-guides recording'; leadEl.textContent='Reading '+file.name.slice(0,28)+'…'; top3El.className='rec-top3 show';
       setC('<button class="rbtn cancel" id="r-cancel">Cancel</button>'); g('r-cancel').onclick=toIdle;
       t0=performance.now(); uiTimer=setInterval(tick,33);
