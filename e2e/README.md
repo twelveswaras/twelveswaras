@@ -21,9 +21,9 @@ npm test                          # or: npx playwright test --headed
 ## What's covered
 
 - `tests/identify.spec.js`
-  - **confident identify** — upload a clip, the wheel names the raaga, shows the detected Sa,
+  - **confident identify**: upload a clip, the wheel names the raaga, shows the detected Sa,
     and offers a "how to hear it" link.
-  - **low-confidence identify** — the recognizer abstains (no confident name, no learn link) and
+  - **low-confidence identify**: the recognizer abstains (no confident name, no learn link) and
     reframes the contribute card as the "teach me this raaga" funnel.
 
 Headless has no mic, so tests use the **upload** path (`#rec-file`); the live-mic path is a
