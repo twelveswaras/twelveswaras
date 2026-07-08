@@ -419,7 +419,7 @@
       '<svg '+TI+'><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M22 9l-5 6M17 9l5 6"/></svg>A quieter spot helps'];
     var mode='idle', source='live', t0=0, elapsed=0, conf=0, top3=[], swaraAct=new Array(12).fill(0);
     var leader='', leaderSince=0, phase='', nextTip=6, tipUntil=0, tipIdx=-1;
-    var stream=null, rec=null, chunks=[], sendTimer=null, uiTimer=null, sending=false, lastSent=0, lockName='', lockConf=0;
+    var stream=null, rec=null, chunks=[], sendTimer=null, uiTimer=null, sending=false, lastSent=0, lockName='', lockConf=0, lockSure=false;
     // contribute-to-commons: the clip + tonic that produced the last result, so a donation sends the
     // exact audio the model heard. Nothing is captured or sent until the listener taps Donate.
     var contribEl=g('rec-contrib'), curMime='', curFile=null, curTonic=null, CONSENT='2026-07-06-own-v1';
@@ -497,7 +497,11 @@
       clearInterval(uiTimer); clearInterval(sendTimer);
       if(!top3.length) return noRes();
       lockName=top3[0].raaga; lockConf=conf;
-      var abstain=lockConf<ABSTAIN_CONF, sure=lockConf>=0.6;
+      // "Confident" (green wheel + check) needs a real read: a high score AND, for a live listen,
+      // enough time. A quick manual stop can't be confident even if the number briefly crossed 0.6,
+      // it shows as a best guess (amber, no check). Uploads are judged on the score alone.
+      var abstain=lockConf<ABSTAIN_CONF, sure=lockConf>=0.6 && (source==='file' || elapsed>=MIN_LISTEN);
+      lockSure=sure;
       if(abstain){
         statusEl.textContent='Not sure'; statusEl.className='rec-status';
         leadEl.textContent="I couldn't place this confidently. It may be a raaga I don't know yet, or the audio needs a clearer drone. Closest guesses:";
@@ -660,7 +664,7 @@
       var t=now/1000, active=mode!=='idle', locked=mode==='locked', listening=mode==='listening';
       ctx.clearRect(0,0,size,size);
       var pulse=reduce?0.6:(0.5+0.5*Math.sin(t*(listening?3.4:1.4)));
-      var gc=locked?'116,198,157':'245,158,11';
+      var confident=locked&&lockSure, gc=confident?'116,198,157':'245,158,11';
       var glow=ctx.createRadialGradient(cx,cy,4,cx,cy,ring);
       glow.addColorStop(0,'rgba('+gc+','+(active?0.22+0.16*pulse:0.10)+')'); glow.addColorStop(1,'rgba(0,0,0,0)');
       ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(cx,cy,ring,0,7); ctx.fill();
@@ -669,8 +673,8 @@
       var shown=active?(locked?lockConf:conf):0;
       if(shown>0.001){ var a0=-Math.PI/2, a1=a0+shown*Math.PI*2;
         var gr=ctx.createLinearGradient(cx-ring,cy,cx+ring,cy);
-        if(locked){gr.addColorStop(0,'#5aa87f');gr.addColorStop(1,'#74c69d');}else{gr.addColorStop(0,'#d97706');gr.addColorStop(1,'#fbbf24');}
-        ctx.strokeStyle=gr; ctx.lineWidth=6; ctx.shadowBlur=16; ctx.shadowColor=locked?'rgba(116,198,157,.55)':'rgba(245,158,11,.55)';
+        if(confident){gr.addColorStop(0,'#5aa87f');gr.addColorStop(1,'#74c69d');}else{gr.addColorStop(0,'#d97706');gr.addColorStop(1,'#fbbf24');}
+        ctx.strokeStyle=gr; ctx.lineWidth=6; ctx.shadowBlur=16; ctx.shadowColor=confident?'rgba(116,198,157,.55)':'rgba(245,158,11,.55)';
         ctx.beginPath(); ctx.arc(cx,cy,ring,a0,a1); ctx.stroke(); ctx.shadowBlur=0; }
       if(listening && !reduce){ var sw=(-Math.PI/2)+(t*1.7)%(Math.PI*2);
         var g2=ctx.createLinearGradient(cx+Math.cos(sw-0.6)*ring,cy+Math.sin(sw-0.6)*ring,cx+Math.cos(sw)*ring,cy+Math.sin(sw)*ring);
@@ -685,7 +689,7 @@
         var len=10+(innerR*0.72)*Math.max(0.1,a);
         var x0=cx+Math.cos(ang)*innerR, y0=cy+Math.sin(ang)*innerR, x1=cx+Math.cos(ang)*(innerR+len), y1=cy+Math.sin(ang)*(innerR+len);
         var c0,c1;
-        if(locked){ var lit=real>0.22; c0=lit?'#3f7a5c':'#2a3a30'; c1=lit?'#9fe0bd':'#4b7a63'; } else { c0='#d97706'; c1='#fde68a'; }
+        if(confident){ var lit=real>0.22; c0=lit?'#3f7a5c':'#2a3a30'; c1=lit?'#9fe0bd':'#4b7a63'; } else { c0='#d97706'; c1='#fde68a'; }
         var bg=ctx.createLinearGradient(x0,y0,x1,y1); bg.addColorStop(0,c0); bg.addColorStop(1,c1);
         ctx.globalAlpha=active?(0.6+0.4*Math.min(1,a)):0.5; ctx.strokeStyle=bg; ctx.lineWidth=6; ctx.lineCap='round';
         ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
@@ -693,8 +697,9 @@
       ctx.globalAlpha=1;
       ctx.save(); ctx.translate(cx,cy); ctx.textAlign='center'; ctx.textBaseline='middle';
       if(listening){ ctx.fillStyle='#fde68a'; ctx.font='600 27px ui-monospace, Menlo, monospace'; ctx.fillText(elapsed.toFixed(1)+'s',0,1); }
-      else if(locked){ ctx.strokeStyle='#74c69d'; ctx.lineWidth=4; ctx.lineCap='round'; ctx.lineJoin='round';
+      else if(confident){ ctx.strokeStyle='#74c69d'; ctx.lineWidth=4; ctx.lineCap='round'; ctx.lineJoin='round';
         ctx.beginPath(); ctx.moveTo(-11,1); ctx.lineTo(-3,10); ctx.lineTo(13,-9); ctx.stroke(); }
+      else if(locked){ ctx.fillStyle='rgba(251,191,36,0.9)'; ctx.beginPath(); ctx.arc(0,0,4.5,0,7); ctx.fill(); }
       else { ctx.strokeStyle='rgba(242,236,226,0.85)'; ctx.fillStyle='rgba(242,236,226,0.85)'; ctx.lineWidth=3; ctx.lineCap='round';
         ctx.beginPath(); ctx.roundRect(-7,-18,14,24,7); ctx.fill();
         ctx.beginPath(); ctx.arc(0,-2,13,0.15*Math.PI,0.85*Math.PI); ctx.stroke();
