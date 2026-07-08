@@ -161,7 +161,8 @@ async function handleContribute(request, env, ctx) {
     consent_version: (form.get('consent_version') || '').toString().slice(0, 40) || null,
     country: (request.cf && request.cf.country) || null,
   };
-  if (env.CLIPS) ctx.waitUntil(env.CLIPS.put(key, bytes, { httpMetadata: { contentType: mime } }));
+  if (env.CLIPS) ctx.waitUntil(env.CLIPS.put(key, bytes, { httpMetadata: { contentType: mime } })
+    .catch((e) => console.error('contribute: R2 put failed', { err: String((e && e.message) || e), key })));
   if (env.DB) ctx.waitUntil(insertContribution(env, meta));
   return cors(json({ ok: true, status: 'queued' }), env, request);
 }
@@ -201,5 +202,10 @@ async function insertContribution(env, m) {
       new Date().toISOString(), m.key, m.sha, m.raaga, m.label_source, m.model_pred,
       m.confidence, m.tonic_hz, m.instrument, m.release_public, m.consent_version, m.country
     ).run();
-  } catch { /* contribution is best-effort; never break the UX */ }
+  } catch (e) {
+    // Best-effort insert (never break the contributor's UX), but do NOT swallow silently:
+    // log so a failed write shows up in `wrangler tail` instead of a contribution vanishing.
+    console.error('contribute: insertContribution failed',
+      { err: String((e && e.message) || e), r2_key: m.key, raaga: m.raaga });
+  }
 }
