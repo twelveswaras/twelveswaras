@@ -1,6 +1,7 @@
 name: CI
 
-# The dev-process gate (lint -> verify -> e2e) run on every PR and every push to main.
+# The dev-process gate (lint -> verify -> e2e) on every PR and every push to main, plus a
+# deploy stage that ships the site to Cloudflare Pages once those pass on a merge to main.
 # verify/lint do NOT need the heavy stack: essentia, gradio, pytorch, and the frozen model
 # are all imported lazily (or not at all) by the test path, so a lean pip install runs the
 # full suite. The audio-to-pitch path (essentia/compiam) is exercised locally, not in CI.
@@ -104,3 +105,23 @@ jobs:
           name: playwright-report
           path: e2e/playwright-report/
           retention-days: 7
+
+  deploy:
+    name: deploy (cloudflare pages)
+    needs: [verify, lint, e2e]
+    # Continuous deployment: only on a real push to main (a merge), never on PRs, and only
+    # after all three checks above pass. So main can't ship unless CI is green. The site is
+    # served by Cloudflare Pages (the sole production host); there is no GitHub Pages deploy.
+    # Requires the CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID repository secrets.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Deploy site/ to Cloudflare Pages (production)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@4 pages deploy site --project-name=twelveswaras-site --branch=main --commit-dirty=true
