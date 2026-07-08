@@ -170,6 +170,27 @@ def test_abstain_offers_a_teach_me_contribution_funnel():
     assert "another raaga" in site
 
 
+def test_recognizer_start_scrolls_into_view_and_clears_stale_results():
+    """Reported UX: on mobile the locked result renders below the fold (the user has to scroll to
+    see it), and starting a new listen left the PREVIOUS top-3 on screen (mistaken for a
+    recognition of the current clip). Starting a listen must scroll the recognizer into view and
+    blank the previous top-3 (reset clears the big raaga name already; it must clear the list too)."""
+    site = _site()
+    assert "scrollIntoView" in site                          # bring the recognizer into view on start
+    assert re.search(r"top3El\.innerHTML\s*=\s*''", site)    # clear the previous top-3, not just the raaga name
+
+
+def test_stop_midway_is_not_shown_as_confident():
+    """Reported: stopping a live listen midway rendered as a confident result (green wheel +
+    checkmark). 'Confident' must require enough listening time (a quick stop is a best guess), and
+    the wheel's green/checkmark must track that confidence, not merely the locked state."""
+    site = _site()
+    # a live listen must be long enough to be "confident"; an upload is judged on the score alone
+    assert "source==='file' || elapsed>=MIN_LISTEN" in site
+    # the wheel's green + checkmark is gated on that confidence (lockSure), not just mode==='locked'
+    assert "confident=locked&&lockSure" in site
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):
