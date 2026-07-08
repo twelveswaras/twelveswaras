@@ -435,10 +435,10 @@
       saEl.className='rec-sa'; saEl.textContent=''; ragaEl.className='rec-raga'; ragaEl.textContent='';
       top3El.innerHTML=''; top3El.classList.remove('done'); }
     // Bring the recognizer into view when a listen starts. On mobile the locked result renders
-    // below the fold, so without this the listener has to scroll to see it. Only scroll when the
-    // card is not already fully in view, to avoid a jarring jump on desktop.
+    // below the fold, so without this the listener has to scroll to see it. Center it (not 'start',
+    // which jams it to the very top) and only scroll when it is not already fully in view.
     function showRec(){ try{ var el=g('rec'), r=el.getBoundingClientRect();
-      if(r.top<0 || r.bottom>innerHeight) el.scrollIntoView({behavior: reduce?'auto':'smooth', block:'start'}); }catch(e){} }
+      if(r.top<0 || r.bottom>innerHeight) el.scrollIntoView({behavior: reduce?'auto':'smooth', block:'center'}); }catch(e){} }
 
     async function startLive(){
       reset('live'); showRec(); statusEl.textContent='Identifying'; statusEl.className='rec-status warm';
