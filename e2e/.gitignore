@@ -1,0 +1,7 @@
+node_modules/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# The tiny audio fixture is intentionally committed; the root .gitignore excludes *.wav.
+!fixtures/clip.wav
