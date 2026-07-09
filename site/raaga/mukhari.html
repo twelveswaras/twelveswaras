@@ -30,6 +30,10 @@
   },
   "description": "Mukhāri: a bhashanga Carnatic raaga. Its swaras, how to hear it, allied raagas, and kritis to listen for.",
   "url": "https://twelveswaras.com/raaga/mukhari",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "creditText": "twelveswaras (twelveswaras.com), CC-BY-4.0",
+  "isAccessibleForFree": true,
+  "usageInfo": "https://twelveswaras.com/about/#faq",
   "sameAs": "https://en.wikipedia.org/wiki/Mukhari"
 }
 </script>
@@ -126,6 +130,16 @@
   footer .tagline{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);
     max-width:48ch;margin:0 auto;text-wrap:balance}
   footer .links{margin-top:.7rem;font-size:.9rem;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+  /* Printable reference card: drop the dark theme + interactive wheel; keep the raaga's notes,
+     so the reference works on paper, not only on a screen. */
+  @media print {
+    *{background:transparent !important;box-shadow:none !important;text-shadow:none !important;color:#1a1a1a !important}
+    body{background:#fff !important}
+    .top,.crumb,.wheelwrap,.play,.cta-row,footer .links{display:none !important}
+    a{text-decoration:none}
+    .scale span,.struct span,.cell{border:1px solid #bbb !important}
+    .draftbar{border-color:#999 !important} footer{border-color:#ccc !important}
+  }
 </style>
 </head>
 <body>
