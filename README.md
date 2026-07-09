@@ -56,10 +56,6 @@ exactly what the data commons exists to close. Full progression in
 [`benchmark/leaderboard.md`](benchmark/leaderboard.md). Needs a drone: concert/TV audio works;
 solo voice with no drone is unreliable.
 
-Honest caveat: this number is cross-validation on curated research audio. Accuracy **in the
-wild** (arbitrary recordings, varied mics, background noise) is **lower**, and closing that
-gap is exactly what the contributor data commons exists to do.
-
 ## Data & attribution
 
 Trained on openly-available research corpora, **attribution required by their licenses**:
@@ -88,30 +84,22 @@ Full bibliography in [`METHODOLOGY.md`](METHODOLOGY.md).
 
 ## Roadmap
 
-- **v0 (proof, shipped):** identify only. 40-raaga tonic-normalized TDMS model + live demo +
-  learner panel. No contribution loop yet.
-- **v0.5 (trust, shipped):** legible recognition, calibrated confidence, gamaka features, junk gate.
-- **Raaga Explorer (shipped):** a browsable reference for all 40 raagas grouped by melakarta, each
-  with a beginner "tell", how-to-hear notes, a playable swara wheel, and allied / graha-bhedam
-  links; an ear-trainer; and open data (`/data/raagas.json`, CC-BY-4.0) plus `/llms.txt` and
-  per-page JSON-LD. Reference facts are draft, pending expert review.
-- **v1 (commons, contribute loop shipped):** the opt-in contribute flow is live: rights-gated,
-  quarantined as `pending`, audio kept private unless the contributor releases it CC-BY. Next in
-  this phase: community verification of pending clips, the consolidation job, and publishing the
-  CC-BY contributor dataset.
-- **Grow the commons deliberately (deepen before widen):** the measured highest-value contribution
-  is more varied, in-the-wild audio of the *current* 40 raagas, which sharply improves real-world
-  accuracy, so steer contributors toward the weakest and most-confusable of the 40 (a targeted
-  commons). Raagas beyond the 40 are pooled toward a per-raaga threshold and only trained in once
-  one reaches critical mass, never one clip at a time, and always in a quarantine separate from the
-  40 (a clip of an unknown raaga can never be model-confirmed).
-- **Abstention / open-set recognition (v1 shipped):** below a calibrated-confidence threshold the
-  tool now says "not sure" and shows tentative closest guesses instead of confidently naming the
-  nearest of the 40, and it invites the listener to contribute the clip and teach it the raaga
-  (the vocabulary-growth funnel). Next: an out-of-distribution detector to also catch the
-  confident-but-wrong cases, and re-tuning the threshold on the confidences now logged from real use.
-- **v2 (quality):** TDMS to CNN, phrase/gamaka disambiguation of allied raagas, retraining
-  pipeline, expert-annotation tier, and Hindustani.
+**Shipped:**
+
+- **v0 to v0.5:** identify-only, then legible, calibrated recognition with gamaka features and a junk gate.
+- **Raaga Explorer:** a browsable reference for all 40 raagas grouped by melakarta, an ear-trainer, and open data at `/data/raagas.json` (facts are draft, pending expert review).
+- **v1 commons:** the opt-in contribute-to-the-commons loop, rights-gated and quarantined, audio private unless released CC-BY.
+- **Abstention:** below a confidence threshold it says "not sure" and invites you to teach it the raaga.
+
+**Next:**
+
+- **Deepen the commons before widening it.** The highest-value contribution is more in-the-wild
+  audio of the *current* 40 raagas; raagas beyond the 40 are pooled and trained in only once one
+  reaches critical mass, always quarantined from the 40 (an unknown raaga can never be model-confirmed).
+- **Verify and publish.** Community verification of pending clips, the consolidation job, and the
+  public CC-BY contributor dataset.
+- **Quality (v2).** TDMS to CNN, allied-raaga disambiguation, an out-of-distribution detector for
+  the confident-but-wrong cases, an expert-annotation tier, and Hindustani.
 
 ## Getting started (developers)
 
