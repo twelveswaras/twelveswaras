@@ -245,6 +245,16 @@ __JSONLD__
   footer .tagline{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);
     max-width:48ch;margin:0 auto;text-wrap:balance}
   footer .links{margin-top:.7rem;font-size:.9rem;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+  /* Printable reference card: drop the dark theme + interactive wheel; keep the raaga's notes,
+     so the reference works on paper, not only on a screen. */
+  @media print {
+    *{background:transparent !important;box-shadow:none !important;text-shadow:none !important;color:#1a1a1a !important}
+    body{background:#fff !important}
+    .top,.crumb,.wheelwrap,.play,.cta-row,footer .links{display:none !important}
+    a{text-decoration:none}
+    .scale span,.struct span,.cell{border:1px solid #bbb !important}
+    .draftbar{border-color:#999 !important} footer{border-color:#ccc !important}
+  }
 </style>
 </head>
 <body>
@@ -482,6 +492,12 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str]) -> s
         "inDefinedTermSet": {"@type": "DefinedTermSet", "name": "Carnatic raagas",
                              "url": "https://twelveswaras.com/raaga/"},
         "description": desc, "url": f"https://twelveswaras.com/raaga/{slug(name)}",
+        # Machine-readable rights that travel with the data, so an agent reading a single raaga
+        # page (not just /data/raagas.json) gets the licence + the exact attribution string.
+        "license": "https://creativecommons.org/licenses/by/4.0/",
+        "creditText": "twelveswaras (twelveswaras.com), CC-BY-4.0",
+        "isAccessibleForFree": True,
+        "usageInfo": "https://twelveswaras.com/about/#faq",
     }
     if sameas:
         jsonld["sameAs"] = sameas
