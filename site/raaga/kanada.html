@@ -237,15 +237,18 @@
     t.setAttribute('class', je?'jeeva':(on?'on':'')); t.textContent=LABELS[i]; g.appendChild(t);
   }
 
-  // A real sung "aah" (Freesound #764329 by ShangusBurger, CC0) tuned to Sa (F3) and pitch-shifted
-  // per swara. Falls back to a formant-synth "aah" if the sample can't load or Web Audio is absent.
-  var SA_HZ = 174.61, SAMPLE_HZ = 176.64, ctx = null, aaBuf = null, aaRaw = null, aaDecoding = false;
-  try { fetch('../swara-aa.mp3').then(function(r){ return r.arrayBuffer(); })
-          .then(function(b){ aaRaw = b; }).catch(function(){}); } catch(e){}
+  // A spiccato violin note (Freesound #373854 by sgossner, CC0) tuned near Sa and pitch-shifted
+  // per swara. Falls back to a formant-synth voice if the sample can't load or Web Audio is absent.
+  var SA_HZ = 174.61, SAMPLE_HZ = 261.2, ctx = null, aaBuf = null;
+  // Decode the sample eagerly (offline context, no user gesture needed) so it is ready before the
+  // first playback. Otherwise "play the scale" schedules its notes before the async decode finishes
+  // and every note falls back to the synth voice.
+  try { fetch('../swara-violin.mp3').then(function(r){ return r.arrayBuffer(); }).then(function(b){
+      var OAC=window.OfflineAudioContext||window.webkitOfflineAudioContext;
+      (OAC?new OAC(1,1,44100):audio()).decodeAudioData(b.slice(0)).then(function(buf){ aaBuf=buf; }).catch(function(){});
+    }).catch(function(){}); } catch(e){}
   function audio(){
     if(!ctx){ var AC=window.AudioContext||window.webkitAudioContext; ctx=AC?new AC():null; }
-    if(ctx && aaRaw && !aaBuf && !aaDecoding){ aaDecoding=true;
-      ctx.decodeAudioData(aaRaw.slice(0)).then(function(buf){ aaBuf=buf; }).catch(function(){}); }
     return ctx;
   }
   function voice(semi, when, dur){

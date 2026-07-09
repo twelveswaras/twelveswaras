@@ -167,15 +167,34 @@
   var el = function (id) { return document.getElementById(id); };
   var pool = [], score = 0, roundN = 0, streak = 0, target = null, locked = false, HARD = false;
 
-  // ---- Web Audio: a formant-based vocal "aah" synth (a glottal-ish sawtooth through vowel
-  // formant filters + vibrato), warmer than a beep. A swara = a pitch relative to Sa. No samples,
-  // no backend. NB a synthesized scale still can't carry gamaka; a real sung rendition is future
-  // work (the audio commons), which is also why "hard mode" stays note-set-based, not gamaka-based.
-  var SA_HZ = 174.61, ctx = null;
-  function audio(){ if(!ctx){ var AC = window.AudioContext||window.webkitAudioContext; ctx = AC ? new AC() : null; } return ctx; }
+  // ---- Web Audio: a spiccato violin note (Freesound #373854 by sgossner, CC0) pitch-shifted per
+  // swara, with a formant-synth voice as a fallback if the sample can't load. A swara = a pitch
+  // relative to Sa. NB a scale still can't carry gamaka; a real rendition is future work (the audio
+  // commons), which is also why "hard mode" stays note-set-based, not gamaka-based.
+  var SA_HZ = 174.61, SAMPLE_HZ = 261.2, ctx = null, vlnBuf = null;
+  // Decode eagerly (offline, no gesture needed) so the sample is ready before the first play,
+  // otherwise the first scale schedules its notes before the decode finishes and falls back to synth.
+  try { fetch('../swara-violin.mp3').then(function(r){ return r.arrayBuffer(); }).then(function(b){
+      var OAC = window.OfflineAudioContext||window.webkitOfflineAudioContext;
+      (OAC ? new OAC(1,1,44100) : audio()).decodeAudioData(b.slice(0)).then(function(buf){ vlnBuf = buf; }).catch(function(){});
+    }).catch(function(){}); } catch(e){}
+  function audio(){
+    if(!ctx){ var AC = window.AudioContext||window.webkitAudioContext; ctx = AC ? new AC() : null; }
+    return ctx;
+  }
   function voice(semi, when, dur){
     var ac = audio(); if(!ac) return;
     var t0 = when, d = dur||0.6, f0 = SA_HZ * Math.pow(2, semi/12);
+    if(vlnBuf){                                          // pitch-shifted violin sample
+      var s = ac.createBufferSource(); s.buffer = vlnBuf; s.playbackRate.value = f0/SAMPLE_HZ;
+      var vg = ac.createGain();
+      vg.gain.setValueAtTime(0.0001, t0);
+      vg.gain.exponentialRampToValueAtTime(0.7, t0+0.03);
+      vg.gain.setValueAtTime(0.7, t0+Math.max(0.05, d-0.14));
+      vg.gain.exponentialRampToValueAtTime(0.0001, t0+d);
+      s.connect(vg).connect(ac.destination); s.start(t0); s.stop(t0+d+0.05);
+      return;
+    }
     var src = ac.createOscillator(); src.type = 'sawtooth'; src.frequency.value = f0;
     var vib = ac.createOscillator(); vib.frequency.value = 5.4;
     var vibg = ac.createGain(); vibg.gain.value = f0*0.011; vib.connect(vibg).connect(src.frequency);

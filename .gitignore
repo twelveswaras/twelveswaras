@@ -49,4 +49,4 @@ benchmark/realworld/links.csv
 .vscode/
 
 # site audio assets are part of the published site
-!site/swara-aa.mp3
+!site/swara-violin.mp3
