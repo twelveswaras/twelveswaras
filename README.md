@@ -149,6 +149,12 @@ If you use twelveswaras in your research, please cite it. Machine-readable metad
 [`CITATION.cff`](CITATION.cff) (GitHub renders a "Cite this repository" button from it),
 which also lists the key prior work the model builds on.
 
+## Principles
+
+twelveswaras is built on [People's Digital Goods and Infrastructure (PDGI)](https://pdgi.org)
+principles: people before digital, rights-centric, commons-oriented, transparent. [`PDGI.md`](PDGI.md)
+is a public, honest scorecard of how each one is implemented, and where we still fall short.
+
 ## Licensing
 
 - **Code:** MIT.

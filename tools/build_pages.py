@@ -319,7 +319,7 @@ __HEAR____CONFUSE____LISTEN____COUSINS__
 <footer>
   <div class="wrap">
     <p class="tagline">a non-commercial, open-source public good, Carnatic first, CC-BY data commons</p>
-    <div class="links"><a href="../listen/">train your ear</a><a href="https://github.com/twelveswaras">github</a></div>
+    <div class="links"><a href="../listen/">train your ear</a><a href="https://github.com/twelveswaras">github</a><a href="https://github.com/twelveswaras/twelveswaras/blob/main/PDGI.md">a digital commons</a></div>
   </div>
 </footer>
 
@@ -702,7 +702,7 @@ __SECTIONS__
 
   <p class="foot">
     Grouped from our draft reference; a few parent-mēḷa placements (marked mēḷa?) are debated and pending a musician's review. ·
-    <a href="../">identify a raaga →</a> · <a href="../listen/">train your ear →</a> · <a href="https://github.com/twelveswaras">github →</a>
+    <a href="../">identify a raaga →</a> · <a href="../listen/">train your ear →</a> · <a href="https://github.com/twelveswaras">github →</a> · <a href="https://github.com/twelveswaras/twelveswaras/blob/main/PDGI.md">a digital commons →</a>
   </p>
 </div>
 </body>
