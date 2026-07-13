@@ -11,10 +11,15 @@ CREATE TABLE IF NOT EXISTS identifications (
   tonic_hz      REAL,
   heard_s       REAL,
   no_prediction INTEGER DEFAULT 0,
-  country       TEXT                       -- request.cf.country (coarse geo, not PII)
+  country       TEXT,                      -- request.cf.country (coarse geo, not PII)
+  referrer      TEXT                       -- acquisition referrer HOST only (e.g. "www.google.com",
+                                           -- "t.co"), never a full URL/path/query; '' -> NULL = direct.
+                                           -- On a live DB that predates this column, run once:
+                                           --   ALTER TABLE identifications ADD COLUMN referrer TEXT;
 );
 CREATE INDEX IF NOT EXISTS idx_ident_ts   ON identifications(ts);
 CREATE INDEX IF NOT EXISTS idx_ident_top1 ON identifications(top1);
+CREATE INDEX IF NOT EXISTS idx_ident_ref  ON identifications(referrer);
 
 -- Opt-in contributions to the commons. The audio clip is stored PRIVATELY in R2 (used to improve
 -- the model and for human verification). By default we publish the improved MODEL and the

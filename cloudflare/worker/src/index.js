@@ -113,8 +113,8 @@ async function logToD1(env, data, request) {
   const top = (data.top3 && data.top3[0]) || null;
   try {
     await env.DB.prepare(
-      `INSERT INTO identifications (ts, top1, confidence, top3, tonic_hz, heard_s, no_prediction, country)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO identifications (ts, top1, confidence, top3, tonic_hz, heard_s, no_prediction, country, referrer)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).bind(
       new Date().toISOString(),
       top ? top.raaga : null,
@@ -123,11 +123,24 @@ async function logToD1(env, data, request) {
       data.tonic_hz ?? null,
       data.heard_seconds ?? null,
       data.no_prediction ? 1 : 0,
-      (request.cf && request.cf.country) || null
+      (request.cf && request.cf.country) || null,
+      cleanReferrer(data.referrer)
     ).run();
   } catch {
     /* logging must never break recognition */
   }
+}
+
+// Acquisition referrer, HOST only. The page sends document.referrer's hostname (see logResult in
+// site/index.html); this is defence-in-depth so a hand-crafted POST can't smuggle a full URL with a
+// path/query (potential PII) into the log. Reduce anything to its host, cap length, '' -> NULL.
+function cleanReferrer(v) {
+  if (typeof v !== 'string') return null;
+  let s = v.trim();
+  if (!s) return null;
+  try { if (s.includes('://')) s = new URL(s).hostname; } catch { /* not a URL, fall through */ }
+  s = s.split('/')[0].split('?')[0].split('#')[0].slice(0, 120);
+  return s || null;
 }
 
 // POST /contribute — an explicit, opt-in donation to the commons. The rights gate is enforced

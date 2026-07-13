@@ -538,10 +538,29 @@
     // Log one row per finished session (the locked result, or a no-prediction), posted to the
     // worker /result endpoint at lock time. /identify is not logged (the wheel polls it every few
     // seconds, which over-counted usage). No audio is sent, only the result metadata.
+    // The acquisition referrer HOST (e.g. "www.google.com", "t.co"), captured once per session so
+    // that navigating between our own pages does not overwrite where the visitor actually came from.
+    // Host only, never the full URL; our own domain and direct visits both record as '' (= direct).
+    function acqReferrer(){
+      try{
+        var r=sessionStorage.getItem('tw_ref');
+        if(r===null){
+          r='';
+          try{
+            if(document.referrer){
+              var h=new URL(document.referrer).hostname;
+              if(h && h!=='twelveswaras.com' && h!=='www.twelveswaras.com') r=h;
+            }
+          }catch(e){}
+          sessionStorage.setItem('tw_ref', r);
+        }
+        return r;
+      }catch(e){ return ''; }
+    }
     function logResult(){
       try{
         var body=JSON.stringify({ top3: top3, tonic_hz: curTonic, heard_seconds: elapsed,
-          no_prediction: top3.length ? 0 : 1 });
+          no_prediction: top3.length ? 0 : 1, referrer: acqReferrer() });
         fetch(API+'/result',{method:'POST',headers:{'content-type':'application/json'},body:body,keepalive:true}).catch(function(){});
       }catch(e){}
     }
