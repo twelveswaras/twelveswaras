@@ -445,8 +445,10 @@
       reset('live'); showRec(); statusEl.textContent='Identifying'; statusEl.className='rec-status warm';
       guides.className='rec-guides recording'; leadEl.textContent='Finding the swaras…'; top3El.className='rec-top3 show';
       setC('<button class="rbtn stop" id="r-stop">Stop now</button>'); g('r-stop').onclick=function(){finish();};
+      ev('listen_start','live');
       try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }
-      catch(e){ return fail('Microphone access is needed to identify live. You can also upload a recording.'); }
+      catch(e){ ev('mic_denied','live');
+        return fail('Microphone access is needed to identify live. You can also upload a recording.'); }
       var mime=pickMime(); curMime=mime; curFile=null; rec=new MediaRecorder(stream, mime?{mimeType:mime}:undefined); chunks=[];
       rec.ondataavailable=function(e){ if(e.data&&e.data.size) chunks.push(e.data); };
       rec.start(1000); t0=performance.now();
@@ -470,6 +472,7 @@
       reset('file'); showRec(); curFile=file; curMime=file.type||''; statusEl.textContent='Analysing recording'; statusEl.className='rec-status warm';
       guides.className='rec-guides recording'; leadEl.textContent='Reading '+file.name.slice(0,28)+'…'; top3El.className='rec-top3 show';
       setC('<button class="rbtn cancel" id="r-cancel">Cancel</button>'); g('r-cancel').onclick=toIdle;
+      ev('listen_start','file');
       t0=performance.now(); uiTimer=setInterval(tick,33);
       try{ var fd=new FormData(); fd.append('audio', file, file.name);
         var r=await fetch(API+'/identify',{method:'POST',body:fd}); var d=await r.json(); apply(d); finish();
@@ -562,6 +565,28 @@
         var body=JSON.stringify({ top3: top3, tonic_hz: curTonic, heard_seconds: elapsed,
           no_prediction: top3.length ? 0 : 1, referrer: acqReferrer() });
         fetch(API+'/result',{method:'POST',headers:{'content-type':'application/json'},body:body,keepalive:true}).catch(function(){});
+      }catch(e){}
+      ev('result', source);
+    }
+    // ---- funnel -------------------------------------------------------------------------------
+    // view -> listen_start -> result, with mic_denied branching off the middle step. /result only
+    // ever tells us about listens that finished; these tell us about the ones that did not, which
+    // is the number that actually explains a quiet day. Anonymous: a random per-TAB id kept in
+    // sessionStorage, so it dies with the tab. Not a cookie, never joined to a person, no audio.
+    function sid(){
+      try{
+        var s=sessionStorage.getItem('tw_sid');
+        if(!s){ s=Math.random().toString(36).slice(2,10)+Math.random().toString(36).slice(2,10);
+          sessionStorage.setItem('tw_sid', s); }
+        return s;
+      }catch(e){ return ''; }
+    }
+    // Fire-and-forget, and swallow everything: a funnel ping must never be able to affect a listen.
+    function ev(name, src){
+      try{
+        fetch(API+'/event',{method:'POST',headers:{'content-type':'application/json'},
+          body:JSON.stringify({event:name, session:sid(), source:src||null, referrer:acqReferrer()}),
+          keepalive:true}).catch(function(){});
       }catch(e){}
     }
     function fail(msg){
@@ -732,6 +757,7 @@
     g('rec-file').onchange=function(e){ var f=e.target.files&&e.target.files[0]; if(f) startFile(f); e.target.value=''; };
     orb.addEventListener('click',function(){ if(mode==='idle'||mode==='locked') startLive(); });
     toIdle();
+    ev('view');   // top of the funnel: a real browser ran this, so it counts a human, not a crawler
   })();
 </script>
 

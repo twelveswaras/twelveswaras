@@ -21,6 +21,27 @@ CREATE INDEX IF NOT EXISTS idx_ident_ts   ON identifications(ts);
 CREATE INDEX IF NOT EXISTS idx_ident_top1 ON identifications(top1);
 CREATE INDEX IF NOT EXISTS idx_ident_ref  ON identifications(referrer);
 
+-- Funnel steps. `identifications` records sessions that FINISHED; this records the ones that did
+-- not, which is the larger and more useful number. Without it "~100 visitors/day, 0 recognitions"
+-- is unreadable: never-tapped-the-orb and tapped-then-gave-up-waiting look identical, and they
+-- need opposite fixes. Anonymous by construction: `session` is a random per-TAB token held in
+-- sessionStorage, it dies when the tab closes, it is never a cookie and never joined to a person.
+-- No audio, no PII. (A crawler that does not run JavaScript never fires `view`, so this is also a
+-- truer human traffic count than the bot-inflated edge pageviews.)
+CREATE TABLE IF NOT EXISTS events (
+  id       INTEGER PRIMARY KEY AUTOINCREMENT,
+  ts       TEXT NOT NULL,               -- ISO8601
+  event    TEXT NOT NULL,               -- view | listen_start | mic_denied | result
+                                        -- (the worker enforces exactly this set; see FUNNEL_EVENTS)
+  session  TEXT,                        -- anonymous per-tab token, dies with the tab
+  source   TEXT,                        -- 'live' | 'file', where the step has one
+  country  TEXT,                        -- request.cf.country (coarse geo, not PII)
+  referrer TEXT                         -- acquisition referrer HOST only, same rule as above
+);
+CREATE INDEX IF NOT EXISTS idx_events_ts    ON events(ts);
+CREATE INDEX IF NOT EXISTS idx_events_event ON events(event);
+CREATE INDEX IF NOT EXISTS idx_events_sess  ON events(session);
+
 -- Opt-in contributions to the commons. The audio clip is stored PRIVATELY in R2 (used to improve
 -- the model and for human verification). By default we publish the improved MODEL and the
 -- non-reconstructable FEATURES, never the recording; the raw audio joins a public CC-BY dataset

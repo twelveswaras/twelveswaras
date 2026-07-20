@@ -74,8 +74,17 @@ jobs:
               sys.exit(1)
           print("JSON-LD ok")
           PY
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
       - name: Worker JavaScript parses
         run: node --check cloudflare/worker/src/index.js && echo "worker ok"
+      - name: Worker unit tests
+        # The sanitizers that stand between an arbitrary POST and a D1 column, plus the /event
+        # allowlist and the keep-warm cron. No Workers runtime and no network: the module is
+        # imported directly and D1 is a stub.
+        working-directory: cloudflare/worker
+        run: node --test
 
   e2e:
     name: e2e (playwright)

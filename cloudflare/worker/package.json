@@ -1,0 +1,9 @@
+{
+  "name": "twelveswaras-api",
+  "private": true,
+  "type": "module",
+  "//": "type=module so src/index.js is read as the ES module it is, by both Node (node --check, node --test) and Wrangler. No dependencies: the worker is plain Workers-runtime JavaScript.",
+  "scripts": {
+    "test": "node --test test/"
+  }
+}

@@ -29,6 +29,11 @@ export default {
     if (request.method === 'POST' && url.pathname.endsWith('/result')) {
       return handleResult(request, env, ctx);
     }
+    // one row per funnel step reached (view -> listen_start -> result), so a visit that produces
+    // nothing is legible rather than invisible
+    if (request.method === 'POST' && url.pathname.endsWith('/event')) {
+      return handleEvent(request, env, ctx);
+    }
     if (url.pathname.endsWith('/health')) {
       try {
         const r = await fetch(env.SPACE_URL + '/health');
@@ -39,7 +44,33 @@ export default {
     }
     return cors(json({ error: 'not found', path: url.pathname }, 404), env, request);
   },
+
+  // Cron (wrangler.toml [triggers]): keep the recognizer Space warm. A sleeping HF Space costs the
+  // FIRST visitor a ~34s cold start with no feedback, which is well past the point where anyone
+  // waits; measured usage was ~100 visitors/day producing zero recognitions. Cheaper to pay that
+  // cold start on a schedule than to charge it to whoever shows up.
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(keepWarm(env));
+  },
 };
+
+// A warm Space answers /health in ~1s. Anything slower means it had gone to sleep and this ping
+// just absorbed the cold start on a visitor's behalf. Logged either way (`wrangler tail`) so the
+// cron cadence can be tuned from evidence about how fast the Space actually sleeps.
+const COLD_MS = 5000;
+
+async function keepWarm(env) {
+  const t0 = Date.now();
+  try {
+    const r = await fetch(env.SPACE_URL + '/health');
+    const ms = Date.now() - t0;
+    console.log('keepwarm', { status: r.status, ms, cold: ms > COLD_MS });
+  } catch (e) {
+    // Never throw: an unhandled rejection here would mark the cron as failing, and a dead cron is
+    // worse than a cold Space (it fails silently and the cold start comes back).
+    console.error('keepwarm failed', { err: String((e && e.message) || e), ms: Date.now() - t0 });
+  }
+}
 
 // Reflect the request Origin when it's one of ours (production, *.pages.dev previews, or localhost
 // dev), otherwise fall back to the primary origin. This lets the wheel be tested from a local static
@@ -129,6 +160,61 @@ async function logToD1(env, data, request) {
   } catch {
     /* logging must never break recognition */
   }
+}
+
+// POST /event — log ONE row per funnel step a visitor reaches. /result tells us about sessions
+// that finished; this tells us about the ones that did not, which is the larger number. Without it
+// "100 visitors, 0 recognitions" cannot be read: we cannot separate never-tapped-the-orb from
+// tapped-then-gave-up-waiting, and those need opposite fixes. No audio, no PII; `session` is an
+// anonymous per-tab token that dies with the tab (see sid() in site/index.html).
+const FUNNEL_EVENTS = new Set([
+  'view',          // the recognizer page rendered and ran its script (so: a human, not a crawler)
+  'listen_start',  // tapped the orb, or picked a file
+  'mic_denied',    // asked for the microphone and was refused
+  'result',        // a result was shown (a lock, an abstention, or a no-prediction)
+]);
+
+async function handleEvent(request, env, ctx) {
+  let data;
+  try { data = await request.json(); }
+  catch { return cors(json({ error: 'expected json' }, 400), env, request); }
+  // Unknown step names are dropped, not stored: the allowlist is what keeps this table a funnel
+  // rather than an open write endpoint. Still a 200, because analytics must never surface to the
+  // page as an error.
+  if (env.DB && FUNNEL_EVENTS.has(data.event)) ctx.waitUntil(logEvent(env, data, request));
+  return cors(json({ ok: true }), env, request);
+}
+
+async function logEvent(env, data, request) {
+  try {
+    await env.DB.prepare(
+      `INSERT INTO events (ts, event, session, source, country, referrer)
+       VALUES (?, ?, ?, ?, ?, ?)`
+    ).bind(
+      new Date().toISOString(),
+      data.event,
+      cleanId(data.session),
+      cleanSource(data.source),
+      (request.cf && request.cf.country) || null,
+      cleanReferrer(data.referrer)
+    ).run();
+  } catch {
+    /* logging must never break the page */
+  }
+}
+
+// The anonymous per-tab funnel id. Accept a short alphanumeric token and nothing else: dropping a
+// malformed id costs one row of funnel data, whereas storing whatever was posted would turn this
+// column into free-form storage (and a place to smuggle an identity we promised not to keep).
+function cleanId(v) {
+  if (typeof v !== 'string') return null;
+  const s = v.trim().slice(0, 32);
+  return /^[a-z0-9]+$/i.test(s) ? s : null;
+}
+
+// Which entry point the step came through. A closed enum, so it stays a dimension we can group by.
+function cleanSource(v) {
+  return v === 'live' || v === 'file' ? v : null;
 }
 
 // Acquisition referrer, HOST only. The page sends document.referrer's hostname (see logResult in
@@ -222,3 +308,8 @@ async function insertContribution(env, m) {
       { err: String((e && e.message) || e), r2_key: m.key, raaga: m.raaga });
   }
 }
+
+// Test-only surface (cloudflare/worker/test/worker.test.mjs). The Workers runtime only ever reads
+// the default export above; naming these as well costs nothing at runtime and lets the sanitizers
+// that guard the D1 columns be unit-tested directly.
+export { cleanReferrer, cleanId, cleanSource, FUNNEL_EVENTS };
