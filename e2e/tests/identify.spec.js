@@ -3,21 +3,13 @@
 // wheel locking, the raaga name, the tonic, the abstention path, without a Worker, model, or mic.
 const { test, expect } = require('@playwright/test');
 const path = require('path');
+const { stubApi } = require('./helpers');
 
 const FIXTURE = path.join(__dirname, '..', 'fixtures', 'clip.wav');
-const ACT = [0.9, 0.1, 0.2, 0.05, 0.7, 0.3, 0.1, 0.8, 0.1, 0.2, 0.05, 0.6];
 
-// Stub /identify with a chosen top-3. top3[0].confidence drives finish(): >=0.6 confident,
-// <0.45 abstain. /result is fire-and-forget usage logging, swallow it so nothing hits the Worker.
-async function stubIdentify(page, top3, tonicHz = 146) {
-  await page.route('**/identify', (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ tonic_hz: tonicHz, swara_activation: ACT, top3 }),
-    }));
-  await page.route('**/result', (route) => route.fulfill({ status: 200, body: '{}' }));
-}
+// top3[0].confidence drives finish(): >=0.6 confident, <0.45 abstain. The logging endpoints
+// (/result, /event) are swallowed by the shared stub so nothing reaches the live Worker.
+const stubIdentify = (page, top3, tonicHz = 146) => stubApi(page, { top3, tonicHz });
 
 test('confident identify names the raaga, shows the tonic and a learn link', async ({ page }) => {
   await stubIdentify(page, [
