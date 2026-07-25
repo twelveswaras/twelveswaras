@@ -1,0 +1,12 @@
+raga,url,drone,instrument,start,notes
+# Copy this to links.csv (gitignored) and add one row per clip. Only raga + url are required.
+# raga       = true raaga (any spelling / diacritics; folded to the Hindustani-30 vocab; out-of-vocab rows are skipped)
+# url        = YouTube (or any yt-dlp-supported) link
+# drone      = yes | no | unknown   (tanpura presence; breaks accuracy down by drone)
+# instrument = vocal | sitar | sarod | bansuri | sarangi | santoor | violin | shehnai | ...
+# start      = OPTIONAL start second to grab from (default 30, to skip spoken intros); a &t= in the url is honored
+# notes      = bandish / artist / anything
+# --- example rows (delete; a leading # in the raga column marks a comment) ---
+# Yaman,https://youtu.be/XXXX,yes,vocal,60,khayal, start after the announcement
+# Bhūp,https://youtu.be/XXXX,yes,bansuri,,alap
+# Darbāri,https://youtu.be/XXXX,yes,sarod,90,vilambit

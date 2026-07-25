@@ -27,6 +27,9 @@ models/
 benchmark/realworld/audio/
 benchmark/realworld/clips.csv
 benchmark/realworld/links.csv
+benchmark/realworld/hindustani/audio/
+benchmark/realworld/hindustani/clips.csv
+benchmark/realworld/hindustani/links.csv
 *.pkl
 *.parquet
 *.pt

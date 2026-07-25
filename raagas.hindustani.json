@@ -1,0 +1,153 @@
+{
+  "_note": "30-raaga Hindustani set from IAMRRD/HMD (compmusic_raga Hindustani, CC-BY-4.0 features). Canonical spellings match the Carnatic diacritic style. Aliases are ASCII/English variants; extend with expert review (Phase 2). Two names collide with the Carnatic-40 (Tōḍī, Śrī) and are DIFFERENT raagas — always tradition-namespace.",
+  "tradition": "hindustani",
+  "canonical": [
+    "Ahira bhairav",
+    "Alahaiyā bilāval",
+    "Bairāgi",
+    "Basant",
+    "Bhairav",
+    "Bhūp",
+    "Bihāg",
+    "Bilāsakhānī tōḍī",
+    "Bāgēśrī",
+    "Darbāri",
+    "Dēś",
+    "Gauḍ malhār",
+    "Hamsadhvāni",
+    "Jōg",
+    "Khamāj",
+    "Kēdār",
+    "Lalit",
+    "Madhukauns",
+    "Madhuvanti",
+    "Miyān malhār",
+    "Mālkauns",
+    "Mārvā",
+    "Mārūbihāg",
+    "Puriyā dhanaśrī",
+    "Rāgēśrī",
+    "Tōḍī",
+    "Yaman kalyāṇ",
+    "Ābhōgī",
+    "Śrī",
+    "Śuddh sāraṅg"
+  ],
+  "aliases": {
+    "Bhūp": [
+      "Bhoop",
+      "Bhup",
+      "Bhopali"
+    ],
+    "Yaman kalyāṇ": [
+      "Yaman",
+      "Kalyan",
+      "Iman"
+    ],
+    "Mālkauns": [
+      "Malkauns",
+      "Malkosh"
+    ],
+    "Bāgēśrī": [
+      "Bageshri",
+      "Bageshree"
+    ],
+    "Dēś": [
+      "Des",
+      "Desh"
+    ],
+    "Darbāri": [
+      "Darbari",
+      "Darbari Kanada",
+      "Darbari Kanhra"
+    ],
+    "Bihāg": [
+      "Bihag"
+    ],
+    "Kēdār": [
+      "Kedar"
+    ],
+    "Bhairav": [
+      "Bhairav"
+    ],
+    "Tōḍī": [
+      "Todi",
+      "Miyan ki Todi",
+      "Miyan Todi"
+    ],
+    "Mārvā": [
+      "Marwa",
+      "Marva"
+    ],
+    "Basant": [
+      "Vasant",
+      "Basant"
+    ],
+    "Hamsadhvāni": [
+      "Hansdhwani",
+      "Hamsadhwani"
+    ],
+    "Ābhōgī": [
+      "Abhogi",
+      "Abhogi Kanada"
+    ],
+    "Khamāj": [
+      "Khamaj"
+    ],
+    "Rāgēśrī": [
+      "Rageshri",
+      "Rageshree"
+    ],
+    "Jōg": [
+      "Jog"
+    ],
+    "Miyān malhār": [
+      "Miyan Malhar",
+      "Miyan ki Malhar",
+      "Mian Malhar"
+    ],
+    "Gauḍ malhār": [
+      "Gaud Malhar"
+    ],
+    "Śuddh sāraṅg": [
+      "Shuddh Sarang",
+      "Sarang"
+    ],
+    "Ahira bhairav": [
+      "Ahir Bhairav"
+    ],
+    "Puriyā dhanaśrī": [
+      "Puriya Dhanashri",
+      "Poorvi"
+    ],
+    "Bilāsakhānī tōḍī": [
+      "Bilaskhani Todi"
+    ],
+    "Alahaiyā bilāval": [
+      "Alhaiya Bilawal",
+      "Bilawal"
+    ],
+    "Mārūbihāg": [
+      "Marubihag",
+      "Maru Bihag"
+    ],
+    "Madhukauns": [
+      "Madhukauns"
+    ],
+    "Madhuvanti": [
+      "Madhuvanti"
+    ],
+    "Lalit": [
+      "Lalit",
+      "Lalat"
+    ],
+    "Śrī": [
+      "Shri",
+      "Sri"
+    ],
+    "Bairāgi": [
+      "Bairagi",
+      "Bairagi Bhairav"
+    ]
+  }
+}
