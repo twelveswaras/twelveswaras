@@ -5,18 +5,20 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Live at twelveswaras.com](https://img.shields.io/badge/live-twelveswaras.com-brightgreen.svg)](https://twelveswaras.com)
 
-An open-source "Shazam for raagas": play it a clip of Carnatic music and it identifies the
-**raaga**, shows the top-3 with honest confidence and the tonic (Sa) it found, and helps you
-learn to hear that raaga. Paired with a community-contributed, openly-licensed **data commons**
+An open-source "Shazam for raagas": play it a clip of Indian classical music (Carnatic, and now
+Hindustani in preview) and it identifies the **raaga**, shows the top-3 with honest confidence
+and the tonic (Sa) it found, and helps you learn to hear that raaga. Paired with a community-contributed, openly-licensed **data commons**
 (now live) so the model improves over time.
 
 **Live:** [twelveswaras.com](https://twelveswaras.com) · recognizer on a
 [Hugging Face Space](https://huggingface.co/spaces/twelveswaras/twelveswaras)
 
-> **Status:** live and recognizing 40 Carnatic raagas. The opt-in **contribute-to-the-commons**
-> loop is now live (identify then donate, or contribute a recording directly).
-> **Focus:** Carnatic first; the name, schema, and pipeline are **tradition-neutral** by
-> design, with Hindustani planned as a fast-follow.
+> **Status:** live and recognizing **40 Carnatic raagas**, with a **30-raaga Hindustani preview**
+> rolling out (the recognizer is now dual-tradition; the Hindustani reference pages are draft,
+> pending a musician's review). The opt-in **contribute-to-the-commons** loop is live for both
+> traditions (identify then donate, or contribute a recording directly).
+> **Focus:** Carnatic first, Hindustani following; the name, schema, and pipeline are
+> **tradition-neutral** by design.
 > **Scope:** Non-commercial, open-source only. A public good stewarded in the neutral
 > [`twelveswaras`](https://github.com/twelveswaras) GitHub + HF org, not owned by any company.
 
@@ -56,15 +58,22 @@ exactly what the data commons exists to close. Full progression in
 [`benchmark/leaderboard.md`](benchmark/leaderboard.md). Needs a drone: concert/TV audio works;
 solo voice with no drone is unreliable.
 
+**Hindustani preview (30 raagas, draft):** the unified dual-tradition model cross-validates at
+~**0.88** top-1 on clean studio audio (Carnatic held steady, so adding Hindustani did not regress
+it), with cross-tradition confusion only ~3%. That is the studio ceiling only: a **real-world
+Hindustani benchmark is still pending**, and the Hindustani reference pages are draft awaiting
+expert review, so treat this tradition as a preview.
+
 ## Data & attribution
 
 Trained on openly-available research corpora, **attribution required by their licenses**:
 
 - **Saraga Carnatic** (CompMusic / MTG-UPF): CC-BY-**NC-SA**. Predominant pitch + tonic annotations.
-- **Indian Art Music Raga Recognition Dataset: Carnatic Music Dataset (CMD)** (CompMusic /
-  MTG-UPF; Gulati et al.): CC-BY-**NC-ND** 3.0, [Zenodo](https://doi.org/10.5281/zenodo.7278510),
-  accessed via `mirdata` (`compmusic_raga`). Its paired **Hindustani dataset (HMD)** is the
-  training data for the planned Hindustani fast-follow.
+- **Indian Art Music Raga Recognition Dataset** (CompMusic / MTG-UPF; Gulati et al.): the
+  **pitch + tonic features** we train on are **CC-BY-4.0**
+  ([Zenodo](https://doi.org/10.5281/zenodo.7278506)); the audio is separate and access-restricted.
+  Its **Carnatic (CMD)** set backs the 40 Carnatic raagas, and its paired **Hindustani (HMD)** set
+  (30 raagas, same CC-BY-4.0 features) now powers the Hindustani preview.
 
 Built with **essentia** and **compiam** (both **AGPL**; the deployed Space carries AGPL
 obligations, satisfied by publishing all source), plus librosa, xgboost, and gradio.
@@ -87,7 +96,7 @@ Full bibliography in [`METHODOLOGY.md`](METHODOLOGY.md).
 **Shipped:**
 
 - **v0 to v0.5:** identify-only, then legible, calibrated recognition with gamaka features and a junk gate.
-- **Raaga Explorer:** a browsable reference for all 40 raagas grouped by melakarta, an ear-trainer, and open data at `/data/raagas.json` (facts are draft, pending expert review).
+- **Raaga Explorer:** a browsable reference for all 40 Carnatic raagas grouped by melakarta (plus a 30-raaga Hindustani preview, draft), an ear-trainer, and open data at `/data/raagas.json` (facts are draft, pending expert review).
 - **v1 commons:** the opt-in contribute-to-the-commons loop, rights-gated and quarantined, audio private unless released CC-BY.
 - **Abstention:** below a confidence threshold it says "not sure" and invites you to teach it the raaga.
 
