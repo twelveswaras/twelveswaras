@@ -13,10 +13,12 @@ ALLOW_ORIGIN = "https://twelveswaras.com"
 # Keep-warm cron DISABLED for the container. The free HF Space was free-to-ping; a Cloudflare
 # Container is BILLED while running, so a 5-min ping would keep it always-on and blow past the
 # Workers Paid container allowance (~$30/mo). The container scales to zero and cold-starts in
-# ~10s (vs the Space's ~30s), which is fine at current traffic. Re-enable this (and accept the
-# always-on cost) only if traffic grows enough to justify eliminating cold starts.
-# [triggers]
-# crons = ["*/5 * * * *"]
+# ~10s (vs the Space's ~30s), which is fine at current traffic.
+# NOTE: crons must be an EXPLICIT empty array to REMOVE the schedule already deployed on the
+# worker; merely commenting out [triggers] leaves the old schedule live. Re-enable a keep-warm
+# ping (and accept the always-on cost) only if traffic grows enough to justify no cold starts.
+[triggers]
+crons = []
 
 # Same-origin route: twelveswaras.com/api/* -> this worker (Pages serves everything else).
 [[routes]]
