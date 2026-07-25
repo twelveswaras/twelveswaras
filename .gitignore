@@ -30,6 +30,9 @@ benchmark/realworld/links.csv
 benchmark/realworld/hindustani/audio/
 benchmark/realworld/hindustani/clips.csv
 benchmark/realworld/hindustani/links.csv
+# recognizer container build context (assembled app + bundled model; regenerate with assemble.sh)
+cloudflare/recognizer/app/
+cloudflare/recognizer/node_modules/
 *.pkl
 *.parquet
 *.pt

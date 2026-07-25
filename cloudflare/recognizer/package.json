@@ -1,0 +1,8 @@
+{
+  "name": "twelveswaras-recognizer",
+  "private": true,
+  "//": "Cloudflare Container worker. @cloudflare/containers provides the Container base class + getContainer(). Run `npm install` before `wrangler deploy`.",
+  "dependencies": {
+    "@cloudflare/containers": "^0.0.30"
+  }
+}
