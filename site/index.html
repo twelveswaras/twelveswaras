@@ -501,6 +501,9 @@
       clearInterval(uiTimer); clearInterval(sendTimer);
       if(!top3.length) return noRes();
       lockName=top3[0].raaga; lockConf=conf;
+      // Tradition travels per prediction (API top3[].tradition); default carnatic for the current
+      // single-tradition model. Drives the Hindustani label + the learn-link guard below.
+      var lockTrad=(top3[0]&&top3[0].tradition)||'carnatic';
       // "Confident" (green wheel + check) needs a real read: a high score AND, for a live listen,
       // enough time. A quick manual stop can't be confident even if the number briefly crossed 0.6,
       // it shows as a best guess (amber, no check). Uploads are judged on the score alone.
@@ -518,13 +521,22 @@
         return;
       }
       statusEl.textContent=sure?'Confident':'Best guess'; statusEl.className='rec-status '+(sure?'done':'warm');
-      leadEl.textContent = source==='file'
+      var heard = source==='file'
         ? (sure ? 'From your recording.' : 'From your clip. A longer or clearer recording helps.')
         : (sure ? ('Heard for '+elapsed.toFixed(0)+'s') : ('Heard '+elapsed.toFixed(0)+'s. A longer, closer listen helps.'));
+      // Label a Hindustani result so the two traditions are never conflated; Carnatic (the default)
+      // reads exactly as before.
+      leadEl.textContent = (lockTrad==='hindustani' ? 'Hindustani · ' : '') + heard;
       ragaEl.textContent=lockName; ragaEl.className='rec-raga show'+(sure?' done':'');
       top3El.classList.toggle('done',sure); rows(top3,true); guides.className='rec-guides hide';
+      // The "how to hear" page exists only for the Carnatic 40 today; Hindustani raaga pages are a
+      // fast-follow, so only offer the link when the page exists (else it would 404). Widen this to
+      // always-show once the Hindustani pages ship.
+      var learn = lockTrad==='carnatic'
+        ? '<a class="rlearn" id="r-learn" href="raaga/'+slug(lockName)+'.html">↗ How to hear '+lockName+'</a>'
+        : '';
       setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Listen again</button>'
-        +'<a class="rlearn" id="r-learn" href="raaga/'+slug(lockName)+'.html">↗ How to hear '+lockName+'</a>'
+        +learn
         +'<button class="rghost" id="r-up2">or upload a recording ↑</button></div>');
       g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
       mountContrib();
