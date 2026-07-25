@@ -43,10 +43,38 @@ LETTER_WORDS = {
 }
 
 
-def slug(name: str) -> str:
+# Per-tradition config. Carnatic values are the exact current literals, so its output stays
+# byte-identical (verified by regenerating + a zero git diff). Hindustani reuses the SAME template,
+# CSS and wheel, swapping the swara labels, the vadi/samvadi legend, the reference field names, and
+# a "-hindustani" slug suffix (same directory, so every relative path is unchanged).
+TRAD = {
+    "carnatic": {
+        "word": "Carnatic",
+        "labels": ["S", "R1", "R2", "G2", "G3", "M1", "M2", "P", "D1", "D2", "N2", "N3"],
+        "suffix": "",
+        "termset": "Carnatic raagas",
+        "guide": "raaga_guide.json",
+        "ref": "supporting-docs/raaga_reference_draft.json",
+        "legend_jeeva": "jeeva (life note)",
+        "legend_nyasa": "nyasa (resting note)",
+    },
+    "hindustani": {
+        "word": "Hindustani",
+        "labels": ["S", "r", "R", "g", "G", "m", "M", "P", "d", "D", "n", "N"],
+        "suffix": "-hindustani",
+        "termset": "Hindustani raagas",
+        "guide": "raaga_guide.hindustani.json",
+        "ref": "supporting-docs/raaga_reference_hindustani.json",
+        "legend_jeeva": "vadi (sonant)",
+        "legend_nyasa": "samvadi (consonant)",
+    },
+}
+
+
+def slug(name: str, suffix: str = "") -> str:
     d = unicodedata.normalize("NFKD", name)
     d = "".join(c for c in d if not unicodedata.combining(c))
-    return d.lower().replace("ṁ", "m").replace(" ", "-")
+    return d.lower().replace("ṁ", "m").replace(" ", "-") + suffix
 
 
 def esc(s: str) -> str:
@@ -143,13 +171,13 @@ TEMPLATE = """<!doctype html>
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <meta property="og:type" content="article">
-<meta property="og:title" content="__NAME__: a Carnatic raaga · twelveswaras">
+<meta property="og:title" content="__NAME__: a __TRADWORD__ raaga · twelveswaras">
 <meta property="og:description" content="__DESC__">
 <meta property="og:image" content="https://twelveswaras.com/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="__NAME__: a Carnatic raaga">
+<meta name="twitter:title" content="__NAME__: a __TRADWORD__ raaga">
 <meta name="twitter:image" content="https://twelveswaras.com/og.png">
 __JSONLD__
 <style>
@@ -297,8 +325,8 @@ __JSONLD__
       </svg>
       <div class="legend">
         <span><i class="lg-on"></i> in the raaga</span>
-        <span><i class="lg-jeeva"></i> jeeva (life note)</span>
-        <span><i class="lg-nyasa"></i> nyasa (resting note)</span>
+        <span><i class="lg-jeeva"></i> __LEGEND_JEEVA__</span>
+        <span><i class="lg-nyasa"></i> __LEGEND_NYASA__</span>
       </div>
       <div class="play">
         <button id="playScale" type="button" aria-pressed="false">▶ play the scale</button>
@@ -325,7 +353,7 @@ __HEAR____CONFUSE____LISTEN____COUSINS__
 
 <script>
 (function () {
-  var LABELS = ["S","R1","R2","G2","G3","M1","M2","P","D1","D2","N2","N3"];
+  var LABELS = __LABELS__;
   var IN = __IN__, JEEVA = __JEEVA__, NYASA = __NYASA__;
   var cx=150, cy=150, rNode=104, rLabel=132, nodes={};
   var g = document.getElementById('wheel'), NS='http://www.w3.org/2000/svg';
@@ -414,13 +442,22 @@ __HEAR____CONFUSE____LISTEN____COUSINS__
 """
 
 
-def hear_section(ref: dict) -> str:
-    rows = [
-        ("Life notes / jeeva", ref.get("jeeva_swaras", "")),
-        ("Resting notes / nyasa", ref.get("nyasa_swaras", "")),
-        ("Signature phrases / prayoga", ref.get("prayogas", "")),
-        ("Ornament / gamaka", ref.get("gamakas", "")),
-    ]
+def hear_section(ref: dict, trad: dict = TRAD["carnatic"]) -> str:
+    if trad["word"] == "Hindustani":
+        rows = [
+            ("Vadi / sonant", ref.get("vadi", "")),
+            ("Samvadi / consonant", ref.get("samvadi", "")),
+            ("Signature phrase / pakad", ref.get("pakad", "")),
+            ("Thaat", ref.get("thaat", "")),
+            ("Time / samay", ref.get("samay", "")),
+        ]
+    else:
+        rows = [
+            ("Life notes / jeeva", ref.get("jeeva_swaras", "")),
+            ("Resting notes / nyasa", ref.get("nyasa_swaras", "")),
+            ("Signature phrases / prayoga", ref.get("prayogas", "")),
+            ("Ornament / gamaka", ref.get("gamakas", "")),
+        ]
     rows = [(k, v) for k, v in rows if v]
     if not rows:
         return ""
@@ -462,36 +499,50 @@ def cousins_section(cousins: list[str]) -> str:
             '    <div class="cards">\n' + cards + "\n    </div>\n  </section>")
 
 
-def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str]) -> str:
+def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
+               trad: dict = TRAD["carnatic"]) -> str:
+    hin = trad["word"] == "Hindustani"
+    word = trad["word"]
     semis = [SEMITONE[s] for s in swaras if s in SEMITONE]
-    jeeva = parse_positions(ref.get("jeeva_swaras", ""), swaras)
-    nyasa = parse_positions(ref.get("nyasa_swaras", ""), swaras)
+    # The wheel highlights the "life" and "resting" notes; for Hindustani those are the vadi and
+    # samvadi (the raaga's most and second-most important notes), which map cleanly onto the same
+    # jeeva/nyasa highlight slots.
+    jeeva = parse_positions(ref.get("vadi" if hin else "jeeva_swaras", ""), swaras)
+    nyasa = parse_positions(ref.get("samvadi" if hin else "nyasa_swaras", ""), swaras)
     n = len(swaras)
     label = COUNT_LABEL.get(n, "bhashanga" if n > 7 else "")
-    eyebrow = (label.split()[0].capitalize() + " Carnatic raaga") if label else "Carnatic raaga"
-    thesis = (f"{name} is a {label} raaga in the Carnatic tradition."
-              if label else f"{name} is a Carnatic raaga (note-set pending expert review).")
+    if hin:
+        thaat = ref.get("thaat", "")
+        eyebrow = "Hindustani raaga" + (f" · {thaat.split()[0]} thaat" if thaat else "")
+        thesis = (f"{name} is a raaga in the Hindustani tradition"
+                  + (f" ({thaat.split()[0]} thaat)." if thaat else "."))
+        desc = f"{name}: a Hindustani raaga. Its swaras, how to hear it, and raagas it is confused with."
+    else:
+        eyebrow = (label.split()[0].capitalize() + " Carnatic raaga") if label else "Carnatic raaga"
+        thesis = (f"{name} is a {label} raaga in the Carnatic tradition."
+                  if label else f"{name} is a Carnatic raaga (note-set pending expert review).")
+        desc = (f"{name}: a {label} Carnatic raaga. Its swaras, how to hear it, allied raagas, and "
+                f"kritis to listen for." if label
+                else f"{name}: a Carnatic raaga. How to hear it, allied raagas, and kritis.")
     # a verified beginner "tell" becomes the hero line; the structural sentence drops below it
     tell = ref.get("tell", "")
     rasa = ref.get("rasa", "")
     thesis_text = tell or thesis
     mood_html = f'\n    <p class="mood">{esc(rasa)}</p>' if rasa else ""
     struct_html = f'\n    <p class="struct">{esc(thesis)}</p>' if tell else ""
-    desc = (f"{name}: a {label} Carnatic raaga. Its swaras, how to hear it, allied raagas, and "
-            f"kritis to listen for." if label
-            else f"{name}: a Carnatic raaga. How to hear it, allied raagas, and kritis.")
 
-    aro = ref.get("arohana", "")
-    ava = ref.get("avarohana", "")
+    aro = ref.get("aroha", "") if hin else ref.get("arohana", "")
+    ava = ref.get("avaroha", "") if hin else ref.get("avarohana", "")
     aro_html = f'<p class="v">{esc(aro)}</p>' if aro else '<p class="v pending">pending review</p>'
     ava_html = f'<p class="v">{esc(ava)}</p>' if ava else '<p class="v pending">pending review</p>'
 
-    sameas = wikipedia_url(ref.get("sources", ""))
+    src = ref.get("sources", "")
+    sameas = wikipedia_url("; ".join(src) if isinstance(src, list) else src)
     jsonld = {
         "@context": "https://schema.org", "@type": "DefinedTerm", "name": name,
-        "inDefinedTermSet": {"@type": "DefinedTermSet", "name": "Carnatic raagas",
+        "inDefinedTermSet": {"@type": "DefinedTermSet", "name": trad["termset"],
                              "url": "https://twelveswaras.com/raaga/"},
-        "description": desc, "url": f"https://twelveswaras.com/raaga/{slug(name)}",
+        "description": desc, "url": f"https://twelveswaras.com/raaga/{slug(name, trad['suffix'])}",
         # Machine-readable rights that travel with the data, so an agent reading a single raaga
         # page (not just /data/raagas.json) gets the licence + the exact attribution string.
         "license": "https://creativecommons.org/licenses/by/4.0/",
@@ -506,14 +557,16 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str]) -> s
 
     page = TEMPLATE
     repl = {
-        "__TITLE__": f"{name}: a Carnatic raaga, and how to hear it · twelveswaras",
-        "__DESC__": desc, "__SLUG__": slug(name), "__JSONLD__": jsonld_html,
+        "__TITLE__": f"{name}: a {word} raaga, and how to hear it · twelveswaras",
+        "__DESC__": desc, "__SLUG__": slug(name, trad["suffix"]), "__JSONLD__": jsonld_html,
+        "__TRADWORD__": word, "__LABELS__": json.dumps(trad["labels"], separators=(",", ":")),
+        "__LEGEND_JEEVA__": esc(trad["legend_jeeva"]), "__LEGEND_NYASA__": esc(trad["legend_nyasa"]),
         "__CRUMB__": esc(name), "__EYEBROW__": esc(eyebrow), "__NAME__": esc(name),
         "__THESIS__": esc(thesis_text),
         "__MOOD__": mood_html, "__STRUCT__": struct_html,
         "__WHEEL_ALT__": esc(f"Swara wheel for {name}: {' '.join(swaras)}."),
         "__AROHANA__": aro_html, "__AVAROHANA__": ava_html,
-        "__HEAR__": hear_section(ref), "__CONFUSE__": confuse_section(ref),
+        "__HEAR__": hear_section(ref, trad), "__CONFUSE__": confuse_section(ref),
         "__LISTEN__": listen_section(ref), "__COUSINS__": cousins_section(cousins),
         "__IN__": json.dumps(semis), "__JEEVA__": json.dumps(jeeva), "__NYASA__": json.dumps(nyasa),
     }
@@ -737,10 +790,24 @@ def main() -> None:
         n += 1
     (OUT / "index.html").write_text(build_index(guide, ref))
 
+    # Hindustani pages: same template/CSS/wheel, tradition-aware labels + reference fields, written
+    # with a -hindustani slug suffix into the same dir (so relative paths match the Carnatic pages).
+    # Graha-bhedam (modal cousins) is a Carnatic construct, so cousins is empty here.
+    htrad = TRAD["hindustani"]
+    hguide = json.loads((ROOT / htrad["guide"]).read_text())
+    href = json.loads((ROOT / htrad["ref"]).read_text())
+    hnames = [k for k in hguide if not k.startswith("_")]
+    hn = 0
+    for nm in hnames:
+        page = build_page(nm, hguide[nm].get("swaras") or [], href.get(nm, {}), [], trad=htrad)
+        (OUT / f"{slug(nm, htrad['suffix'])}.html").write_text(page)
+        hn += 1
+
     # sitemap.xml — landing, ear-trainer, raaga index, every raaga (clean URLs, as Pages serves them)
     base = "https://twelveswaras.com"
     urls = [f"{base}/", f"{base}/about/", f"{base}/contribute/", f"{base}/listen/", f"{base}/raaga/"]
     urls += [f"{base}/raaga/{slug(nm)}" for nm in guide]
+    urls += [f"{base}/raaga/{slug(nm, htrad['suffix'])}" for nm in hnames]
     sitemap = ('<?xml version="1.0" encoding="UTF-8"?>\n'
                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
                + "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls)
@@ -748,8 +815,8 @@ def main() -> None:
     (ROOT / "site" / "sitemap.xml").write_text(sitemap)
 
     linked = sum(1 for v in cousins_of.values() if v)
-    print(f"wrote {n} raaga pages + grouped index to {OUT.relative_to(ROOT)}/ "
-          f"({linked} have graha-bhedam cousins)")
+    print(f"wrote {n} Carnatic + {hn} Hindustani raaga pages + grouped index to "
+          f"{OUT.relative_to(ROOT)}/ ({linked} have graha-bhedam cousins)")
 
 
 if __name__ == "__main__":
