@@ -262,11 +262,91 @@ def analyze(n_estimators: int = 250) -> None:
     print(f"saved spike artifact -> {artifact}  (shipped model untouched)")
 
 
+FULL_MODEL = MODELS_DIR / "raaga_xgb.dual.json"       # RaagaXGB-loadable (booster + .classes.json)
+FULL_RESULTS = Path(__file__).resolve().parent.parent / "supporting-docs" / "hindustani_dual_full_results.json"
+
+
+def fitfull(total: int = 400, chunk: int = 50) -> None:
+    """Train the full-dim (no PCA), full-data dual model with INCREMENTAL warm-start.
+
+    A single full-dim, 70-class fit does not finish inside this environment's compute window, so
+    training is done in chunks of `chunk` boosting rounds: after each chunk the booster is saved
+    to FULL_MODEL, so a kill mid-way loses at most one chunk and the next run resumes from the
+    saved trees. Same product hyperparameters (depth 6, eta 0.1, hist) as the Carnatic model, and
+    the SAME 75/25 grouped-by-track split the product uses, so the held-out number is honest and
+    the saved model is trained exactly the way the shipped one is. Re-run until it reaches `total`;
+    the final call evaluates on the held-out 25% and writes the results json.
+    """
+    from collections import defaultdict
+
+    import xgboost as xgb
+    from sklearn.model_selection import GroupKFold
+
+    d = np.load(CACHE, allow_pickle=True)
+    X, y, groups, trad = d["X"], d["y"], d["groups"], d["trad"]
+    classes = sorted(set(y.tolist()))
+    cidx = {c: i for i, c in enumerate(classes)}
+    yi = np.array([cidx[v] for v in y])
+    tr_i, te_i = next(GroupKFold(n_splits=4).split(X, yi, groups))
+    dtrain = xgb.DMatrix(X[tr_i], label=yi[tr_i])
+    params = {"objective": "multi:softprob", "num_class": len(classes),
+              "max_depth": 6, "eta": 0.1, "tree_method": "hist", "nthread": 0}
+
+    booster, done = None, 0
+    if FULL_MODEL.exists():
+        booster = xgb.Booster(); booster.load_model(str(FULL_MODEL))
+        done = booster.num_boosted_rounds()
+        print(f"resuming from {done}/{total} rounds", flush=True)
+    print(f"train {len(tr_i)} windows x {X.shape[1]}d, {len(classes)} classes, "
+          f"{len(set(groups[tr_i].tolist()))} tracks; chunk={chunk}", flush=True)
+
+    while done < total:
+        t0 = time.time()
+        step = min(chunk, total - done)
+        booster = xgb.train(params, dtrain, num_boost_round=step, xgb_model=booster)
+        booster.save_model(str(FULL_MODEL))
+        FULL_MODEL.with_suffix(".classes.json").write_text(json.dumps(classes, ensure_ascii=False))
+        done = booster.num_boosted_rounds()
+        print(f"  rounds {done}/{total} saved ({time.time()-t0:.0f}s for {step})", flush=True)
+
+    # held-out evaluation (track-level), same shape as analyze()
+    proba = booster.predict(xgb.DMatrix(X[te_i]))
+    agg = defaultdict(lambda: np.zeros(len(classes))); cnt = defaultdict(int)
+    for row, g in zip(proba, groups[te_i]):
+        agg[g] += row; cnt[g] += 1
+    track_true = {g: lab for g, lab in zip(groups, y)}
+    track_trad = {g: t for g, t in zip(groups, trad)}
+    trad_of_class = {c: (CARNATIC if c.endswith(f"({CARNATIC})") else HINDUSTANI) for c in classes}
+    pred = {g: classes[int((agg[g] / cnt[g]).argmax())] for g in agg}
+
+    def acc(sel):
+        pts = [(pred[g], track_true[g]) for g in pred if sel(g)]
+        return float(np.mean([p == t for p, t in pts])) if pts else float("nan"), len(pts)
+    ov, nov = acc(lambda g: True)
+    ca, nca = acc(lambda g: track_trad[g] == CARNATIC)
+    hi, nhi = acc(lambda g: track_trad[g] == HINDUSTANI)
+    leak = sum(1 for g in pred if track_trad[g] != trad_of_class[pred[g]])
+    res = {"model": "full-dim (2304) no PCA", "rounds": done, "test_tracks": nov,
+           "overall_top1": ov, "carnatic_top1": ca, "carnatic_n": nca,
+           "hindustani_top1": hi, "hindustani_n": nhi,
+           "cross_tradition_leak": leak, "cross_tradition_leak_frac": leak / nov}
+    FULL_RESULTS.write_text(json.dumps(res, ensure_ascii=False, indent=2))
+    print("\n===== FULL-DIM DUAL MODEL (held-out 25%) =====")
+    print(f"rounds {done} | overall {ov:.3f} (n={nov}) | Carnatic {ca:.3f} (n={nca}) | "
+          f"Hindustani {hi:.3f} (n={nhi}) | cross-tradition leak {leak}/{nov}={leak/nov:.3f}")
+    print(f"model -> {FULL_MODEL}  (RaagaXGB-loadable; shipped model untouched)")
+    print(f"results -> {FULL_RESULTS}", flush=True)
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "extract"
     if cmd == "extract":
         extract()
     elif cmd == "analyze":
         analyze()
+    elif cmd == "fitfull":
+        total = int(sys.argv[2]) if len(sys.argv) > 2 else 400
+        chunk = int(sys.argv[3]) if len(sys.argv) > 3 else 50
+        fitfull(total, chunk)
     else:
-        raise SystemExit("usage: python -m tools.hindustani_spike [extract|analyze]")
+        raise SystemExit("usage: python -m tools.hindustani_spike [extract|analyze|fitfull [total] [chunk]]")
