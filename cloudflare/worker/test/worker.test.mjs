@@ -6,7 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import worker, { cleanReferrer, cleanId, cleanSource, FUNNEL_EVENTS } from '../src/index.js';
+import worker, { cleanReferrer, cleanId, cleanSource, cleanTradition, FUNNEL_EVENTS } from '../src/index.js';
 
 // A D1 stub shaped like the bits of the real binding the worker uses: prepare().bind().run().
 // `rows` collects the bound values of every insert so a test can assert what was written.
@@ -102,6 +102,15 @@ test('cleanSource is a two-value enum and nulls everything else', () => {
   assert.equal(cleanSource('other'), null);
   assert.equal(cleanSource(''), null);
   assert.equal(cleanSource(undefined), null);
+});
+
+// ---- cleanTradition --------------------------------------------------------------------------
+test('cleanTradition is a two-value enum, everything else NULL', () => {
+  assert.equal(cleanTradition('carnatic'), 'carnatic');
+  assert.equal(cleanTradition('hindustani'), 'hindustani');
+  assert.equal(cleanTradition('western'), null);
+  assert.equal(cleanTradition(''), null);
+  assert.equal(cleanTradition(undefined), null);
 });
 
 // ---- POST /event -----------------------------------------------------------------------------
