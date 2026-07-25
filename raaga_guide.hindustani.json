@@ -1,0 +1,8 @@
+{
+  "_note": "Hindustani-30 authoritative swara sets (the 12 chromatic positions each raaga uses), mirroring raaga_guide.json for Carnatic. Position tokens are shared with the Carnatic guide (S, R1=komal re, R2=shuddh re, G2=komal ga, G3=shuddh ga, M1=shuddh ma, M2=tivra ma, P, D1=komal dha, D2=shuddh dha, N2=komal ni, N3=shuddh ni); the Hindustani PAGE renders them with Hindustani labels (S r R g G m M P d D n N). Rich fields (thaat, aroha, avaroha, pakad, vadi, samvadi, samay) live in supporting-docs/raaga_reference_hindustani.json and are DRAFT pending expert review. This file currently holds the flagship batch; the remaining raagas are being drafted.",
+  "Yaman kalyāṇ": { "swaras": ["S", "R2", "G3", "M2", "P", "D2", "N3"] },
+  "Bhūp": { "swaras": ["S", "R2", "G3", "P", "D2"] },
+  "Mālkauns": { "swaras": ["S", "G2", "M1", "D1", "N2"] },
+  "Bhairav": { "swaras": ["S", "R1", "G3", "M1", "P", "D1", "N3"] },
+  "Dēś": { "swaras": ["S", "R2", "G3", "M1", "P", "D2", "N2", "N3"] }
+}
