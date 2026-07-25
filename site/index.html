@@ -529,11 +529,13 @@
       leadEl.textContent = (lockTrad==='hindustani' ? 'Hindustani · ' : '') + heard;
       ragaEl.textContent=lockName; ragaEl.className='rec-raga show'+(sure?' done':'');
       top3El.classList.toggle('done',sure); rows(top3,true); guides.className='rec-guides hide';
-      // The "how to hear" page exists only for the Carnatic 40 today; Hindustani raaga pages are a
-      // fast-follow, so only offer the link when the page exists (else it would 404). Widen this to
-      // always-show once the Hindustani pages ship.
+      // "How to hear" page: Carnatic at raaga/<slug>.html, Hindustani at raaga/<slug>-hindustani.html
+      // (the -hindustani suffix keeps the two Todi/Sri pages distinct). Only offered for a known
+      // tradition, so an unknown label never links to a 404.
       var learn = lockTrad==='carnatic'
         ? '<a class="rlearn" id="r-learn" href="raaga/'+slug(lockName)+'.html">↗ How to hear '+lockName+'</a>'
+        : lockTrad==='hindustani'
+        ? '<a class="rlearn" id="r-learn" href="raaga/'+slug(lockName)+'-hindustani.html">↗ How to hear '+lockName+'</a>'
         : '';
       setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Listen again</button>'
         +learn
