@@ -1,0 +1,27 @@
+name = "twelveswaras-recognizer"
+main = "src/index.js"
+compatibility_date = "2026-06-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true          # gives a public *.workers.dev URL the gateway worker points SPACE_URL at
+
+# The recognizer runs as a Cloudflare Container (the FastAPI app in ./Dockerfile, listening on
+# 7860). This worker just forwards every request to one shared, warm container instance. It
+# REPLACES the Hugging Face Space: the free HF Docker Space had become unreliable (sleeps -> ~30s
+# cold starts even with the keep-warm cron), whereas a Container scales to zero and wakes fast, on
+# the Workers Paid plan already in use. Cutover is one line: set the gateway worker's SPACE_URL to
+# this worker's URL. Rollback is the same line back to the HF Space.
+[[containers]]
+class_name = "Recognizer"
+image = "./Dockerfile"          # build context is this dir; the Dockerfile COPYs ./app (assembled)
+max_instances = 3
+instance_type = "standard-1"    # 1/2 vCPU, 4 GiB, 8 GB disk — headroom for essentia + the model.
+                                # Bump to standard-2 (1 vCPU, 6 GiB) if warm inference feels slow.
+
+[[durable_objects.bindings]]
+name = "RECOGNIZER"
+class_name = "Recognizer"
+
+# Container classes are Durable Objects and must be registered as a SQLite-backed class.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Recognizer"]

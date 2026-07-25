@@ -65,6 +65,10 @@ CREATE TABLE IF NOT EXISTS contributions (
   release_public  INTEGER DEFAULT 0,             -- may the AUDIO go in a public CC-BY dataset?
   consent_version TEXT,                          -- which consent text was agreed to
   country         TEXT,                          -- coarse geo (request.cf.country), not PII
+  tradition       TEXT,                          -- 'carnatic' | 'hindustani' (from the contribute
+                                                 -- picker's group); NULL if unspecified. On a live
+                                                 -- DB that predates this column, run once:
+                                                 --   ALTER TABLE contributions ADD COLUMN tradition TEXT;
   verification_status TEXT DEFAULT 'unverified', -- unverified | community_verified | disputed
   split           TEXT    DEFAULT 'pending',     -- pending | train | val | test | rejected
   votes_agree     INTEGER DEFAULT 0,

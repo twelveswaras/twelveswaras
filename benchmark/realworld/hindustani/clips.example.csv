@@ -1,0 +1,13 @@
+file,raga,source,license,drone,notes
+# Copy this to clips.csv (gitignored) and fill it in. Put the audio in benchmark/realworld/hindustani/audio/.
+# file    = filename inside benchmark/realworld/hindustani/audio/ (e.g. baithak1_yaman.m4a)
+# raga    = the true raaga; any spelling/diacritics — folded to the Hindustani-30 vocab (out-of-vocab rows are skipped)
+# source  = where it came from (your recording, a YouTube URL, archive.org, AIR ...)
+# license = own | cc-by | public-domain | private-eval   (private-eval = measure only, never redistribute)
+# drone   = yes | no | unknown   (tanpura presence; lets the harness break accuracy down by drone)
+# notes   = anything (bandish, artist, how you got the label, mic, hall ...)
+# --- example rows (delete these; # in the file column marks a comment) ---
+# yt_yaman_khayal.m4a,Yaman,https://youtu.be/XXXX,private-eval,yes,raga announced before alap
+# baithak_bhoop_bansuri.m4a,Bhūp,my phone at a house concert,own,yes,Hariprasad-style flute
+# air_malkauns_vocal.m4a,Mālkauns,archive.org AIR broadcast,public-domain,yes,dhrupad, no title but announced
+# student_darbari.m4a,Darbāri,volunteer clip,own,no,solo voice no tanpura — tests tonic robustness

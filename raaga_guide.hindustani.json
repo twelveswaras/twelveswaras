@@ -1,0 +1,327 @@
+{
+  "_note": "Hindustani-30 authoritative swara sets (the 12 chromatic positions each raaga uses), mirroring raaga_guide.json for Carnatic. Position tokens are shared with the Carnatic guide (S, R1=komal re, R2=shuddh re, G2=komal ga, G3=shuddh ga, M1=shuddh ma, M2=tivra ma, P, D1=komal dha, D2=shuddh dha, N2=komal ni, N3=shuddh ni); the Hindustani PAGE renders them with Hindustani labels (S r R g G m M P d D n N). Rich fields (thaat, aroha, avaroha, pakad, vadi, samvadi, samay) live in supporting-docs/raaga_reference_hindustani.json and are DRAFT pending expert review. This file currently holds the flagship batch; the remaining raagas are being drafted.",
+  "Yaman kalyāṇ": {
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M2",
+      "P",
+      "D2",
+      "N3"
+    ]
+  },
+  "Bhūp": {
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "P",
+      "D2"
+    ]
+  },
+  "Mālkauns": {
+    "swaras": [
+      "S",
+      "G2",
+      "M1",
+      "D1",
+      "N2"
+    ]
+  },
+  "Bhairav": {
+    "swaras": [
+      "S",
+      "R1",
+      "G3",
+      "M1",
+      "P",
+      "D1",
+      "N3"
+    ]
+  },
+  "Dēś": {
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2",
+      "N3"
+    ]
+  },
+  "Bihāg": {
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "M2",
+      "P",
+      "D2",
+      "N3"
+    ]
+  },
+  "Bāgēśrī": {
+    "swaras": [
+      "S",
+      "R2",
+      "G2",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
+  },
+  "Darbāri": {
+    "swaras": [
+      "S",
+      "R2",
+      "G2",
+      "M1",
+      "P",
+      "D1",
+      "N2"
+    ]
+  },
+  "Kēdār": {
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "M2",
+      "P",
+      "D2",
+      "N3"
+    ]
+  },
+  "Khamāj": {
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2",
+      "N3"
+    ]
+  },
+  "Mārvā": {
+    "swaras": [
+      "S",
+      "R1",
+      "G3",
+      "M2",
+      "D2",
+      "N3"
+    ]
+  },
+  "Puriyā dhanaśrī": {
+    "swaras": [
+      "S",
+      "R1",
+      "G3",
+      "M2",
+      "P",
+      "D1",
+      "N3"
+    ]
+  },
+  "Lalit": {
+    "swaras": [
+      "S",
+      "R1",
+      "G3",
+      "M1",
+      "M2",
+      "D1",
+      "N3"
+    ]
+  },
+  "Basant": {
+    "swaras": [
+      "S",
+      "R1",
+      "G3",
+      "M2",
+      "P",
+      "D1",
+      "N3"
+    ]
+  },
+  "Śrī": {
+    "swaras": [
+      "S",
+      "R1",
+      "G3",
+      "M2",
+      "P",
+      "D1",
+      "N3"
+    ]
+  },
+  "Ahira bhairav": {
+    "swaras": [
+      "S",
+      "R1",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2"
+    ]
+  },
+  "Alahaiyā bilāval": {
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2",
+      "N3"
+    ]
+  },
+  "Tōḍī": {
+    "swaras": [
+      "S",
+      "R1",
+      "G2",
+      "M2",
+      "P",
+      "D1",
+      "N3"
+    ]
+  },
+  "Bilāsakhānī tōḍī": {
+    "swaras": [
+      "S",
+      "R1",
+      "G2",
+      "M1",
+      "P",
+      "D1",
+      "N2"
+    ]
+  },
+  "Bairāgi": {
+    "swaras": [
+      "S",
+      "R1",
+      "M1",
+      "P",
+      "N2"
+    ]
+  },
+  "Hamsadhvāni": {
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "P",
+      "N3"
+    ]
+  },
+  "Jōg": {
+    "swaras": [
+      "S",
+      "G2",
+      "G3",
+      "M1",
+      "P",
+      "N2"
+    ]
+  },
+  "Ābhōgī": {
+    "swaras": [
+      "S",
+      "R2",
+      "G2",
+      "M1",
+      "D2"
+    ]
+  },
+  "Madhukauns": {
+    "swaras": [
+      "S",
+      "G2",
+      "M2",
+      "P",
+      "N2"
+    ]
+  },
+  "Madhuvanti": {
+    "swaras": [
+      "S",
+      "R2",
+      "G2",
+      "M2",
+      "P",
+      "D2",
+      "N3"
+    ]
+  },
+  "Miyān malhār": {
+    "swaras": [
+      "S",
+      "R2",
+      "G2",
+      "M1",
+      "P",
+      "D2",
+      "N2",
+      "N3"
+    ]
+  },
+  "Gauḍ malhār": {
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "P",
+      "D2",
+      "N2",
+      "N3"
+    ]
+  },
+  "Mārūbihāg": {
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "M2",
+      "P",
+      "D2",
+      "N3"
+    ]
+  },
+  "Rāgēśrī": {
+    "swaras": [
+      "S",
+      "R2",
+      "G3",
+      "M1",
+      "D2",
+      "N2"
+    ]
+  },
+  "Śuddh sāraṅg": {
+    "swaras": [
+      "S",
+      "R2",
+      "M1",
+      "M2",
+      "P",
+      "D2",
+      "N2",
+      "N3"
+    ]
+  }
+}

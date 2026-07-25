@@ -3,17 +3,22 @@ main = "src/index.js"
 compatibility_date = "2026-06-01"
 workers_dev = true          # publish to *.workers.dev until the custom-domain route is enabled
 
-# The headless recognizer (the HF Docker Space that serves /identify).
+# The headless recognizer. Cutover 2026-07-25: moved off the unreliable, sleeping HF free Space
+# onto a Cloudflare Container (worker `twelveswaras-recognizer`, cloudflare/recognizer/).
+# ROLLBACK: set SPACE_URL back to https://twelveswaras-recognizer-api.hf.space and redeploy.
 [vars]
-SPACE_URL = "https://twelveswaras-recognizer-api.hf.space"
+SPACE_URL = "https://twelveswaras-recognizer.knerav.workers.dev"
 ALLOW_ORIGIN = "https://twelveswaras.com"
 
-# Keep the recognizer warm. An idle HF Space sleeps, and waking it costs ~34s (measured) with no
-# feedback on screen, so the first visitor after a quiet spell effectively meets a broken site.
-# Five minutes is deliberately inside any plausible sleep timer; the worker logs `cold: true`
-# whenever a ping had to wake it, so this can be widened once we know the real idle window.
+# Keep-warm cron DISABLED for the container. The free HF Space was free-to-ping; a Cloudflare
+# Container is BILLED while running, so a 5-min ping would keep it always-on and blow past the
+# Workers Paid container allowance (~$30/mo). The container scales to zero and cold-starts in
+# ~10s (vs the Space's ~30s), which is fine at current traffic.
+# NOTE: crons must be an EXPLICIT empty array to REMOVE the schedule already deployed on the
+# worker; merely commenting out [triggers] leaves the old schedule live. Re-enable a keep-warm
+# ping (and accept the always-on cost) only if traffic grows enough to justify no cold starts.
 [triggers]
-crons = ["*/5 * * * *"]
+crons = []
 
 # Same-origin route: twelveswaras.com/api/* -> this worker (Pages serves everything else).
 [[routes]]

@@ -1,0 +1,11 @@
+# Build context is this dir; only ./app belongs in the image.
+src
+wrangler.toml
+package.json
+package-lock.json
+node_modules
+DEPLOY.md
+.dockerignore
+assemble.sh
+**/__pycache__
+*.pyc

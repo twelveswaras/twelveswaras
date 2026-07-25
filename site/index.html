@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>twelveswaras: identify the raaga (Shazam for Carnatic music)</title>
-<meta name="description" content="Point your phone at a Carnatic performance and identify the raaga (raga). A free, open-source 'Shazam for raagas': a raga identifier with an open CC-BY data commons. Carnatic first; Hindustani planned.">
+<meta name="description" content="Point your phone at a Carnatic performance and identify the raaga (raga). A free, open-source 'Shazam for raagas': a raga identifier with an open CC-BY data commons. Carnatic first; Hindustani now in preview.">
 <link rel="canonical" href="https://twelveswaras.com/">
 <meta name="theme-color" content="#0b0a08">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -63,7 +63,7 @@
     {"@type": "Question", "name": "Is twelveswaras free and open source?",
      "acceptedAnswer": {"@type": "Answer", "text": "Yes, it is a non-commercial, open-source public good. The code is MIT-licensed and the contributor data commons is CC-BY-4.0. It is not a commercial product."}},
     {"@type": "Question", "name": "How many raagas does it recognise?",
-     "acceptedAnswer": {"@type": "Answer", "text": "40 Carnatic raagas in this version. The name, schema and pipeline are tradition-neutral by design, with Hindustani planned as a fast-follow."}},
+     "acceptedAnswer": {"@type": "Answer", "text": "40 Carnatic raagas, plus a 30-raaga Hindustani preview now rolling out: the recognizer is dual-tradition, though the Hindustani reference pages are draft, pending a musician's review. The name, schema and pipeline are tradition-neutral by design."}},
     {"@type": "Question", "name": "Do I need to install an app?",
      "acceptedAnswer": {"@type": "Answer", "text": "No. It runs in your browser. On a phone you can 'Add to Home Screen' for an app-like, full-screen experience, with no App Store or Play Store needed."}}
   ]
@@ -420,13 +420,16 @@
       '<svg '+TI+'><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M22 9l-5 6M17 9l5 6"/></svg>A quieter spot helps'];
     var mode='idle', source='live', t0=0, elapsed=0, conf=0, top3=[], swaraAct=new Array(12).fill(0);
     var leader='', leaderSince=0, phase='', nextTip=6, tipUntil=0, tipIdx=-1;
-    var stream=null, rec=null, chunks=[], sendTimer=null, uiTimer=null, sending=false, lastSent=0, lockName='', lockConf=0, lockSure=false;
+    var stream=null, rec=null, chunks=[], sendTimer=null, uiTimer=null, sending=false, lastSent=0, lockName='', lockConf=0, lockSure=false, lockTrad='carnatic';
     // contribute-to-commons: the clip + tonic that produced the last result, so a donation sends the
     // exact audio the model heard. Nothing is captured or sent until the listener taps Donate.
     var contribEl=g('rec-contrib'), curMime='', curFile=null, curTonic=null, CONSENT='2026-07-06-own-v1';
     // Commons contribute flow: live as of 2026-07-07 (D1 schema migrated, worker /contribute deployed).
     var CONTRIB_ENABLED=true;
     var RAAGAS=["Aṭāna","Behāg","Bhairavi","Bilahari","Bēgaḍa","Dhanyāsi","Dēvagāndhāri","Gauḷa","Harikāmbhōji","Hussēnī","Kalyāṇi","Kamās","Karaharapriya","Kāmavardani","Kānaḍa","Kāpi","Kāṁbhōji","Kēdāragauḷa","Madhyamāvati","Mukhāri","Māyāmāḷavagauḷa","Mōhanaṁ","Nāṭa","Nāṭakurinji","Pūrvīkaḷyāṇi","Rītigauḷa","Sahānā","Sencuruṭṭi","Sindhubhairavi","Suraṭi","Sāma","Sāvēri","Tōḍi","Varāḷi","Yadukula kāṁbōji","Ānandabhairavi","Śankarābharaṇaṁ","Śrī","Śrīranjani","Ṣanmukhapriya"];
+    // Hindustani-30 (the raagas the dual model covers), shown as a second group in the contribute
+    // picker so a listener can donate a Hindustani clip. Tradition travels with the donation.
+    var HINDUSTANI_RAAGAS=["Ahira bhairav","Alahaiyā bilāval","Bairāgi","Basant","Bhairav","Bhūp","Bihāg","Bilāsakhānī tōḍī","Bāgēśrī","Darbāri","Dēś","Gauḍ malhār","Hamsadhvāni","Jōg","Kēdār","Khamāj","Lalit","Madhukauns","Madhuvanti","Miyān malhār","Mālkauns","Mārvā","Mārūbihāg","Puriyā dhanaśrī","Rāgēśrī","Tōḍī","Yaman kalyāṇ","Ābhōgī","Śrī","Śuddh sāraṅg"];
 
     function pickMime(){ var c=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg'];
       return c.find(function(t){return window.MediaRecorder && MediaRecorder.isTypeSupported(t);})||''; }
@@ -501,6 +504,9 @@
       clearInterval(uiTimer); clearInterval(sendTimer);
       if(!top3.length) return noRes();
       lockName=top3[0].raaga; lockConf=conf;
+      // Tradition travels per prediction (API top3[].tradition); default carnatic for the current
+      // single-tradition model. Drives the Hindustani label + the learn-link guard below.
+      lockTrad=(top3[0]&&top3[0].tradition)||'carnatic';
       // "Confident" (green wheel + check) needs a real read: a high score AND, for a live listen,
       // enough time. A quick manual stop can't be confident even if the number briefly crossed 0.6,
       // it shows as a best guess (amber, no check). Uploads are judged on the score alone.
@@ -518,13 +524,24 @@
         return;
       }
       statusEl.textContent=sure?'Confident':'Best guess'; statusEl.className='rec-status '+(sure?'done':'warm');
-      leadEl.textContent = source==='file'
+      var heard = source==='file'
         ? (sure ? 'From your recording.' : 'From your clip. A longer or clearer recording helps.')
         : (sure ? ('Heard for '+elapsed.toFixed(0)+'s') : ('Heard '+elapsed.toFixed(0)+'s. A longer, closer listen helps.'));
+      // Label a Hindustani result so the two traditions are never conflated; Carnatic (the default)
+      // reads exactly as before.
+      leadEl.textContent = (lockTrad==='hindustani' ? 'Hindustani · ' : '') + heard;
       ragaEl.textContent=lockName; ragaEl.className='rec-raga show'+(sure?' done':'');
       top3El.classList.toggle('done',sure); rows(top3,true); guides.className='rec-guides hide';
+      // "How to hear" page: Carnatic at raaga/<slug>.html, Hindustani at raaga/<slug>-hindustani.html
+      // (the -hindustani suffix keeps the two Todi/Sri pages distinct). Only offered for a known
+      // tradition, so an unknown label never links to a 404.
+      var learn = lockTrad==='carnatic'
+        ? '<a class="rlearn" id="r-learn" href="raaga/'+slug(lockName)+'.html">↗ How to hear '+lockName+'</a>'
+        : lockTrad==='hindustani'
+        ? '<a class="rlearn" id="r-learn" href="raaga/'+slug(lockName)+'-hindustani.html">↗ How to hear '+lockName+'</a>'
+        : '';
       setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Listen again</button>'
-        +'<a class="rlearn" id="r-learn" href="raaga/'+slug(lockName)+'.html">↗ How to hear '+lockName+'</a>'
+        +learn
         +'<button class="rghost" id="r-up2">or upload a recording ↑</button></div>');
       g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
       mountContrib();
@@ -618,9 +635,14 @@
     function clipBlob(){ return curFile ? curFile
       : (chunks.length ? new Blob(chunks, {type: curMime || 'audio/webm'}) : null); }
     function contribHTML(r, abstain){
+      // Two tradition-grouped lists; each option carries its tradition, and the model's prediction
+      // is pre-selected only in its own group (so the two Tōḍī/Śrī never cross-select).
+      function optFor(n, trad){ return '<option data-trad="'+trad+'"'
+        +(!abstain && n===r && lockTrad===trad?' selected':'')+'>'+n+'</option>'; }
       var opts = (abstain ? '<option value="" selected disabled>Select the raaga</option>' : '')
-        + RAAGAS.map(function(n){ return '<option'+(!abstain && n===r?' selected':'')+'>'+n+'</option>'; }).join('')
-        + '<option value="__other__">Another raaga (not listed)</option>';
+        + '<optgroup label="Carnatic">'  + RAAGAS.map(function(n){return optFor(n,'carnatic');}).join('')  + '</optgroup>'
+        + '<optgroup label="Hindustani">'+ HINDUSTANI_RAAGAS.map(function(n){return optFor(n,'hindustani');}).join('') + '</optgroup>'
+        + '<option data-trad="" value="__other__">Another raaga (not listed)</option>';
       var chips = ['Vocal','Violin','Veena','Flute','Nadaswaram','Other'].map(function(n){
         return '<button type="button" class="cc-chip" data-inst="'+n+'">'+n+'</button>'; }).join('');
       var openTxt = abstain ? '+ Help me learn this raaga' : '+ Help improve the recognizer';
@@ -655,6 +677,14 @@
       var openTxt = abstain ? '+ Help me learn this raaga' : '+ Help improve the recognizer';
       open.onclick=function(){ card.hidden=!card.hidden; open.textContent = card.hidden ? openTxt : 'Never mind'; };
       function chosen(){ return sel.value==='__other__' ? (other.value||'').trim() : sel.value; }
+      // Tradition of the donation: the selected option's group; kept-prediction or an unlisted
+      // raaga fall back to the model's tradition.
+      function tradOf(){
+        var opt=sel.options[sel.selectedIndex], t=(opt&&opt.getAttribute('data-trad'))||'';
+        if(!t && lockTrad) t=lockTrad;
+        if(chosen()===lockName && lockTrad) t=lockTrad;
+        return t;
+      }
       function sync(){ send.disabled = !(own.checked && chosen()); }
       sel.onchange=function(){ other.style.display = sel.value==='__other__' ? 'block' : 'none';
         if(yes) yes.classList.toggle('on', sel.value===lockName); sync(); };
@@ -664,9 +694,9 @@
       chips.forEach(function(b){ b.onclick=function(){ var was=b.classList.contains('on');
         chips.forEach(function(x){x.classList.remove('on');});
         if(was){ inst=''; } else { b.classList.add('on'); inst=b.getAttribute('data-inst'); } }; });
-      send.onclick=function(){ submitContrib(chosen(), own.checked, inst, g('cc-pub').checked, send); };
+      send.onclick=function(){ submitContrib(chosen(), own.checked, inst, g('cc-pub').checked, send, tradOf()); };
     }
-    async function submitContrib(raaga, isOwn, inst, pub, send){
+    async function submitContrib(raaga, isOwn, inst, pub, send, trad){
       var blob=clipBlob(), err=g('cc-err');
       if(!blob){ err.textContent='The clip is no longer available. Identify again to donate.'; err.hidden=false; return; }
       if(!isOwn){ err.textContent='Please confirm you have the rights to share this clip.'; err.hidden=false; return; }
@@ -675,6 +705,7 @@
         var fd=new FormData();
         fd.append('audio', blob, 'contrib.webm');
         fd.append('raaga', raaga);
+        if(trad) fd.append('tradition', trad);
         fd.append('is_own', 'true');
         fd.append('model_pred', lockName);
         fd.append('confidence', String(lockConf||''));

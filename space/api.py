@@ -9,11 +9,11 @@ branding: the front end renders everything.
         "no_prediction": false,
         "tonic_hz": 147.0,
         "heard_seconds": 42.3,
-        "top3": [{"raaga": "Kalyāṇi", "confidence": 0.91}, ...],
+        "top3": [{"raaga": "Kalyāṇi", "tradition": "carnatic", "confidence": 0.91}, ...],
         "swara_activation": [12 floats]   # tonic-normalized pitch-class mass, folded to the 12
                                           # swara positions (Sa first) — drives the wheel glow
       }
-    GET /health  ->  {"status": "ok", "raagas": 40}
+    GET /health  ->  {"status": "ok", "raagas": 40, "traditions": {"carnatic": 40, "hindustani": 0}}
 
 Runs the EXACT production pipeline (essentia predominant pitch + compiam tonic -> windowed TDMS
 -> XGBoost). Serves on port 7860 for a Hugging Face Docker Space, but is a plain FastAPI app
@@ -32,6 +32,7 @@ from fastapi.responses import JSONResponse
 from raaga_id import pitch_extract
 from raaga_id.config import MODELS_DIR, TOP_K
 from raaga_id.model import RaagaXGB
+from raaga_id.tradition import tradition_counts, tradition_of
 
 MODEL_PATH = os.environ.get("MODEL_PATH", str(MODELS_DIR / "raaga_xgb.json"))
 SWARAS = 12
@@ -71,7 +72,8 @@ def fold_swaras(pcd) -> list[float]:
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "raagas": len(model().classes)}
+    classes = model().classes
+    return {"status": "ok", "raagas": len(classes), "traditions": tradition_counts(classes)}
 
 
 @app.post("/identify")
@@ -110,6 +112,13 @@ async def identify(audio: UploadFile = File(...), contribute: str = Form("no")):
         "no_prediction": False,
         "tonic_hz": round(float(tonic), 1),
         "heard_seconds": round(float(heard), 1),
-        "top3": [{"raaga": p.raaga, "confidence": round(float(p.confidence), 4)} for p in preds],
+        # `raaga` is the display name (tradition tag split off into its own field). For the shipped
+        # Carnatic model every tradition is "carnatic"; a dual model tags Hindustani predictions.
+        "top3": [_pred_json(p) for p in preds],
         "swara_activation": fold_swaras(pcd),
     }
+
+
+def _pred_json(p):
+    name, trad = tradition_of(p.raaga)
+    return {"raaga": name, "tradition": trad, "confidence": round(float(p.confidence), 4)}
