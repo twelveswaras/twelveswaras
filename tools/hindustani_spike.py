@@ -338,15 +338,78 @@ def fitfull(total: int = 400, chunk: int = 50) -> None:
     print(f"results -> {FULL_RESULTS}", flush=True)
 
 
+def calib() -> None:
+    """Fit the dual model's temperature and analyze abstention, on the leak-free held-out 25%.
+
+    Full k-fold OOF calibration (tools/calibrate.py) would retrain the model k times, ~1.5h at
+    full-dim. The held-out split the model never trained on is a valid, cheap calibration set for
+    a single temperature scalar. Writes <dual>.calib.json (picked up automatically by
+    RaagaXGB.load) and prints an abstention table to pick the site thresholds for BOTH traditions.
+    """
+    from collections import defaultdict
+
+    import xgboost as xgb
+    from sklearn.model_selection import GroupKFold
+
+    from raaga_id import calibrate as C
+
+    d = np.load(CACHE, allow_pickle=True)
+    X, y, groups, trad = d["X"], d["y"], d["groups"], d["trad"]
+    classes = sorted(set(y.tolist()))
+    cidx = {c: i for i, c in enumerate(classes)}
+    yi = np.array([cidx[v] for v in y])
+    _, te_i = next(GroupKFold(n_splits=4).split(X, yi, groups))
+
+    booster = xgb.Booster(); booster.load_model(str(FULL_MODEL))
+    proba = booster.predict(xgb.DMatrix(X[te_i]))
+    # aggregate per track (mean softmax over windows) -> the granularity the UI shows
+    agg = defaultdict(lambda: np.zeros(len(classes))); cnt = defaultdict(int)
+    tt, ttrad = {}, {}
+    for row, g, lab, tr in zip(proba, groups[te_i], y[te_i], trad[te_i]):
+        agg[g] += row; cnt[g] += 1; tt[g] = cidx[lab]; ttrad[g] = tr
+    tracks = list(agg)
+    P = np.vstack([agg[g] / cnt[g] for g in tracks])
+    ytrue = np.array([tt[g] for g in tracks])
+    trad_arr = np.array([ttrad[g] for g in tracks])
+
+    T = C.fit_temperature(P, ytrue)
+    Pc = C.apply_temperature(P, T)
+    print(f"tracks {len(tracks)} | fitted T = {T:.3f}  (argmax-preserving, top-1 unchanged)")
+    print(f"  NLL {C.nll(P, ytrue):.3f} -> {C.nll(Pc, ytrue):.3f}   "
+          f"ECE {C.ece(P, ytrue):.3f} -> {C.ece(Pc, ytrue):.3f}   "
+          f"mean top-1 conf {P.max(1).mean():.3f} -> {Pc.max(1).mean():.3f}")
+
+    C.save_temperature(FULL_MODEL, T, extra={"fit": {"method": "temperature-heldout",
+                        "n_tracks": len(tracks), "note": "fit on the 75/25 held-out split, not full k-fold OOF"}})
+    print(f"saved -> {C.temperature_path(FULL_MODEL)}")
+
+    # abstention table on the CALIBRATED per-track top-1 confidence
+    conf = Pc.max(1)
+    correct = (Pc.argmax(1) == ytrue)
+    print("\nabstention (calibrated): threshold -> shown-top1 (kept) / abstain-rate, overall | Carnatic | Hindustani")
+    for thr in (0.20, 0.30, 0.40, 0.45, 0.50, 0.60):
+        def cell(mask):
+            kept = mask & (conf >= thr)
+            shown = correct[kept].mean() if kept.any() else float("nan")
+            abst = 1 - kept.sum() / max(mask.sum(), 1)
+            return f"{shown:.2f}/{abst:.0%}"
+        allm = np.ones(len(tracks), bool)
+        cm = trad_arr == CARNATIC
+        hm = trad_arr == HINDUSTANI
+        print(f"  {thr:.2f} -> {cell(allm):>9} | {cell(cm):>9} | {cell(hm):>9}")
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "extract"
     if cmd == "extract":
         extract()
     elif cmd == "analyze":
         analyze()
+    elif cmd == "calib":
+        calib()
     elif cmd == "fitfull":
         total = int(sys.argv[2]) if len(sys.argv) > 2 else 400
         chunk = int(sys.argv[3]) if len(sys.argv) > 3 else 50
         fitfull(total, chunk)
     else:
-        raise SystemExit("usage: python -m tools.hindustani_spike [extract|analyze|fitfull [total] [chunk]]")
+        raise SystemExit("usage: python -m tools.hindustani_spike [extract|analyze|calib|fitfull [total] [chunk]]")
