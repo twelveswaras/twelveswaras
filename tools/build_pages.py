@@ -600,13 +600,18 @@ FAMILIES = [
 CONTESTED = {"Sāma"}
 
 
-def swara_chips(swaras: list[str]) -> str:
+def swara_chips(swaras: list[str], labels: list[str] | None = None) -> str:
     if not swaras:
         return '<span class="empty">notes pending review</span>'
-    return "".join(f"<span>{esc(s)}</span>" for s in swaras)
+    # labels=None keeps the raw position tokens (Carnatic labels == tokens, byte-identical output);
+    # Hindustani passes its own label set, mapping each position token to its Hindustani name.
+    if labels is None:
+        return "".join(f"<span>{esc(s)}</span>" for s in swaras)
+    return "".join(f"<span>{esc(labels[SEMITONE[s]])}</span>" for s in swaras if s in SEMITONE)
 
 
-def build_index(guide: dict, ref: dict) -> str:
+def build_index(guide: dict, ref: dict, hguide: dict | None = None, href: dict | None = None) -> str:
+    from collections import defaultdict
     covered = [nm for _, _, members in FAMILIES for nm in members]
     missing = [k for k in guide if k not in covered]
     extra = [nm for nm in covered if nm not in guide]
@@ -637,6 +642,34 @@ def build_index(guide: dict, ref: dict) -> str:
             f' <span class="ct">{len(members)}</span></h2>\n'
             f'    <div class="grid">\n' + "\n".join(cards) + "\n    </div>\n  </section>")
 
+    # Hindustani, grouped by thaat (the Hindustani analog of the melakarta family view). Cards link
+    # to the -hindustani pages; chips render in Hindustani notation. Each h2 self-labels as
+    # Hindustani so the two traditions read apart at a glance.
+    if hguide:
+        hlabels = TRAD["hindustani"]["labels"]
+        THAATS = ["Kalyan", "Bilawal", "Khamaj", "Kafi", "Asavari", "Bhairavi", "Bhairav",
+                  "Todi", "Purvi", "Marwa"]
+        hnames = [k for k in hguide if not k.startswith("_")]
+        by_thaat: dict = defaultdict(list)
+        for nm in hnames:
+            th = ((href or {}).get(nm, {}).get("thaat", "") or "").split()[0] or "Other"
+            th = {"Poorvi": "Purvi", "Bilaval": "Bilawal"}.get(th, th)
+            by_thaat[th].append(nm)
+        for th in THAATS + [t for t in by_thaat if t not in THAATS]:
+            members = sorted(by_thaat.get(th, []))
+            if not members:
+                continue
+            cards = [
+                f'      <a class="card" href="{slug(nm, "-hindustani")}.html">'
+                f'<div class="cn"><span class="name">{esc(nm)}</span></div>'
+                f'<div class="chips">{swara_chips(hguide[nm].get("swaras") or [], hlabels)}</div></a>'
+                for nm in members]
+            sections.append(
+                f'  <section class="fam">\n'
+                f'    <h2><span class="ml">Hindustani</span> {esc(th)} thaat'
+                f' <span class="ct">{len(members)}</span></h2>\n'
+                f'    <div class="grid">\n' + "\n".join(cards) + "\n    </div>\n  </section>")
+
     body = "\n".join(sections)
     return INDEX_TEMPLATE.replace("__SECTIONS__", body)
 
@@ -646,13 +679,13 @@ INDEX_TEMPLATE = """<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The raagas: all 40, by mēḷa family · twelveswaras</title>
+<title>The raagas: 40 Carnatic + 30 Hindustani · twelveswaras</title>
 <meta name="description" content="Browse the 40 Carnatic raagas twelveswaras recognises, grouped by parent melakarta so allied raagas sit together. Each has a page: swaras, how to hear it, and kritis.">
 <link rel="canonical" href="https://twelveswaras.com/raaga/">
 <meta name="theme-color" content="#0b0a08">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<meta property="og:title" content="The raagas: all 40, by mēḷa family · twelveswaras">
+<meta property="og:title" content="The raagas: 40 Carnatic + 30 Hindustani · twelveswaras">
 <meta property="og:description" content="Browse the 40 Carnatic raagas twelveswaras recognises, grouped by parent melakarta.">
 <meta property="og:image" content="https://twelveswaras.com/og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -747,8 +780,8 @@ INDEX_TEMPLATE = """<!doctype html>
 
   <header class="hero">
     <p class="eyebrow">The raagas</p>
-    <h1>All 40, by mēḷa family</h1>
-    <p class="sub">Grouped by parent melakarta, so the allied raagas you'd most likely confuse sit side by side. Tap any one to see its swaras, how to hear it, and kritis to listen for.</p>
+    <h1>The raagas: Carnatic and Hindustani</h1>
+    <p class="sub">40 Carnatic raagas grouped by parent melakarta, and 30 Hindustani raagas (preview, draft) grouped by thaat, so allied raagas sit side by side. Tap any one for its swaras and how to hear it.</p>
   </header>
 
 __SECTIONS__
@@ -783,25 +816,25 @@ def main() -> None:
         grp = groups.get(necklace(pcset(sw)), []) if qualifies(nm, sw) else []
         cousins_of[nm] = [c for c in grp if c != nm]
 
+    # Hindustani data (also feeds the index below): same template/CSS/wheel, tradition-aware labels
+    # + reference fields, written with a -hindustani slug suffix into the same dir (so relative paths
+    # match the Carnatic pages). Graha-bhedam (modal cousins) is a Carnatic construct, so empty here.
+    htrad = TRAD["hindustani"]
+    hguide = json.loads((ROOT / htrad["guide"]).read_text())
+    href = json.loads((ROOT / htrad["ref"]).read_text())
+    hnames = [k for k in hguide if not k.startswith("_")]
+
     n = 0
     for nm, g in guide.items():
         page = build_page(nm, resolved[nm], ref.get(nm, {}), cousins_of[nm])
         (OUT / f"{slug(nm)}.html").write_text(page)
         n += 1
-    (OUT / "index.html").write_text(build_index(guide, ref))
-
-    # Hindustani pages: same template/CSS/wheel, tradition-aware labels + reference fields, written
-    # with a -hindustani slug suffix into the same dir (so relative paths match the Carnatic pages).
-    # Graha-bhedam (modal cousins) is a Carnatic construct, so cousins is empty here.
-    htrad = TRAD["hindustani"]
-    hguide = json.loads((ROOT / htrad["guide"]).read_text())
-    href = json.loads((ROOT / htrad["ref"]).read_text())
-    hnames = [k for k in hguide if not k.startswith("_")]
     hn = 0
     for nm in hnames:
         page = build_page(nm, hguide[nm].get("swaras") or [], href.get(nm, {}), [], trad=htrad)
         (OUT / f"{slug(nm, htrad['suffix'])}.html").write_text(page)
         hn += 1
+    (OUT / "index.html").write_text(build_index(guide, ref, hguide, href))
 
     # sitemap.xml — landing, ear-trainer, raaga index, every raaga (clean URLs, as Pages serves them)
     base = "https://twelveswaras.com"
