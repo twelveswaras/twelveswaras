@@ -191,6 +191,55 @@ def test_stop_midway_is_not_shown_as_confident():
     assert "confident=locked&&lockSure" in site
 
 
+# --- dual-tradition rebrand: the site names Carnatic AND Hindustani, drops "Carnatic first" -----
+
+def _about() -> str:
+    return (ROOT / "site" / "about" / "index.html").read_text()
+
+
+def test_landing_and_about_carry_dual_tradition_framing():
+    """The Hybrid rebrand: keep 'a Shazam for raagas', name both traditions, retire the
+    Carnatic-only phrasings. Guards against a page silently reverting to single-tradition copy."""
+    for name, page in [("index", _site()), ("about", _about())]:
+        assert "Carnatic and Hindustani" in page, f"{name}: dual-tradition framing missing"
+        # the retired Carnatic-only phrasings must be gone
+        assert "Shazam for Carnatic" not in page, f"{name}: stale 'Shazam for Carnatic' copy"
+        assert "Carnatic first" not in page, f"{name}: stale 'Carnatic first' tagline"
+    # "a Shazam for raagas" survives the rebrand as the hero line
+    assert "Shazam for raagas" in _site()
+
+
+def test_ear_trainer_states_it_is_carnatic_only_for_now():
+    """User ask: if the trainer is Carnatic-only it must say so clearly. The /listen page names
+    the limit in its own copy (not just implicitly)."""
+    listen = (ROOT / "site" / "listen" / "index.html").read_text().lower()
+    assert "carnatic raagas for now" in listen
+
+
+# --- og.png social card is generated (reproducible), 1200x630, and signals both traditions -------
+
+def _png_dims(p: Path) -> tuple[int, int]:
+    b = p.read_bytes()
+    assert b[:8] == b"\x89PNG\r\n\x1a\n", "not a PNG"
+    w = int.from_bytes(b[16:20], "big")
+    h = int.from_bytes(b[20:24], "big")
+    return w, h
+
+
+def test_og_card_is_generated_dual_and_correctly_sized():
+    import importlib.util
+    src = ROOT / "tools" / "build_og.py"
+    spec = importlib.util.spec_from_file_location("build_og", src)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    svg = mod.build_svg()
+    # the card names both traditions and keeps the wordmark + hero line
+    for token in ["Carnatic", "Hindustani", "twelve", "swaras", "Shazam for raagas"]:
+        assert token in svg, f"og card SVG missing '{token}'"
+    # the committed PNG the meta tags point at is the declared 1200x630
+    assert _png_dims(ROOT / "site" / "og.png") == (1200, 630)
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):
