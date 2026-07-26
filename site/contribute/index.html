@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Contribute a recording to twelveswaras (the open raaga commons)</title>
-<meta name="description" content="Already know the raaga? Record or upload a short clip over a drone and add it to the open, CC-BY Carnatic music commons that helps the recognizer learn.">
+<meta name="description" content="Already know the raaga? Record or upload a short clip over a drone and add it to the open, CC-BY commons of Indian classical music (Carnatic and Hindustani) that helps the recognizer learn.">
 <link rel="canonical" href="https://twelveswaras.com/contribute/">
 <meta name="theme-color" content="#0b0a08">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
@@ -15,13 +15,13 @@
 <meta property="og:site_name" content="twelveswaras">
 <meta property="og:url" content="https://twelveswaras.com/contribute/">
 <meta property="og:title" content="Contribute a recording to the open raaga commons">
-<meta property="og:description" content="Know the raaga? Add a short clip over a drone to the open, CC-BY Carnatic music commons.">
+<meta property="og:description" content="Know the raaga? Add a short clip over a drone to the open, CC-BY Carnatic and Hindustani commons.">
 <meta property="og:image" content="https://twelveswaras.com/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Contribute a recording to twelveswaras">
-<meta name="twitter:description" content="Know the raaga? Add a clip to the open Carnatic commons.">
+<meta name="twitter:description" content="Know the raaga? Add a clip to the open Carnatic and Hindustani commons.">
 <meta name="twitter:image" content="https://twelveswaras.com/og.png">
 <script type="application/ld+json">
 {
@@ -29,7 +29,7 @@
   "@type": "WebPage",
   "name": "Contribute a recording",
   "url": "https://twelveswaras.com/contribute/",
-  "description": "Record or upload a short Carnatic clip over a drone and add it, with the raaga you know it to be, to the open CC-BY commons that improves the recognizer.",
+  "description": "Record or upload a short Carnatic or Hindustani clip over a drone and add it, with the raaga you know it to be, to the open CC-BY commons that improves the recognizer.",
   "isPartOf": {"@type": "WebSite", "name": "twelveswaras", "url": "https://twelveswaras.com/"}
 }
 </script>
@@ -161,7 +161,7 @@
   <header class="page-head">
     <p class="eyebrow">Build the commons</p>
     <h1>Contribute a recording</h1>
-    <p class="lead">Already know the raaga? Add a short clip to an open, freely-licensed collection of Carnatic music. Every clip helps the tool learn to hear better.</p>
+    <p class="lead">Already know the raaga? Add a short clip to an open, freely-licensed collection of Carnatic and Hindustani music. Every clip helps the tool learn to hear better.</p>
   </header>
 
   <main>
@@ -192,6 +192,7 @@
   var CONSENT='2026-07-07-contribute-v1';
   var MAXREC=60, MINREC=8, MAXFILE=25*1024*1024;
   var RAAGAS=["Aṭāna","Behāg","Bhairavi","Bilahari","Bēgaḍa","Dhanyāsi","Dēvagāndhāri","Gauḷa","Harikāmbhōji","Hussēnī","Kalyāṇi","Kamās","Karaharapriya","Kāmavardani","Kānaḍa","Kāpi","Kāṁbhōji","Kēdāragauḷa","Madhyamāvati","Mukhāri","Māyāmāḷavagauḷa","Mōhanaṁ","Nāṭa","Nāṭakurinji","Pūrvīkaḷyāṇi","Rītigauḷa","Sahānā","Sencuruṭṭi","Sindhubhairavi","Suraṭi","Sāma","Sāvēri","Tōḍi","Varāḷi","Yadukula kāṁbōji","Ānandabhairavi","Śankarābharaṇaṁ","Śrī","Śrīranjani","Ṣanmukhapriya"];
+  var HINDUSTANI_RAAGAS=["Ahira bhairav","Alahaiyā bilāval","Bairāgi","Basant","Bhairav","Bhūp","Bihāg","Bilāsakhānī tōḍī","Bāgēśrī","Darbāri","Dēś","Gauḍ malhār","Hamsadhvāni","Jōg","Kēdār","Khamāj","Lalit","Madhukauns","Madhuvanti","Miyān malhār","Mālkauns","Mārvā","Mārūbihāg","Puriyā dhanaśrī","Rāgēśrī","Tōḍī","Yaman kalyāṇ","Ābhōgī","Śrī","Śuddh sāraṅg"];
 
   var cx=g('cx'), fileEl=g('cx-file');
   var clip=null, clipMime='', rec=null, stream=null, chunks=[], wake=null, t0=0, recTimer=null;
@@ -272,8 +273,10 @@
   // ---- review + submit ----
   function renderReview(){
     meta={tonic:null, model_pred:'', conf:'', checked:false, drone:null};
+    function optRow(n,t){return '<option data-tradition="'+t+'">'+n+'</option>';}
     var opts='<option value="" selected disabled>Select the raaga</option>'
-      + RAAGAS.map(function(n){return '<option>'+n+'</option>';}).join('')
+      + '<optgroup label="Carnatic">'  + RAAGAS.map(function(n){return optRow(n,'carnatic');}).join('')  + '</optgroup>'
+      + '<optgroup label="Hindustani">'+ HINDUSTANI_RAAGAS.map(function(n){return optRow(n,'hindustani');}).join('') + '</optgroup>'
       + '<option value="__other__">Another raaga (not listed)</option>';
     var chips=['Vocal','Violin','Veena','Flute','Nadaswaram','Other'].map(function(n){
       return '<button type="button" class="chip" data-inst="'+n+'">'+n+'</button>';}).join('');
@@ -302,8 +305,10 @@
       chipEls.forEach(function(x){x.classList.remove('on');});
       if(was){inst='';}else{b.classList.add('on'); inst=b.getAttribute('data-inst');} }; });
     function chosenRaaga(){ return raaga.value==='__other__' ? (other.value||'').trim() : raaga.value; }
+    // tradition rides along from the picked option's optgroup; unknown for a free-typed raaga
+    function chosenTradition(){ var o=raaga.options[raaga.selectedIndex]; return (o && o.getAttribute('data-tradition')) || ''; }
     function syncSend(){ send.disabled = !(own.checked && chosenRaaga()); }
-    send.onclick=function(){ submit(chosenRaaga(), own.checked, inst, g('cx-pub').checked, send); };
+    send.onclick=function(){ submit(chosenRaaga(), own.checked, inst, g('cx-pub').checked, send, chosenTradition()); };
     g('cx-redo').onclick=renderIdle;
     checkClip();
   }
@@ -325,7 +330,7 @@
     }catch(e){ var q3=g('cx-quality'); if(q3){ q3.className='quality'; q3.textContent='Could not check the clip just now, that is fine, you can still contribute it.'; } }
   }
 
-  async function submit(raaga, isOwn, inst, pub, send){
+  async function submit(raaga, isOwn, inst, pub, send, tradition){
     var err=g('cx-err');
     if(!clip){ err.textContent='The clip is no longer available. Please record or upload again.'; err.style.display='block'; return; }
     if(!isOwn){ err.textContent='Please confirm you have the rights to share this clip.'; err.style.display='block'; return; }
@@ -335,6 +340,7 @@
       var fd=new FormData();
       fd.append('audio', clip, 'contrib');
       fd.append('raaga', raaga);
+      if(tradition) fd.append('tradition', tradition);
       fd.append('is_own','true');
       if(inst) fd.append('instrument', inst);
       fd.append('release_public', pub ? 'true' : 'false');

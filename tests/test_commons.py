@@ -115,6 +115,16 @@ def test_contribute_release_is_opt_in():
     assert "release_public" in _contribute()
 
 
+def test_contribute_page_offers_both_traditions():
+    # the dedicated /contribute flow must match the inline card and our live dual model: a
+    # Hindustani optgroup in the picker, and the tradition sent with the clip (not Carnatic-only).
+    c = _contribute()
+    assert 'optgroup label="Hindustani"' in c and 'optgroup label="Carnatic"' in c
+    assert "HINDUSTANI_RAAGAS" in c
+    assert "fd.append('tradition'" in c                      # tradition rides along on submit
+    assert "Carnatic and Hindustani" in c                    # copy no longer says Carnatic-only
+
+
 def test_landing_links_to_contribute_page():
     assert "contribute/" in _site()                        # the landing surfaces the dedicated flow
 
