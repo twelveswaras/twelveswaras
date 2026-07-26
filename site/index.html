@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>twelveswaras: identify the raaga (Shazam for Carnatic music)</title>
-<meta name="description" content="Point your phone at a Carnatic performance and identify the raaga (raga). A free, open-source 'Shazam for raagas': a raga identifier with an open CC-BY data commons. Carnatic first; Hindustani now in preview.">
+<title>twelveswaras: identify the raaga · Carnatic and Hindustani · Shazam for raagas</title>
+<meta name="description" content="Point your phone at Indian classical music (Carnatic or Hindustani) and identify the raaga (raga). A free, open-source 'Shazam for raagas': a raga identifier with an open CC-BY data commons.">
 <link rel="canonical" href="https://twelveswaras.com/">
 <meta name="theme-color" content="#0b0a08">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -22,15 +22,15 @@
 <meta property="og:site_name" content="twelveswaras">
 <meta property="og:url" content="https://twelveswaras.com/">
 <meta property="og:title" content="twelveswaras: identify the raaga">
-<meta property="og:description" content="A free, open-source 'Shazam for raagas'. Point your phone at a Carnatic performance; it names the raaga.">
+<meta property="og:description" content="A free, open-source 'Shazam for raagas'. Point your phone at Carnatic or Hindustani music; it names the raaga.">
 <meta property="og:image" content="https://twelveswaras.com/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:type" content="image/png">
-<meta property="og:image:alt" content="twelveswaras: identify the raaga, a Shazam for Carnatic music">
+<meta property="og:image:alt" content="twelveswaras: identify the raaga, a Shazam for raagas (Carnatic and Hindustani)">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="twelveswaras: identify the raaga">
-<meta name="twitter:description" content="A free, open-source 'Shazam for raagas' for Carnatic music.">
+<meta name="twitter:description" content="A free, open-source 'Shazam for raagas' for Carnatic and Hindustani music.">
 <meta name="twitter:image" content="https://twelveswaras.com/og.png">
 
 <!-- AEO: structured data for answer engines -->
@@ -39,7 +39,7 @@
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "twelveswaras",
-  "description": "An open 'Shazam for raagas' that identifies the raaga of a Carnatic music performance from audio.",
+  "description": "An open 'Shazam for raagas' that identifies the raaga of Indian classical music (Carnatic or Hindustani) from audio.",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Web",
   "url": "https://twelveswaras.com/",
@@ -55,7 +55,7 @@
   "@type": "FAQPage",
   "mainEntity": [
     {"@type": "Question", "name": "What is twelveswaras?",
-     "acceptedAnswer": {"@type": "Answer", "text": "twelveswaras is a free, open-source 'Shazam for raagas'. Give it a short clip of Carnatic music and it identifies the raaga, showing the top-3 with confidence, plus the tonic (Sa) it detected, and a note on how to hear that raaga."}},
+     "acceptedAnswer": {"@type": "Answer", "text": "twelveswaras is a free, open-source 'Shazam for raagas'. Give it a short clip of Carnatic or Hindustani music and it identifies the raaga, showing the top-3 with confidence, plus the tonic (Sa) it detected, and a note on how to hear that raaga."}},
     {"@type": "Question", "name": "How do I identify a raaga?",
      "acceptedAnswer": {"@type": "Answer", "text": "Open the recognizer, record (or upload) about 15-30 seconds of melody, and it names the raaga. A tanpura or shruti-box drone under the melody gives the best results because the tonic is found from it."}},
     {"@type": "Question", "name": "Does it work at a live concert?",
@@ -75,7 +75,7 @@
   "@type": "WebSite",
   "name": "twelveswaras",
   "url": "https://twelveswaras.com/",
-  "description": "A free, open-source 'Shazam for raagas' that identifies the raaga of a Carnatic performance from audio."
+  "description": "A free, open-source 'Shazam for raagas' that identifies the raaga of a Carnatic or Hindustani performance from audio."
 }
 </script>
 <script type="application/ld+json">
@@ -85,7 +85,7 @@
   "name": "twelveswaras",
   "url": "https://twelveswaras.com/",
   "logo": "https://twelveswaras.com/icon-512.png",
-  "description": "A free, non-commercial, open-source 'Shazam for raagas' that identifies the raaga of a Carnatic music performance from audio, paired with an openly-licensed community data commons.",
+  "description": "A free, non-commercial, open-source 'Shazam for raagas' that identifies the raaga of Indian classical music (Carnatic or Hindustani) from audio, paired with an openly-licensed community data commons.",
   "sameAs": [
     "https://github.com/twelveswaras",
     "https://huggingface.co/twelveswaras"
@@ -317,7 +317,7 @@
   <header class="hero">
     <p class="eyebrow">Shazam for raagas</p>
     <h1 class="title">Name the raaga.<br><span class="b">Learn to hear it.</span></h1>
-    <p class="thesis">Play it a few seconds of Carnatic music: it names the raaga, and shows you how to recognise it yourself.</p>
+    <p class="thesis">Play it a few seconds of Carnatic or Hindustani music: it names the raaga, and shows you how to recognise it yourself.</p>
 
     <div class="rec" id="rec">
       <p class="rec-status" id="rec-status" aria-live="polite">Identify a raaga</p>
@@ -376,7 +376,7 @@
 
 <footer>
   <div class="wrap">
-    <p class="tagline">a non-commercial, open-source public good · Carnatic first · CC-BY data commons</p>
+    <p class="tagline">a non-commercial, open-source public good · Carnatic and Hindustani · CC-BY data commons</p>
     <div class="links">
       <a href="raaga/">browse the raagas</a>
       <a href="listen/">train your ear</a>

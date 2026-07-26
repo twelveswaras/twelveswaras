@@ -17,8 +17,8 @@ and the tonic (Sa) it found, and helps you learn to hear that raaga. Paired with
 > rolling out (the recognizer is now dual-tradition; the Hindustani reference pages are draft,
 > pending a musician's review). The opt-in **contribute-to-the-commons** loop is live for both
 > traditions (identify then donate, or contribute a recording directly).
-> **Focus:** Carnatic first, Hindustani following; the name, schema, and pipeline are
-> **tradition-neutral** by design.
+> **Both traditions, one tool:** Carnatic and Hindustani share the twelve-swara space, so
+> the name, schema, and pipeline are **tradition-neutral** by design (Carnatic came first).
 > **Scope:** Non-commercial, open-source only. A public good stewarded in the neutral
 > [`twelveswaras`](https://github.com/twelveswaras) GitHub + HF org, not owned by any company.
 

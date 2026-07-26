@@ -10,16 +10,19 @@ url: "https://twelveswaras.com"
 license: MIT
 year: 2026
 abstract: >-
-  twelveswaras is an open-source "Shazam for raagas": given a clip of Carnatic
-  music it identifies the raaga, shows the top three candidates with calibrated
-  confidence and the detected tonic (Sa), and helps the listener learn to hear
-  that raaga. It pairs a tonic-normalized Time-Delayed Melody Surface (TDMS)
-  feature with an XGBoost classifier, and is paired with a community-contributed,
+  twelveswaras is an open-source "Shazam for raagas": given a clip of Indian
+  classical music (Carnatic or Hindustani) it identifies the raaga, shows the top
+  three candidates with calibrated confidence and the detected tonic (Sa), and
+  helps the listener learn to hear that raaga. It pairs a tonic-normalized
+  Time-Delayed Melody Surface (TDMS) feature with an XGBoost classifier over a
+  shared 12-swara space, and is paired with a community-contributed,
   openly-licensed data commons (CC-BY-4.0) so the model improves over time. The
   project is a non-commercial public good stewarded in the neutral twelveswaras
   organization and is not owned by any company.
 keywords:
   - Carnatic music
+  - Hindustani music
+  - Indian classical music
   - raaga recognition
   - music information retrieval
   - TDMS

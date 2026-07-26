@@ -56,3 +56,4 @@ cloudflare/recognizer/node_modules/
 
 # site audio assets are part of the published site
 !site/swara-violin.mp3
+tools/og.svg
