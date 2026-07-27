@@ -680,13 +680,13 @@ INDEX_TEMPLATE = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The raagas: 40 Carnatic + 30 Hindustani · twelveswaras</title>
-<meta name="description" content="Browse the 40 Carnatic raagas twelveswaras recognises, grouped by parent melakarta so allied raagas sit together. Each has a page: swaras, how to hear it, and kritis.">
+<meta name="description" content="Browse the raagas twelveswaras recognises: 40 Carnatic grouped by parent melakarta and 30 Hindustani (preview) grouped by thaat, so allied raagas sit together. Each has its own page: swaras and how to hear it.">
 <link rel="canonical" href="https://twelveswaras.com/raaga/">
 <meta name="theme-color" content="#0b0a08">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <meta property="og:title" content="The raagas: 40 Carnatic + 30 Hindustani · twelveswaras">
-<meta property="og:description" content="Browse the 40 Carnatic raagas twelveswaras recognises, grouped by parent melakarta.">
+<meta property="og:description" content="Browse the raagas twelveswaras recognises: 40 Carnatic grouped by melakarta and 30 Hindustani (preview) grouped by thaat.">
 <meta property="og:image" content="https://twelveswaras.com/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://twelveswaras.com/og.png">

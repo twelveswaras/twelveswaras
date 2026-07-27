@@ -219,6 +219,24 @@ def test_landing_and_about_carry_dual_tradition_framing():
     assert "Shazam for raagas" in _site()
 
 
+def test_raaga_index_meta_names_both_traditions():
+    """The /raaga/ listing card title went dual, but its description + og:description lagged as
+    'Browse the 40 Carnatic raagas...' (the stale social subtext). Both must name Hindustani too,
+    and the Carnatic-only phrasing must be gone. Guards the generated page AND its source (the
+    index-page phrase 'Browse the raagas twelveswaras recognises' is unique to this block)."""
+    for name, page in [
+        ("site/raaga/index.html", (ROOT / "site" / "raaga" / "index.html").read_text()),
+        ("tools/build_pages.py", (ROOT / "tools" / "build_pages.py").read_text()),
+    ]:
+        assert "Browse the raagas twelveswaras recognises" in page, \
+            f"{name}: raaga-index dual description phrase missing"
+        assert "Browse the 40 Carnatic raagas twelveswaras recognises" not in page, \
+            f"{name}: raaga-index description reverted to Carnatic-only subtext"
+        # the new subtext must actually name Hindustani (both meta + og carry it)
+        assert page.count("Hindustani (preview) grouped by thaat") >= 2, \
+            f"{name}: raaga-index meta/og description does not name Hindustani"
+
+
 def test_ear_trainer_states_it_is_carnatic_only_for_now():
     """User ask: if the trainer is Carnatic-only it must say so clearly. The /listen page names
     the limit in its own copy (not just implicitly)."""
