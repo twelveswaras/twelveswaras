@@ -657,6 +657,9 @@
         +   '<p class="cc-q">'+q+'</p>'
         +   choices
         +   '<input type="text" id="cc-other" placeholder="Type the raaga name" style="display:none;margin:0 0 12px;width:100%">'
+        +   '<div id="cc-other-trad" role="group" aria-label="Which tradition?" style="display:none;flex-wrap:wrap;gap:6px;margin:0 0 12px">'
+        +     '<button type="button" class="cc-chip" data-trad="carnatic">Carnatic</button>'
+        +     '<button type="button" class="cc-chip" data-trad="hindustani">Hindustani</button></div>'
         +   '<label class="cc-lab req"><input type="checkbox" id="cc-own">'
         +     '<span>This is <b>my own performance</b>, or I have the rights to share it publicly.</span></label>'
         +   '<p class="cc-note">We learn from your clip to <b>improve the recognizer</b>. We publish the model, '
@@ -673,24 +676,32 @@
       if(!lockName || !clipBlob()){ contribEl.innerHTML=''; return; }   // nothing to donate
       contribEl.innerHTML = contribHTML(lockName, abstain);
       var open=g('cc-open'), card=g('cc-card'), yes=g('cc-yes'), sel=g('cc-sel'),
-          other=g('cc-other'), own=g('cc-own'), send=g('cc-send');
+          other=g('cc-other'), otherTrad=g('cc-other-trad'), own=g('cc-own'), send=g('cc-send');
       var openTxt = abstain ? '+ Help me learn this raaga' : '+ Help improve the recognizer';
       open.onclick=function(){ card.hidden=!card.hidden; open.textContent = card.hidden ? openTxt : 'Never mind'; };
+      var oTrad='', tchips=otherTrad.querySelectorAll('.cc-chip');
       function chosen(){ return sel.value==='__other__' ? (other.value||'').trim() : sel.value; }
-      // Tradition of the donation: the selected option's group; kept-prediction or an unlisted
-      // raaga fall back to the model's tradition.
+      // Tradition of the donation: an in-vocab pick carries its optgroup; a kept prediction uses the
+      // model's tradition; a free-typed (unlisted) raaga uses the explicit toggle the contributor set.
       function tradOf(){
+        if(sel.value==='__other__') return oTrad;
         var opt=sel.options[sel.selectedIndex], t=(opt&&opt.getAttribute('data-trad'))||'';
         if(!t && lockTrad) t=lockTrad;
         if(chosen()===lockName && lockTrad) t=lockTrad;
         return t;
       }
-      function sync(){ send.disabled = !(own.checked && chosen()); }
-      sel.onchange=function(){ other.style.display = sel.value==='__other__' ? 'block' : 'none';
+      function sync(){ send.disabled = !(own.checked && chosen() && tradOf()); }
+      sel.onchange=function(){ var isOther=sel.value==='__other__';
+        other.style.display = isOther ? 'block' : 'none';
+        otherTrad.style.display = isOther ? 'flex' : 'none';
+        if(!isOther){ oTrad=''; tchips.forEach(function(x){x.classList.remove('on');}); }
         if(yes) yes.classList.toggle('on', sel.value===lockName); sync(); };
       other.oninput=sync; own.onchange=sync;
-      if(yes) yes.onclick=function(){ sel.value=lockName; other.style.display='none'; yes.classList.add('on'); sync(); };
-      var inst='', chips=card.querySelectorAll('.cc-chip');
+      tchips.forEach(function(b){ b.onclick=function(){ tchips.forEach(function(x){x.classList.remove('on');});
+        b.classList.add('on'); oTrad=b.getAttribute('data-trad'); sync(); }; });
+      if(yes) yes.onclick=function(){ sel.value=lockName; other.style.display='none'; otherTrad.style.display='none';
+        oTrad=''; tchips.forEach(function(x){x.classList.remove('on');}); yes.classList.add('on'); sync(); };
+      var inst='', chips=card.querySelector('.cc-inst').querySelectorAll('.cc-chip');   // scope to instrument chips
       chips.forEach(function(b){ b.onclick=function(){ var was=b.classList.contains('on');
         chips.forEach(function(x){x.classList.remove('on');});
         if(was){ inst=''; } else { b.classList.add('on'); inst=b.getAttribute('data-inst'); } }; });
