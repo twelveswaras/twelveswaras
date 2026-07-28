@@ -287,7 +287,10 @@
       + '<hr class="sep">'
       + '<div class="field"><label class="lab" for="cx-raaga">Which raaga is this?</label>'
       + '<select id="cx-raaga">'+opts+'</select>'
-      + '<input type="text" id="cx-other" placeholder="Type the raaga name" style="display:none;margin-top:8px"></div>'
+      + '<input type="text" id="cx-other" placeholder="Type the raaga name" style="display:none;margin-top:8px">'
+      + '<div class="chips" id="cx-other-trad" role="group" aria-label="Which tradition?" style="display:none;margin-top:8px">'
+      +   '<button type="button" class="chip" data-trad="carnatic">Carnatic</button>'
+      +   '<button type="button" class="chip" data-trad="hindustani">Hindustani</button></div></div>'
       + '<div class="field"><span class="lab">Instrument or voice (optional)</span><div class="chips" id="cx-inst">'+chips+'</div></div>'
       + '<div class="field"><label class="cb req"><input type="checkbox" id="cx-own"><span>This is <b>my own performance</b>, or I have the rights to share it publicly.</span></label></div>'
       + '<div class="field"><label class="cb"><input type="checkbox" id="cx-pub"><span>Also release this clip publicly under CC-BY. If unchecked, the clip stays private and only the model learns from it.</span></label></div>'
@@ -296,18 +299,26 @@
       + '<div class="divider">or</div>'
       + '<div class="row"><button class="btn ghost" id="cx-redo">Start over</button></div>';
     try{ g('cx-audio').src=URL.createObjectURL(clip); }catch(e){}
-    var raaga=g('cx-raaga'), other=g('cx-other'), own=g('cx-own'), send=g('cx-send');
-    var inst='';
-    raaga.onchange=function(){ other.style.display = raaga.value==='__other__' ? 'block' : 'none'; syncSend(); };
+    var raaga=g('cx-raaga'), other=g('cx-other'), otherTrad=g('cx-other-trad'), own=g('cx-own'), send=g('cx-send');
+    var inst='', oTrad='';
+    var tradEls=otherTrad.querySelectorAll('.chip');
+    raaga.onchange=function(){ var isOther=raaga.value==='__other__';
+      other.style.display = isOther ? 'block' : 'none';
+      otherTrad.style.display = isOther ? 'flex' : 'none';
+      if(!isOther){ oTrad=''; tradEls.forEach(function(x){x.classList.remove('on');}); }
+      syncSend(); };
     other.oninput=syncSend; own.onchange=syncSend;
-    var chipEls=cx.querySelectorAll('.chip');
+    var chipEls=g('cx-inst').querySelectorAll('.chip');           // scope to the instrument group
     chipEls.forEach(function(b){ b.onclick=function(){ var was=b.classList.contains('on');
       chipEls.forEach(function(x){x.classList.remove('on');});
       if(was){inst='';}else{b.classList.add('on'); inst=b.getAttribute('data-inst');} }; });
+    tradEls.forEach(function(b){ b.onclick=function(){ tradEls.forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on'); oTrad=b.getAttribute('data-trad'); syncSend(); }; });
     function chosenRaaga(){ return raaga.value==='__other__' ? (other.value||'').trim() : raaga.value; }
-    // tradition rides along from the picked option's optgroup; unknown for a free-typed raaga
-    function chosenTradition(){ var o=raaga.options[raaga.selectedIndex]; return (o && o.getAttribute('data-tradition')) || ''; }
-    function syncSend(){ send.disabled = !(own.checked && chosenRaaga()); }
+    // in-vocab picks carry their optgroup's tradition; a free-typed raaga needs the explicit toggle
+    function chosenTradition(){ if(raaga.value==='__other__') return oTrad;
+      var o=raaga.options[raaga.selectedIndex]; return (o && o.getAttribute('data-tradition')) || ''; }
+    function syncSend(){ send.disabled = !(own.checked && chosenRaaga() && chosenTradition()); }
     send.onclick=function(){ submit(chosenRaaga(), own.checked, inst, g('cx-pub').checked, send, chosenTradition()); };
     g('cx-redo').onclick=renderIdle;
     checkClip();

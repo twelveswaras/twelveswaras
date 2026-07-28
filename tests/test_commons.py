@@ -125,6 +125,28 @@ def test_contribute_page_offers_both_traditions():
     assert "Carnatic and Hindustani" in c                    # copy no longer says Carnatic-only
 
 
+def test_free_text_raaga_path_requires_tradition():
+    """The 'Another raaga (not listed)' free-text path is the only place tradition isn't implied by
+    the picker's optgroup: on /contribute it was left NULL, and on the inline card it was *guessed*
+    from the model's prediction (wrong exactly when teaching an unknown raaga). Both surfaces must
+    now offer an explicit Carnatic/Hindustani toggle for that path AND require it before submit."""
+    for name, page, cont, gate in [
+        ("site/contribute/index.html", _contribute(), "cx-other-trad",
+         "own.checked && chosenRaaga() && chosenTradition()"),
+        ("site/index.html", _site(), "cc-other-trad",
+         "own.checked && chosen() && tradOf()"),
+    ]:
+        assert '"__other__"' in page, f"{name}: free-text 'Another raaga' path missing"
+        # an explicit tradition toggle tied to the free-text path, offering both traditions
+        assert f'id="{cont}"' in page, f"{name}: no tradition toggle ({cont}) for the free-text path"
+        seg = page.split(f'id="{cont}"', 1)[1][:400]
+        assert 'data-trad="carnatic"' in seg and 'data-trad="hindustani"' in seg, \
+            f"{name}: tradition toggle must offer Carnatic and Hindustani"
+        # the submit gate makes tradition mandatory on the free-text path (truthy for in-vocab picks,
+        # so it only bites when the user typed an unlisted raaga)
+        assert gate in page, f"{name}: submit gate does not require a tradition"
+
+
 def test_landing_links_to_contribute_page():
     assert "contribute/" in _site()                        # the landing surfaces the dedicated flow
 
