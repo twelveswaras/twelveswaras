@@ -19,6 +19,10 @@ FROZEN_TEST_PATH = BENCHMARK_DIR / "test_track_ids.json"
 SARAGA_DATASET = "saraga_carnatic"
 SARAGA_HOME = DATA_DIR / "saraga_carnatic"
 
+# Commons corpus materialized by pipeline.pull_commons (verified contributions).
+COMMONS_DIR = DATA_DIR / "commons"
+COMMONS_MANIFEST = COMMONS_DIR / "manifest.jsonl"
+
 
 @dataclass
 class Clip:
@@ -40,6 +44,55 @@ class PitchClip:
     tonic_hz: float
     times: "object"        # np.ndarray of frame times (s)
     freqs: "object"        # np.ndarray of f0 (Hz), 0/NaN where unvoiced
+
+
+@dataclass
+class CommonsClip:
+    """A contributor recording pulled from the commons. Raw uploads carry no pre-annotated
+    pitch/tonic, so the melody + tonic are extracted here via the SAME path a live upload
+    takes (pitch_extract), leaving `windows` ready to pool with the corpus clips."""
+    track_id: str
+    raaga: str
+    windows: "object"          # list of model feature windows (windowed TDMS, D28)
+    tradition: str = "carnatic"
+
+
+def iter_commons_clips(manifest_path: Path = COMMONS_MANIFEST):
+    """Yield a CommonsClip per pulled contribution in the manifest (pipeline.pull_commons).
+
+    Extracts predominant-melody pitch + tonic from the raw audio, then windowed TDMS —
+    identical to how the model sees a live upload — so a contribution pools with the Saraga/
+    IAMRRD clips in training. Skips clips whose audio is missing or yields no usable window
+    (no clear melody/drone). Commons track_ids never appear in the frozen benchmark, so these
+    clips are training-only by construction (split_by_track keeps the frozen test set intact).
+
+    REQUIRES the numpy<2 inference env (essentia); imported lazily so this module still
+    imports cleanly under the numpy-2 training env.
+    """
+    manifest_path = Path(manifest_path)
+    if not manifest_path.exists():
+        return
+    from . import features, pitch_extract
+    from .pitch_extract import TONIC_SR
+
+    base = manifest_path.parent
+    for line in manifest_path.read_text().splitlines():
+        if not line.strip():
+            continue
+        entry = json.loads(line)
+        audio_path = base / entry["audio_path"]
+        if not audio_path.exists():
+            continue
+        y = features.load_audio(str(audio_path), sr=TONIC_SR)
+        windows, _tonic, _secs, _pcd = pitch_extract.audio_to_features(y, TONIC_SR)
+        if not windows:
+            continue
+        yield CommonsClip(
+            track_id=f"commons:{entry['id']}",
+            raaga=entry["raaga"],
+            windows=windows,
+            tradition=entry.get("tradition", "carnatic"),
+        )
 
 
 def _dataset(download: bool = False):
