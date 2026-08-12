@@ -152,6 +152,9 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md) for details and
 under MIT; data contributions under CC-BY-4.0. Security reports go to the private channel
 in [`SECURITY.md`](SECURITY.md), not a public issue.
 
+Contributing a clip is anonymous by default, with an optional public credit. People who
+have grown the data commons are credited in [`CONTRIBUTORS.md`](CONTRIBUTORS.md).
+
 ## Citing this work
 
 If you use twelveswaras in your research, please cite it. Machine-readable metadata is in

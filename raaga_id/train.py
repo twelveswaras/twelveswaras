@@ -19,10 +19,16 @@ from .model import RaagaXGB
 
 
 def build_features(pclips, max_windows: int | None):
-    """(X, y) of per-window model features (windowed TDMS, D28) labelled with track raaga."""
+    """(X, y) of per-window model features (windowed TDMS, D28) labelled with track raaga.
+
+    Corpus clips carry a pitch track (times/freqs/tonic) windowed here; commons clips
+    (data.CommonsClip) arrive with `windows` already extracted from raw audio, so use those
+    directly — the feature is identical either way."""
     X, y = [], []
     for pc in pclips:
-        wins = features.model_windows(pc.times, pc.freqs, pc.tonic_hz, max_windows=max_windows)
+        wins = getattr(pc, "windows", None)
+        if wins is None:
+            wins = features.model_windows(pc.times, pc.freqs, pc.tonic_hz, max_windows=max_windows)
         X.extend(wins)
         y.extend([pc.raaga] * len(wins))
     if not X:
@@ -33,12 +39,18 @@ def build_features(pclips, max_windows: int | None):
 def main() -> None:
     ap = argparse.ArgumentParser(description="Train the raaga floor (windowed TDMS + XGBoost, D28).")
     ap.add_argument("--out", default=str(MODELS_DIR / "raaga_xgb.json"))
-    ap.add_argument("--datasets", nargs="+", default=["saraga_carnatic"])
+    ap.add_argument("--datasets", nargs="+", default=["saraga_carnatic"],
+                    help="corpus datasets; add 'commons' to fold in pulled contributions")
     ap.add_argument("--max-windows", type=int, default=None, help="cap windows/track (default: config)")
     ap.add_argument("--test-frac", type=float, default=0.25)
     args = ap.parse_args()
 
-    pclips = list(data.iter_pitch_clips(only_vocab=True, datasets=tuple(args.datasets)))
+    corpus = [d for d in args.datasets if d != "commons"]
+    pclips = list(data.iter_pitch_clips(only_vocab=True, datasets=tuple(corpus))) if corpus else []
+    if "commons" in args.datasets:
+        commons = list(data.iter_commons_clips())
+        print(f"+ {len(commons)} commons clip(s) from {data.COMMONS_MANIFEST}")
+        pclips += commons
     if not pclips:
         raise SystemExit("No labelled pitch clips — check datasets / raagas.json.")
 

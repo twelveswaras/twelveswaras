@@ -6,7 +6,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import worker, { cleanReferrer, cleanId, cleanSource, cleanTradition, FUNNEL_EVENTS } from '../src/index.js';
+import worker, { cleanReferrer, cleanId, cleanSource, cleanTradition, cleanCredit, FUNNEL_EVENTS } from '../src/index.js';
 
 // A D1 stub shaped like the bits of the real binding the worker uses: prepare().bind().run().
 // `rows` collects the bound values of every insert so a test can assert what was written.
@@ -111,6 +111,31 @@ test('cleanTradition is a two-value enum, everything else NULL', () => {
   assert.equal(cleanTradition('western'), null);
   assert.equal(cleanTradition(''), null);
   assert.equal(cleanTradition(undefined), null);
+});
+
+// ---- cleanCredit -----------------------------------------------------------------------------
+// The one contribution column that stores free text (an optional public display credit). It must
+// keep a normal name/handle intact, collapse to a single line, cap length, and map empty -> NULL.
+test('cleanCredit keeps a normal name or handle', () => {
+  assert.equal(cleanCredit('Skanda (Shaale)'), 'Skanda (Shaale)');
+  assert.equal(cleanCredit('@some_handle'), '@some_handle');
+});
+
+test('cleanCredit trims and collapses internal whitespace to one line', () => {
+  assert.equal(cleanCredit('  Ravi   Kumar  '), 'Ravi Kumar');
+  assert.equal(cleanCredit('line one\nline two\tx'), 'line one line two x');
+});
+
+test('cleanCredit maps empty and non-string input to null (anonymous, the default)', () => {
+  assert.equal(cleanCredit(''), null);
+  assert.equal(cleanCredit('   '), null);
+  assert.equal(cleanCredit(undefined), null);
+  assert.equal(cleanCredit(null), null);
+  assert.equal(cleanCredit(42), null);
+});
+
+test('cleanCredit caps length so the column cannot be used as storage', () => {
+  assert.equal(cleanCredit('a'.repeat(300)).length, 80);
 });
 
 // ---- POST /event -----------------------------------------------------------------------------

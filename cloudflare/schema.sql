@@ -69,6 +69,13 @@ CREATE TABLE IF NOT EXISTS contributions (
                                                  -- picker's group); NULL if unspecified. On a live
                                                  -- DB that predates this column, run once:
                                                  --   ALTER TABLE contributions ADD COLUMN tradition TEXT;
+  credit          TEXT,                          -- optional PUBLIC attribution: a name/handle the
+                                                 -- contributor typed to be credited by, shown in
+                                                 -- CONTRIBUTORS.md and (for released clips) the CC-BY
+                                                 -- dataset. NULL = anonymous (the default). Never PII/
+                                                 -- email; the worker (cleanCredit) trims, single-lines
+                                                 -- and caps it. On a live DB that predates this column:
+                                                 --   ALTER TABLE contributions ADD COLUMN credit TEXT;
   verification_status TEXT DEFAULT 'unverified', -- unverified | community_verified | disputed
   split           TEXT    DEFAULT 'pending',     -- pending | train | val | test | rejected
   votes_agree     INTEGER DEFAULT 0,

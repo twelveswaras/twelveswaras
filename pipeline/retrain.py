@@ -6,8 +6,10 @@ contributor data can be clean CC-BY (vs the CC-BY-NC-SA Saraga-seeded model, D9)
 """
 from __future__ import annotations
 
-# TODO(v1+): implement. Reuses raaga_id.train.build_dataset over the commons splits,
-# then raaga_id.evaluate against benchmark/test_track_ids.json before promotion.
+# The commons -> corpus half is done: pipeline.pull_commons pulls verified contributions
+# into data/commons/, and `raaga_id.train --datasets saraga_carnatic commons` folds them in.
+# TODO(v1+): the promotion half — retrain, score against benchmark/test_track_ids.json, and
+# publish only if it beats the incumbent.
 
 
 def main() -> None:
