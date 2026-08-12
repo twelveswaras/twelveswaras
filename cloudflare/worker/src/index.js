@@ -223,6 +223,18 @@ function cleanTradition(v) {
   return v === 'carnatic' || v === 'hindustani' ? v : null;
 }
 
+// A contributor's optional PUBLIC credit (name or handle), shown in CONTRIBUTORS.md and, for a
+// CC-BY-released clip, alongside it in the commons dataset. Free text by nature, so this is the one
+// contribution column we deliberately store as typed, but bounded: control chars and newlines
+// collapse to a single space (a credit is one line, never a place to smuggle markup or a payload),
+// length is capped, and empty -> NULL, which is the default (anonymous). Never an email: we ask for
+// a display name only, and do not validate/keep anything that looks like contact info here.
+function cleanCredit(v) {
+  if (typeof v !== 'string') return null;
+  const s = v.replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80);
+  return s || null;
+}
+
 // Acquisition referrer, HOST only. The page sends document.referrer's hostname (see logResult in
 // site/index.html); this is defence-in-depth so a hand-crafted POST can't smuggle a full URL with a
 // path/query (potential PII) into the log. Reduce anything to its host, cap length, '' -> NULL.
@@ -266,6 +278,7 @@ async function handleContribute(request, env, ctx) {
     consent_version: (form.get('consent_version') || '').toString().slice(0, 40) || null,
     country: (request.cf && request.cf.country) || null,
     tradition: cleanTradition(form.get('tradition')),
+    credit: cleanCredit(form.get('credit')),
   };
   if (env.CLIPS) ctx.waitUntil(env.CLIPS.put(key, bytes, { httpMetadata: { contentType: mime } })
     .catch((e) => console.error('contribute: R2 put failed', { err: String((e && e.message) || e), key })));
@@ -302,11 +315,11 @@ async function insertContribution(env, m) {
     await env.DB.prepare(
       `INSERT INTO contributions
          (ts, r2_key, audio_sha256, raaga, label_source, model_pred, confidence, tonic_hz,
-          instrument, is_own, license, release_public, consent_version, country, tradition, split)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'CC-BY-4.0', ?, ?, ?, ?, 'pending')`
+          instrument, is_own, license, release_public, consent_version, country, tradition, credit, split)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 'CC-BY-4.0', ?, ?, ?, ?, ?, 'pending')`
     ).bind(
       new Date().toISOString(), m.key, m.sha, m.raaga, m.label_source, m.model_pred,
-      m.confidence, m.tonic_hz, m.instrument, m.release_public, m.consent_version, m.country, m.tradition
+      m.confidence, m.tonic_hz, m.instrument, m.release_public, m.consent_version, m.country, m.tradition, m.credit
     ).run();
   } catch (e) {
     // Best-effort insert (never break the contributor's UX), but do NOT swallow silently:
@@ -319,4 +332,4 @@ async function insertContribution(env, m) {
 // Test-only surface (cloudflare/worker/test/worker.test.mjs). The Workers runtime only ever reads
 // the default export above; naming these as well costs nothing at runtime and lets the sanitizers
 // that guard the D1 columns be unit-tested directly.
-export { cleanReferrer, cleanId, cleanSource, cleanTradition, FUNNEL_EVENTS };
+export { cleanReferrer, cleanId, cleanSource, cleanTradition, cleanCredit, FUNNEL_EVENTS };

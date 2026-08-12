@@ -22,8 +22,10 @@ A few things to know before you contribute a clip:
 - **Rights gate.** Only contribute audio that is **your own performance**, or that you
   otherwise have the right to share under the chosen license. A concert recording you
   merely captured is not your own performance.
-- **Anonymous by default.** No login is required. An optional handle lets you claim
-  attribution if you want it.
+- **Anonymous by default.** No login is required. An optional **Credit** field lets you
+  claim public attribution if you want it (a name or handle, never an email); credited
+  contributors are listed in [`CONTRIBUTORS.md`](CONTRIBUTORS.md). Leave it blank to stay
+  anonymous.
 - **Audio is not published by default.** By default you help improve the recognizer (we
   publish the model, not your voice). Releasing the raw audio into the public commons is
   a separate, explicit opt-in.

@@ -294,6 +294,9 @@
       + '<div class="field"><span class="lab">Instrument or voice (optional)</span><div class="chips" id="cx-inst">'+chips+'</div></div>'
       + '<div class="field"><label class="cb req"><input type="checkbox" id="cx-own"><span>This is <b>my own performance</b>, or I have the rights to share it publicly.</span></label></div>'
       + '<div class="field"><label class="cb"><input type="checkbox" id="cx-pub"><span>Also release this clip publicly under CC-BY. If unchecked, the clip stays private and only the model learns from it.</span></label></div>'
+      + '<div class="field"><label class="lab" for="cx-credit">Credit (optional)</label>'
+      +   '<input type="text" id="cx-credit" maxlength="80" autocomplete="off" placeholder="A name or handle to be credited by">'
+      +   '<p class="note">Shown as the contributor in <b>CONTRIBUTORS.md</b> and, for a CC-BY-released clip, in the open dataset. Leave blank to stay anonymous. Please don\'t enter an email.</p></div>'
       + '<button class="btn primary" id="cx-send" style="width:100%" disabled>Contribute this clip</button>'
       + '<p class="err" id="cx-err" style="display:none"></p>'
       + '<div class="divider">or</div>'
@@ -355,6 +358,8 @@
       fd.append('is_own','true');
       if(inst) fd.append('instrument', inst);
       fd.append('release_public', pub ? 'true' : 'false');
+      var credit=(g('cx-credit') && g('cx-credit').value || '').trim();
+      if(credit) fd.append('credit', credit);
       if(meta.model_pred) fd.append('model_pred', meta.model_pred);
       if(meta.conf!=='' && meta.conf!=null) fd.append('confidence', String(meta.conf));
       if(meta.tonic) fd.append('tonic_hz', String(meta.tonic));
