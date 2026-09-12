@@ -8,8 +8,14 @@ from __future__ import annotations
 
 # The commons -> corpus half is done: pipeline.pull_commons pulls verified contributions
 # into data/commons/, and `raaga_id.train --datasets saraga_carnatic commons` folds them in.
-# TODO(v1+): the promotion half — retrain, score against benchmark/test_track_ids.json, and
+# TODO(v1+): the promotion half: retrain, score against benchmark/test_track_ids.json, and
 # publish only if it beats the incumbent.
+#
+# RIGHTS GUARD (D9): contributions carry a `license` and `release_public`. Training may use all
+# verified rows, but the clean-CC-BY model and ANY public-audio release MUST exclude non-CC-BY
+# licences (e.g. license='Shaale-train-only', written by pipeline.import_shaale) and rows with
+# release_public=0. Those clips may train the model; their audio must never be published. See
+# shaale-train-only-data / CONTRIBUTORS.md.
 
 
 def main() -> None:

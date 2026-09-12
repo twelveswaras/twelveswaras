@@ -74,6 +74,11 @@ Trained on openly-available research corpora, **attribution required by their li
   ([Zenodo](https://doi.org/10.5281/zenodo.7278506)); the audio is separate and access-restricted.
   Its **Carnatic (CMD)** set backs the 40 Carnatic raagas, and its paired **Hindustani (HMD)** set
   (30 raagas, same CC-BY-4.0 features) now powers the Hindustani preview.
+- **Community and partner contributions** (the data commons): opt-in recordings, CC-BY-4.0 when
+  contributors release them publicly. Some are shared under a **train-only** licence (for example
+  student recordings from **[Shaale](https://shaale.com)**): the model learns from them, but the
+  audio stays private and is not redistributed, so like Saraga they keep the current model in the
+  non-commercial bucket. Credited in [`CONTRIBUTORS.md`](CONTRIBUTORS.md).
 
 Built with **essentia** and **compiam** (both **AGPL**; the deployed Space carries AGPL
 obligations, satisfied by publishing all source), plus librosa, xgboost, and gradio.

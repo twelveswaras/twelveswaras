@@ -1,9 +1,11 @@
 # Contributors
 
-twelveswaras is a community-owned public good. This file credits the people who have grown
-its openly-licensed **data commons** by contributing recordings. Code contributors are
-credited through the Git history and [`CITATION.cff`](CITATION.cff); this file is for the
-audio commons specifically, whose CC-BY-4.0 licence is built on attribution.
+twelveswaras is a community-owned public good. This file credits the people and organisations
+who have grown its **data commons** by contributing recordings. Code contributors are credited
+through the Git history and [`CITATION.cff`](CITATION.cff); this file is for the audio commons.
+Most contributions are CC-BY-4.0 (attribution is that licence's core term); some are shared
+under other terms, such as a **train-only** licence, where the rights holder is credited here
+by request and the audio is never published.
 
 ## How attribution works
 
@@ -21,10 +23,12 @@ by opening an issue or writing to the contact in [`SECURITY.md`](SECURITY.md).
 
 ## Data commons contributors
 
-- **[Skanda (Shaale)](https://shaale.com)** contributed the first recordings to the
-  commons: **Lathangi**, **Arabhi**, **Kuntala Varali** (Carnatic) and **Hameer**
-  (Hindustani). These vocal recordings reach beyond the raagas the model is currently
-  trained on, seeding new raagas for a future model to learn.
+- **[Shaale](https://shaale.com)** contributed the first recordings, student performances
+  shared under a **train-only** licence: the model learns from them, but the audio is kept
+  private and is **not** part of the public CC-BY dataset. The first set covers **Lathangi**,
+  **Arabhi**, **Kuntala Varali** (Carnatic) and **Hameer** (Hindustani), with more to follow.
+  These reach beyond the raagas the model is currently trained on, seeding new raagas for a
+  future model to learn.
 
 ---
 
