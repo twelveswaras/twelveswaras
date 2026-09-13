@@ -66,11 +66,12 @@ def test_frontend_uses_performance_not_recording_wording():
     assert "my own recording" not in site
 
 
-def test_frontend_features_first_framing():
+def test_frontend_correction_framing():
     site = _site().lower()
-    # default ask is "help improve the recognizer", and we publish the model, not the voice
-    assert "improve the recognizer" in site
-    assert ("not your recording" in site) or ("not your voice" in site)
+    # the ask is "correct us when we're wrong" (a correction is the signal that helps), and we
+    # publish the model, never the recording
+    assert ("correct it" in site) or ("correction" in site)
+    assert ("never your recording" in site) or ("not your recording" in site) or ("not your voice" in site)
 
 
 # --- the dedicated /contribute page (for people who already know the raaga) -------------------

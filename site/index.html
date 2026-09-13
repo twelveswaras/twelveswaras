@@ -630,8 +630,9 @@
       orb.setAttribute('aria-label','Tap to identify the raaga');
     }
     // ---- contribute to the commons (opt-in) ---------------------------------------------------
-    // Features-first: the default ask is to improve the recognizer; the audio stays private and is
-    // used only to verify the label. Rights are attested here AND re-checked in the worker. The
+    // Correction-first: the default ask is to correct the recognizer when it's wrong; the audio
+    // stays private and is used only to verify the label. Rights are attested here AND re-checked
+    // in the worker. The
     // exact clip that produced the result is sent, so the label matches what the model heard.
     function clipBlob(){ return curFile ? curFile
       : (chunks.length ? new Blob(chunks, {type: curMime || 'audio/webm'}) : null); }
@@ -646,7 +647,7 @@
         + '<option data-trad="" value="__other__">Another raaga (not listed)</option>';
       var chips = ['Vocal','Violin','Veena','Flute','Nadaswaram','Other'].map(function(n){
         return '<button type="button" class="cc-chip" data-inst="'+n+'">'+n+'</button>'; }).join('');
-      var openTxt = abstain ? '+ Help me learn this raaga' : '+ Help improve the recognizer';
+      var openTxt = abstain ? '+ Know this raaga? Tell me' : '+ Wrong? Correct it';
       var q = abstain ? "I couldn't place this one. If you know the raaga, add it and teach me:"
                       : 'We heard <b>'+r+'</b>. Is that right?';
       var choices = abstain
@@ -663,13 +664,13 @@
         +     '<button type="button" class="cc-chip" data-trad="hindustani">Hindustani</button></div>'
         +   '<label class="cc-lab req"><input type="checkbox" id="cc-own">'
         +     '<span>This is <b>my own performance</b>, or I have the rights to share it publicly.</span></label>'
-        +   '<p class="cc-note">We learn from your clip to <b>improve the recognizer</b>. We publish the model, '
-        +     'not your recording: the audio stays private and is used only to check the label. '
+        +   '<p class="cc-note">Your correction teaches it where it got a raaga <b>wrong</b>, which is what '
+        +     'helps most. The audio stays private, used only to check the label; we publish the model, never your recording. '
         +     '<a href="about/#faq" style="color:var(--jade-hi)">How we handle your clip &rarr;</a></p>'
         +   '<div class="cc-inst" role="group" aria-label="Instrument (optional)">'+chips+'</div>'
         +   '<label class="cc-lab"><input type="checkbox" id="cc-pub">'
         +     '<span>Also release this clip publicly under CC-BY (optional).</span></label>'
-        +   '<button type="button" class="cc-send" id="cc-send" disabled>Donate this clip</button>'
+        +   '<button type="button" class="cc-send" id="cc-send" disabled>'+(abstain?'Add this raaga':'Send correction')+'</button>'
         +   '<p class="cc-err" id="cc-err" hidden></p></div>';
     }
     function mountContrib(abstain){
@@ -678,7 +679,7 @@
       contribEl.innerHTML = contribHTML(lockName, abstain);
       var open=g('cc-open'), card=g('cc-card'), yes=g('cc-yes'), sel=g('cc-sel'),
           other=g('cc-other'), otherTrad=g('cc-other-trad'), own=g('cc-own'), send=g('cc-send');
-      var openTxt = abstain ? '+ Help me learn this raaga' : '+ Help improve the recognizer';
+      var openTxt = abstain ? '+ Know this raaga? Tell me' : '+ Wrong? Correct it';
       open.onclick=function(){ card.hidden=!card.hidden; open.textContent = card.hidden ? openTxt : 'Never mind'; };
       var oTrad='', tchips=otherTrad.querySelectorAll('.cc-chip');
       function chosen(){ return sel.value==='__other__' ? (other.value||'').trim() : sel.value; }
@@ -691,7 +692,8 @@
         if(chosen()===lockName && lockTrad) t=lockTrad;
         return t;
       }
-      function sync(){ send.disabled = !(own.checked && chosen() && tradOf()); }
+      function sync(){ send.disabled = !(own.checked && chosen() && tradOf());
+        send.textContent = (!abstain && chosen()===lockName) ? 'Confirm' : (abstain ? 'Add this raaga' : 'Send correction'); }
       sel.onchange=function(){ var isOther=sel.value==='__other__';
         other.style.display = isOther ? 'block' : 'none';
         otherTrad.style.display = isOther ? 'flex' : 'none';
@@ -710,7 +712,7 @@
     }
     async function submitContrib(raaga, isOwn, inst, pub, send, trad){
       var blob=clipBlob(), err=g('cc-err');
-      if(!blob){ err.textContent='The clip is no longer available. Identify again to donate.'; err.hidden=false; return; }
+      if(!blob){ err.textContent='The clip is no longer available. Identify again to send a correction.'; err.hidden=false; return; }
       if(!isOwn){ err.textContent='Please confirm you have the rights to share this clip.'; err.hidden=false; return; }
       err.hidden=true; send.disabled=true; send.textContent='Sending…';
       try{
@@ -727,11 +729,11 @@
         fd.append('consent_version', CONSENT);
         var res=await fetch(API+'/contribute',{method:'POST',body:fd}); var d=await res.json();
         if(!res.ok || (d&&d.error)) throw new Error((d&&d.error)||'failed');
-        g('cc-card').innerHTML='<p class="cc-done"><b>Thank you.</b> Your clip is queued for community '
-          +'verification. It helps the recognizer learn '+raaga+'.</p>';
+        g('cc-card').innerHTML='<p class="cc-done"><b>Thank you.</b> Your correction is queued for review, '
+          +'it teaches the recognizer '+raaga+'.</p>';
         g('cc-open').style.display='none';
       }catch(e){ err.textContent='Could not send just now. Please try again.'; err.hidden=false;
-        send.disabled=false; send.textContent='Donate this clip'; }
+        send.disabled=false; send.textContent = raaga===lockName ? 'Confirm' : 'Send correction'; }
     }
     var rowEls={};
     function rows(list,done){

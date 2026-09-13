@@ -44,6 +44,6 @@ test('low-confidence identify abstains and offers the teach-me funnel', async ({
   await expect(page.locator('#rec-status')).toHaveText('Not sure');
   await expect(page.locator('#rec-raga')).toBeEmpty();
   await expect(page.locator('#r-learn')).toHaveCount(0);
-  // ...and it reframes the contribute card as "teach me this raaga" (the vocabulary-growth funnel).
-  await expect(page.locator('#rec-contrib')).toContainText('Help me learn this raaga');
+  // ...and it reframes the contribute card as "know this raaga? tell me" (the vocabulary-growth funnel).
+  await expect(page.locator('#rec-contrib')).toContainText('Know this raaga? Tell me');
 });
