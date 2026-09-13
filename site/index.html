@@ -403,10 +403,11 @@
     var statusEl=g('rec-status'), saEl=g('rec-sa'), leadEl=g('rec-lead'), ragaEl=g('rec-raga'),
         top3El=g('rec-top3'), controls=g('rec-controls'), orb=g('rec-orb'), guides=g('rec-guides');
     // Listen long: in-the-wild accuracy is monotonic in listening time (benchmark: 0.33@45s ->
-    // 0.46@90s) and the old snappy 15s lock scored 0.215 (below baseline). Conservative lock —
-    // don't commit before MIN_LISTEN, need a long stable hold + high confidence — else run to MAX_S.
-    // MAX_S=90 matches the backend INFER_SECONDS cap. Confirmed 0.450 top-1 (lockpoint sim).
-    var HOLD=10.0, MIN_LISTEN=45, MAX_S=90, SEND_EVERY=3500, FIRST_SEND=4500;
+    // 0.475@90s -> 0.512@150s) and the old snappy 15s lock scored 0.215 (below baseline). Conservative
+    // lock — don't commit before MIN_LISTEN, need a long stable hold + high confidence — else run to
+    // MAX_S. MAX_S=150 matches the backend INFER_SECONDS cap; easy clips still lock early on stability,
+    // only hard/ambiguous ones run to the cap (which is exactly where the extra accuracy comes from).
+    var HOLD=10.0, MIN_LISTEN=45, MAX_S=150, SEND_EVERY=3500, FIRST_SEND=4500;
     // Abstention: below this calibrated confidence, do not present a confident raaga name; say the
     // model is not sure (it may be a raaga outside the 40, or the audio lacks a clear drone). The
     // threshold is from a wild-set experiment: ~0.45 lifts shown-accuracy 0.46 -> 0.54 while

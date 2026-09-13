@@ -29,7 +29,9 @@ LOW_CONFIDENCE = 0.15
 # a pitch-class profile, so an honest close-call is common and correct.
 CLOSE_MARGIN = 0.06
 INFER_MAX_WINDOWS = 60     # analyse ~first 10 min of a long upload (matches training)
-INFER_SECONDS = 90         # cap raw-audio analysed at inference — tonic salience is ~1min/2min
+INFER_SECONDS = 150        # cap raw-audio analysed at inference; wild benchmark is monotonic in
+                           # listen time (90s -> 0.475, 150s -> 0.512), and tonic salience keeps
+                           # improving to ~150s, so listen long. Hard/ambiguous clips benefit most.
 PCD_BINS = 120             # pitch-class-distribution resolution (10-cent bins); the display feature
 
 # Production model feature = windowed Time-Delayed Melody Surface (D28). The gate benchmark
