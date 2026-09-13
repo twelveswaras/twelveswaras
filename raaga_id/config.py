@@ -59,17 +59,26 @@ def load_raagas() -> dict:
 
 
 def fold_raaga(name: str) -> str:
-    """Normalize a raaga name for matching: strip diacritics + case + separators.
+    """Normalize a raaga name for matching: strip diacritics + case + separators, then
+    normalize common Indic romanization variants.
 
-    Saraga uses diacritics (Mōhanaṁ, Tōḍi, Śudda sāvēri); our vocab/aliases are ASCII.
-    NFKD-decompose, drop combining marks, lowercase, keep only alphanumerics so
-    'Mōhanaṁ' and 'Mohanam' fold to the same key.
+    Saraga/IAMRRD use diacritics (Mōhanaṁ, Tōḍi, Śaṅkarābharaṇaṁ); contributors use varied
+    ASCII (Mohanam, Thodi, Shankarabharana). NFKD-decompose, drop combining marks, lowercase,
+    keep only alphanumerics — then fold the aspirate/sibilant spellings (sh/s, th/t, dh/d, …)
+    and collapse doubled letters, so 'Shankarabharanam' and 'Śaṅkarābharaṇaṁ' fold together.
+    Verified not to collapse any two distinct model classes into one key.
     """
+    import re
     import unicodedata
 
     decomposed = unicodedata.normalize("NFKD", name)
     stripped = "".join(c for c in decomposed if not unicodedata.combining(c))
-    return "".join(c for c in stripped.lower() if c.isalnum())
+    key = "".join(c for c in stripped.lower() if c.isalnum())
+    for a, b in (("shh", "s"), ("sh", "s"), ("chh", "c"), ("ch", "c"), ("th", "t"),
+                 ("dh", "d"), ("bh", "b"), ("gh", "g"), ("kh", "k"), ("ph", "p"),
+                 ("w", "v"), ("z", "j")):
+        key = key.replace(a, b)
+    return re.sub(r"(.)\1+", r"\1", key)  # collapse doubled letters (naata -> nata)
 
 
 def canonical_raaga(name: str, vocab: dict | None = None) -> str:
