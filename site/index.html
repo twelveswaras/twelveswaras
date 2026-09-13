@@ -630,8 +630,9 @@
       orb.setAttribute('aria-label','Tap to identify the raaga');
     }
     // ---- contribute to the commons (opt-in) ---------------------------------------------------
-    // Features-first: the default ask is to improve the recognizer; the audio stays private and is
-    // used only to verify the label. Rights are attested here AND re-checked in the worker. The
+    // Correction-first: the default ask is to correct the recognizer when it's wrong; the audio
+    // stays private and is used only to verify the label. Rights are attested here AND re-checked
+    // in the worker. The
     // exact clip that produced the result is sent, so the label matches what the model heard.
     function clipBlob(){ return curFile ? curFile
       : (chunks.length ? new Blob(chunks, {type: curMime || 'audio/webm'}) : null); }
