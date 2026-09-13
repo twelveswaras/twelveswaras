@@ -150,3 +150,25 @@ windows as junk. Retrained + refit calibration:
 
 Small lift on *studio* audio (already clean); the larger payoff is on real-world clips, which
 carry far more junk, to be confirmed on the real-world benchmark. Gate is a config knob, tunable.
+
+### Surface augmentation: train on clean + degraded TDMS (2026-09-13)
+
+The studio to in-the-wild gap is an ACOUSTIC problem, not a data-coverage one: reverb, noise, and
+a weak/absent drone corrupt the melody surface. Pooling more *clean* data (Saraga, contributor
+clips) sharpens studio but *hurts* wild (measured: +0.027 studio / -0.075 wild). Instead,
+regularise against that corruption directly, train on the clean train split PLUS one
+surface-degraded copy of every window (`tools/hindustani_spike.degrade`: gaussian blur + spurious
+mass + a +-1-bin tonic jitter). The model learns raaga structure that survives the wild, and it
+improves BOTH benchmarks at once:
+
+| model | frozen top1 | held-out 25% CV | in-the-wild top1 | in-the-wild top3 |
+|-------|-------------|-----------------|------------------|------------------|
+| clean (incumbent) | 0.806 | 0.877 | 0.362 | 0.512 |
+| **+ surface augmentation** | **0.830** | **0.908** | **~0.40-0.45** | **~0.61-0.63** |
+
+Carnatic CV +0.05, Hindustani flat (no cross-tradition damage), and it beats the incumbent with
+*fewer* rounds (300 vs 400). The gain is stable across degradation seeds; the in-the-wild range
+reflects seed variation on the 80-clip set. Rebuild with `python -m tools.hindustani_spike fitfull`
+(augment defaults on). Corrects an earlier note that "augmentation regressed", that was pitch/tempo
+augmentation; *surface* degradation is a different, and clearly positive, lever. Ships on the next
+recognizer redeploy.
