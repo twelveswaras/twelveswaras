@@ -1,13 +1,18 @@
 """Inference-time audio -> model feature windows.
 
 Extracts the predominant-melody pitch (essentia PredominantPitchMelodia) and the tonic
-(compiam TonicIndianMultiPitch = the Salamon/Gulati multipitch method, which exploits the
-drone), then builds windowed TDMS (D28) via features.model_windows — the SAME feature the
-model trains on. This is the audio->feature path for a RAW upload; the annotated-corpus path
-(data.iter_pitch_clips) uses each dataset's own pitch+tonic instead.
+(essentia TonicIndianArtMusic, which exploits the drone), then builds windowed TDMS (D28)
+via features.model_windows — the SAME feature the model trains on. This is the audio->feature
+path for a RAW upload; the annotated-corpus path (data.iter_pitch_clips) uses each dataset's
+own pitch+tonic instead.
+
+Tonic was compiam TonicIndianMultiPitch until 2026-09-14. Swapped after the first
+ground-truth benchmark (tools/tonic_bench, vs Saraga ctonic, identical audio, 150s, n=39):
+TonicIndianArtMusic scores 90% vs 87% clean and 59% vs 46% on degraded audio. compiam is no
+longer imported here, but stays in the env because it pins numpy<2.
 
 REQUIRES the numpy<2 inference env (environment-inference.yml): essentia's compute is
-broken under numpy 2.x. essentia/compiam are imported lazily so this module still imports
+broken under numpy 2.x. essentia is imported lazily so this module still imports
 (harmlessly) in the numpy-2.x training env.
 """
 from __future__ import annotations
@@ -24,17 +29,54 @@ _MELODIA = None
 _TONIC = None
 
 
+# Sa search range. 100 Hz is deliberately NOT raised: a higher floor scores better on the degraded
+# benchmark, but only because Saraga's annotated tonics span just 131-197 Hz. Real tonics go lower
+# (the Shaale corpus reaches 103.9 Hz), and a floor above those makes a low-voiced singer's Sa
+# unfindable by construction. Better to keep the honest range than to buy points on a narrow sample.
+TONIC_MIN_HZ = 100.0
+TONIC_MAX_HZ = 375.0
+
+
+class _TonicEstimator:
+    """Sa from the drone, via essentia TonicIndianArtMusic.
+
+    Benchmarked against Saraga's ground-truth ctonic (tools/tonic_bench), identical audio, 150s,
+    n=39: this beats the previous compiam TonicIndianMultiPitch wrapper 90% vs 87% on clean and
+    **59% vs 46% on degraded audio**, which is where we actually lose (a wrong Sa mis-normalises the
+    TDMS and yields a confident WRONG raaga, the worst failure a learning tool can have).
+
+    A FRESH algorithm is built per call on purpose. Essentia algorithm objects are stateful: reusing
+    one raises "No peak locations" on its second compute. compiam hid this by re-instantiating
+    internally, so caching its wrapper was safe; caching a raw essentia algorithm would NOT be, and
+    would fail every request after the first. Construction is cheap next to the analysis itself.
+    """
+
+    def extract(self, y, input_sr: int = TONIC_SR) -> float:
+        from essentia.standard import TonicIndianArtMusic
+
+        sig = np.asarray(y, dtype=np.float32)
+        if input_sr != TONIC_SR:
+            import librosa
+
+            sig = librosa.resample(sig, orig_sr=input_sr, target_sr=TONIC_SR).astype(np.float32)
+        algo = TonicIndianArtMusic(minTonicFrequency=TONIC_MIN_HZ, maxTonicFrequency=TONIC_MAX_HZ)
+        try:
+            return float(algo(sig))
+        finally:
+            del algo
+
+
 def _extractors():
-    """Import + instantiate the essentia/compiam extractors ONCE, then reuse. Importing
-    compiam is the slow (~tens of s) one-time cost; instantiating and reusing the
-    algorithms keeps every identify ~3.5s. Call warmup() at startup to pay it upfront."""
+    """Import + instantiate the extractors ONCE, then reuse. The essentia import is the slow
+    (~tens of s) one-time cost; reusing Melodia keeps every identify ~3.5s. Call warmup() at
+    startup to pay it upfront. The tonic estimator is a thin stateless wrapper (see above: the
+    underlying essentia algorithm must NOT be cached)."""
     global _MELODIA, _TONIC
     if _MELODIA is None:
-        from compiam.melody.tonic_identification.tonic_multipitch import TonicIndianMultiPitch
         from essentia.standard import PredominantPitchMelodia
 
         _MELODIA = PredominantPitchMelodia(hopSize=MELODIA_HOP, sampleRate=TONIC_SR)
-        _TONIC = TonicIndianMultiPitch()
+        _TONIC = _TonicEstimator()
     return _MELODIA, _TONIC
 
 
