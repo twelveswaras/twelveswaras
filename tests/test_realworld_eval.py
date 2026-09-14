@@ -63,3 +63,36 @@ if __name__ == "__main__":
     test_score_clip_top1_top3_rank()
     test_summary_overall_and_drone_breakdown()
     print("REALWORLD-EVAL OK — parse/vocab-validate, score top1/top3/rank, drone breakdown pass")
+
+
+# The dual (production) model tags its classes with a tradition: "Kalyāṇi (Carnatic)". A clip list
+# holds the bare name. Folding the tagged class directly matched NOTHING, so every clip was skipped
+# and this benchmark silently scored zero clips against the production model.
+DUAL_VOCAB = ["Kalyāṇi (Carnatic)", "Tōḍi (Carnatic)", "Tōḍi (Hindustani)", "Yaman kalyāṇ (Hindustani)"]
+
+
+def test_parse_matches_tradition_tagged_dual_model_classes():
+    rows = [{"file": "a.m4a", "raga": "Kalyani", "source": "yt", "license": "private-eval", "drone": "yes"}]
+    clips, skipped = R.parse_clip_list(rows, DUAL_VOCAB)
+    assert skipped == []
+    assert len(clips) == 1
+    # stored label is the FULL model class, so scoring compares like-for-like against predictions
+    assert clips[0].raga == "Kalyāṇi (Carnatic)"
+
+
+def test_parse_resolves_cross_tradition_collisions():
+    """Tōḍi exists in both traditions. An explicit `tradition` column wins; absent one it defaults
+    to Carnatic, matching tradition_of's documented tie-break."""
+    rows = [
+        {"file": "c.m4a", "raga": "Todi", "tradition": "hindustani", "drone": "yes"},
+        {"file": "d.m4a", "raga": "Todi", "drone": "yes"},
+    ]
+    clips, _ = R.parse_clip_list(rows, DUAL_VOCAB)
+    assert [c.raga for c in clips] == ["Tōḍi (Hindustani)", "Tōḍi (Carnatic)"]
+
+
+def test_parse_still_skips_genuinely_out_of_vocab():
+    rows = [{"file": "e.m4a", "raga": "NotARaaga", "drone": "no"}]
+    clips, skipped = R.parse_clip_list(rows, DUAL_VOCAB)
+    assert clips == []
+    assert len(skipped) == 1 and "vocab" in skipped[0].reason

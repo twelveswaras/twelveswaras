@@ -22,6 +22,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from raaga_id.config import fold_raaga
+from raaga_id.tradition import tradition_of
 
 TRUTHY = {"yes", "y", "true", "1", "drone"}
 FALSY = {"no", "n", "false", "0", "nodrone", "none"}
@@ -67,8 +68,28 @@ def _parse_drone(v: str) -> bool | None:
 def parse_clip_list(rows, vocab) -> tuple[list[Clip], list[Skipped]]:
     """Validate rows against the model vocabulary. A row is kept only if it has a file and its
     raga folds to one of the model's classes; the canonical (model-class) spelling is stored so
-    scoring compares like-for-like. Returns (clips, skipped-with-reasons)."""
-    fold_to_canon = {fold_raaga(c): c for c in vocab}
+    scoring compares like-for-like. Returns (clips, skipped-with-reasons).
+
+    The dual model's classes carry a tradition tag ("Kalyāṇi (Carnatic)"), while a clip list holds
+    the bare name ("Kalyāṇi"). Folding the tagged class directly therefore matched NOTHING and every
+    clip was skipped, which silently broke this benchmark against the production model. So index by
+    the BARE name via tradition_of, and keep the tagged class as the stored label.
+    """
+    by_bare: dict[str, list[str]] = {}
+    for c in vocab:
+        name, _trad = tradition_of(c)
+        by_bare.setdefault(fold_raaga(name), []).append(c)
+
+    def resolve(raw: str, want_trad: str) -> str | None:
+        # A name can be present in BOTH traditions (Tōḍi, Śrī ...). Prefer the row's tradition when
+        # given; otherwise fall back to the first candidate, which for an untagged row means
+        # Carnatic (the vocab is Carnatic-first), matching tradition_of's documented tie-break.
+        cands = by_bare.get(fold_raaga(raw))
+        if not cands:
+            return None
+        want = (want_trad or "carnatic").strip().lower()
+        return next((c for c in cands if tradition_of(c)[1].lower() == want), cands[0])
+
     clips, skipped = [], []
     for row in rows:
         f = (row.get("file") or "").strip()
@@ -76,9 +97,9 @@ def parse_clip_list(rows, vocab) -> tuple[list[Clip], list[Skipped]]:
         if not f:
             skipped.append(Skipped(f or "(blank)", "no file given"))
             continue
-        canon = fold_to_canon.get(fold_raaga(raw_raga))
+        canon = resolve(raw_raga, (row.get("tradition") or ""))
         if canon is None:
-            skipped.append(Skipped(f, f"raga '{raw_raga}' not in the 40-raaga vocab"))
+            skipped.append(Skipped(f, f"raga '{raw_raga}' not in the {len(vocab)}-class vocab"))
             continue
         clips.append(Clip(file=f, raga=canon, source=(row.get("source") or "").strip(),
                           license=(row.get("license") or "").strip(),
