@@ -9,13 +9,29 @@ CREATE TABLE IF NOT EXISTS identifications (
   confidence    REAL,
   top3          TEXT,                      -- JSON array of {raaga, confidence}
   tonic_hz      REAL,
-  heard_s       REAL,
+  heard_s       REAL,                      -- seconds of audio the SERVER actually analysed (capped at
+                                           -- INFER_SECONDS). NB: rows written before 2026-09-14 hold
+                                           -- the browser's wall-clock here instead, so duration
+                                           -- analysis across that boundary is not comparable.
   no_prediction INTEGER DEFAULT 0,
   country       TEXT,                      -- request.cf.country (coarse geo, not PII)
-  referrer      TEXT                       -- acquisition referrer HOST only (e.g. "www.google.com",
+  referrer      TEXT,                      -- acquisition referrer HOST only (e.g. "www.google.com",
                                            -- "t.co"), never a full URL/path/query; '' -> NULL = direct.
                                            -- On a live DB that predates this column, run once:
                                            --   ALTER TABLE identifications ADD COLUMN referrer TEXT;
+  source        TEXT,                      -- 'live' (mic) or 'file' (upload). Without this the two
+                                           -- are indistinguishable, and they have different physics.
+  elapsed_s     REAL,                      -- the BROWSER's wall-clock. For an upload this is
+                                           -- processing time, NOT audio duration. Kept separate from
+                                           -- heard_s so the two are never conflated again.
+  reason        TEXT                       -- why a no_prediction happened: 'too_short' |
+                                           -- 'tonic_failed' | 'no_windows'. NULL when a raaga was
+                                           -- returned. ~46% of sessions end without a prediction and
+                                           -- until this column existed the cause was unrecorded.
+                                           -- On a live DB that predates these columns, run once:
+                                           --   ALTER TABLE identifications ADD COLUMN source TEXT;
+                                           --   ALTER TABLE identifications ADD COLUMN elapsed_s REAL;
+                                           --   ALTER TABLE identifications ADD COLUMN reason TEXT;
 );
 CREATE INDEX IF NOT EXISTS idx_ident_ts   ON identifications(ts);
 CREATE INDEX IF NOT EXISTS idx_ident_top1 ON identifications(top1);

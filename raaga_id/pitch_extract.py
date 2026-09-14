@@ -67,12 +67,19 @@ def audio_to_features(audio, sr, max_seconds: float = INFER_SECONDS, max_windows
         return [], None, 0.0, None
     analysed_seconds = y.size / TONIC_SR
 
+    # On a tonic failure return the REAL analysed_seconds (not 0.0). Callers distinguish the three
+    # no-window outcomes from the triple alone, with no extra return value:
+    #   secs == 0            -> too_short (returned above)
+    #   tonic is None        -> tonic_failed (the estimator threw or gave <=0)
+    #   tonic is not None    -> no_windows (the voiced-fraction junk gate dropped everything)
+    # Before this, every early failure reported 0.0 and the three were indistinguishable in
+    # telemetry, which is why our biggest production failure mode was unreadable.
     try:
         tonic = float(tonic_algo.extract(y, input_sr=TONIC_SR))
     except Exception:  # noqa: BLE001 — essentia raises "No peak locations" on unclear audio
-        return [], None, 0.0, None
+        return [], None, analysed_seconds, None
     if not tonic or tonic <= 0:
-        return [], None, 0.0, None
+        return [], None, analysed_seconds, None
 
     f0, _ = melodia(y)
     times = np.arange(len(f0)) * MELODIA_HOP / TONIC_SR

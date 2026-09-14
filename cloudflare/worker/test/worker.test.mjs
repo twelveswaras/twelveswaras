@@ -231,3 +231,44 @@ test('a failing keep-warm ping never throws (a dead cron is worse than a cold Sp
     globalThis.fetch = realFetch;
   }
 });
+
+// ---- POST /result telemetry columns ------------------------------------------------------------
+// heard_s used to receive the BROWSER's wall-clock, which for an upload is processing time, not
+// audio duration. Conflating the two made our biggest failure mode (~46% of sessions end with no
+// prediction) unreadable, so the server's analysed seconds, the browser elapsed, the source and the
+// failure reason are now separate columns.
+test('POST /result records source, elapsed_s and the no-prediction reason', async () => {
+  const db = stubDB();
+  const ctx = stubCtx();
+  const res = await worker.fetch(
+    postJSON('/api/result', {
+      top3: [], no_prediction: 1, tonic_hz: null,
+      heard_seconds: 42.5, elapsed_s: 118.2, source: 'live', reason: 'tonic_failed',
+    }), { ...ENV, DB: db }, ctx);
+  await ctx.settle();
+
+  assert.equal(res.status, 200);
+  assert.equal(db.rows.length, 1);
+  const v = db.rows[0].values;
+  assert.equal(v[5], 42.5);            // heard_s  = the SERVER's analysed seconds
+  assert.equal(v[6], 1);               // no_prediction
+  assert.equal(v[9], 'live');          // source
+  assert.equal(v[10], 118.2);          // elapsed_s = browser wall-clock, kept separate
+  assert.equal(v[11], 'tonic_failed'); // reason
+});
+
+test('POST /result rejects an unknown source or reason rather than storing it', async () => {
+  const db = stubDB();
+  const ctx = stubCtx();
+  await worker.fetch(
+    postJSON('/api/result', {
+      top3: [], no_prediction: 1,
+      source: '../../etc/passwd', reason: 'DROP TABLE', elapsed_s: 'not-a-number',
+    }), { ...ENV, DB: db }, ctx);
+  await ctx.settle();
+
+  const v = db.rows[0].values;
+  assert.equal(v[9], null);            // source  outside the allowlist -> NULL
+  assert.equal(v[10], null);           // elapsed_s non-numeric        -> NULL
+  assert.equal(v[11], null);           // reason  outside the allowlist -> NULL
+});
