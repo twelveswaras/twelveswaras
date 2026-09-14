@@ -72,3 +72,44 @@ if __name__ == "__main__":
     test_idle_prompt_when_no_audio()
     test_result_names_the_heard_segment()
     print("IDENTIFY OK — mmss, listening-state-first, idle prompt, heard-segment label all pass")
+
+
+# ---- tonic estimator: the algorithm must never be cached ---------------------------------------
+def test_tonic_estimator_builds_a_fresh_algorithm_per_call(monkeypatch):
+    """Essentia algorithm objects are STATEFUL: a reused instance raises "No peak locations" on its
+    second compute. The old compiam wrapper re-instantiated internally, so caching it was safe;
+    caching a raw essentia algorithm is not, and would break every request after the first. This
+    pins the contract so the cache can never creep back in. (Stubs essentia, so it runs in CI,
+    which has no essentia installed.)"""
+    import sys
+    import types
+
+    built = []
+
+    class FakeAlgo:
+        def __init__(self, **kw):
+            self.kw = kw
+            self.calls = 0
+            built.append(self)
+
+        def __call__(self, sig):
+            self.calls += 1
+            if self.calls > 1:                      # mimic essentia's real failure on reuse
+                raise RuntimeError("No peak locations")
+            return 146.2
+
+    fake = types.ModuleType("essentia.standard")
+    fake.TonicIndianArtMusic = FakeAlgo
+    monkeypatch.setitem(sys.modules, "essentia", types.ModuleType("essentia"))
+    monkeypatch.setitem(sys.modules, "essentia.standard", fake)
+
+    from raaga_id import pitch_extract
+
+    est = pitch_extract._TonicEstimator()
+    sig = np.zeros(1024, dtype=np.float32)
+    # three calls on the SAME estimator must all succeed, each with its own algorithm
+    assert [round(est.extract(sig), 1) for _ in range(3)] == [146.2, 146.2, 146.2]
+    assert len(built) == 3, "a fresh TonicIndianArtMusic must be built per call, not cached"
+    assert all(a.calls == 1 for a in built)
+    # and the honest Sa range is passed through (not silently narrowed)
+    assert built[0].kw["minTonicFrequency"] == pitch_extract.TONIC_MIN_HZ == 100.0
