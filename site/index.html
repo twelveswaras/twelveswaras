@@ -427,7 +427,7 @@
     var stream=null, rec=null, chunks=[], sendTimer=null, uiTimer=null, sending=false, lastSent=0, lockName='', lockConf=0, lockSure=false, lockTrad='carnatic';
     // contribute-to-commons: the clip + tonic that produced the last result, so a donation sends the
     // exact audio the model heard. Nothing is captured or sent until the listener taps Donate.
-    var contribEl=g('rec-contrib'), curMime='', curFile=null, curTonic=null, CONSENT='2026-07-06-own-v1';
+    var contribEl=g('rec-contrib'), curMime='', curFile=null, curTonic=null, curHeard=null, curReason='', CONSENT='2026-07-06-own-v1';
     // Commons contribute flow: live as of 2026-07-07 (D1 schema migrated, worker /contribute deployed).
     var CONTRIB_ENABLED=true;
     var RAAGAS=["Aṭāna","Behāg","Bhairavi","Bilahari","Bēgaḍa","Dhanyāsi","Dēvagāndhāri","Gauḷa","Harikāmbhōji","Hussēnī","Kalyāṇi","Kamās","Karaharapriya","Kāmavardani","Kānaḍa","Kāpi","Kāṁbhōji","Kēdāragauḷa","Madhyamāvati","Mukhāri","Māyāmāḷavagauḷa","Mōhanaṁ","Nāṭa","Nāṭakurinji","Pūrvīkaḷyāṇi","Rītigauḷa","Sahānā","Sencuruṭṭi","Sindhubhairavi","Suraṭi","Sāma","Sāvēri","Tōḍi","Varāḷi","Yadukula kāṁbōji","Ānandabhairavi","Śankarābharaṇaṁ","Śrī","Śrīranjani","Ṣanmukhapriya"];
@@ -439,7 +439,7 @@
       return c.find(function(t){return window.MediaRecorder && MediaRecorder.isTypeSupported(t);})||''; }
     function setC(h){ controls.innerHTML=h; }
     function reset(src){ source=src; mode='listening'; elapsed=0; conf=0; top3=[]; swaraAct=new Array(12).fill(0);
-      leader=''; leaderSince=0; lastSent=0; phase=''; nextTip=6; tipUntil=0; tipIdx=-1; curTonic=null; contribEl.innerHTML='';
+      leader=''; leaderSince=0; lastSent=0; phase=''; nextTip=6; tipUntil=0; tipIdx=-1; curTonic=null; curHeard=null; curReason=''; contribEl.innerHTML='';
       saEl.className='rec-sa'; saEl.textContent=''; ragaEl.className='rec-raga'; ragaEl.textContent='';
       top3El.innerHTML=''; top3El.classList.remove('done'); }
     // Bring the recognizer into view when a listen starts. On mobile the locked result renders
@@ -487,6 +487,11 @@
     }
     function apply(d){
       if(d&&Array.isArray(d.swara_activation)) swaraAct=d.swara_activation;
+      // Keep what the SERVER measured. curHeard is seconds of audio actually analysed, which is not
+      // the same as the browser's `elapsed` wall-clock (for an upload, elapsed is just processing
+      // time), and curReason says why a no-prediction happened. Both go to /result.
+      if(d&&typeof d.heard_seconds==='number') curHeard=d.heard_seconds;
+      if(d&&d.reason) curReason=d.reason; else if(d&&d.top3&&d.top3.length) curReason='';
       if(d&&d.tonic_hz){ curTonic=d.tonic_hz; saEl.textContent='Sa · '+Math.round(d.tonic_hz)+' Hz'; saEl.className='rec-sa show'; }
       if(d&&d.top3&&d.top3.length){ top3=d.top3; conf=d.top3[0].confidence||0;
         var ld=d.top3[0].raaga; if(ld!==leader){leader=ld; leaderSince=elapsed;} rows(top3); }
@@ -583,7 +588,12 @@
     }
     function logResult(){
       try{
-        var body=JSON.stringify({ top3: top3, tonic_hz: curTonic, heard_seconds: elapsed,
+        // heard_seconds is the SERVER's analysed duration, not the browser's `elapsed`: for an
+        // upload elapsed is processing time, so mixing the two made failure analysis unreadable.
+        // source separates live listens from uploads; reason says why a no-prediction happened.
+        var body=JSON.stringify({ top3: top3, tonic_hz: curTonic,
+          heard_seconds: (curHeard!=null ? curHeard : elapsed),
+          elapsed_s: Math.round(elapsed*10)/10, source: source, reason: curReason||'',
           no_prediction: top3.length ? 0 : 1, referrer: acqReferrer() });
         fetch(API+'/result',{method:'POST',headers:{'content-type':'application/json'},body:body,keepalive:true}).catch(function(){});
       }catch(e){}

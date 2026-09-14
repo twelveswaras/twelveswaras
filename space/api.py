@@ -99,8 +99,18 @@ async def identify(audio: UploadFile = File(...), contribute: str = Form("no")):
 
     windows, tonic, heard, pcd = pitch_extract.audio_to_features(y, sr)
     if not windows:
+        # Say WHY there is no prediction. Nearly half of live sessions end here, and until now the
+        # response carried no reason, so the single biggest failure mode was invisible in telemetry.
+        # The triple is enough to tell the three cases apart (see audio_to_features).
+        if not heard:
+            reason = "too_short"            # below MIN_CLIP_SECONDS; the estimator never ran
+        elif tonic is None:
+            reason = "tonic_failed"         # no drone / unclear audio: Sa could not be estimated
+        else:
+            reason = "no_windows"           # Sa found, but every window failed the voiced-fraction gate
         return {
             "no_prediction": True,
+            "reason": reason,
             "tonic_hz": round(float(tonic), 1) if tonic else None,
             "heard_seconds": round(float(heard or 0), 1),
             "top3": [],

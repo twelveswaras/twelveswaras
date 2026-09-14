@@ -140,12 +140,16 @@ async function handleResult(request, env, ctx) {
   return cors(json({ ok: true }), env, request);
 }
 
+// A closed set, so a malformed/hostile body cannot write arbitrary strings into the column.
+const RESULT_REASONS = new Set(['too_short', 'tonic_failed', 'no_windows']);
+const RESULT_SOURCES = new Set(['live', 'file']);
+
 async function logToD1(env, data, request) {
   const top = (data.top3 && data.top3[0]) || null;
   try {
     await env.DB.prepare(
-      `INSERT INTO identifications (ts, top1, confidence, top3, tonic_hz, heard_s, no_prediction, country, referrer)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO identifications (ts, top1, confidence, top3, tonic_hz, heard_s, no_prediction, country, referrer, source, elapsed_s, reason)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).bind(
       new Date().toISOString(),
       top ? top.raaga : null,
@@ -155,7 +159,14 @@ async function logToD1(env, data, request) {
       data.heard_seconds ?? null,
       data.no_prediction ? 1 : 0,
       (request.cf && request.cf.country) || null,
-      cleanReferrer(data.referrer)
+      cleanReferrer(data.referrer),
+      // heard_s is now the SERVER's analysed seconds; elapsed_s keeps the browser wall-clock
+      // separately so the two are never conflated again, and `source` tells them apart (an
+      // upload's elapsed is processing time, not audio duration). `reason` says why a
+      // no-prediction happened, which was previously unrecorded and unknowable.
+      RESULT_SOURCES.has(data.source) ? data.source : null,
+      typeof data.elapsed_s === 'number' ? data.elapsed_s : null,
+      RESULT_REASONS.has(data.reason) ? data.reason : null
     ).run();
   } catch {
     /* logging must never break recognition */
