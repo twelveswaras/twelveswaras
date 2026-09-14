@@ -253,6 +253,9 @@
   .cc-yes{appearance:none;font-family:var(--sans);font-weight:600;font-size:.82rem;cursor:pointer;border-radius:9px;
     padding:.42rem .9rem;border:1px solid #5aa87f55;background:#5aa87f14;color:var(--jade-hi)}
   .cc-yes.on{background:var(--jade);border-color:var(--jade);color:#07130c}
+  .cc-alt{appearance:none;font-family:var(--sans);font-weight:600;font-size:.82rem;cursor:pointer;border-radius:9px;
+    padding:.42rem .9rem;border:1px solid var(--line-2);background:var(--raise);color:var(--paper)}
+  .cc-alt.on{background:var(--jade);border-color:var(--jade);color:#07130c}
   .cc-sel{font-family:var(--sans);font-size:.82rem;background:var(--raise);color:var(--paper);
     border:1px solid var(--line-2);border-radius:9px;padding:.42rem .5rem;max-width:100%}
   #cc-other{font-family:var(--sans);font-size:.82rem;background:var(--raise);color:var(--paper);
@@ -650,10 +653,18 @@
       var openTxt = abstain ? '+ Know this raaga? Tell me' : '+ Wrong? Correct it';
       var q = abstain ? "I couldn't place this one. If you know the raaga, add it and teach me:"
                       : 'We heard <b>'+r+'</b>. Is that right?';
+      // Quick-pick chips for the candidates we just showed: the non-leader top-3 on a confident
+      // answer (the leader is the "Yes" button), or all three "closest guesses" on an abstain. The
+      // common correction is "it's the #2 you displayed", so make that one tap instead of a hunt
+      // through the ~70-item dropdown; the dropdown stays for anything outside the shown three.
+      function altChip(p){ var t=(p&&p.tradition)||'carnatic';
+        return '<button type="button" class="cc-alt" data-raaga="'+p.raaga+'" data-trad="'+t+'"'
+          + ' aria-label="Correct to '+p.raaga+'">'+p.raaga+'</button>'; }
+      var altChips = (abstain ? top3 : top3.slice(1)).map(altChip).join('');
       var choices = abstain
-        ? '<div class="cc-choices"><select class="cc-sel" id="cc-sel" aria-label="What raaga is it?">'+opts+'</select></div>'
+        ? '<div class="cc-choices">'+altChips+'<select class="cc-sel" id="cc-sel" aria-label="What raaga is it?">'+opts+'</select></div>'
         : '<div class="cc-choices"><button type="button" class="cc-yes on" id="cc-yes">Yes, '+r+'</button>'
-          + '<select class="cc-sel" id="cc-sel" aria-label="Correct the raaga">'+opts+'</select></div>';
+          + altChips + '<select class="cc-sel" id="cc-sel" aria-label="Correct the raaga">'+opts+'</select></div>';
       return '<button type="button" class="contrib-open" id="cc-open">'+openTxt+'</button>'
         + '<div class="contrib-card" id="cc-card" hidden>'
         +   '<p class="cc-q">'+q+'</p>'
@@ -678,7 +689,8 @@
       if(!lockName || !clipBlob()){ contribEl.innerHTML=''; return; }   // nothing to donate
       contribEl.innerHTML = contribHTML(lockName, abstain);
       var open=g('cc-open'), card=g('cc-card'), yes=g('cc-yes'), sel=g('cc-sel'),
-          other=g('cc-other'), otherTrad=g('cc-other-trad'), own=g('cc-own'), send=g('cc-send');
+          other=g('cc-other'), otherTrad=g('cc-other-trad'), own=g('cc-own'), send=g('cc-send'),
+          altBtns=card.querySelectorAll('.cc-alt');
       var openTxt = abstain ? '+ Know this raaga? Tell me' : '+ Wrong? Correct it';
       open.onclick=function(){ card.hidden=!card.hidden; open.textContent = card.hidden ? openTxt : 'Never mind'; };
       var oTrad='', tchips=otherTrad.querySelectorAll('.cc-chip');
@@ -694,16 +706,28 @@
       }
       function sync(){ send.disabled = !(own.checked && chosen() && tradOf());
         send.textContent = (!abstain && chosen()===lockName) ? 'Confirm' : (abstain ? 'Add this raaga' : 'Send correction'); }
+      // Keep the three selection surfaces (Yes button, quick-pick chips, dropdown) in sync: they all
+      // resolve to one <option>, matched by name AND tradition so the two Tōḍī/Śrī never cross-select.
+      function reflect(){ var isOther=sel.value==='__other__', o=sel.options[sel.selectedIndex],
+          curTrad=(!isOther && o && o.getAttribute('data-trad'))||'';
+        if(yes) yes.classList.toggle('on', !isOther && sel.value===lockName && curTrad===lockTrad);
+        altBtns.forEach(function(b){ b.classList.toggle('on', !isOther
+          && sel.value===b.getAttribute('data-raaga') && curTrad===(b.getAttribute('data-trad')||'')); }); }
+      function pick(name, trad){ for(var i=0;i<sel.options.length;i++){ var o=sel.options[i];
+          if(o.value!=='__other__' && o.text===name && (o.getAttribute('data-trad')||'')===(trad||'')){ sel.selectedIndex=i; break; } }
+        other.style.display='none'; otherTrad.style.display='none'; oTrad=''; tchips.forEach(function(x){x.classList.remove('on');});
+        reflect(); sync(); }
       sel.onchange=function(){ var isOther=sel.value==='__other__';
         other.style.display = isOther ? 'block' : 'none';
         otherTrad.style.display = isOther ? 'flex' : 'none';
         if(!isOther){ oTrad=''; tchips.forEach(function(x){x.classList.remove('on');}); }
-        if(yes) yes.classList.toggle('on', sel.value===lockName); sync(); };
+        reflect(); sync(); };
       other.oninput=sync; own.onchange=sync;
       tchips.forEach(function(b){ b.onclick=function(){ tchips.forEach(function(x){x.classList.remove('on');});
         b.classList.add('on'); oTrad=b.getAttribute('data-trad'); sync(); }; });
-      if(yes) yes.onclick=function(){ sel.value=lockName; other.style.display='none'; otherTrad.style.display='none';
-        oTrad=''; tchips.forEach(function(x){x.classList.remove('on');}); yes.classList.add('on'); sync(); };
+      if(yes) yes.onclick=function(){ pick(lockName, lockTrad); };
+      altBtns.forEach(function(b){ b.onclick=function(){ pick(b.getAttribute('data-raaga'), b.getAttribute('data-trad')); }; });
+      reflect();
       var inst='', chips=card.querySelector('.cc-inst').querySelectorAll('.cc-chip');   // scope to instrument chips
       chips.forEach(function(b){ b.onclick=function(){ var was=b.classList.contains('on');
         chips.forEach(function(x){x.classList.remove('on');});
