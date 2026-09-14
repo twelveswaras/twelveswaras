@@ -87,7 +87,9 @@ async def identify(audio: UploadFile = File(...), contribute: str = Form("no")):
     suffix = os.path.splitext(audio.filename or "")[1] or ".webm"
     tmp = tempfile.NamedTemporaryFile(suffix=suffix, delete=False)
     try:
-        tmp.write(raw); tmp.flush(); tmp.close()
+        tmp.write(raw)
+        tmp.flush()
+        tmp.close()
         y, sr = librosa.load(tmp.name, sr=None, mono=True)
     except Exception as e:  # noqa: BLE001
         return JSONResponse({"error": "could not decode audio", "detail": str(e)[:200]}, status_code=400)

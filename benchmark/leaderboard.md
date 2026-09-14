@@ -172,3 +172,48 @@ reflects seed variation on the 80-clip set. Rebuild with `python -m tools.hindus
 (augment defaults on). Corrects an earlier note that "augmentation regressed", that was pitch/tempo
 augmentation; *surface* degradation is a different, and clearly positive, lever. Ships on the next
 recognizer redeploy.
+
+### Tonic estimator swap: compiam -> essentia (2026-09-14)
+
+Tonic accuracy had never been measured against ground truth, only ever by comparing two estimators
+to each other. Saraga ships a per-track `.ctonic.txt`, so `tools/tonic_bench` now scores Sa directly,
+on clean audio and on audio degraded toward real-world conditions (drone suppression, pink noise,
+reverb, phone band-limit).
+
+**Tonic accuracy** (within 50 cents, identical audio, 150 s, n=39):
+
+| estimator | clean | degraded |
+|---|---|---|
+| compiam `TonicIndianMultiPitch` (was) | 0.87 | 0.46 |
+| **essentia `TonicIndianArtMusic` (now)** | **0.90** | **0.59** |
+
+**And it converts.** Controlled A/B on the real-world benchmark, same tool, same 80 clips, same dual
+model, only the estimator differing:
+
+| tonic estimator | in-the-wild top1 | in-the-wild top3 |
+|---|---|---|
+| compiam (was) | 0.475 | 0.725 |
+| **essentia (now)** | **0.537** | **0.762** |
+
+**+6.2 pts top1, +3.7 pts top3** from the tonic alone. A wrong Sa mis-normalizes the TDMS and yields
+a *confident wrong* raaga, so tonic gates everything downstream; this is the cheapest lever we have
+found (no retraining, no new data).
+
+`minTonicFrequency` deliberately stays at 100 Hz. A 130 Hz floor scores better on the degraded set
+(0.64), but Saraga's annotated tonics span only 131-197 Hz while real ones go lower, and the
+real-world clips include correct predictions at Sa ~103, 105, 110 and 117 Hz. That floor would have
+made exactly those unfindable: a benchmark-optimal choice that is production-wrong.
+
+**Two measurement bugs fixed alongside, both of which had been hiding real numbers:**
+- `tools/realworld_eval` matched clip labels against model classes by folding the class name
+  directly. The dual model tags classes with a tradition (`Kalyāṇi (Carnatic)`) while clip lists hold
+  the bare name, so NOTHING matched and all 80 clips were skipped. This benchmark had been scoring
+  zero clips against the shipped model; earlier wild figures came from an ad-hoc script instead.
+- Essentia algorithm objects are stateful (a reused instance raises "No peak locations" on its
+  second compute). compiam hid this by re-instantiating internally, so the estimator now builds a
+  fresh algorithm per call, with a test pinning it.
+
+**Caveat on the wild set:** all 80 clips extract cleanly (80/80), whereas ~46% of live sessions
+return no prediction at all. This benchmark is systematically easier than production, so treat wild
+numbers as directional. Production `reason` telemetry (`too_short` / `tonic_failed` / `no_windows`)
+now records the live failure mix.
