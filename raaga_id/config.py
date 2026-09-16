@@ -66,9 +66,18 @@ def fold_raaga(name: str) -> str:
 
     Saraga/IAMRRD use diacritics (Mōhanaṁ, Tōḍi, Śaṅkarābharaṇaṁ); contributors use varied
     ASCII (Mohanam, Thodi, Shankarabharana). NFKD-decompose, drop combining marks, lowercase,
-    keep only alphanumerics — then fold the aspirate/sibilant spellings (sh/s, th/t, dh/d, …)
-    and collapse doubled letters, so 'Shankarabharanam' and 'Śaṅkarābharaṇaṁ' fold together.
-    Verified not to collapse any two distinct model classes into one key.
+    keep only alphanumerics — then fold the aspirate/sibilant spellings (sh/s, th/t, dh/d, …),
+    the long vowels ('oo' for ū, 'ee' for ī), and collapse doubled letters, so
+    'Shankarabharanam' and 'Śaṅkarābharaṇaṁ' fold together, as do 'Poorvi Kalyani' and
+    'Pūrvīkaḷyāṇi'.
+
+    The long-vowel rules must run BEFORE the doubled-letter collapse: without them 'poorvi'
+    collapsed to 'porvi' and never reached 'purvi', silently dropping every such recording from
+    training as an unknown raaga.
+
+    Verified not to collapse two distinct model classes of the SAME tradition into one key. The
+    one cross-tradition duplicate (Carnatic Tōḍi vs Hindustani Tōḍī) folds together by design and
+    is separated by the tradition tag, not by this key.
     """
     import re
     import unicodedata
@@ -78,7 +87,7 @@ def fold_raaga(name: str) -> str:
     key = "".join(c for c in stripped.lower() if c.isalnum())
     for a, b in (("shh", "s"), ("sh", "s"), ("chh", "c"), ("ch", "c"), ("th", "t"),
                  ("dh", "d"), ("bh", "b"), ("gh", "g"), ("kh", "k"), ("ph", "p"),
-                 ("w", "v"), ("z", "j")):
+                 ("w", "v"), ("z", "j"), ("oo", "u"), ("ee", "i")):
         key = key.replace(a, b)
     return re.sub(r"(.)\1+", r"\1", key)  # collapse doubled letters (naata -> nata)
 
