@@ -62,7 +62,40 @@ def test_similar_names_that_are_DIFFERENT_raagas_are_not_merged():
     assert canonical_raaga("Darbar") != "Darbāri"
     # Asāvēri and Sāvēri are separate Carnatic raagas
     assert canonical_raaga("Asaveri") != "Sāvēri"
-    # Malahari is a janya of Māyāmāḷavagauḷa, not the same raaga
-    assert canonical_raaga("Malahari") != "Māyāmāḷavagauḷa"
+    # Malahari is a janya of Māyāmāḷavagauḷa, not the same raaga. It was aliased onto it, and an
+    # earlier version of this test passed only because that alias resolved to a dead-end name
+    # rather than to the class, so assert it stays ITSELF rather than merely "not that one".
+    assert canonical_raaga("Malahari") == "Malahari"
     # Carnatic Kēdāraṁ is not Hindustani Kēdār
     assert canonical_raaga("Kedaram") != "Kēdār"
+
+
+def test_folds_ow_for_au():
+    """'ow' is the other everyday transliteration of au (Gowla/Gauḷa). It has to be applied BEFORE
+    the w->v rule, or 'ow' has already become 'ov' and can never reach 'au'."""
+    assert fold_raaga("Reethigowla") == fold_raaga("Rītigauḷa")
+    assert fold_raaga("Kedaragowla") == fold_raaga("Kēdāragauḷa")
+    assert fold_raaga("Gowla") == fold_raaga("Gauḷa")
+    assert fold_raaga("Mayamalavagowla") == fold_raaga("Māyāmāḷavagauḷa")
+
+
+def test_alias_keys_are_real_class_names():
+    """An alias pointing at a name the model does not have is a dead end: the recording resolves
+    to a label no class matches and is dropped. 'Mayamalavagowla' and 'Hindolam' were both such
+    keys."""
+    from raaga_id.config import fold_raaga, load_raagas
+
+    voc = load_raagas()
+    canonical_folds = {fold_raaga(c) for c in voc["canonical"]}
+    for key in voc["aliases"]:
+        assert fold_raaga(key) in canonical_folds, f"alias key {key!r} is not a canonical raaga"
+
+
+def test_hindustani_raagas_are_not_aliased_into_carnatic_classes():
+    """These aliases predate the dual model, when mapping a Hindustani name onto its nearest
+    Carnatic class was the only option. Now both traditions are real classes, so the alias would
+    mislabel a Hindustani recording as Carnatic."""
+    from raaga_id.config import canonical_raaga
+
+    assert canonical_raaga("Yaman") != "Kalyani"
+    assert canonical_raaga("Malkauns") != "Hindolam"
