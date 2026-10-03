@@ -17,7 +17,7 @@ Open source (MIT), open repository, a full written method with citations, and ho
 Evidence: this repository, [METHODOLOGY.md](./METHODOLOGY.md), [benchmark/leaderboard.md](./benchmark/leaderboard.md), [GOVERNANCE.md](./GOVERNANCE.md), the "accuracy in the wild is lower" caveat in the [README](./README.md).
 
 ### Decentralisation and no lock-in: ✅
-No account, no signup to identify a raaga or browse the reference. The raaga reference is published as open data ([/data/raagas.json](https://twelveswaras.com/data/raagas.json), CC-BY-4.0) and downloads in full; the model lives on the Hugging Face Hub; the code is MIT and the site is static, so the whole thing is forkable and self-hostable. Nothing is trapped in the platform.
+No account, no signup to identify a raaga or browse the reference. The raaga reference is published as open data ([/data/raagas.json](https://twelveswaras.com/data/raagas.json), CC-BY-4.0) and downloads in full; the model and the full training pipeline are in the repo; the code is MIT and the site is static, so the whole thing is forkable and self-hostable. Nothing is trapped in the platform.
 Evidence: [/data/raagas.json](https://twelveswaras.com/data/raagas.json), the [MIT LICENSE](./LICENSE), the open-source recognizer, the static site.
 
 ### Free software and the digital commons: ✅
@@ -30,7 +30,7 @@ The recognizer never stores your recording: it is analysed to find the raaga, th
 Evidence: [/about](https://twelveswaras.com/about/) ("your recording is never stored"), [cloudflare/schema.sql](./cloudflare/schema.sql) (metadata-only log, no audio column), the anonymous [/contribute](https://twelveswaras.com/contribute/) flow.
 
 ### Platform cooperativism: ✅
-Anyone can contribute a recording to the commons for free and anonymously, credited under CC-BY on their own terms: private by default, public only if they choose. The commons improves one shared model that everyone benefits from, and a later model trained purely on it can be cleanly CC-BY, owned by no company. The project is stewarded in a neutral GitHub and Hugging Face org, not a corporate account.
+Anyone can contribute a recording to the commons for free and anonymously, credited under CC-BY on their own terms: private by default, public only if they choose. The commons improves one shared model that everyone benefits from, and a later model trained purely on it can be cleanly CC-BY, owned by no company. The project is maintained in its own GitHub organisation, independent of any company.
 Evidence: the [/contribute](https://twelveswaras.com/contribute/) flow, the CC-BY dataset, [GOVERNANCE.md](./GOVERNANCE.md).
 
 ### Humans in the loop (AI does not cut people out): 🟡

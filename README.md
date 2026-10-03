@@ -140,8 +140,8 @@ pytest tests/
 ```
 
 Top-level layout: `raaga_id/` (core library: pitch, TDMS features, model, training,
-evaluation), `apps/` (identify / contribute / verify entry points), `space/` (the Hugging
-Face Space), `cloudflare/` (the Worker API, D1 schema, Pages), `site/` (the website),
+evaluation), `apps/` (identify / contribute / verify entry points), `space/` (source of the recognizer API,
+bundled into the Cloudflare container), `cloudflare/` (the Worker API, D1 schema, Pages), `site/` (the website),
 `tools/` (dev + data scripts), `pipeline/` (consolidate + retrain jobs), and `benchmark/`
 (the frozen evaluation set + leaderboard).
 
