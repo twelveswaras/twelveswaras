@@ -1,18 +1,18 @@
 # Governance
 
-twelveswaras is a **non-commercial, open-source public good**: never a
-commercial product, and not owned by any company.
+twelveswaras is a **non-commercial, open-source public good**, built as an open commons:
+the code, the model and the reference data are all public, and the point is that anyone can
+use, check, fork or build on them.
 
 ## Stewardship
 
-Hosted in the neutral [`twelveswaras`](https://github.com/twelveswaras) GitHub + Hugging
-Face org, created under Sathya Sankaran's personal account and stewarded by him
-personally. Associated with, but **not owned by**, urbanmorph.
+Maintained by Sathya Sankaran in the [`twelveswaras`](https://github.com/twelveswaras) GitHub
+organisation, so the project and its commons stay independent of any one employer or company.
 
 ## Licensing
 
-- **Code**: MIT. The hosted demo bundles AGPL `essentia`/`compIAM`, so the
-  deployed Space carries AGPL obligations, satisfied because we publish all source.
+- **Code**: MIT. The recognizer bundles AGPL `essentia`, so the deployed recognizer carries
+  AGPL obligations, satisfied because we publish all source.
 - **Contributor commons**: CC-BY-4.0, in a repo kept **separate** from
   Saraga-derived artifacts so it stays cleanly reusable.
 - **Seed model**: trained on Saraga (CC-BY-**NC-SA**) and the CMD / Indian Art Music
