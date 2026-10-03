@@ -57,8 +57,9 @@ Then redeploy the gateway worker:
 cd ../worker && npx --yes wrangler@4 deploy
 ```
 
-Now `twelveswaras.com/api/identify` is served by the Container. **Rollback** = set `SPACE_URL` back
-to `https://twelveswaras-recognizer-api.hf.space` and redeploy. Instant.
+Now `twelveswaras.com/api/identify` is served by the Container. **Rollback** = point `SPACE_URL`
+at a previously-deployed container version and redeploy the worker. NB the old Hugging Face Space
+that used to be the rollback target is gone, so it is no longer a fallback.
 
 ## Later: the Hindustani launch (dual model)
 

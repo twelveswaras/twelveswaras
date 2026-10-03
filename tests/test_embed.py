@@ -88,9 +88,15 @@ def test_api_base_uses_worker_off_production():
 
 def test_no_huggingface_in_user_copy():
     # Hugging Face is plumbing — never named to users, no "open it directly" link.
-    site = _site()
-    for phrase in ("Hugging Face", "Hugging&nbsp;Face", "open it directly", "open the recognizer"):
-        assert phrase not in site, f"HF exposed to users: {phrase!r}"
+    # Covers EVERY user-facing page, not just the landing one: the about page named it for months
+    # because this check only ever read index.html, and the recognizer has since moved off HF
+    # entirely (the Space is gone; the org holds no models or datasets).
+    root = Path(__file__).resolve().parent.parent / "site"
+    for page in sorted(root.rglob("index.html")):
+        html = page.read_text()
+        for phrase in ("Hugging Face", "Hugging&nbsp;Face", "huggingface.co",
+                       "open it directly", "open the recognizer"):
+            assert phrase not in html, f"HF exposed in {page.relative_to(root)}: {phrase!r}"
 
 
 if __name__ == "__main__":
@@ -103,3 +109,24 @@ if __name__ == "__main__":
     test_api_base_uses_worker_off_production()
     test_no_huggingface_in_user_copy()
     print("EMBED OK — iframe-detect + hide chrome, auto-resize (no nested scroll), no HF in copy")
+
+
+def test_listen_guidance_matches_the_real_minimum():
+    """The page must not promise a result from less audio than the recognizer can actually use.
+
+    It needs a full TDMS window (30 s) before ANY reading is possible, and the wheel will not lock
+    before MIN_LISTEN. The page used to say "15-30 seconds is enough", which set people up to stop
+    early; short captures are one of the largest causes of a no-prediction in production.
+    """
+    import re
+
+    site = _site()
+    m = re.search(r"MIN_LISTEN\s*=\s*(\d+)", site)
+    assert m, "MIN_LISTEN not found in the page"
+    min_listen = int(m.group(1))
+
+    # any "N seconds" the copy offers as sufficient must not undercut the real floor
+    for num in re.findall(r"(?:about\s+)?(\d+)(?:\s*[–-]\s*\d+)?\s*seconds? (?:of melody )?is enough", site):
+        assert int(num) >= min_listen, f"copy promises {num}s, but the wheel needs {min_listen}s"
+    assert "15–30 seconds of melody is enough" not in site
+    assert "15-30 seconds" not in site

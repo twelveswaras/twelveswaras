@@ -30,12 +30,12 @@ In scope:
 - **The audio-upload / contribute endpoint** (`/contribute`) and the handling, storage,
   and consent/rights gating of contributed clips.
 
-Also of interest, though lower priority: the Hugging Face Space recognizer and anything
+Also of interest, though lower priority: the Cloudflare recognizer container and anything
 that could expose contributor data or bypass the rights/consent gate.
 
 Out of scope: reports that require physical access, social engineering of the maintainer,
 volumetric denial-of-service, or issues in third-party platforms (GitHub, Cloudflare,
-Hugging Face) themselves rather than in our configuration of them.
+Cloudflare) themselves rather than in our configuration of them.
 
 ## Response expectations
 

@@ -18,7 +18,7 @@ Evidence: this repository, [METHODOLOGY.md](./METHODOLOGY.md), [benchmark/leader
 
 ### Decentralisation and no lock-in: ✅
 No account, no signup to identify a raaga or browse the reference. The raaga reference is published as open data ([/data/raagas.json](https://twelveswaras.com/data/raagas.json), CC-BY-4.0) and downloads in full; the model lives on the Hugging Face Hub; the code is MIT and the site is static, so the whole thing is forkable and self-hostable. Nothing is trapped in the platform.
-Evidence: [/data/raagas.json](https://twelveswaras.com/data/raagas.json), the [MIT LICENSE](./LICENSE), the Hugging Face Space, the static site.
+Evidence: [/data/raagas.json](https://twelveswaras.com/data/raagas.json), the [MIT LICENSE](./LICENSE), the open-source recognizer, the static site.
 
 ### Free software and the digital commons: ✅
 MIT code. The contributor dataset is CC-BY-4.0 and kept deliberately separate from the non-commercial research corpora so it stays cleanly reusable, and the contribute flow rejects anything that isn't your own or rights-cleared at the door. We take clean provenance seriously in practice, not just in principle: the deployed model was retrained on only permissively-licensed clean audio (CC-BY plus Wikimedia Commons), *deliberately excluding* unlicensed concert recordings that were on hand, at no measurable accuracy cost.
