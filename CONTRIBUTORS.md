@@ -26,7 +26,7 @@ by opening an issue or writing to the contact in [`SECURITY.md`](SECURITY.md).
 - **[Shaale](https://shaale.com)** contributed the first recordings, student performances
   shared under a **train-only** licence: the model learns from them, but the audio is kept
   private and is **not** part of the public CC-BY dataset. The first set covers **Lathangi**,
-  **Arabhi**, **Kuntala Varali** (Carnatic) and **Hameer** (Hindustani), with more to follow.
+  **Arabhi**, **Kuntala Varali** and **Hameer**, with more to follow.
   These reach beyond the raagas the model is currently trained on, seeding new raagas for a
   future model to learn.
 
