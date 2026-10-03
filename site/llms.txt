@@ -3,13 +3,12 @@
 > An open-source, non-commercial 'Shazam for raagas': play it a short clip of Carnatic music and it identifies the raaga, then helps a beginner learn to hear it. Paired with an openly-licensed (CC-BY) data commons. Owned by no company; a public good.
 
 Site: https://twelveswaras.com
-About: https://twelveswaras.com/about/ (what it is, who is behind it, exactly what happens to your recording, and how it is licensed)
 Code: https://github.com/twelveswaras (MIT)
-Recognizer model: XGBoost on a tonic-normalized Time-Delayed Melody Surface (TDMS); 40 Carnatic raagas. See METHODOLOGY.md in the repo for the full pipeline + citations.
+Recognizer model: XGBoost on a tonic-normalized Time-Delayed Melody Surface (TDMS); 70 raagas (40 Carnatic, 30 Hindustani). See METHODOLOGY.md in the repo for the full pipeline + citations.
 
 ## How to use the recognizer
 
-- Give it ~15-30s of Carnatic melody WITH a tanpura/shruti drone (a live concert always has one). The tonic (Sa) is found from the drone; solo singing with no drone is unreliable.
+- Give it about a minute of Carnatic or Hindustani melody WITH a tanpura/shruti drone (a live concert always has one). It needs at least 30s before it can read anything. The tonic (Sa) is found from the drone; solo singing with no drone is unreliable.
 - It returns the top-3 raagas with calibrated confidence, the detected Sa, and a plain note on how to hear that raaga.
 
 ## Open data

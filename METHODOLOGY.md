@@ -17,8 +17,10 @@ Fully automatic; the only input is audio.
 
 1. **Predominant-melody pitch**: essentia `PredominantPitchMelodia` extracts the lead melodic
    line as an f0 contour (`raaga_id/pitch_extract.py`).
-2. **Tonic (Sa)**: from the tanpura drone, via compiam `TonicIndianMultiPitch` / essentia
-   `TonicIndianArtMusic` (the Salamon–Gulati–Serra 2012 multipitch method). In training we use
+2. **Tonic (Sa)**: from the tanpura drone, via essentia `TonicIndianArtMusic` (the
+   Salamon–Gulati–Serra 2012 multipitch method). compiam's `TonicIndianMultiPitch` was used
+   until 2026-09; benchmarked against Saraga's ground-truth ctonic it scored 0.87 clean / 0.46 on
+   degraded audio, against 0.90 / 0.59 for the essentia algorithm, worth +6.2 pts top-1 in the wild. In training we use
    each corpus's tonic annotation; at inference we estimate it.
    **Tonic-normalization, hearing every note *relative to Sa*, is the central unlock.** The
    reference Harvard thesis skipped it (used absolute pitch-class chroma); adding it roughly
@@ -47,7 +49,8 @@ the frozen benchmark 0.798 → 0.806 / 0.938 → 0.946, and is expected to help 
 |---------|------------------|--------------|
 | librosa chroma + MFCC | absolute pitch class + timbre | ≈ chance (overfit / track-memorization) |
 | tonic-normalized PCD (120-bin) | *which* notes, relative to Sa | strong lift |
-| **windowed TDMS (48×48)** | *how* notes move (gamaka) | **0.806 / top-3 0.946** (0.798 pre-junk-gate) |
+| **windowed TDMS (48×48)** | *how* notes move (gamaka) | 0.806 / top-3 0.946 (0.798 pre-junk-gate) |
+| **+ surface augmentation (shipped)** | robustness to wild acoustics | **0.830** frozen; **0.537 / 0.762** in the wild |
 | CNN on TDMS (spike, not shipped) | spatial gamaka structure | 0.868 (held behind the real-world benchmark) |
 
 We deliberately **exclude timbre features (MFCC, spectral, ZCR)**: they encode instrument /
@@ -58,8 +61,10 @@ relevant, corroborating the pitch-focused choice.
 ## Evaluation
 
 - **Frozen benchmark**: a fixed held-out set of 129 tracks across 40 raagas, split **by track**
-  (no window leakage). Reported: top-1 **0.806**, top-3 **0.946** with the junk gate
-  (0.798 / 0.938 without; chance 0.025 / 0.075).
+  (no window leakage). Current: top-1 **0.830** with surface augmentation (0.806 / top-3 0.946
+  before it; 0.798 / 0.938 without the junk gate; chance 0.025 / 0.075).
+- **Real-world benchmark**: 80 in-the-wild clips, the number that actually matters. Current:
+  top-1 **0.537**, top-3 **0.762** (`tools/realworld_eval`).
 - **k-fold track-level cross-validation** (`tools/cross_validate.py`) for lower-variance estimates.
 - **Real-world benchmark harness** (`tools/realworld_eval.py`): scores the model on
   concert/phone clips broken down **by drone presence**, to measure the studio→real-world gap the
@@ -94,7 +99,7 @@ relevant, corroborating the pitch-focused choice.
 | model | ANN / LSTM / CNN / BERT on 50-dim vectors or mel-spectrograms | XGBoost on TDMS |
 | timbre features | included (MFCC, spectral, ZCR) | excluded (avoid track-memorization) |
 | augmentation | 4 kinds, 9× data | none yet, adopting |
-| scope | up to 15 raagas (86%) | 40 raagas (0.798) |
+| scope | up to 15 raagas (86%) | 70 raagas (0.830 frozen) |
 
 The thesis's headline results (its BERT failed at 10 raagas; its simple ANN beat CNN/LSTM at
 scale) support our "strong model on a good, raaga-specific feature" bet over heavier

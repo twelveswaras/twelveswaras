@@ -10,12 +10,12 @@ Hindustani in preview) and it identifies the **raaga**, shows the top-3 with hon
 and the tonic (Sa) it found, and helps you learn to hear that raaga. Paired with a community-contributed, openly-licensed **data commons**
 (now live) so the model improves over time.
 
-**Live:** [twelveswaras.com](https://twelveswaras.com) · recognizer on a
-[Hugging Face Space](https://huggingface.co/spaces/twelveswaras/twelveswaras)
+**Live:** [twelveswaras.com](https://twelveswaras.com) · recognizer runs first-party on
+Cloudflare (Worker + container); no third-party embed
 
-> **Status:** live and recognizing **40 Carnatic raagas**, with a **30-raaga Hindustani preview**
-> rolling out (the recognizer is now dual-tradition; the Hindustani reference pages are draft,
-> pending a musician's review). The opt-in **contribute-to-the-commons** loop is live for both
+> **Status:** live and recognizing **70 raagas** (40 Carnatic, 30 Hindustani) from one
+> dual-tradition model. The Hindustani reference *pages* are still draft, pending a musician's
+> review. The opt-in **contribute-to-the-commons** loop is live for both
 > traditions (identify then donate, or contribute a recording directly).
 > **Both traditions, one tool:** Carnatic and Hindustani share the twelve-swara space, so
 > the name, schema, and pipeline are **tradition-neutral** by design (Carnatic came first).
@@ -42,8 +42,8 @@ Fully automatic, no user input beyond the audio (see [`METHODOLOGY.md`](METHODOL
 full detail and citations):
 
 1. **Predominant-melody pitch** from the audio (essentia `PredominantPitchMelodia`).
-2. **Tonic (Sa)** from the tanpura drone (compiam / essentia, the Salamon–Gulati–Serra
-   multipitch method). *Tonic-normalization, heard relative to Sa, is the key unlock the
+2. **Tonic (Sa)** from the tanpura drone (essentia `TonicIndianArtMusic`, the
+   Salamon–Gulati–Serra multipitch method). *Tonic-normalization, heard relative to Sa, is the key unlock the
    Harvard reference thesis skipped.*
 3. **Feature:** a tonic-normalized, windowed **Time-Delayed Melody Surface (TDMS)**, a 2-D
    histogram of `(pitch(t), pitch(t+delay))` that captures **gamaka** (the *movement* between
@@ -51,14 +51,14 @@ full detail and citations):
 4. **Classifier:** XGBoost over the surfaces, window-aggregated, with **temperature-calibrated**
    confidences (a shown "70%" is right ~70% of the time).
 
-**Accuracy (cross-validated on the frozen 129-track benchmark, 40 raagas):** top-1 **0.806**,
-top-3 **0.946** (~32× / 13× chance), after a junk gate that drops non-melodic windows (percussion,
-speech, silence). That figure is on studio recordings; **accuracy in the wild is lower**, which is
-exactly what the data commons exists to close. Full progression in
+**Accuracy.** On the frozen 129-track studio benchmark: top-1 **0.830** (chance 0.025), after
+surface augmentation and a junk gate that drops non-melodic windows. On the 80-clip **real-world**
+benchmark, which is the number that actually matters: top-1 **0.537**, top-3 **0.762**. The gap
+between those two is the whole problem, and closing it is what the data commons is for. Full progression in
 [`benchmark/leaderboard.md`](benchmark/leaderboard.md). Needs a drone: concert/TV audio works;
 solo voice with no drone is unreliable.
 
-**Hindustani preview (30 raagas, draft):** the unified dual-tradition model cross-validates at
+**Hindustani (30 raagas; reference pages still draft):** the unified dual-tradition model cross-validates at
 ~**0.88** top-1 on clean studio audio (Carnatic held steady, so adding Hindustani did not regress
 it), with cross-tradition confusion only ~3%. That is the studio ceiling only: a **real-world
 Hindustani benchmark is still pending**, and the Hindustani reference pages are draft awaiting
@@ -73,14 +73,14 @@ Trained on openly-available research corpora, **attribution required by their li
   **pitch + tonic features** we train on are **CC-BY-4.0**
   ([Zenodo](https://doi.org/10.5281/zenodo.7278506)); the audio is separate and access-restricted.
   Its **Carnatic (CMD)** set backs the 40 Carnatic raagas, and its paired **Hindustani (HMD)** set
-  (30 raagas, same CC-BY-4.0 features) now powers the Hindustani preview.
+  (30 raagas, same CC-BY-4.0 features) now powers the Hindustani half of the model.
 - **Community and partner contributions** (the data commons): opt-in recordings, CC-BY-4.0 when
   contributors release them publicly. Some are shared under a **train-only** licence (for example
   student recordings from **[Shaale](https://shaale.com)**): the model learns from them, but the
   audio stays private and is not redistributed, so like Saraga they keep the current model in the
   non-commercial bucket. Credited in [`CONTRIBUTORS.md`](CONTRIBUTORS.md).
 
-Built with **essentia** and **compiam** (both **AGPL**; the deployed Space carries AGPL
+Built with **essentia** and **compiam** (both **AGPL**; the deployed recognizer carries AGPL
 obligations, satisfied by publishing all source), plus librosa, xgboost, and gradio.
 
 ## Prior work we build on
@@ -101,7 +101,7 @@ Full bibliography in [`METHODOLOGY.md`](METHODOLOGY.md).
 **Shipped:**
 
 - **v0 to v0.5:** identify-only, then legible, calibrated recognition with gamaka features and a junk gate.
-- **Raaga Explorer:** a browsable reference for all 40 Carnatic raagas grouped by melakarta (plus a 30-raaga Hindustani preview, draft), an ear-trainer, and open data at `/data/raagas.json` (facts are draft, pending expert review).
+- **Raaga Explorer:** a browsable reference for all 40 Carnatic raagas grouped by melakarta (plus 30 Hindustani, pages still draft), an ear-trainer, and open data at `/data/raagas.json` (facts are draft, pending expert review).
 - **v1 commons:** the opt-in contribute-to-the-commons loop, rights-gated and quarantined, audio private unless released CC-BY.
 - **Abstention:** below a confidence threshold it says "not sure" and invites you to teach it the raaga.
 
@@ -125,13 +125,13 @@ training uses `numpy 2.x`, so they are kept separate):
 conda env create -f environment.yml
 conda activate twelveswaras
 
-# 2. Inference + demo (essentia pitch + compiam tonic, the audio -> raaga path)
+# 2. Inference + demo (essentia pitch + essentia tonic, the audio -> raaga path)
 conda env create -f environment-inference.yml
 conda activate twelveswaras-infer
 python -m apps.identify
 ```
 
-On Linux (for example the Hugging Face Space) install from `requirements.txt` instead of
+On Linux (for example the recognizer container) install from `requirements.txt` instead of
 `environment.yml`. Run the tests from the `twelveswaras` env at the repo root:
 
 ```bash

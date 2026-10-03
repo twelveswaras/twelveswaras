@@ -35,6 +35,7 @@ Pages job (it re-uploads the artifact and fails with "Multiple artifacts"); fire
 space retries a few minutes apart to avoid the transient "try again later" throttle.
 
 ## Wire the recognizer
-`index.html` embeds the Space at `https://twelveswaras-twelveswaras.hf.space` (deployed from
-`../space/`; see `../space/DEPLOY.md`). Update the iframe `src` and `og:url` if the Space slug
-differs.
+`index.html` runs the recognizer first-party: it posts audio to `/api/identify` on
+twelveswaras.com, which a Cloudflare Worker (`../cloudflare/worker`) forwards to the recognizer
+container (`../cloudflare/recognizer`). There is no iframe and no third-party embed. See
+`../cloudflare/DEPLOY.md`.

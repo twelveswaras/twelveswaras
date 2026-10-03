@@ -35,6 +35,18 @@ SWARA12 = ["S", "R1", "R2", "G2", "G3", "M1", "M2", "P", "D1", "D2", "N2", "N3"]
 SEMITONE = {s: i for i, s in enumerate(SWARA12)}
 
 
+def _n_carnatic() -> int:
+    """Size of the tracked Carnatic vocabulary (the model's Carnatic half)."""
+    import json
+    return len(json.load(open(ROOT / "raagas.json", encoding="utf-8"))["canonical"])
+
+
+def _n_hindustani() -> int:
+    """Size of the tracked Hindustani vocabulary (the model's Hindustani half)."""
+    import json
+    return len(json.load(open(ROOT / "raagas.hindustani.json", encoding="utf-8"))["canonical"])
+
+
 def slug(name: str) -> str:
     """URL/id slug: strip diacritics, drop spaces, lowercase. Mirrors the page path."""
     d = unicodedata.normalize("NFKD", name)
@@ -102,13 +114,18 @@ def build_llms_txt(recs: list[dict]) -> str:
         "",
         f"Site: {SITE_URL}",
         "Code: https://github.com/twelveswaras (MIT)",
+        # Counts come from the tracked vocabularies, never from len(recs): recs is the Carnatic
+        # REFERENCE dataset, and using it here described a 70-class dual-tradition model as
+        # "40 Carnatic raagas" for as long as the Hindustani side has existed.
         "Recognizer model: XGBoost on a tonic-normalized Time-Delayed Melody Surface (TDMS); "
-        f"{len(recs)} Carnatic raagas. See METHODOLOGY.md in the repo for the full pipeline + citations.",
+        f"{_n_carnatic() + _n_hindustani()} raagas ({_n_carnatic()} Carnatic, {_n_hindustani()} "
+        "Hindustani). See METHODOLOGY.md in the repo for the full pipeline + citations.",
         "",
         "## How to use the recognizer",
         "",
-        "- Give it ~15-30s of Carnatic melody WITH a tanpura/shruti drone (a live concert always "
-        "has one). The tonic (Sa) is found from the drone; solo singing with no drone is unreliable.",
+        "- Give it about a minute of Carnatic or Hindustani melody WITH a tanpura/shruti drone (a "
+        "live concert always has one). It needs at least 30s before it can read anything. The tonic "
+        "(Sa) is found from the drone; solo singing with no drone is unreliable.",
         "- It returns the top-3 raagas with calibrated confidence, the detected Sa, and a plain note "
         "on how to hear that raaga.",
         "",

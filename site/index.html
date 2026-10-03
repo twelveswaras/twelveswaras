@@ -57,13 +57,13 @@
     {"@type": "Question", "name": "What is twelveswaras?",
      "acceptedAnswer": {"@type": "Answer", "text": "twelveswaras is a free, open-source 'Shazam for raagas'. Give it a short clip of Carnatic or Hindustani music and it identifies the raaga, showing the top-3 with confidence, plus the tonic (Sa) it detected, and a note on how to hear that raaga."}},
     {"@type": "Question", "name": "How do I identify a raaga?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Open the recognizer, record (or upload) about 15-30 seconds of melody, and it names the raaga. A tanpura or shruti-box drone under the melody gives the best results because the tonic is found from it."}},
+     "acceptedAnswer": {"@type": "Answer", "text": "Open the recognizer, record (or upload) about a minute of melody, and it names the raaga. A tanpura or shruti-box drone under the melody gives the best results because the tonic is found from it."}},
     {"@type": "Question", "name": "Does it work at a live concert?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Yes. A concert always has a tanpura drone, which is exactly what the tool uses to find the tonic. Point your phone at the stage for about 30 seconds. Solo singing with no drone is unreliable."}},
+     "acceptedAnswer": {"@type": "Answer", "text": "Yes. A concert always has a tanpura drone, which is exactly what the tool uses to find the tonic. Point your phone at the stage for a minute or so. Solo singing with no drone is unreliable."}},
     {"@type": "Question", "name": "Is twelveswaras free and open source?",
      "acceptedAnswer": {"@type": "Answer", "text": "Yes, it is a non-commercial, open-source public good. The code is MIT-licensed and the contributor data commons is CC-BY-4.0. It is not a commercial product."}},
     {"@type": "Question", "name": "How many raagas does it recognise?",
-     "acceptedAnswer": {"@type": "Answer", "text": "40 Carnatic raagas, plus a 30-raaga Hindustani preview now rolling out: the recognizer is dual-tradition, though the Hindustani reference pages are draft, pending a musician's review. The name, schema and pipeline are tradition-neutral by design."}},
+     "acceptedAnswer": {"@type": "Answer", "text": "Seventy raagas: 40 Carnatic and 30 Hindustani, recognised by one dual-tradition model. The Hindustani reference pages are still draft, pending a musician's review. The name, schema and pipeline are tradition-neutral by design."}},
     {"@type": "Question", "name": "Do I need to install an app?",
      "acceptedAnswer": {"@type": "Answer", "text": "No. It runs in your browser. On a phone you can 'Add to Home Screen' for an app-like, full-screen experience, with no App Store or Play Store needed."}}
   ]
@@ -87,8 +87,7 @@
   "logo": "https://twelveswaras.com/icon-512.png",
   "description": "A free, non-commercial, open-source 'Shazam for raagas' that identifies the raaga of Indian classical music (Carnatic or Hindustani) from audio, paired with an openly-licensed community data commons.",
   "sameAs": [
-    "https://github.com/twelveswaras",
-    "https://huggingface.co/twelveswaras"
+    "https://github.com/twelveswaras"
   ],
   "founder": {
     "@type": "Person",
@@ -352,7 +351,7 @@
       <div class="stepp">
         <span class="dot">01</span>
         <div><span class="lab">Listen</span><h3>Record, or point your phone at the stage</h3>
-          <p>About 15–30 seconds of melody is enough. At a concert, just let it hear the singer over the drone.</p></div>
+          <p>About a minute of melody works best. It needs at least 30 seconds before it can read anything, and it keeps listening when a raaga is hard to place.</p></div>
       </div>
       <div class="stepp">
         <span class="dot">02</span>
@@ -370,7 +369,7 @@
   <section id="faq">
     <h2>Questions</h2>
     <details open><summary>Does it work at a live concert?</summary>
-      <p>Yes, a concert has a tanpura drone, which is exactly what it needs to find the tonic. Point your phone at the stage for about 30 seconds. Solo singing with no drone is unreliable.</p></details>
+      <p>Yes, a concert has a tanpura drone, which is exactly what it needs to find the tonic. Point your phone at the stage for a minute or so. Solo singing with no drone is unreliable.</p></details>
     <details><summary>Do I need to install anything?</summary>
       <p>No, it runs in your browser. On a phone, use “Add to Home Screen” for a full-screen, app-like experience.</p></details>
     <p class="faq-more"><a href="about/">What it is, who is behind it, and what happens to your recording →</a></p>
