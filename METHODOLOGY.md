@@ -132,4 +132,4 @@ phrase-matching work.
    dataset (HMD) is the corpus for the planned Hindustani fast-follow. Because the seed model is
    trained on this CC-BY-NC-SA and CC-BY-NC-ND 3.0 material, the released seed weights are treated
    as non-commercial; a model retrained purely on the CC-BY contributor commons can be cleanly CC-BY.
-9. **Libraries:** essentia, compiam (both AGPL); librosa; xgboost; gradio.
+9. **Libraries:** essentia (AGPL); librosa; xgboost. gradio is used only by the local demo.

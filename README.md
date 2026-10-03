@@ -80,8 +80,9 @@ Trained on openly-available research corpora, **attribution required by their li
   audio stays private and is not redistributed, so like Saraga they keep the current model in the
   non-commercial bucket. Credited in [`CONTRIBUTORS.md`](CONTRIBUTORS.md).
 
-Built with **essentia** and **compiam** (both **AGPL**; the deployed recognizer carries AGPL
-obligations, satisfied by publishing all source), plus librosa, xgboost, and gradio.
+Built with **essentia** (**AGPL**; the deployed recognizer carries AGPL obligations, satisfied by
+publishing all source), plus librosa and xgboost. `gradio` is used only by the local demo
+(`apps/identify`), not by the deployed recognizer.
 
 ## Prior work we build on
 

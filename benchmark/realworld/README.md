@@ -1,6 +1,6 @@
 # Real-world benchmark
 
-The frozen benchmark is clean **studio** audio (top1 0.798 / top3 0.938). This measures the
+The frozen benchmark is clean **studio** audio (top1 0.830 after surface augmentation). This measures the
 number that actually matters, accuracy on **real-world** clips (phone mics, room acoustics,
 concert halls), and breaks it down **by drone presence**, which directly tests whether the
 tonic step is the coverage bottleneck.

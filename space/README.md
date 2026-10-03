@@ -10,6 +10,12 @@ license: mit
 short_description: Shazam for raagas, identify the raaga of a Carnatic clip
 ---
 
+> **Retired.** This front-matter configured the old Hugging Face Space (Gradio, Carnatic-only).
+> The recognizer now runs as a Cloudflare Container, see `cloudflare/recognizer/`. Kept for the
+> record; `space/api.py` is still live as the SOURCE of the recognizer API, bundled into the
+> container image by `cloudflare/recognizer/assemble.sh`. The model is now dual-tradition
+> (40 Carnatic + 30 Hindustani), not Carnatic-only as described below.
+
 # 🎶 twelveswaras: identify the raaga
 
 An open "Shazam for raagas": upload or record a short Carnatic clip and it identifies

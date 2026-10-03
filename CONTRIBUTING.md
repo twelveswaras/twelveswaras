@@ -68,7 +68,9 @@ conda activate twelveswaras
 
 **2. Inference and demo** (`environment-inference.yml`, env name `twelveswaras-infer`):
 the audio -> pitch -> tonic path used by the recognizer and demo. It pins `numpy < 2` and
-installs `essentia` (predominant-melody pitch) plus `compiam` (the working tonic recipe).
+installs `essentia`, which provides both the predominant-melody pitch and the tonic
+(`TonicIndianArtMusic`). `compiam` is still pinned because it holds numpy below 2, but nothing
+imports it any more.
 
 ```bash
 conda env create -f environment-inference.yml
@@ -76,7 +78,7 @@ conda activate twelveswaras-infer
 python -m apps.identify
 ```
 
-On Linux (for example the Hugging Face Space) the pip manifest `requirements.txt` is used
+On Linux (for example the recognizer container) the pip manifest `requirements.txt` is used
 instead of `environment.yml`, since wheels exist there.
 
 ### Running the tests
@@ -100,7 +102,7 @@ Top-level directories:
 |---------------|------------|
 | `raaga_id/`   | The core library: pitch extraction, features (TDMS), model, training, calibration, evaluation. |
 | `apps/`       | Entry-point apps: `identify`, `contribute`, `verify`, usage logging. |
-| `space/`      | The Hugging Face Space (Gradio app + API) that hosts the recognizer. |
+| `space/`      | Source of the recognizer API (`api.py`), bundled into the Cloudflare container by `cloudflare/recognizer/assemble.sh`. The old Hugging Face Space it was named for is retired. |
 | `cloudflare/` | The Cloudflare Worker API, D1 schema, and Pages config behind twelveswaras.com. |
 | `site/`       | The static website front-end. |
 | `tools/`      | Developer and data scripts: cross-validation, real-world eval, page/data builders, clip fetchers. |

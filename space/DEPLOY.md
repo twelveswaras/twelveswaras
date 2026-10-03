@@ -1,3 +1,8 @@
+> **Retired.** The recognizer no longer runs on Hugging Face. It is a Cloudflare Container,
+> deployed via `cloudflare/recognizer/DEPLOY.md`. This file is kept only as a record of the old
+> deployment. `space/api.py` is still live: it is the SOURCE of the recognizer API, copied into
+> the container image by `cloudflare/recognizer/assemble.sh`.
+
 # Deploy the recognizer to a Hugging Face Space
 
 The recognizer is a Gradio app that needs a Python backend (essentia + compiam + numpy<2

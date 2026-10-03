@@ -6,7 +6,7 @@ asserts source structure and model math): these assert the actual **user experie
 recognizer wheel locking, naming a raaga, showing the tonic, and abstaining on low confidence.
 
 The recognizer API is **stubbed per test** with `page.route()`, so the tests are fully offline
-and deterministic: no Cloudflare Worker, no Hugging Face Space, no model, no microphone. The
+and deterministic: no Cloudflare Worker, no recognizer backend, no model, no microphone. The
 static site is served straight from `../site/` by `python -m http.server` (no build step).
 
 ## Run locally
