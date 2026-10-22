@@ -1,0 +1,23 @@
+/* "Install app" button + the iPhone "Add to Home Screen" guide (see install-button.js).
+   Uses the page's own tokens (--ink, --raise-2, --line-2, --paper, --amber...). The button sits in
+   the topbar between the brand and the nav: a small mono pill, pushed right on desktop, and on
+   phones it shares the brand's centered row while the nav drops to its own row. */
+.install-app{appearance:none;cursor:pointer;margin-left:auto;margin-right:14px;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.02em;white-space:nowrap;
+  color:var(--amber-hi);background:#f59e0b12;border:1px solid #f59e0b40;border-radius:999px;
+  padding:.3rem .7rem}
+.install-app:hover{border-color:var(--amber);color:var(--paper)}
+.install-app[hidden]{display:none}
+@media (max-width:560px){.install-app{margin:0 0 0 12px}}
+
+.install-guide{max-width:min(92vw,360px);padding:22px 22px 18px;border-radius:14px;
+  background:var(--raise-2);color:var(--paper);border:1px solid var(--line-2);
+  font-family:var(--sans);line-height:1.55}
+.install-guide::backdrop{background:#0b0a08b3}
+.install-guide h2{margin:0 0 10px;font-size:1.05rem;font-weight:700;letter-spacing:-.01em}
+.install-guide ol{margin:0;padding-left:1.2rem;color:var(--muted);font-size:.92rem}
+.install-guide li{margin:.35rem 0}
+.install-guide strong{color:var(--paper);font-weight:650}
+.install-guide form{margin:16px 0 0;text-align:right}
+.install-guide button{appearance:none;cursor:pointer;font-family:var(--sans);font-weight:700;font-size:.9rem;
+  border-radius:10px;padding:.45rem 1.2rem;border:1px solid var(--amber);background:var(--amber);color:var(--ink)}

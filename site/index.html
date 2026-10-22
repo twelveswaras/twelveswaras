@@ -13,6 +13,7 @@
 <link rel="alternate icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="install-button.css">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="twelveswaras">
@@ -305,6 +306,7 @@
       </svg>
       <span><span class="a">twelve</span><span class="b">swaras</span></span>
     </span>
+    <button id="install-app" class="install-app" type="button" hidden>Install app</button>
     <span class="nav">
       <a href="raaga/">raagas</a>
       <span class="sep" aria-hidden="true">·</span>
@@ -839,5 +841,9 @@
   })();
 </script>
 
+<script type="module">
+  import { mountInstallButton } from './install-button.js';
+  mountInstallButton(document.getElementById('install-app'), { appName: 'twelveswaras' });
+</script>
 </body>
 </html>
