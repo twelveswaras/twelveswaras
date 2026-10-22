@@ -11,7 +11,10 @@ build step at deploy time; the raaga pages and open data are pre-generated from 
 - `data/raagas.json`: open reference data (CC-BY-4.0), from `../tools/build_data.py`.
 - `llms.txt`: a plain-text project guide for LLMs / agents.
 - Icons + share card: `favicon.svg` / `.ico` / `-16` / `-32`, `apple-touch-icon.png`,
-  `icon-192.png` / `icon-512.png`, `og.png`. The PNGs are rasterized from the `.svg` sources.
+  `icon-192.png` / `icon-512.png` (manifest `any`), `icon-maskable-512.png` (manifest `maskable`:
+  full-bleed, mark inside the safe zone, from `icon-maskable.svg`), `og.png`. The PNGs are
+  rasterized from the `.svg` sources.
+- `install-button.js` / `.css`: the "Install app" button on every page that links the manifest.
 
 ## Regenerate
     python -m tools.merge_enrichment   # fold the draft reference + tell/rasa into the reference JSON
@@ -23,6 +26,7 @@ build step at deploy time; the raaga pages and open data are pre-generated from 
     rsvg-convert -w 180  -h 180 site/icon.svg   -o site/apple-touch-icon.png
     rsvg-convert -w 192  -h 192 site/icon.svg   -o site/icon-192.png
     rsvg-convert -w 512  -h 512 site/icon.svg   -o site/icon-512.png
+    rsvg-convert -w 512  -h 512 site/icon-maskable.svg -o site/icon-maskable-512.png
     rsvg-convert -w 32   -h 32  site/favicon.svg -o site/favicon-32.png
     rsvg-convert -w 16   -h 16  site/favicon.svg -o site/favicon-16.png
     magick site/favicon.svg -background none -define icon:auto-resize=16,32,48 site/favicon.ico
