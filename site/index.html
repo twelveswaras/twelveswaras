@@ -412,6 +412,10 @@
     // MAX_S. MAX_S=150 matches the backend INFER_SECONDS cap; easy clips still lock early on stability,
     // only hard/ambiguous ones run to the cap (which is exactly where the extra accuracy comes from).
     var HOLD=10.0, MIN_LISTEN=45, MAX_S=150, SEND_EVERY=3500, FIRST_SEND=4500;
+    // Identifying runs on the server, so it needs the network: say so, never blame the recording.
+    var NO_NET='No connection. Identifying a raaga needs the internet: the recording is analysed on our server. Try again when you are back online.';
+    var netFails=0; // live sends in a row that never reached the server
+    var offline=function(){ return navigator.onLine===false; };
     // Abstention: below this calibrated confidence, do not present a confident raaga name; say the
     // model is not sure (it may be a raaga outside the 40, or the audio lacks a clear drone). The
     // threshold is from a wild-set experiment: ~0.45 lifts shown-accuracy 0.46 -> 0.54 while
@@ -454,6 +458,8 @@
       guides.className='rec-guides recording'; leadEl.textContent='Finding the swaras…'; top3El.className='rec-top3 show';
       setC('<button class="rbtn stop" id="r-stop">Stop now</button>'); g('r-stop').onclick=function(){finish();};
       ev('listen_start','live');
+      if(offline()) return fail(NO_NET);
+      netFails=0;
       try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }
       catch(e){ ev('mic_denied','live');
         return fail('Microphone access is needed to identify live. You can also upload a recording.'); }
@@ -472,7 +478,13 @@
       lastSent=elapsed;
       sending=true;
       try{ var fd=new FormData(); fd.append('audio', new Blob(chunks,{type:mime||'audio/webm'}), 'clip.webm');
-        var r=await fetch(API+'/identify',{method:'POST',body:fd}); var d=await r.json();
+        var r;
+        // A send that never reaches the server: stop on the second in a row (or at once when the
+        // phone knows it is offline), instead of "listening" forever with no answer.
+        try{ r=await fetch(API+'/identify',{method:'POST',body:fd}); }
+        catch(e){ if(mode==='listening'&&(offline()||++netFails>=2)) fail(NO_NET); return; }
+        netFails=0;
+        var d=await r.json();
         if(mode==='listening') apply(d);
       }catch(e){} finally{ sending=false; }
     }
@@ -481,10 +493,12 @@
       guides.className='rec-guides recording'; leadEl.textContent='Reading '+file.name.slice(0,28)+'…'; top3El.className='rec-top3 show';
       setC('<button class="rbtn cancel" id="r-cancel">Cancel</button>'); g('r-cancel').onclick=toIdle;
       ev('listen_start','file');
+      if(offline()) return fail(NO_NET);
       t0=performance.now(); uiTimer=setInterval(tick,33);
-      try{ var fd=new FormData(); fd.append('audio', file, file.name);
-        var r=await fetch(API+'/identify',{method:'POST',body:fd}); var d=await r.json(); apply(d); finish();
-      }catch(e){ fail('That file could not be analysed. Try a clear clip with a drone.'); }
+      var fd=new FormData(), r; fd.append('audio', file, file.name);
+      try{ r=await fetch(API+'/identify',{method:'POST',body:fd}); }catch(e){ return fail(NO_NET); }
+      try{ var d=await r.json(); apply(d); finish(); }
+      catch(e){ fail('That file could not be analysed. Try a clear clip with a drone.'); }
     }
     function apply(d){
       if(d&&Array.isArray(d.swara_activation)) swaraAct=d.swara_activation;
@@ -843,7 +857,9 @@
 
 <script type="module">
   import { mountInstallButton } from './install-button.js';
+  import { registerOfflinePage } from './offline.js';
   mountInstallButton(document.getElementById('install-app'), { appName: 'twelveswaras' });
+  registerOfflinePage();
 </script>
 </body>
 </html>
