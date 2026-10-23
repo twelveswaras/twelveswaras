@@ -3,7 +3,7 @@
   "lang": "en",
   "name": "twelveswaras: identify the raaga",
   "short_name": "twelveswaras",
-  "description": "A Shazam for raagas: identify the raaga of a Carnatic music performance.",
+  "description": "A Shazam for raagas: identify the raaga of Carnatic or Hindustani music.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
