@@ -5,7 +5,7 @@
 // page load that fails; everything else goes to the network untouched, so nothing can
 // go stale. VERSION is the offline page's content hash (tests/test_site_offline.py), so
 // changing that page ships a new worker.
-const VERSION = 'a8706e6f8d5d';
+const VERSION = '6997175ab019';
 const CACHE = `offline-${VERSION}`;
 const OFFLINE = '/offline/';
 

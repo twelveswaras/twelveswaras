@@ -197,8 +197,8 @@ __JSONLD__
     line-height:1.62;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   a{color:var(--amber-hi);text-decoration:none} a:hover{color:#fff}
   :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
-  .wrap{width:100%;max-width:780px;margin:0 auto;padding:0 22px}
-  .top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 0}
+  .wrap{width:100%;max-width:780px;margin:0 auto;padding:0 max(22px,env(safe-area-inset-right)) 0 max(22px,env(safe-area-inset-left))}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:max(18px,env(safe-area-inset-top)) 0 0}
   .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
   .brand svg{width:26px;height:26px;flex:0 0 auto}
@@ -207,7 +207,7 @@ __JSONLD__
   .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
   .top .nav a:hover,.top .nav a.here{color:var(--paper)}
   .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
-  @media (max-width:560px){.top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:16px}
+  @media (max-width:560px){.top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:max(16px,env(safe-area-inset-top))}
     .top .nav{flex-basis:100%;justify-content:center;gap:14px} .top .nav a{white-space:nowrap}}
   @media (max-width:400px){.top .nav{gap:11px} .top .nav a{font-size:.72rem}}
   .top .gh:hover{color:var(--paper)}
@@ -269,7 +269,7 @@ __JSONLD__
   .cta:hover{background:var(--amber-hi);color:#1a1205;transform:translateY(-1px)}
   .draftbar{font-family:var(--mono);font-size:.72rem;color:var(--faint);border:1px dashed var(--line-2);
     border-radius:10px;padding:12px 14px;margin:14px 0 0;line-height:1.5}
-  footer{border-top:1px solid var(--line);padding:30px 0 46px;text-align:center}
+  footer{border-top:1px solid var(--line);padding:30px 0 max(46px,env(safe-area-inset-bottom));text-align:center}
   footer .tagline{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);
     max-width:48ch;margin:0 auto;text-wrap:balance}
   footer .links{margin-top:.7rem;font-size:.9rem;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
@@ -705,8 +705,8 @@ INDEX_TEMPLATE = """<!doctype html>
     line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   a{color:var(--amber-hi);text-decoration:none} a:hover{color:#fff}
   :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:6px}
-  .wrap{width:100%;max-width:860px;margin:0 auto;padding:0 22px}
-  .top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 0}
+  .wrap{width:100%;max-width:860px;margin:0 auto;padding:0 max(22px,env(safe-area-inset-right)) 0 max(22px,env(safe-area-inset-left))}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:max(18px,env(safe-area-inset-top)) 0 0}
   .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
   .brand svg{width:26px;height:26px;flex:0 0 auto}
@@ -715,7 +715,7 @@ INDEX_TEMPLATE = """<!doctype html>
   .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
   .top .nav a:hover,.top .nav a.here{color:var(--paper)}
   .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
-  @media (max-width:560px){.top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:16px}
+  @media (max-width:560px){.top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:max(16px,env(safe-area-inset-top))}
     .top .nav{flex-basis:100%;justify-content:center;gap:14px} .top .nav a{white-space:nowrap}}
   @media (max-width:400px){.top .nav{gap:11px} .top .nav a{font-size:.72rem}}
   .top .gh:hover{color:var(--paper)}
@@ -746,7 +746,7 @@ INDEX_TEMPLATE = """<!doctype html>
     border:1px solid var(--line-2);border-radius:5px;padding:.12rem .34rem}
   .card .chips span.empty{color:var(--faint);border-style:dashed}
   .foot{font-family:var(--mono);font-size:.72rem;color:var(--faint);text-align:center;
-    border-top:1px solid var(--line);margin-top:34px;padding:22px 0 40px;line-height:1.7}
+    border-top:1px solid var(--line);margin-top:34px;padding:22px 0 max(40px,env(safe-area-inset-bottom));line-height:1.7}
   .foot a{color:var(--muted)} .foot a:hover{color:var(--paper)}
 </style>
 </head>

@@ -24,8 +24,8 @@
   a{color:var(--amber-hi);text-decoration:none}
   a:hover{color:#fff}
   :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
-  .wrap{width:100%;max-width:640px;margin:0 auto;padding:0 22px}
-  .top{display:flex;justify-content:center;padding:22px 0 0}
+  .wrap{width:100%;max-width:640px;margin:0 auto;padding:0 max(22px,env(safe-area-inset-right)) 0 max(22px,env(safe-area-inset-left))}
+  .top{display:flex;justify-content:center;padding:max(22px,env(safe-area-inset-top)) 0 0}
   .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
   .brand svg{width:26px;height:26px}
@@ -40,7 +40,7 @@
   .links a:hover{border-color:#74c69d;color:#fff}
   .links a.act{background:var(--jade);border-color:var(--jade);color:#07130c}
   .links a.act:hover{background:var(--jade-hi);border-color:var(--jade-hi);color:#07130c}
-  footer{text-align:center;padding:22px 0 34px}
+  footer{text-align:center;padding:22px 0 max(34px,env(safe-area-inset-bottom))}
   footer p{font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;color:var(--faint);margin:0}
 </style>
 </head>

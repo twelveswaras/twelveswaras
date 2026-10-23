@@ -118,10 +118,10 @@
   a{color:var(--amber-hi);text-decoration:none}
   a:hover{color:#fff}
   :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
-  .wrap{width:100%;max-width:780px;margin:0 auto;padding:0 22px}
+  .wrap{width:100%;max-width:780px;margin:0 auto;padding:0 max(22px,env(safe-area-inset-right)) 0 max(22px,env(safe-area-inset-left))}
 
   /* ---- topbar ---- */
-  .top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 0}
+  .top{display:flex;align-items:center;justify-content:space-between;padding:max(18px,env(safe-area-inset-top)) 0 0}
   .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
   .brand svg{width:26px;height:26px;flex:0 0 auto}
@@ -135,7 +135,7 @@
   /* mobile: the three links won't fit on the brand's row, so drop them to their own
      centered row instead of letting "train your ear" wrap mid-label */
   @media (max-width:560px){
-    .top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:16px}
+    .top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:max(16px,env(safe-area-inset-top))}
     .top .nav{flex-basis:100%;justify-content:center;gap:14px}
     .top .nav a,.top .gh{white-space:nowrap}
   }
@@ -197,7 +197,7 @@
   .faq-more{margin:18px 0 0;font-size:.9rem} .faq-more a{color:var(--jade-hi)} .faq-more a:hover{color:#fff}
 
   /* ---- footer ---- */
-  footer{border-top:1px solid var(--line);padding:30px 0 46px;text-align:center}
+  footer{border-top:1px solid var(--line);padding:30px 0 max(46px,env(safe-area-inset-bottom));text-align:center}
   footer .tagline{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);
     max-width:48ch;margin:0 auto;text-wrap:balance}
   footer .links{margin-top:.7rem;font-size:.9rem;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
