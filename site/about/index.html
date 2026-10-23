@@ -323,7 +323,9 @@
 </script>
 <script type="module">
   import { mountInstallButton } from '../install-button.js';
+  import { registerOfflinePage } from '../offline.js';
   mountInstallButton(document.getElementById('install-app'), { appName: 'twelveswaras' });
+  registerOfflinePage();
 </script>
 </body>
 </html>
