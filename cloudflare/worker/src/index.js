@@ -100,6 +100,21 @@ function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: { 'content-type': 'application/json' } });
 }
 
+// A failed recognition: why, in Workers Logs (with the detail) and as one events row (the reason
+// only, with country; no audio, no session) so the ops dashboard can count failures by reason.
+// Best effort: recording it must never change the reply.
+function identifyFailed(env, ctx, request, reason, detail) {
+  console.error(`identify failed: ${reason}: ${String(detail).slice(0, 200)}`);
+  try {
+    ctx.waitUntil(
+      env.DB.prepare(
+        `INSERT INTO events (ts, event, session, source, country, referrer) VALUES (?, ?, ?, ?, ?, ?)`
+      ).bind(new Date().toISOString(), 'identify_failed', null, reason.slice(0, 40),
+        (request.cf && request.cf.country) || null, null).run().catch(() => {})
+    );
+  } catch { /* D1 unavailable: the log line above still has it */ }
+}
+
 async function handleIdentify(request, env, ctx) {
   let form;
   try {
@@ -113,15 +128,29 @@ async function handleIdentify(request, env, ctx) {
   // forward to the headless recognizer
   const fwd = new FormData();
   fwd.append('audio', audio, 'clip.webm');
-  let data;
+  let r;
   try {
-    const r = await fetch(env.SPACE_URL + '/identify', { method: 'POST', body: fwd });
-    data = await r.json();
-  } catch {
+    r = await fetch(env.SPACE_URL + '/identify', { method: 'POST', body: fwd });
+  } catch (e) {
+    identifyFailed(env, ctx, request, 'unreachable', String(e && e.message || e));
+    return cors(json({ error: 'recognizer unavailable' }, 502), env, request);
+  }
+  const text = await r.text();
+  let data;
+  try { data = JSON.parse(text); }
+  catch {
+    // e.g. the container restarting answers with a plain-text error page
+    identifyFailed(env, ctx, request, `bad_reply:${r.status}`, text);
     return cors(json({ error: 'recognizer unavailable' }, 502), env, request);
   }
 
-  if (!data || data.error) return cors(json(data || { error: 'bad response' }, 502), env, request);
+  if (!data || data.error) {
+    // A clip the recognizer rejects (400 "could not decode audio") is the clip's problem, not a
+    // server error: keep its status. Anything else from the recognizer is a 502.
+    const rejected = r.status >= 400 && r.status < 500;
+    identifyFailed(env, ctx, request, `${rejected ? 'rejected' : 'error'}:${r.status}`, (data && data.error) || 'empty reply');
+    return cors(json(data || { error: 'bad response' }, rejected ? r.status : 502), env, request);
+  }
 
   // NB: identify is NOT logged. The wheel polls /identify every few seconds while listening, so
   // logging here over-counted usage many times over. The browser posts the final locked result to

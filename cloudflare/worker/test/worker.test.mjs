@@ -272,3 +272,87 @@ test('POST /result rejects an unknown source or reason rather than storing it', 
   assert.equal(v[10], null);           // elapsed_s non-numeric        -> NULL
   assert.equal(v[11], null);           // reason  outside the allowlist -> NULL
 });
+
+// ---- POST /identify failures -------------------------------------------------------------------
+// A failed recognition used to be one opaque 502 "recognizer unavailable", whatever happened. Each
+// failure now records WHY (one events row, no audio, no session) and a clip the recognizer rejects
+// keeps its own status, so a bad clip never reads as a server error.
+function identifyRequest() {
+  const fd = new FormData();
+  fd.append('audio', new Blob([new Uint8Array([1, 2, 3])], { type: 'audio/webm' }), 'clip.webm');
+  return new Request('https://twelveswaras.com/api/identify', { method: 'POST', body: fd, headers: { Origin: 'https://twelveswaras.com' } });
+}
+async function identifyWith(fakeFetch) {
+  const realFetch = globalThis.fetch, realError = console.error;
+  const logged = [];
+  globalThis.fetch = fakeFetch;
+  console.error = (...a) => logged.push(a.join(' '));
+  try {
+    const DB = stubDB(), ctx = stubCtx();
+    const res = await worker.fetch(identifyRequest(), { ...ENV, DB }, ctx);
+    await ctx.settle();
+    return { res, body: await res.json(), rows: DB.rows, logged };
+  } finally {
+    globalThis.fetch = realFetch; console.error = realError;
+  }
+}
+const failureRow = (rows) => rows.find((r) => r.sql.includes('INSERT INTO events'));
+
+test('identify: recognizer unreachable → 502, recorded as unreachable', async () => {
+  const { res, rows, logged } = await identifyWith(async () => { throw new TypeError('Network connection lost'); });
+  assert.equal(res.status, 502);
+  const row = failureRow(rows);
+  assert.equal(row.values[1], 'identify_failed');
+  assert.equal(row.values[3], 'unreachable');
+  assert.match(logged.join('\n'), /unreachable.*Network connection lost/);
+});
+
+test('identify: a reply that is not JSON (container restarting) → 502, recorded with its status', async () => {
+  const { res, rows, logged } = await identifyWith(async () => new Response('Container is not running', { status: 503 }));
+  assert.equal(res.status, 502);
+  assert.equal(failureRow(rows).values[3], 'bad_reply:503');
+  assert.match(logged.join('\n'), /bad_reply:503.*Container is not running/);
+});
+
+test('identify: a clip the recognizer cannot decode keeps its 400, recorded as rejected', async () => {
+  const { res, body, rows } = await identifyWith(async () =>
+    Response.json({ error: 'could not decode audio', detail: 'x' }, { status: 400 }));
+  assert.equal(res.status, 400);
+  assert.equal(body.error, 'could not decode audio');
+  assert.equal(failureRow(rows).values[3], 'rejected:400');
+});
+
+test('identify: a recognizer error reply is a 502, recorded with its status', async () => {
+  const { res, rows } = await identifyWith(async () => Response.json({ error: 'model crashed' }, { status: 500 }));
+  assert.equal(res.status, 502);
+  assert.equal(failureRow(rows).values[3], 'error:500');
+});
+
+test('identify: a normal answer records nothing (identify is not logged)', async () => {
+  const { res, rows } = await identifyWith(async () => Response.json({ top3: [], tonic_hz: 140 }));
+  assert.equal(res.status, 200);
+  assert.equal(rows.length, 0);
+});
+
+test('identify: recording a failure never breaks the reply (D1 down)', async () => {
+  const realFetch = globalThis.fetch, realError = console.error;
+  globalThis.fetch = async () => { throw new TypeError('down'); };
+  console.error = () => {};
+  try {
+    const DB = { prepare() { throw new Error('D1 unavailable'); } }, ctx = stubCtx();
+    const res = await worker.fetch(identifyRequest(), { ...ENV, DB }, ctx);
+    await ctx.settle();
+    assert.equal(res.status, 502);
+  } finally { globalThis.fetch = realFetch; console.error = realError; }
+});
+
+// ---- Workers Logs --------------------------------------------------------------------------------
+// Neither worker kept logs, so a failure could only be read live with `wrangler tail`. Both keep
+// them now (Workers Logs), which is where identifyFailed's detail lands.
+test('both workers keep Workers Logs', async () => {
+  const { readFile } = await import('node:fs/promises');
+  for (const f of ['../wrangler.toml', '../../recognizer/wrangler.toml']) {
+    const toml = await readFile(new URL(f, import.meta.url), 'utf8');
+    assert.match(toml, /^\[observability\]\s*\nenabled = true/m, f);
+  }
+});
