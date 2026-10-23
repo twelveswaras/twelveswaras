@@ -74,3 +74,9 @@ def test_pages_with_a_manifest_offer_the_install_button():
         assert re.search(r'<button[^>]*id="install-app"[^>]*\bhidden\b', html), page
         assert re.search(r'<link rel="stylesheet" href="(\.\./)*install-button\.css">', html), page
         assert re.search(r"import \{ mountInstallButton \} from '(\./|\.\./)+install-button\.js'", html), page
+
+
+def test_manifest_description_names_both_traditions():
+    """The install dialog shows this: it must match the site, which identifies Carnatic and Hindustani raagas."""
+    description = _manifest()["description"]
+    assert "Carnatic" in description and "Hindustani" in description
