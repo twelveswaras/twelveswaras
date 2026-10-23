@@ -25,6 +25,11 @@ crons = []
 pattern = "twelveswaras.com/api/*"
 zone_name = "twelveswaras.com"
 
+# Workers Logs: keep this worker's logs (console output, errors) to read after the fact, not only
+# live with `wrangler tail`. The gateway logs why an /identify failed (identifyFailed).
+[observability]
+enabled = true
+
 # Usage logs (result metadata only, never audio).
 [[d1_databases]]
 binding = "DB"

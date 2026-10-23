@@ -49,8 +49,11 @@ CREATE TABLE IF NOT EXISTS events (
   ts       TEXT NOT NULL,               -- ISO8601
   event    TEXT NOT NULL,               -- view | listen_start | mic_denied | result
                                         -- (the worker enforces exactly this set; see FUNNEL_EVENTS)
+                                        -- plus identify_failed, written by the worker itself when
+                                        -- a recognition fails (source = the reason, e.g.
+                                        -- unreachable, bad_reply:503, rejected:400, error:500)
   session  TEXT,                        -- anonymous per-tab token, dies with the tab
-  source   TEXT,                        -- 'live' | 'file', where the step has one
+  source   TEXT,                        -- 'live' | 'file', where the step has one; the reason for identify_failed
   country  TEXT,                        -- request.cf.country (coarse geo, not PII)
   referrer TEXT                         -- acquisition referrer HOST only, same rule as above
 );
