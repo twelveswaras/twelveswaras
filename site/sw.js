@@ -1,13 +1,13 @@
 // twelveswaras' offline worker. Identifying a raaga needs the network (the recording
 // is analysed on the server), so this is not an offline app. The worker exists only so
 // that opening the site with no connection shows the site's own page saying so
-// (offline.html), not the browser's error. It caches that one page and answers only a
+// (offline/index.html), not the browser's error. It caches that one page and answers only a
 // page load that fails; everything else goes to the network untouched, so nothing can
 // go stale. VERSION is the offline page's content hash (tests/test_site_offline.py), so
 // changing that page ships a new worker.
 const VERSION = 'a8706e6f8d5d';
 const CACHE = `offline-${VERSION}`;
-const OFFLINE = '/offline.html';
+const OFFLINE = '/offline/';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();

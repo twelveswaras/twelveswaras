@@ -3,7 +3,7 @@
 Identifying a raaga needs the network (the recording is analysed on the server), so
 twelveswaras is not an offline app. But opening it with no connection should show the
 site's own page saying so, not the browser's error page. The worker (site/sw.js) does
-only that: it caches one page, offline.html, and serves it when a page fails to load.
+only that: it caches one page, offline/index.html (/offline/), and serves it when a page fails to load.
 Nothing else is cached or answered from a cache, so nothing can go stale.
 
     python -m pytest tests/test_site_offline.py
@@ -16,7 +16,7 @@ from pathlib import Path
 
 SITE = Path(__file__).resolve().parent.parent / "site"
 SW = (SITE / "sw.js").read_text(encoding="utf-8")
-OFFLINE = (SITE / "offline.html").read_text(encoding="utf-8")
+OFFLINE = (SITE / "offline" / "index.html").read_text(encoding="utf-8")
 
 
 def test_offline_page_says_why_and_is_kept_out_of_search():
@@ -33,7 +33,8 @@ def test_offline_page_is_not_in_the_sitemap():
 
 
 def test_worker_caches_only_the_offline_page_and_answers_only_failed_page_loads():
-    assert re.search(r"const OFFLINE = '/offline\.html'", SW)
+    # A directory page: Cloudflare Pages redirects a .html address, which the worker can't cache.
+    assert re.search(r"const OFFLINE = '/offline/'", SW)
     assert "respondWith" in SW and "'navigate'" in SW
     # Never caches anything else: one cache.add, no cache.put.
     assert SW.count("cache.add(") == 1 and "cache.put(" not in SW
