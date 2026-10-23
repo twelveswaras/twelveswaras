@@ -15,6 +15,8 @@ build step at deploy time; the raaga pages and open data are pre-generated from 
   full-bleed, mark inside the safe zone, from `icon-maskable.svg`), `og.png`. The PNGs are
   rasterized from the `.svg` sources.
 - `install-button.js` / `.css`: the "Install app" button on every page that links the manifest.
+- `screenshots/home-narrow.webp` / `home-wide.webp`: the home page on a phone and on a desktop,
+  shown in Chrome's install dialog (manifest `screenshots`). Not cached by the worker.
 
 ## Regenerate
     python -m tools.merge_enrichment   # fold the draft reference + tell/rasa into the reference JSON
@@ -30,6 +32,9 @@ build step at deploy time; the raaga pages and open data are pre-generated from 
     rsvg-convert -w 32   -h 32  site/favicon.svg -o site/favicon-32.png
     rsvg-convert -w 16   -h 16  site/favicon.svg -o site/favicon-16.png
     magick site/favicon.svg -background none -define icon:auto-resize=16,32,48 site/favicon.ico
+
+    # install-dialog screenshots (after a visible change to the home page):
+    cd e2e && npm run screenshots
 
 ## Deploy
 Pushing changes under `site/**` to `main` triggers `.github/workflows/pages.yml`, which uploads

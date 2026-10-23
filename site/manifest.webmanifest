@@ -16,5 +16,9 @@
     {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
     {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
     {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "screenshots": [
+    {"src": "screenshots/home-narrow.webp", "sizes": "824x1830", "type": "image/webp", "form_factor": "narrow", "label": "Identify a raaga: hold your phone to the music"},
+    {"src": "screenshots/home-wide.webp", "sizes": "1280x800", "type": "image/webp", "form_factor": "wide", "label": "Identify a raaga from a few seconds of music"}
   ]
 }

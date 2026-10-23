@@ -5,7 +5,8 @@
   "description": "Browser end-to-end user tests for the twelveswaras.com site (Playwright).",
   "scripts": {
     "test": "playwright test",
-    "report": "playwright show-report"
+    "report": "playwright show-report",
+    "screenshots": "node screenshots.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0"

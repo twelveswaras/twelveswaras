@@ -24,7 +24,7 @@
   a{color:var(--amber-hi);text-decoration:none}
   a:hover{color:#fff}
   :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
-  .wrap{width:100%;max-width:640px;margin:0 auto;padding:0 22px}
+  .wrap{width:100%;max-width:640px;margin:0 auto;padding:0 max(22px,env(safe-area-inset-right)) 0 max(22px,env(safe-area-inset-left))}
   .top{display:flex;justify-content:center;padding:max(22px,env(safe-area-inset-top)) 0 0}
   .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
