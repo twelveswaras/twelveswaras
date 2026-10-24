@@ -640,7 +640,8 @@
       ev('result', source);
     }
     // ---- funnel -------------------------------------------------------------------------------
-    // view -> listen_start -> result, with mic_denied branching off the middle step. /result only
+    // view -> listen_start -> result, with mic_denied branching off the middle step, then
+    // correct_open -> correct_sent when a listener corrects or confirms the answer. /result only
     // ever tells us about listens that finished; these tell us about the ones that did not, which
     // is the number that actually explains a quiet day. Anonymous: a random per-TAB id kept in
     // sessionStorage, so it dies with the tab. Not a cookie, never joined to a person, no audio.
@@ -742,7 +743,8 @@
           other=g('cc-other'), otherTrad=g('cc-other-trad'), own=g('cc-own'), send=g('cc-send'),
           altBtns=card.querySelectorAll('.cc-alt');
       var openTxt = abstain ? '+ Know this raaga? Tell me' : '+ Wrong? Correct it';
-      open.onclick=function(){ card.hidden=!card.hidden; open.textContent = card.hidden ? openTxt : 'Never mind'; };
+      open.onclick=function(){ card.hidden=!card.hidden; open.textContent = card.hidden ? openTxt : 'Never mind';
+        if(!card.hidden) ev('correct_open', source); };
       var oTrad='', tchips=otherTrad.querySelectorAll('.cc-chip');
       function chosen(){ return sel.value==='__other__' ? (other.value||'').trim() : sel.value; }
       // Tradition of the donation: an in-vocab pick carries its optgroup; a kept prediction uses the
@@ -806,6 +808,7 @@
         g('cc-card').innerHTML='<p class="cc-done"><b>Thank you.</b> Your correction is queued for review, '
           +'it teaches the recognizer '+raaga+'.</p>';
         g('cc-open').style.display='none';
+        ev('correct_sent', source);
       }catch(e){ err.textContent='Could not send just now. Please try again.'; err.hidden=false;
         send.disabled=false; send.textContent = raaga===lockName ? 'Confirm' : 'Send correction'; }
     }

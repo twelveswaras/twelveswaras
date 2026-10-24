@@ -225,6 +225,10 @@ const FUNNEL_EVENTS = new Set([
   'listen_start',  // tapped the orb, or picked a file
   'mic_denied',    // asked for the microphone and was refused
   'result',        // a result was shown (a lock, an abstention, or a no-prediction)
+  'correct_open',  // opened "Wrong? Correct it" / "Know this raaga?" under a result
+  'correct_sent',  // a correction or confirmation from a result was accepted
+  'contribute_view', // the contribute page rendered (site/contribute/)
+  'contribute_sent', // a recording from the contribute page was accepted
 ]);
 
 async function handleEvent(request, env, ctx) {
