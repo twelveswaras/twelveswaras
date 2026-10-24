@@ -146,12 +146,19 @@ def tdms_windows(
     surfaces aggregate exactly like PCD windows. Windows voiced less than `min_voiced` of the
     time are dropped (junk gate, D6/D8 — percussion/speech/silence, no stable melody to track).
     """
+    return [surf for surf, _ in _tdms_window_masks(times, f0_hz, tonic_hz, window_s, hop_s,
+                                                    max_windows, delay, n_bins, min_voiced)]
+
+
+def _tdms_window_masks(times, f0_hz, tonic_hz, window_s, hop_s, max_windows, delay, n_bins, min_voiced):
+    """The window loop behind tdms_windows: (surface, frame mask) for every kept window, so any
+    other per-window feature can be cut from exactly the same frames."""
     times = np.asarray(times, dtype=float)
     f0 = np.asarray(f0_hz, dtype=float)
     if times.size == 0 or times[-1] < MIN_CLIP_SECONDS:
         return []
     end = float(times[-1])
-    out: list[np.ndarray] = []
+    out: list[tuple[np.ndarray, np.ndarray]] = []
     start = 0.0
     while start < end:
         if min(start + window_s, end) - start < MIN_CLIP_SECONDS:
@@ -160,7 +167,7 @@ def tdms_windows(
         if _voiced_fraction(f0[mask]) >= min_voiced:
             surf = tdms(times[mask], f0[mask], tonic_hz, delay=delay, n_bins=n_bins)
             if surf.sum() > 0:
-                out.append(surf)
+                out.append((surf, mask))
         if max_windows and len(out) >= max_windows:
             break
         start += hop_s
@@ -168,17 +175,25 @@ def tdms_windows(
 
 
 def model_windows(times, f0_hz, tonic_hz: float, max_windows: int | None = None,
-                  hop_s: float | None = None) -> list[np.ndarray]:
+                  hop_s: float | None = None, phrases: bool = False):
     """THE production model feature (D28): windowed TDMS at the config's winning settings.
     train / evaluate / calibrate / inference all call this one function, so the feature can
     never drift between how the model is trained and how it's served. `hop_s` overrides only the
     stride — inference passes a smaller hop so a short clip yields more windows to average (each
     window is still classified independently, so overlap is safe and doesn't change the feature).
+    phrases=True returns (surfaces, swara phrases per window), cut from the same frames.
     """
     from .config import TDMS_BINS, TDMS_DELAY, TDMS_HOP_S, TDMS_MAX_WINDOWS, TDMS_WINDOW_S
 
-    return tdms_windows(times, f0_hz, tonic_hz, window_s=TDMS_WINDOW_S, hop_s=hop_s or TDMS_HOP_S,
-                        max_windows=max_windows or TDMS_MAX_WINDOWS, delay=TDMS_DELAY, n_bins=TDMS_BINS)
+    kept = _tdms_window_masks(times, f0_hz, tonic_hz, TDMS_WINDOW_S, hop_s or TDMS_HOP_S,
+                              max_windows or TDMS_MAX_WINDOWS, TDMS_DELAY, TDMS_BINS, MIN_VOICED_FRAC)
+    surfs = [surf for surf, _ in kept]
+    if not phrases:
+        return surfs
+    from . import swara
+
+    t, f0 = np.asarray(times, dtype=float), np.asarray(f0_hz, dtype=float)
+    return surfs, [swara.phrases(t[m], f0[m], tonic_hz) for _, m in kept]
 
 
 def frame_vector(y: np.ndarray, sr: int = SAMPLE_RATE, tonic_pc: int = 0) -> np.ndarray:

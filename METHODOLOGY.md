@@ -50,7 +50,8 @@ the frozen benchmark 0.798 → 0.806 / 0.938 → 0.946, and is expected to help 
 | librosa chroma + MFCC | absolute pitch class + timbre | ≈ chance (overfit / track-memorization) |
 | tonic-normalized PCD (120-bin) | *which* notes, relative to Sa | strong lift |
 | **windowed TDMS (48×48)** | *how* notes move (gamaka) | 0.806 / top-3 0.946 (0.798 pre-junk-gate) |
-| **+ surface augmentation (shipped)** | robustness to wild acoustics | **0.830** frozen; **0.537 / 0.762** in the wild |
+| **+ surface augmentation** | robustness to wild acoustics | **0.830** frozen; **0.537 / 0.762** in the wild |
+| **+ swara chains (shipped)** | the *order* of notes: phrases, vakra movement | **0.688 / 0.787** in the wild |
 | CNN on TDMS (spike, not shipped) | spatial gamaka structure | 0.868 (held behind the real-world benchmark) |
 
 We deliberately **exclude timbre features (MFCC, spectral, ZCR)**: they encode instrument /
@@ -64,7 +65,7 @@ relevant, corroborating the pitch-focused choice.
   (no window leakage). Current: top-1 **0.830** with surface augmentation (0.806 / top-3 0.946
   before it; 0.798 / 0.938 without the junk gate; chance 0.025 / 0.075).
 - **Real-world benchmark**: 80 in-the-wild clips, the number that actually matters. Current:
-  top-1 **0.537**, top-3 **0.762** (`tools/realworld_eval`).
+  top-1 **0.688**, top-3 **0.787** with swara chains; 0.537 / 0.762 without (`tools/realworld_eval`).
 - **k-fold track-level cross-validation** (`tools/cross_validate.py`) for lower-variance estimates.
 - **Real-world benchmark harness** (`tools/realworld_eval.py`): scores the model on
   concert/phone clips broken down **by drone presence**, to measure the studio→real-world gap the
@@ -76,7 +77,9 @@ relevant, corroborating the pitch-focused choice.
   accuracy (measured ~0.67→0.33). Concert/TV audio (always has a drone) is fine.
 - **Allied raagas**: janya raagas of the same parent mela share a scale and differ mainly in
   gamaka/phrasing (e.g. the Harikāmbhōji and Karaharapriya families). TDMS narrows these
-  confusions but doesn't eliminate them; phrase-level modelling is the next lever.
+  confusions; second-order swara chains (`raaga_id/swara.py`) narrow them further (on the pairs the
+  model confuses most, held-out track top-1 rose 0.647 -> 0.804 in cross-validation), but
+  allied pairs remain the main source of error.
 - **Domain gap**: trained on studio corpora; real-world phone/concert accuracy is being measured
   (harness above), not yet closed.
 
@@ -84,8 +87,9 @@ relevant, corroborating the pitch-focused choice.
 
 - **TDMS → 2-D CNN**: the surface is an image; a small CNN beat XGBoost 0.798→0.868 in a spike,
   held pending the real-world benchmark and the cost of a torch dependency.
-- **Phrase / sañcāra matching**: mine characteristic gamaka-laden motifs to disambiguate allied
-  raagas (the musician's own method) and power the "how to hear this raaga" learner panel.
+- **Phrase / sañcāra matching**: swara chains (shipped) model phrase order statistically. Next:
+  mine each raaga's most characteristic phrases from the corpus, with timestamps, for the "how to
+  hear this raaga" learner panel (mined from real recordings, never generated).
 - **Data augmentation** (adopted from the Harvard thesis): augment raw audio with
   **background noise** (first, to attack the domain gap), speed, and light pitch jitter, then
   re-extract pitch+tonic and retrain.

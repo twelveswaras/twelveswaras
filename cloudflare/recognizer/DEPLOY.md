@@ -69,7 +69,7 @@ live:
 
 ```
 cd cloudflare/recognizer
-./assemble.sh dual      # 70-class calibrated dual model (Carnatic + Hindustani)
+./assemble.sh swara     # 70-class dual model + swara chains (tools/train_swara)
 npx --yes wrangler@4 deploy
 ```
 

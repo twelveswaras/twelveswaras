@@ -165,13 +165,13 @@ def identify(audio, model: RaagaXGB):
 
     sr, wav = audio
     t0 = time.perf_counter()
-    windows, tonic, heard, display_pcd = pitch_extract.audio_to_features(wav, sr)
+    windows, tonic, heard, display_pcd, phrases = pitch_extract.audio_to_features(wav, sr)
     if not windows:
         usage_log.record(no_prediction=True, tonic_hz=tonic, heard_seconds=heard)
         yield {}, "🤔 Couldn't find a clear melody + tonic. Try a longer, cleaner clip with a drone.", None, ""
         return
     X = np.vstack(windows)
-    preds = model.aggregate_top_k(X, k=TOP_K)
+    preds = model.aggregate_top_k(X, k=TOP_K, phrases=phrases)
     elapsed = time.perf_counter() - t0
     print(f"[identify] {preds[0].raaga} ({preds[0].confidence:.0%}) · Sa≈{tonic:.0f}Hz · "
           f"heard {_mmss(heard)} · {elapsed:.1f}s", flush=True)

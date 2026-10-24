@@ -22,12 +22,19 @@ class Prediction:
 
 
 class RaagaXGB:
-    """XGBoost floor over frame vectors. Wraps label<->index + top-k decode."""
+    """XGBoost floor over frame vectors. Wraps label<->index + top-k decode.
 
-    def __init__(self, classes: list[str], booster=None, temperature: float = 1.0):
+    With `chains` (swara.SwaraChains, saved as the <model>.chain.npz sidecar) a clip's answer
+    fuses the windows' probabilities with how well each raaga's swara chain fits the clip's
+    phrases, so callers must pass each window's phrases; such a model refuses to answer without
+    them rather than silently drop half its evidence.
+    """
+
+    def __init__(self, classes: list[str], booster=None, temperature: float = 1.0, chains=None):
         self.classes = list(classes)
         self._booster = booster
         self.temperature = temperature   # calibration (D25); 1.0 = uncalibrated identity
+        self.chains = chains
 
     def fit(self, X: np.ndarray, y_idx: np.ndarray, **kwargs):
         from xgboost import XGBClassifier
@@ -49,16 +56,22 @@ class RaagaXGB:
             raise RuntimeError("model is not trained/loaded")
         return self._booster.predict_proba(X)
 
-    def top_k(self, x: np.ndarray, k: int = TOP_K) -> list[Prediction]:
+    def top_k(self, x: np.ndarray, k: int = TOP_K, phrases=None) -> list[Prediction]:
         """Top-k raagas + confidence for one frame vector (D6: always top-3)."""
-        proba = self.predict_proba(x.reshape(1, -1))[0]
-        return self._decode(proba, k)
+        return self.aggregate_top_k(x.reshape(1, -1), k, phrases=None if phrases is None else [phrases])
 
-    def aggregate_top_k(self, X: np.ndarray, k: int = TOP_K) -> list[Prediction]:
+    def aggregate_top_k(self, X: np.ndarray, k: int = TOP_K, phrases=None) -> list[Prediction]:
         """Top-k for a clip given its per-window vectors: mean the window
-        probabilities, then decode (D7: aggregate predictions across a long clip)."""
+        probabilities, then decode (D7: aggregate predictions across a long clip).
+        `phrases` (one list of swara phrases per window) is required when the model has chains."""
         X = np.atleast_2d(X)
         proba = self.predict_proba(X).mean(axis=0)
+        if self.chains is not None:
+            if phrases is None or len(phrases) != len(X):
+                raise ValueError("this model scores swara phrases: pass phrases= for every window")
+            from .swara import fuse
+
+            proba = fuse(proba, self.chains.score_windows(phrases).mean(axis=0), self.chains.weight)
         return self._decode(proba, k)
 
     def _decode(self, proba: np.ndarray, k: int) -> list[Prediction]:
@@ -72,6 +85,11 @@ class RaagaXGB:
         path.parent.mkdir(parents=True, exist_ok=True)
         self._booster.save_model(str(path))
         path.with_suffix(".classes.json").write_text(json.dumps(self.classes))
+        sidecar = path.with_suffix(".chain.npz")
+        if self.chains is not None:
+            self.chains.save(sidecar, self.classes)
+        else:
+            sidecar.unlink(missing_ok=True)   # a stale sidecar would be loaded with this model
         return path
 
     @classmethod
@@ -84,7 +102,13 @@ class RaagaXGB:
         booster = XGBClassifier()
         booster.load_model(str(path))
         classes = json.loads(path.with_suffix(".classes.json").read_text())
-        return cls(classes, booster, temperature=load_temperature(path))
+        chain_path = path.with_suffix(".chain.npz")
+        chains = None
+        if chain_path.exists():
+            from .swara import SwaraChains
+
+            chains = SwaraChains.load(chain_path, classes)
+        return cls(classes, booster, temperature=load_temperature(path), chains=chains)
 
 
 class RaagaCNN:

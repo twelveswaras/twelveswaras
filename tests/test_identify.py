@@ -47,15 +47,16 @@ def test_idle_prompt_when_no_audio():
     assert info.strip()  # some prompt, not blank
 
 
-def test_result_names_the_heard_segment():
+def test_result_names_the_heard_segment(monkeypatch):
     # Hermetic: stub the essentia path + the matplotlib plot so this runs in the train env.
-    # audio_to_features -> (model windows, tonic, heard_seconds, display_pcd).
-    I.pitch_extract.audio_to_features = lambda wav, sr: ([np.ones(2304) / 2304], 200.0, 90.0,
-                                                         np.ones(120) / 120)
-    I._learn_plot = lambda *a, **k: None
+    # audio_to_features -> (model windows, tonic, heard_seconds, display_pcd, phrases).
+    # monkeypatch, not assignment: a plain assignment leaked the stub into every later test.
+    monkeypatch.setattr(I.pitch_extract, "audio_to_features",
+                        lambda wav, sr: ([np.ones(2304) / 2304], 200.0, 90.0, np.ones(120) / 120, [[]]))
+    monkeypatch.setattr(I, "_learn_plot", lambda *a, **k: None)
 
     class FakeModel:
-        def aggregate_top_k(self, X, k=3):
+        def aggregate_top_k(self, X, k=3, phrases=None):
             return [P("Tōḍi", 0.42), P("Sāvēri", 0.30), P("Bhairavi", 0.28)]
 
     outs = list(I.identify((16000, np.zeros(16000, np.float32)), FakeModel()))
@@ -70,7 +71,9 @@ if __name__ == "__main__":
     test_mmss()
     test_listening_state_is_yielded_first()
     test_idle_prompt_when_no_audio()
-    test_result_names_the_heard_segment()
+    import pytest
+    with pytest.MonkeyPatch.context() as mp:
+        test_result_names_the_heard_segment(mp)
     print("IDENTIFY OK — mmss, listening-state-first, idle prompt, heard-segment label all pass")
 
 

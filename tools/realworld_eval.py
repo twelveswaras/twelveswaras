@@ -183,13 +183,13 @@ def main() -> None:
         except Exception as e:  # noqa: BLE001
             print(f"  DECODE-FAIL {c.file}: {e}", flush=True)
             continue
-        windows, tonic, _, _ = pitch_extract.audio_to_features(y, sr)
+        windows, tonic, _, _, phrases = pitch_extract.audio_to_features(y, sr)
         if not windows:
             results.append(Result(c.file, c.raga, None, None, None, drone=c.drone, instrument=c.instrument))
             print(f"  {c.file:32s} -> NO PREDICTION (no tonic/melody)   true={c.raga}", flush=True)
             continue
         import numpy as np
-        preds = model.aggregate_top_k(np.vstack(windows), k=TOP_K)
+        preds = model.aggregate_top_k(np.vstack(windows), k=TOP_K, phrases=phrases)
         t1, t3, rank = score_clip(preds, c.raga)
         results.append(Result(c.file, c.raga, t1, t3, rank, drone=c.drone, instrument=c.instrument))
         mark = "✓" if t1 else ("·3" if t3 else "✗")
