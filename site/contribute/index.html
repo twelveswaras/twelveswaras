@@ -199,6 +199,24 @@
   var meta={tonic:null, model_pred:'', conf:'', checked:false, drone:null};
   var canRecord = !!(window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
 
+  // Funnel: contribute_view -> contribute_sent, under the SAME anonymous per-tab id as the
+  // recognizer page (sid() in site/index.html, key 'tw_sid'), so a visit that identified a raaga
+  // and then came here reads as one journey. sessionStorage dies with the tab; never a cookie.
+  function sid(){
+    try{
+      var s=sessionStorage.getItem('tw_sid');
+      if(!s){ s=Math.random().toString(36).slice(2,10)+Math.random().toString(36).slice(2,10);
+        sessionStorage.setItem('tw_sid', s); }
+      return s;
+    }catch(e){ return ''; }
+  }
+  function ev(name){
+    try{
+      fetch(API+'/event',{method:'POST',headers:{'content-type':'application/json'},
+        body:JSON.stringify({event:name, session:sid()}), keepalive:true}).catch(function(){});
+    }catch(e){}
+  }
+
   function fmt(s){ s=Math.max(0,Math.floor(s)); return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2); }
   function pickMime(){ var c=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg'];
     return c.find(function(t){return MediaRecorder.isTypeSupported(t);})||''; }
@@ -366,6 +384,7 @@
       fd.append('consent_version', CONSENT);
       var res=await fetch(API+'/contribute',{method:'POST',body:fd}); var d=await res.json();
       if(!res.ok || (d&&d.error)) throw new Error((d&&d.error)||'failed');
+      ev('contribute_sent');
       renderDone(raaga);
     }catch(e){ err.textContent='Could not send just now. Please try again.'; err.style.display='block';
       send.disabled=false; send.textContent='Contribute this clip'; }
@@ -384,6 +403,7 @@
   function renderIdleWithError(msg){ renderIdle(); var d=document.createElement('p'); d.className='err'; d.textContent=msg; cx.appendChild(d); }
 
   renderIdle();
+  ev('contribute_view');
 })();
 </script>
 </body>

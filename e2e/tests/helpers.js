@@ -9,7 +9,8 @@ const ACT = [0.9, 0.1, 0.2, 0.05, 0.7, 0.3, 0.1, 0.8, 0.1, 0.2, 0.05, 0.6];
 
 /**
  * Stub /identify with a chosen top-3 and swallow the two logging endpoints.
- * Returns the array that /event bodies are pushed into, so a test can assert the funnel.
+ * Returns the array that /event bodies are pushed into, so a test can assert the funnel
+ * (`events.contributions` counts accepted /contribute posts).
  * Call this BEFORE page.goto(): the `view` event fires as the page initialises.
  */
 async function stubApi(page, { top3 = [], tonicHz = 146 } = {}) {
@@ -25,6 +26,10 @@ async function stubApi(page, { top3 = [], tonicHz = 146 } = {}) {
     }
     if (url.endsWith('/warm')) return route.fulfill({ status: 200, body: '{"warm":true}' });
     if (url.endsWith('/result')) return route.fulfill({ status: 200, body: '{}' });
+    if (url.endsWith('/contribute')) {
+      events.contributions = (events.contributions || 0) + 1;
+      return route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' });
+    }
     if (url.endsWith('/event')) {
       try { events.push(JSON.parse(route.request().postData() || '{}')); } catch { /* ignore */ }
       return route.fulfill({ status: 200, body: '{}' });
