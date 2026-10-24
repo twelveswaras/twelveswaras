@@ -28,9 +28,10 @@ def test_priming_clip_actually_produces_model_windows():
     """The point of priming: tonic, melody and TDMS all run, so the classifier gets called too.
     Needs essentia, so it runs in the inference env, not in CI."""
     pytest.importorskip("essentia")
-    windows, tonic, secs, _ = pitch_extract.audio_to_features(pitch_extract.priming_clip(),
-                                                             pitch_extract.TONIC_SR)
+    windows, tonic, secs, _, phrases = pitch_extract.audio_to_features(pitch_extract.priming_clip(),
+                                                                      pitch_extract.TONIC_SR)
     assert tonic and windows, "a priming clip that yields no windows never reaches the model"
+    assert len(phrases) == len(windows) and any(phrases), "every window needs its swara phrases"
 
 
 @pytest.fixture
@@ -96,12 +97,12 @@ def test_identify_and_priming_decode_through_the_same_helper(api, monkeypatch):
     class FakeModel:
         classes = ["x"]
 
-        def aggregate_top_k(self, X, k):
+        def aggregate_top_k(self, X, k, phrases=None):
             return []
 
     monkeypatch.setattr(api, "decode", spy)
     monkeypatch.setattr(api, "model", lambda: FakeModel())
-    monkeypatch.setattr(api.pitch_extract, "audio_to_features", lambda y, sr: ([], None, 0.0, None))
+    monkeypatch.setattr(api.pitch_extract, "audio_to_features", lambda y, sr: ([], None, 0.0, None, []))
 
     api._prime()
     assert seen == [".wav"], "priming must decode a real file, not hand over an array"

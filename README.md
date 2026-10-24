@@ -53,7 +53,9 @@ full detail and citations):
 
 **Accuracy.** On the frozen 129-track studio benchmark: top-1 **0.830** (chance 0.025), after
 surface augmentation and a junk gate that drops non-melodic windows. On the 80-clip **real-world**
-benchmark, which is the number that actually matters: top-1 **0.537**, top-3 **0.762**. The gap
+benchmark, which is the number that actually matters: top-1 **0.688**, top-3 **0.787**, since
+per-raaga swara chains (the order of notes, not just how they move) joined the model; it was
+0.537 / 0.762 without them. The gap
 between those two is the whole problem, and closing it is what the data commons is for. Full progression in
 [`benchmark/leaderboard.md`](benchmark/leaderboard.md). Needs a drone: concert/TV audio works;
 solo voice with no drone is unreliable.

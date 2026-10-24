@@ -29,7 +29,7 @@ git remote add origin https://huggingface.co/spaces/twelveswaras/recognizer-api
 git push -u origin main
 ```
 
-Build and deploy it with `cloudflare/recognizer/assemble.sh dual` then `wrangler deploy` (see
+Build and deploy it with `cloudflare/recognizer/assemble.sh swara` then `wrangler deploy` (see
 `cloudflare/recognizer/DEPLOY.md`). The first build takes ~20 minutes: essentia compiles, and the
 image cross-builds to linux/amd64. Verify:
 

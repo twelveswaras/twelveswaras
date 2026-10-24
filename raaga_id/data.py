@@ -84,7 +84,7 @@ def iter_commons_clips(manifest_path: Path = COMMONS_MANIFEST):
         if not audio_path.exists():
             continue
         y = features.load_audio(str(audio_path), sr=TONIC_SR)
-        windows, _tonic, _secs, _pcd = pitch_extract.audio_to_features(y, TONIC_SR)
+        windows, _tonic, _secs, _pcd, _phrases = pitch_extract.audio_to_features(y, TONIC_SR)
         if not windows:
             continue
         yield CommonsClip(

@@ -217,3 +217,48 @@ made exactly those unfindable: a benchmark-optimal choice that is production-wro
 return no prediction at all. This benchmark is systematically easier than production, so treat wild
 numbers as directional. Production `reason` telemetry (`too_short` / `tonic_failed` / `no_windows`)
 now records the live failure mix.
+
+### Swara chains: the order of notes, fused with the model (2026-10-24)
+
+TDMS records how pitch moves over one 0.3 s step. A raaga's grammar runs longer: zig-zag (vakra)
+movement, notes that appear only inside certain phrases, characteristic sañcāras. Each raaga now
+gets a second-order Markov chain over swaras (`raaga_id/swara.py`): the melody becomes phrases of
+semitones above Sa (holds under 60 ms are gamaka transit and dropped, repeats merge, a pause over
+250 ms ends a phrase), and a clip is scored by how likely each raaga's chain finds its phrases. The
+shipped model is unchanged; its clip probabilities are fused with the chain scores
+(`log p + 20 × score`, then a fresh temperature), tuned by `tools/train_swara` on held-out tracks.
+
+**Real-world benchmark** (80 clips, production front end):
+
+| model | top-1 | top-3 |
+|---|---|---|
+| shipped (TDMS + surface augmentation) | 0.537 | 0.762 |
+| **+ swara chains** | **0.688** | **0.787** |
+
+16 clips fixed, 4 broken (exact McNemar p ≈ 0.01). By instrument, top-1: vocal 0.750, flute 0.800,
+violin 0.700, veena 0.600, nadaswaram 0.400.
+
+**Held-out studio tracks** (the 195 tracks the shipped model never trained on), top-1:
+
+| clip length | shipped | + swara chains |
+|---|---|---|
+| one 30 s window | 0.554 | **0.600** |
+| first 150 s (what the app analyses) | 0.800 | **0.851** |
+| whole track | 0.908 | 0.913 |
+
+The gain is largest on the short clips the app actually gets; on whole studio tracks the surface
+alone was already near its ceiling.
+
+**At the site's confidence thresholds** (real-world clips, 150 s): answers named at ≥ 0.45 were
+right 56% of the time before and **81%** now; the median confidence of a wrong answer fell from 0.62
+to 0.44, so the existing "not sure" threshold now catches most wrong answers.
+
+The proposal behind this predicted the chains might *fail* on phone audio, because turning pitch
+into swaras is fragile there. They held up better than the TDMS surface did: the chain alone scored
+0.688 on the real-world set.
+
+**Measurement trap found on the way:** `GroupKFold`'s "first 75/25 split" is not the same split
+across scikit-learn versions (1.5.2 and 1.9.0 share only 1,030 of 3,229 held-out windows). Scored
+on the other version's split, the shipped model looked like it had trained on its held-out set
+(0.875 window top-1 against a true 0.613). `tools/train_swara` now refuses to tune unless the
+shipped model scores like a model that has never seen the held-out tracks.

@@ -61,11 +61,11 @@ def main() -> None:
         picks = []
         for off in section_offsets(dur, args.sections, args.secs):
             seg = y[int(off * sr): int((off + args.secs) * sr)]
-            windows, tonic, _, _ = pitch_extract.audio_to_features(seg, sr)
+            windows, tonic, _, _, phrases = pitch_extract.audio_to_features(seg, sr)
             if not windows:
                 picks.append(("—", 0.0))
                 continue
-            top = model.aggregate_top_k(np.vstack(windows), k=TOP_K)[0]
+            top = model.aggregate_top_k(np.vstack(windows), k=TOP_K, phrases=phrases)[0]
             picks.append((top.raaga, float(top.confidence)))
 
         names = [p[0] for p in picks if p[0] != "—"]

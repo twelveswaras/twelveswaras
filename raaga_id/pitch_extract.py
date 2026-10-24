@@ -86,14 +86,16 @@ def warmup() -> None:
 
 
 def audio_to_features(audio, sr, max_seconds: float = INFER_SECONDS, max_windows: int = INFER_MAX_WINDOWS):
-    """Raw mono audio -> (list of model-feature windows, tonic_hz, analysed_seconds, display_pcd).
+    """Raw mono audio -> (model-feature windows, tonic_hz, analysed_seconds, display_pcd, phrases).
 
     The model windows are windowed TDMS (D28), IDENTICAL to training via features.model_windows.
     display_pcd is the tonic-normalized pitch-class distribution over the whole analysed span —
     used ONLY for the learner panel's human-readable swara fingerprint, never by the model.
     analysed_seconds is how much audio (from 0:00) was actually fed to the model — capped at
     max_seconds — so the UI can tell the user exactly what it heard (D24: legible recognition).
-    Returns ([], None, 0.0, None) when the tonic or pitch can't be estimated (no clear melody/drone).
+    phrases holds each window's swara phrases (cut from the same frames), which a model with
+    swara chains scores alongside the TDMS.
+    Returns ([], None, 0.0, None, []) when the tonic or pitch can't be estimated (no clear melody/drone).
     """
     import librosa
 
@@ -106,7 +108,7 @@ def audio_to_features(audio, sr, max_seconds: float = INFER_SECONDS, max_windows
     if max_seconds:
         y = y[: int(max_seconds * TONIC_SR)]
     if y.size < int(MIN_CLIP_SECONDS * TONIC_SR):
-        return [], None, 0.0, None
+        return [], None, 0.0, None, []
     analysed_seconds = y.size / TONIC_SR
 
     # On a tonic failure return the REAL analysed_seconds (not 0.0). Callers distinguish the three
@@ -119,16 +121,17 @@ def audio_to_features(audio, sr, max_seconds: float = INFER_SECONDS, max_windows
     try:
         tonic = float(tonic_algo.extract(y, input_sr=TONIC_SR))
     except Exception:  # noqa: BLE001 — essentia raises "No peak locations" on unclear audio
-        return [], None, analysed_seconds, None
+        return [], None, analysed_seconds, None, []
     if not tonic or tonic <= 0:
-        return [], None, analysed_seconds, None
+        return [], None, analysed_seconds, None, []
 
     f0, _ = melodia(y)
     times = np.arange(len(f0)) * MELODIA_HOP / TONIC_SR
     # Overlap windows at inference (hop < window) so a short clip still yields several to average.
-    windows = features.model_windows(times, f0, tonic, max_windows=max_windows, hop_s=TDMS_HOP_S / 2)
+    windows, phrases = features.model_windows(times, f0, tonic, max_windows=max_windows,
+                                              hop_s=TDMS_HOP_S / 2, phrases=True)
     display_pcd = features.pitch_class_histogram(f0, tonic, n_bins=PCD_BINS)
-    return windows, tonic, analysed_seconds, display_pcd
+    return windows, tonic, analysed_seconds, display_pcd, phrases
 
 
 def priming_clip(seconds: float = 36.0, sa_hz: float = 146.8, seed: int = 0) -> np.ndarray:

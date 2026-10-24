@@ -86,6 +86,14 @@ def iter_hindustani_clips():
         )
 
 
+def tag(raaga: str, tradition: str) -> str:
+    """'<name> (<tradition>)', stripping any tag already there so nothing is double-tagged. This
+    is what keeps the two Todi and the two Sri as distinct classes."""
+    for suf in (f" ({CARNATIC})", f" ({HINDUSTANI})"):
+        raaga = raaga.removesuffix(suf)
+    return f"{raaga} ({tradition})"
+
+
 def _windows_for(pc):
     return features.model_windows(pc.times, pc.freqs, pc.tonic_hz, max_windows=TDMS_MAX_WINDOWS)
 
@@ -95,14 +103,7 @@ def extract() -> None:
     X, y, groups, trad = [], [], [], []
 
     def add(pc, tradition, i, total):
-        # Tag EVERY label with its tradition, regardless of whether pc.raaga arrived pre-tagged
-        # (Hindustani) or plain (Carnatic, from iter_pitch_clips). Strip any existing tag first so
-        # we never double-tag. This is what keeps the two Todi and the two Sri as distinct classes.
-        base = pc.raaga
-        for suf in (f" ({CARNATIC})", f" ({HINDUSTANI})"):
-            if base.endswith(suf):
-                base = base[: -len(suf)]
-        label = f"{base} ({tradition})"
+        label = tag(pc.raaga, tradition)   # Hindustani arrives pre-tagged, Carnatic plain
         wins = _windows_for(pc)
         for w in wins:
             X.append(w)

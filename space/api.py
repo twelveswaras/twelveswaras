@@ -105,9 +105,9 @@ def _prime() -> None:
         buf = io.BytesIO()
         sf.write(buf, pitch_extract.priming_clip(), pitch_extract.TONIC_SR, format="WAV")
         y, sr = decode(buf.getvalue(), ".wav")
-        windows, _tonic, _secs, _pcd = pitch_extract.audio_to_features(y, sr)
+        windows, _tonic, _secs, _pcd, phrases = pitch_extract.audio_to_features(y, sr)
         if windows:
-            m.aggregate_top_k(np.vstack(windows), k=TOP_K)
+            m.aggregate_top_k(np.vstack(windows), k=TOP_K, phrases=phrases)
     finally:
         _warm["done"] = True
 
@@ -151,7 +151,7 @@ async def identify(audio: UploadFile = File(...), contribute: str = Form("no")):
     except Exception as e:  # noqa: BLE001
         return JSONResponse({"error": "could not decode audio", "detail": str(e)[:200]}, status_code=400)
 
-    windows, tonic, heard, pcd = pitch_extract.audio_to_features(y, sr)
+    windows, tonic, heard, pcd, phrases = pitch_extract.audio_to_features(y, sr)
     if not windows:
         # Say WHY there is no prediction. Nearly half of live sessions end here, and until now the
         # response carried no reason, so the single biggest failure mode was invisible in telemetry.
@@ -171,7 +171,7 @@ async def identify(audio: UploadFile = File(...), contribute: str = Form("no")):
             "swara_activation": fold_swaras(pcd),
         }
 
-    preds = m.aggregate_top_k(np.vstack(windows), k=TOP_K)
+    preds = m.aggregate_top_k(np.vstack(windows), k=TOP_K, phrases=phrases)
     return {
         "no_prediction": False,
         "tonic_hz": round(float(tonic), 1),
