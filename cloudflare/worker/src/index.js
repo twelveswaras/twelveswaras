@@ -35,12 +35,13 @@ export default {
       return handleEvent(request, env, ctx);
     }
     if (url.pathname.endsWith('/health')) {
-      try {
-        const r = await fetch(env.SPACE_URL + '/health');
-        return cors(json(await r.json()), env, request);
-      } catch {
-        return cors(json({ status: 'backend unavailable' }, 502), env, request);
-      }
+      return proxyRecognizerGet('/health', { status: 'backend unavailable' }, 502, env, request);
+    }
+    // The page pings this on load. A sleeping recognizer took 42.6 s to give its first answer, and
+    // most visitors gave up inside that window; waking it while they read the page moves that wait
+    // off their critical path. Deliberately not logged: it is not usage.
+    if (url.pathname.endsWith('/warm')) {
+      return proxyRecognizerGet('/warm', { warm: false }, 503, env, request);
     }
     return cors(json({ error: 'not found', path: url.pathname }, 404), env, request);
   },
@@ -115,6 +116,16 @@ function identifyFailed(env, ctx, request, reason, detail) {
   } catch { /* D1 unavailable: the log line above still has it */ }
 }
 
+// GET a recognizer endpoint and relay its JSON, or a fixed fallback if it is unreachable.
+async function proxyRecognizerGet(path, fallback, fallbackStatus, env, request) {
+  try {
+    const r = await fetch(env.SPACE_URL + path);
+    return cors(json(await r.json()), env, request);
+  } catch {
+    return cors(json(fallback, fallbackStatus), env, request);
+  }
+}
+
 async function handleIdentify(request, env, ctx) {
   let form;
   try {
@@ -170,7 +181,9 @@ async function handleResult(request, env, ctx) {
 }
 
 // A closed set, so a malformed/hostile body cannot write arbitrary strings into the column.
-const RESULT_REASONS = new Set(['too_short', 'tonic_failed', 'no_windows']);
+// too_short / tonic_failed / no_windows come from the recognizer. not_sent / no_reply come from the
+// page: the session ended before any audio was sent, or audio was sent and no answer came back.
+const RESULT_REASONS = new Set(['too_short', 'tonic_failed', 'no_windows', 'not_sent', 'no_reply']);
 const RESULT_SOURCES = new Set(['live', 'file']);
 
 async function logToD1(env, data, request) {

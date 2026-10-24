@@ -92,8 +92,10 @@ touches Hugging Face any more.
   stored to R2 **only** through the explicit `POST /contribute` endpoint, which is opt-in and
   rights-gated (`is_own` must be attested) and keeps the clip private unless `release_public` is set.
 - **Costs:** Worker + Pages + D1 + R2 all have generous free tiers. The recognizer Container is
-  the one paid piece (Workers Paid plan); it sleeps when idle and a cron keeps it warm during the
-  day, so cost tracks actual use.
+  the one paid piece (Workers Paid plan). It sleeps 5 minutes after the last request and there is
+  **no keep-warm cron** (`crons = []`), so cost tracks actual use. The price is a cold start: the
+  first answer after sleep took 42.6 s (2026-10-24). The page pings `/api/warm` on load so that wait
+  happens while a visitor reads; re-enabling a cron would remove it at the cost of always-on time.
 - **Rate limiting:** a Cloudflare WAF rate-limiting rule (Security -> WAF -> Rate limiting rules)
   protects `/api/identify`: **50 requests / 10s per IP per data center, block for 10s**. On the Free
   plan this is the one allowed WAF rule, and the period is fixed at 10s and counting is per-colo

@@ -11,7 +11,8 @@ import { Container, getContainer } from '@cloudflare/containers';
 
 export class Recognizer extends Container {
   defaultPort = 7860;      // uvicorn api:app --port 7860 (see Dockerfile)
-  sleepAfter = '5m';       // scale to zero 5 min after the last request; wake is fast on the next
+  sleepAfter = '5m';       // scale to zero 5 min after the last request. Waking is NOT fast: the first
+                           // answer took 42.6 s (2026-10-24), hence the page's /api/warm ping on load.
 }
 
 export default {

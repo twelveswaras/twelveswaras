@@ -412,6 +412,10 @@
     // MAX_S. MAX_S=150 matches the backend INFER_SECONDS cap; easy clips still lock early on stability,
     // only hard/ambiguous ones run to the cap (which is exactly where the extra accuracy comes from).
     var HOLD=10.0, MIN_LISTEN=45, MAX_S=150, SEND_EVERY=3500, FIRST_SEND=4500;
+    // A sleeping recognizer took 42.6 s to give its first answer (measured 2026-10-24) and most
+    // visitors gave up inside that window. Say so after WAKE_NOTE s of waiting, and when Stop is
+    // tapped with an answer already on its way, wait up to FINISH_WAIT for it rather than drop it.
+    var WAKE_NOTE=10, FINISH_WAIT=30000, sentOnce=false, gotReply=false, finishTimer=null;
     // Identifying runs on the server, so it needs the network: say so, never blame the recording.
     var NO_NET='No connection. Identifying a raaga needs the internet: the recording is analysed on our server. Try again when you are back online.';
     var netFails=0; // live sends in a row that never reached the server
@@ -444,7 +448,7 @@
       return c.find(function(t){return window.MediaRecorder && MediaRecorder.isTypeSupported(t);})||''; }
     function setC(h){ controls.innerHTML=h; }
     function reset(src){ source=src; mode='listening'; elapsed=0; conf=0; top3=[]; swaraAct=new Array(12).fill(0);
-      leader=''; leaderSince=0; lastSent=0; phase=''; nextTip=6; tipUntil=0; tipIdx=-1; curTonic=null; curHeard=null; curReason=''; contribEl.innerHTML='';
+      leader=''; leaderSince=0; lastSent=0; phase=''; nextTip=6; tipUntil=0; tipIdx=-1; curTonic=null; curHeard=null; curReason=''; sentOnce=false; gotReply=false; contribEl.innerHTML='';
       saEl.className='rec-sa'; saEl.textContent=''; ragaEl.className='rec-raga'; ragaEl.textContent='';
       top3El.innerHTML=''; top3El.classList.remove('done'); }
     // Bring the recognizer into view when a listen starts. On mobile the locked result renders
@@ -456,7 +460,7 @@
     async function startLive(){
       reset('live'); showRec(); statusEl.textContent='Identifying'; statusEl.className='rec-status warm';
       guides.className='rec-guides recording'; leadEl.textContent='Finding the swaras…'; top3El.className='rec-top3 show';
-      setC('<button class="rbtn stop" id="r-stop">Stop now</button>'); g('r-stop').onclick=function(){finish();};
+      setC('<button class="rbtn stop" id="r-stop">Stop now</button>'); g('r-stop').onclick=stopNow;
       ev('listen_start','live');
       if(offline()) return fail(NO_NET);
       netFails=0;
@@ -476,7 +480,7 @@
       var gap = elapsed<30 ? 0 : (elapsed<60 ? 5 : 7);
       if(gap && lastSent && elapsed-lastSent < gap) return;
       lastSent=elapsed;
-      sending=true;
+      sending=true; sentOnce=true;
       try{ var fd=new FormData(); fd.append('audio', new Blob(chunks,{type:mime||'audio/webm'}), 'clip.webm');
         var r;
         // A send that never reaches the server: stop on the second in a row (or at once when the
@@ -485,8 +489,8 @@
         catch(e){ if(mode==='listening'&&(offline()||++netFails>=2)) fail(NO_NET); return; }
         netFails=0;
         var d=await r.json();
-        if(mode==='listening') apply(d);
-      }catch(e){} finally{ sending=false; }
+        if(mode==='listening'||mode==='finishing') apply(d);
+      }catch(e){} finally{ sending=false; if(mode==='finishing') finish(); }
     }
     async function startFile(file){
       reset('file'); showRec(); curFile=file; curMime=file.type||''; statusEl.textContent='Analysing recording'; statusEl.className='rec-status warm';
@@ -495,12 +499,13 @@
       ev('listen_start','file');
       if(offline()) return fail(NO_NET);
       t0=performance.now(); uiTimer=setInterval(tick,33);
-      var fd=new FormData(), r; fd.append('audio', file, file.name);
+      var fd=new FormData(), r; fd.append('audio', file, file.name); sentOnce=true;
       try{ r=await fetch(API+'/identify',{method:'POST',body:fd}); }catch(e){ return fail(NO_NET); }
       try{ var d=await r.json(); apply(d); finish(); }
       catch(e){ fail('That file could not be analysed. Try a clear clip with a drone.'); }
     }
     function apply(d){
+      gotReply=true;
       if(d&&Array.isArray(d.swara_activation)) swaraAct=d.swara_activation;
       // Keep what the SERVER measured. curHeard is seconds of audio actually analysed, which is not
       // the same as the browser's `elapsed` wall-clock (for an upload, elapsed is just processing
@@ -515,6 +520,8 @@
       elapsed=(performance.now()-t0)/1000; if(mode!=='listening') return;
       var held=elapsed-leaderSince, s;
       if(source==='file'){ s = VERBS[Math.floor(elapsed/1.8)%VERBS.length]; }
+      else if(sentOnce && !gotReply && elapsed>=FIRST_SEND/1000+WAKE_NOTE){
+        s='Waking up the recognizer. The first answer can take half a minute.'; }
       else{ if(elapsed>=nextTip && elapsed<MAX_S-3){ tipUntil=elapsed+2.6; nextTip+=7; tipIdx=(tipIdx+1)%TIPS.length; }
         if(elapsed<tipUntil) s=TIPS[tipIdx];
         else if(conf>0&&elapsed>=MIN_LISTEN&&held>=HOLD*0.85) s='Locking it in…';
@@ -523,8 +530,18 @@
       var ready = conf>0&&leader&&(elapsed-leaderSince)>=HOLD&&elapsed>=MIN_LISTEN&&conf>=0.80;
       if(ready||elapsed>=MAX_S) finish();
     }
+    // Stop tapped while the first answer is still on its way: wait for it (finish() runs when the
+    // reply lands, fails, or FINISH_WAIT passes) instead of discarding it and showing nothing.
+    function stopNow(){
+      if(mode!=='listening') return;
+      if(!(sending && !top3.length)) return finish();
+      mode='finishing'; stopCap(); clearInterval(uiTimer); clearInterval(sendTimer);
+      leadEl.textContent='Finishing, getting the answer that is on its way…';
+      finishTimer=setTimeout(finish, FINISH_WAIT);
+    }
     function finish(){
-      if(mode!=='listening') return; mode='locked'; stopCap();
+      if(mode!=='listening'&&mode!=='finishing') return; mode='locked'; stopCap();
+      clearTimeout(finishTimer);
       clearInterval(uiTimer); clearInterval(sendTimer);
       if(!top3.length) return noRes();
       lockName=top3[0].raaga; lockConf=conf;
@@ -601,6 +618,14 @@
         return r;
       }catch(e){ return ''; }
     }
+    // Why a session ended with no raaga. The recognizer's own reason when it answered; otherwise
+    // whether audio was ever sent. Before this, 221 of 262 such sessions were recorded as blanks.
+    function emptyReason(){
+      if(top3.length) return '';
+      if(curReason) return curReason;
+      if(gotReply) return '';
+      return sentOnce ? 'no_reply' : 'not_sent';
+    }
     function logResult(){
       try{
         // heard_seconds is the SERVER's analysed duration, not the browser's `elapsed`: for an
@@ -608,7 +633,7 @@
         // source separates live listens from uploads; reason says why a no-prediction happened.
         var body=JSON.stringify({ top3: top3, tonic_hz: curTonic,
           heard_seconds: (curHeard!=null ? curHeard : elapsed),
-          elapsed_s: Math.round(elapsed*10)/10, source: source, reason: curReason||'',
+          elapsed_s: Math.round(elapsed*10)/10, source: source, reason: emptyReason(),
           no_prediction: top3.length ? 0 : 1, referrer: acqReferrer() });
         fetch(API+'/result',{method:'POST',headers:{'content-type':'application/json'},body:body,keepalive:true}).catch(function(){});
       }catch(e){}
@@ -852,6 +877,9 @@
     orb.addEventListener('click',function(){ if(mode==='idle'||mode==='locked') startLive(); });
     toIdle();
     ev('view');   // top of the funnel: a real browser ran this, so it counts a human, not a crawler
+    // Wake the recognizer now, while the visitor reads, so its slow first answer (42.6 s from cold)
+    // is not spent with their phone held up. Fire and forget; a failure here changes nothing.
+    try{ if(!offline()) fetch(API+'/warm').catch(function(){}); }catch(e){}
   })();
 </script>
 
