@@ -70,11 +70,42 @@ _warm_lock = threading.Lock()
 _warm = {"started": False, "done": False}
 
 
+def decode(raw: bytes, suffix: str):
+    """Upload bytes -> (mono audio, its native sample rate). Shared by /identify and _prime, so
+    priming pays exactly the first-call costs a real upload would.
+
+    Writes a temp file so librosa can fall back to ffmpeg (audioread) for compressed formats
+    (webm/opus from the browser, m4a/mp3 from uploads); soundfile-on-BytesIO can't read those.
+    """
+    import librosa
+
+    tmp = tempfile.NamedTemporaryFile(suffix=suffix, delete=False)
+    try:
+        tmp.write(raw)
+        tmp.close()
+        return librosa.load(tmp.name, sr=None, mono=True)
+    finally:
+        try:
+            os.unlink(tmp.name)
+        except OSError:
+            pass
+
+
 def _prime() -> None:
+    """Pay every first-call cost the way a real request would. The biggest is the first
+    librosa.load in a process (numba compiling librosa, ~30 s on the container), which only
+    decoding a real file triggers, so the priming clip goes through decode() as a WAV upload.
+    Also run at image build time (see the Dockerfile) to bake the compiled code into the image."""
+    import io
+
+    import soundfile as sf
+
     try:
         m = model()
-        windows, _tonic, _secs, _pcd = pitch_extract.audio_to_features(
-            pitch_extract.priming_clip(), pitch_extract.TONIC_SR)
+        buf = io.BytesIO()
+        sf.write(buf, pitch_extract.priming_clip(), pitch_extract.TONIC_SR, format="WAV")
+        y, sr = decode(buf.getvalue(), ".wav")
+        windows, _tonic, _secs, _pcd = pitch_extract.audio_to_features(y, sr)
         if windows:
             m.aggregate_top_k(np.vstack(windows), k=TOP_K)
     finally:
@@ -112,26 +143,13 @@ def health():
 
 @app.post("/identify")
 async def identify(audio: UploadFile = File(...), contribute: str = Form("no")):
-    import librosa
-
     m = model()
     raw = await audio.read()
-    # Write to a temp file so librosa can fall back to ffmpeg (audioread) for compressed formats
-    # (webm/opus from the browser, m4a/mp3 from uploads); soundfile-on-BytesIO can't read those.
     suffix = os.path.splitext(audio.filename or "")[1] or ".webm"
-    tmp = tempfile.NamedTemporaryFile(suffix=suffix, delete=False)
     try:
-        tmp.write(raw)
-        tmp.flush()
-        tmp.close()
-        y, sr = librosa.load(tmp.name, sr=None, mono=True)
+        y, sr = decode(raw, suffix)
     except Exception as e:  # noqa: BLE001
         return JSONResponse({"error": "could not decode audio", "detail": str(e)[:200]}, status_code=400)
-    finally:
-        try:
-            os.unlink(tmp.name)
-        except OSError:
-            pass
 
     windows, tonic, heard, pcd = pitch_extract.audio_to_features(y, sr)
     if not windows:
