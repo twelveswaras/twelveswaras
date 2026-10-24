@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import os
 import tempfile
+import threading
 
 import numpy as np
 from fastapi import FastAPI, File, Form, UploadFile
@@ -46,14 +47,47 @@ app.add_middleware(
 )
 
 _model = None
+_model_lock = threading.Lock()   # the /warm thread and a visitor's first identify can race
 
 
 def model() -> RaagaXGB:
     global _model
     if _model is None:
-        _model = RaagaXGB.load(MODEL_PATH)
-        pitch_extract.warmup()          # pay the essentia/compiam import cost once, at first call
+        with _model_lock:
+            if _model is None:
+                m = RaagaXGB.load(MODEL_PATH)
+                pitch_extract.warmup()   # pay the essentia import cost once, at first call
+                _model = m
     return _model
+
+
+# ---- cold-start priming -----------------------------------------------------------------------
+# A sleeping recognizer took 42.6 s to give its first answer (2026-10-24), and most visitors gave
+# up inside that window. The page pings /warm on load; this pays every first-call cost in the
+# background (model load, essentia import, and one real pass of the pipeline) so a visitor's first
+# identify does not.
+_warm_lock = threading.Lock()
+_warm = {"started": False, "done": False}
+
+
+def _prime() -> None:
+    try:
+        m = model()
+        windows, _tonic, _secs, _pcd = pitch_extract.audio_to_features(
+            pitch_extract.priming_clip(), pitch_extract.TONIC_SR)
+        if windows:
+            m.aggregate_top_k(np.vstack(windows), k=TOP_K)
+    finally:
+        _warm["done"] = True
+
+
+@app.get("/warm")
+def warm():
+    with _warm_lock:
+        if not _warm["started"]:
+            _warm["started"] = True
+            threading.Thread(target=_prime, daemon=True).start()
+    return {"warm": _warm["done"]}
 
 
 def fold_swaras(pcd) -> list[float]:

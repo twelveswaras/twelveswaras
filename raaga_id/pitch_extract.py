@@ -129,3 +129,29 @@ def audio_to_features(audio, sr, max_seconds: float = INFER_SECONDS, max_windows
     windows = features.model_windows(times, f0, tonic, max_windows=max_windows, hop_s=TDMS_HOP_S / 2)
     display_pcd = features.pitch_class_histogram(f0, tonic, n_bins=PCD_BINS)
     return windows, tonic, analysed_seconds, display_pcd
+
+
+def priming_clip(seconds: float = 36.0, sa_hz: float = 146.8, seed: int = 0) -> np.ndarray:
+    """A synthetic tanpura-plus-voice clip, used only to warm a cold recognizer.
+
+    The first real clip after a cold start pays one-time costs (model load, the essentia import,
+    first-call compilation in the pitch, tonic and TDMS path). Running this through the pipeline
+    pays them in the background instead of while a visitor waits. It needs a drone, so the tonic
+    is found, and a voiced melody longer than one TDMS window, so the classifier runs too.
+    """
+    sr = TONIC_SR
+    t = np.arange(int(seconds * sr)) / sr
+    rng = np.random.default_rng(seed)
+    drone = np.zeros_like(t)
+    for f0, amp in ((sa_hz / 2, 0.5), (sa_hz * 1.5, 0.35), (sa_hz, 0.4)):       # Sa, Pa, Sa
+        for h in range(1, 6):
+            drone += amp / h * np.sin(2 * np.pi * f0 * h * t + rng.uniform(0, 2 * np.pi))
+    scale = (0, 2, 4, 5, 7, 9, 11, 12, 11, 9, 7, 5, 4, 2)                           # a plain scale
+    note_len = 1.2
+    idx = (t // note_len).astype(int) % len(scale)
+    freq = sa_hz * 2.0 ** (np.asarray(scale)[idx] / 12.0)
+    freq = freq * (1 + 0.004 * np.sin(2 * np.pi * 5.5 * t))                      # gentle gamaka
+    phase = 2 * np.pi * np.cumsum(freq) / sr
+    voice = sum(np.sin(h * phase) / h for h in range(1, 5))
+    y = 0.35 * drone / np.abs(drone).max() + 0.65 * voice / np.abs(voice).max()
+    return (0.8 * y / np.abs(y).max()).astype(np.float32)

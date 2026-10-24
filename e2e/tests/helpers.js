@@ -23,6 +23,7 @@ async function stubApi(page, { top3 = [], tonicHz = 146 } = {}) {
         body: JSON.stringify({ tonic_hz: tonicHz, swara_activation: ACT, top3 }),
       });
     }
+    if (url.endsWith('/warm')) return route.fulfill({ status: 200, body: '{"warm":true}' });
     if (url.endsWith('/result')) return route.fulfill({ status: 200, body: '{}' });
     if (url.endsWith('/event')) {
       try { events.push(JSON.parse(route.request().postData() || '{}')); } catch { /* ignore */ }

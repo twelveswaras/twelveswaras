@@ -356,3 +356,50 @@ test('both workers keep Workers Logs', async () => {
     assert.match(toml, /^\[observability\]\s*\nenabled = true/m, f);
   }
 });
+
+// ---- GET /warm: wake the recognizer before the visitor taps ------------------------------------
+// A sleeping recognizer took 42.6 s to give its first answer (measured 2026-10-24), and 163 live
+// sessions gave up inside that window with nothing. The page pings /warm on load so the wake-up
+// happens while the visitor is reading, not while they hold their phone up.
+test('GET /api/warm forwards to the recognizer /warm and logs nothing', async () => {
+  const db = stubDB();
+  const seen = [];
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async (u) => { seen.push(String(u)); return new Response('{"warm":true}', { status: 200 }); };
+  try {
+    const res = await worker.fetch(new Request('https://twelveswaras.com/api/warm'),
+      { ...ENV, DB: db, SPACE_URL: 'https://space.invalid' }, stubCtx());
+    assert.equal(res.status, 200);
+    assert.deepEqual(await res.json(), { warm: true });
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+  assert.deepEqual(seen, ['https://space.invalid/warm']);
+  assert.equal(db.rows.length, 0, 'a warm-up ping is not usage and must not be logged');
+});
+
+test('GET /api/warm degrades quietly when the recognizer is unreachable', async () => {
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async () => { throw new Error('down'); };
+  try {
+    const res = await worker.fetch(new Request('https://twelveswaras.com/api/warm'), ENV, stubCtx());
+    assert.equal(res.status, 503);
+    assert.deepEqual(await res.json(), { warm: false });
+  } finally {
+    globalThis.fetch = realFetch;
+  }
+});
+
+// The page now says why a session ended without any reply: it never sent audio (stopped before
+// the first send), or it sent and no answer came back in time. Both were NULL before, which hid
+// 221 of 262 failures in the first month of this telemetry.
+test('POST /result accepts the page-side reasons not_sent and no_reply', async () => {
+  for (const reason of ['not_sent', 'no_reply']) {
+    const db = stubDB();
+    const ctx = stubCtx();
+    await worker.fetch(postJSON('/api/result', { top3: [], no_prediction: 1, source: 'live', reason }),
+      { ...ENV, DB: db }, ctx);
+    await ctx.settle();
+    assert.equal(db.rows[0].values[11], reason);
+  }
+});
