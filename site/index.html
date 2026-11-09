@@ -321,7 +321,7 @@
   <header class="hero">
     <p class="eyebrow">Shazam for raagas</p>
     <h1 class="title">What's the raaga?<br><span class="b">Learn to hear it.</span></h1>
-    <p class="thesis">Play it a few seconds of Carnatic or Hindustani music: it names the raaga, and shows you how to recognise it yourself.</p>
+    <p class="thesis">Play it about a minute of Carnatic or Hindustani music: it names the raaga, and shows you how to recognise it yourself.</p>
 
     <div class="rec" id="rec">
       <p class="rec-status" id="rec-status" aria-live="polite">Identify a raaga</p>
@@ -411,7 +411,11 @@
     // lock — don't commit before MIN_LISTEN, need a long stable hold + high confidence — else run to
     // MAX_S. MAX_S=150 matches the backend INFER_SECONDS cap; easy clips still lock early on stability,
     // only hard/ambiguous ones run to the cap (which is exactly where the extra accuracy comes from).
-    var HOLD=10.0, MIN_LISTEN=45, MAX_S=150, SEND_EVERY=3500, FIRST_SEND=4500;
+    // No raaga names before MIN_LISTEN on a live listen: on the 80 real-world clips a named answer is
+    // right 48% of the time at 30 s, 64% at 60 s and 81% at 150 s (measured 2026-11-09), and visitors
+    // used to stop at ~33 s on an early name. The first minute shows the listening instead (Sa, the
+    // swaras, a ring filling to one minute); no seconds counter at any point.
+    var HOLD=10.0, MIN_LISTEN=60, MAX_S=150, SEND_EVERY=3500, FIRST_SEND=4500;
     // A sleeping recognizer took 42.6 s to give its first answer (measured 2026-10-24) and most
     // visitors gave up inside that window. Say so after WAKE_NOTE s of waiting, and when Stop is
     // tapped with an answer already on its way, wait up to FINISH_WAIT for it rather than drop it.
@@ -450,7 +454,7 @@
     function reset(src){ source=src; mode='listening'; elapsed=0; conf=0; top3=[]; swaraAct=new Array(12).fill(0);
       leader=''; leaderSince=0; lastSent=0; phase=''; nextTip=6; tipUntil=0; tipIdx=-1; curTonic=null; curHeard=null; curReason=''; sentOnce=false; gotReply=false; contribEl.innerHTML='';
       saEl.className='rec-sa'; saEl.textContent=''; ragaEl.className='rec-raga'; ragaEl.textContent='';
-      top3El.innerHTML=''; top3El.classList.remove('done'); }
+      top3El.innerHTML=''; rows._k=''; named=false; top3El.classList.remove('done'); }
     // Bring the recognizer into view when a listen starts. On mobile the locked result renders
     // below the fold, so without this the listener has to scroll to see it. Center it (not 'start',
     // which jams it to the very top) and only scroll when it is not already fully in view.
@@ -460,13 +464,15 @@
     async function startLive(){
       reset('live'); showRec(); statusEl.textContent='Identifying'; statusEl.className='rec-status warm';
       guides.className='rec-guides recording'; leadEl.textContent='Finding the swaras…'; top3El.className='rec-top3 show';
-      setC('<button class="rbtn stop" id="r-stop">Stop now</button>'); g('r-stop').onclick=stopNow;
+      setC('<button class="rbtn stop" id="r-stop">Stop early</button>'); g('r-stop').onclick=stopNow;
+      orb.setAttribute('aria-label','Listening. Raaga names appear after a minute.');
       ev('listen_start','live');
       if(offline()) return fail(NO_NET);
       netFails=0;
-      try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }
-      catch(e){ ev('mic_denied','live');
-        return fail('Microphone access is needed to identify live. You can also upload a recording.'); }
+      try{ if(!window.MediaRecorder) throw new TypeError('no MediaRecorder');
+        stream=await navigator.mediaDevices.getUserMedia({audio:true}); }
+      catch(e){ var cause=micCause(e); ev('mic_denied','live'); ev('mic_'+cause,'live');
+        return fail(MIC_MSG[cause], true); }
       var mime=pickMime(); curMime=mime; curFile=null; rec=new MediaRecorder(stream, mime?{mimeType:mime}:undefined); chunks=[];
       rec.ondataavailable=function(e){ if(e.data&&e.data.size) chunks.push(e.data); };
       rec.start(1000); t0=performance.now();
@@ -514,10 +520,22 @@
       if(d&&d.reason) curReason=d.reason; else if(d&&d.top3&&d.top3.length) curReason='';
       if(d&&d.tonic_hz){ curTonic=d.tonic_hz; saEl.textContent='Sa · '+Math.round(d.tonic_hz)+' Hz'; saEl.className='rec-sa show'; }
       if(d&&d.top3&&d.top3.length){ top3=d.top3; conf=d.top3[0].confidence||0;
-        var ld=d.top3[0].raaga; if(ld!==leader){leader=ld; leaderSince=elapsed;} rows(top3); }
+        var ld=d.top3[0].raaga; if(ld!==leader){leader=ld; leaderSince=elapsed;} if(namesShown()) rows(top3); }
     }
+    var named=false;   // the one-minute handover on a live listen has happened
+    function namesShown(){ return source==='file' || elapsed>=MIN_LISTEN; }
     function tick(){
       elapsed=(performance.now()-t0)/1000; if(mode!=='listening') return;
+      if(source==='live'){
+        var early=!namesShown(), st=early ? 'Listening · names after a minute' : 'Identifying';
+        if(statusEl.textContent!==st) statusEl.textContent=st;
+        // Once, at the minute, even if no answer has arrived yet (a cold recognizer, empty replies):
+        // the labels change now, and the names appear here or when apply() gets the first answer.
+        if(!early && !named){ named=true;
+          var sb=g('r-stop'); if(sb) sb.textContent='Stop now';
+          orb.setAttribute('aria-label','Listening. Tap Stop now for the answer so far.');
+          if(top3.length) rows(top3); }
+      }
       var held=elapsed-leaderSince, s;
       if(source==='file'){ s = VERBS[Math.floor(elapsed/1.8)%VERBS.length]; }
       else if(sentOnce && !gotReply && elapsed>=FIRST_SEND/1000+WAKE_NOTE){
@@ -525,6 +543,7 @@
       else{ if(elapsed>=nextTip && elapsed<MAX_S-3){ tipUntil=elapsed+2.6; nextTip+=7; tipIdx=(tipIdx+1)%TIPS.length; }
         if(elapsed<tipUntil) s=TIPS[tipIdx];
         else if(conf>0&&elapsed>=MIN_LISTEN&&held>=HOLD*0.85) s='Locking it in…';
+        else if(!namesShown()) s = curTonic ? 'Sa found. Listening to the phrases…' : 'Finding Sa from the drone…';
         else s=VERBS[Math.floor(elapsed/2.6)%VERBS.length]; }
       if(s!==phase){phase=s; leadEl.innerHTML=s;}
       var ready = conf>0&&leader&&(elapsed-leaderSince)>=HOLD&&elapsed>=MIN_LISTEN&&conf>=0.80;
@@ -564,9 +583,11 @@
         mountContrib(true); logResult();
         return;
       }
-      statusEl.textContent=sure?'Confident':'Best guess'; statusEl.className='rec-status '+(sure?'done':'warm');
+      var earlyGuess = source==='live' && elapsed<MIN_LISTEN;
+      statusEl.textContent=sure?'Confident':(earlyGuess?'Early guess':'Best guess'); statusEl.className='rec-status '+(sure?'done':'warm');
       var heard = source==='file'
         ? (sure ? 'From your recording.' : 'From your clip. A longer or clearer recording helps.')
+        : earlyGuess ? ('Heard '+elapsed.toFixed(0)+'s. Answers before a minute are right only about half the time; listen longer for a surer answer.')
         : (sure ? ('Heard for '+elapsed.toFixed(0)+'s') : ('Heard '+elapsed.toFixed(0)+'s. A longer, closer listen helps.'));
       // Label a Hindustani result so the two traditions are never conflated; Carnatic (the default)
       // reads exactly as before.
@@ -661,15 +682,34 @@
           keepalive:true}).catch(function(){});
       }catch(e){}
     }
-    function fail(msg){
+    // Why the microphone failed, from the browser's own error. 'blocked' is the one a retry cannot
+    // fix (the browser will not ask again), so every message leads with upload, not "Try again".
+    function micCause(e){
+      if(!window.MediaRecorder || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return 'unsupported';
+      var n=(e&&e.name)||'';
+      if(n==='NotFoundError'||n==='OverconstrainedError'||n==='DevicesNotFoundError') return 'missing';
+      if(n==='NotReadableError'||n==='AbortError'||n==='TrackStartError') return 'busy';
+      return 'blocked';
+    }
+    var MIC_MSG={
+      blocked:"Microphone access was not allowed. Try again and choose Allow. If the browser doesn't ask, tap the lock or settings icon beside the address, open Microphone and choose Allow. Or upload a recording.",
+      missing:'No microphone was found on this device. Upload a recording instead.',
+      busy:'The microphone is being used by another app. Close that app and try again, or upload a recording.',
+      unsupported:"This browser can't record audio. If you opened this link inside another app, open it in Chrome or Safari instead. Or upload a recording."
+    };
+    function fail(msg, uploadFirst){
       stopCap(); clearInterval(uiTimer); clearInterval(sendTimer); mode='idle';
       statusEl.textContent='Identify a raaga'; statusEl.className='rec-status';
       leadEl.innerHTML='<span class="rerr">'+msg+'</span>'; guides.className='rec-guides';
-      setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Try again</button>'
-        +'<button class="rghost" id="r-up2">upload a recording ↑</button></div>');
+      setC(uploadFirst
+        ? '<div class="rec-entry"><button class="rbtn again" id="r-up2">Upload a recording ↑</button>'
+          +'<button class="rghost" id="r-again">or try again</button></div>'
+        : '<div class="rec-entry"><button class="rbtn again" id="r-again">Try again</button>'
+          +'<button class="rghost" id="r-up2">upload a recording ↑</button></div>');
       g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
     }
-    function stopCap(){ try{ if(rec&&rec.state!=='inactive') rec.stop(); }catch(e){}
+    function stopCap(){ orb.setAttribute('aria-label','Tap to identify the raaga');
+      try{ if(rec&&rec.state!=='inactive') rec.stop(); }catch(e){}
       if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; } }
     function toIdle(){
       stopCap(); clearInterval(uiTimer); clearInterval(sendTimer);
@@ -837,7 +877,9 @@
       ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(cx,cy,ring,0,7); ctx.fill();
       ctx.lineWidth=5; ctx.lineCap='round'; ctx.strokeStyle='rgba(255,255,255,0.08)';
       ctx.beginPath(); ctx.arc(cx,cy,ring,0,Math.PI*2); ctx.stroke();
-      var shown=active?(locked?lockConf:conf):0;
+      // While the first minute of a live listen fills, the ring is listening progress, not confidence.
+      var filling=listening && !namesShown();
+      var shown=active?(locked?lockConf:(filling?Math.min(1,elapsed/MIN_LISTEN):conf)):0;
       if(shown>0.001){ var a0=-Math.PI/2, a1=a0+shown*Math.PI*2;
         var gr=ctx.createLinearGradient(cx-ring,cy,cx+ring,cy);
         if(confident){gr.addColorStop(0,'#5aa87f');gr.addColorStop(1,'#74c69d');}else{gr.addColorStop(0,'#d97706');gr.addColorStop(1,'#fbbf24');}
@@ -863,7 +905,9 @@
       }
       ctx.globalAlpha=1;
       ctx.save(); ctx.translate(cx,cy); ctx.textAlign='center'; ctx.textBaseline='middle';
-      if(listening){ ctx.fillStyle='#fde68a'; ctx.font='600 27px ui-monospace, Menlo, monospace'; ctx.fillText(elapsed.toFixed(1)+'s',0,1); }
+      var centre = listening ? (source==='file' ? 'Reading' : (filling ? (curTonic ? 'Sa found' : 'Finding Sa') : 'Listening')) : '';
+      if(centre!==draw._c){ draw._c=centre; orb.setAttribute('data-centre', centre); }
+      if(listening){ ctx.fillStyle='#fde68a'; ctx.font='600 15px ui-monospace, Menlo, monospace'; ctx.fillText(centre,0,1); }
       else if(confident){ ctx.strokeStyle='#74c69d'; ctx.lineWidth=4; ctx.lineCap='round'; ctx.lineJoin='round';
         ctx.beginPath(); ctx.moveTo(-11,1); ctx.lineTo(-3,10); ctx.lineTo(13,-9); ctx.stroke(); }
       else if(locked){ ctx.fillStyle='rgba(251,191,36,0.9)'; ctx.beginPath(); ctx.arc(0,0,4.5,0,7); ctx.fill(); }
