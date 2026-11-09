@@ -262,3 +262,29 @@ across scikit-learn versions (1.5.2 and 1.9.0 share only 1,030 of 3,229 held-out
 on the other version's split, the shipped model looked like it had trained on its held-out set
 (0.875 window top-1 against a true 0.613). `tools/train_swara` now refuses to tune unless the
 shipped model scores like a model that has never seen the held-out tracks.
+
+### Tonic on every annotated Saraga recording (2026-11-09)
+
+The September tonic figures came from 39 recordings, and the `tools/tonic_bench` they cite was
+never committed. It is now (`tools/tonic_bench.py`), run over **all 197** Saraga Carnatic
+recordings that ship both a mix and an annotated `.ctonic.txt`. Two data quirks had hidden most of
+them: 116 mixes are named `x.mp3.mp3`, and every annotation has a binary macOS `._` twin.
+
+**essentia `TonicIndianArtMusic`, clean audio, first 150 s, n=197:**
+
+| outcome | recordings | share |
+|---|---|---|
+| Sa within 50 cents | 157 | 0.797 |
+| Sa an octave away (harmless: features fold octaves) | 2 | 0.010 |
+| **Pa taken for Sa** | 20 | 0.102 |
+| **Ma taken for Sa** | 13 | 0.066 |
+| other | 5 | 0.025 |
+
+Usable Sa **0.807**, down from 0.90 on the 39-recording sample. The misses are not scattered:
+33 of 38 are a fifth or a fourth, the drone's Pa (or Ma) read as its Sa. That is a single,
+targetable confusion, and on clean concert audio it already sends about one recording in six into
+the wrong key before any model runs.
+
+The Indian Art Music Tonic Dataset (Zenodo 1257113, 597 annotated recordings) could not be used:
+it distributes features only, its recordings do not overlap the local Saraga audio, and the audio
+of the overlapping raaga-recognition recordings is restricted.

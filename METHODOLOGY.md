@@ -20,7 +20,9 @@ Fully automatic; the only input is audio.
 2. **Tonic (Sa)**: from the tanpura drone, via essentia `TonicIndianArtMusic` (the
    Salamon–Gulati–Serra 2012 multipitch method). compiam's `TonicIndianMultiPitch` was used
    until 2026-09; benchmarked against Saraga's ground-truth ctonic it scored 0.87 clean / 0.46 on
-   degraded audio, against 0.90 / 0.59 for the essentia algorithm, worth +6.2 pts top-1 in the wild. In training we use
+   degraded audio, against 0.90 / 0.59 for the essentia algorithm, worth +6.2 pts top-1 in the wild.
+   On all 197 annotated Saraga Carnatic recordings (`tools/tonic_bench`, 2026-11) the essentia
+   estimator finds Sa 0.80 of the time; 33 of its 38 misses land on Pa or Ma. In training we use
    each corpus's tonic annotation; at inference we estimate it.
    **Tonic-normalization, hearing every note *relative to Sa*, is the central unlock.** The
    reference Harvard thesis skipped it (used absolute pitch-class chroma); adding it roughly
