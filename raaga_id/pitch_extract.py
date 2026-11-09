@@ -21,7 +21,7 @@ from __future__ import annotations
 import numpy as np
 
 from . import features
-from .config import INFER_MAX_WINDOWS, INFER_SECONDS, MIN_CLIP_SECONDS, PCD_BINS, TDMS_HOP_S
+from .config import INFER_MAX_WINDOWS, INFER_SECONDS, MIN_CLIP_SECONDS, PCD_BINS, TDMS_HOP_S, TONIC_SECONDS
 
 TONIC_SR = 44100          # essentia's native rate for pitch + tonic
 MELODIA_HOP = 128
@@ -94,6 +94,7 @@ def audio_to_features(audio, sr, max_seconds: float = INFER_SECONDS, max_windows
     used ONLY for the learner panel's human-readable swara fingerprint, never by the model.
     analysed_seconds is how much audio (from 0:00) was actually fed to the model — capped at
     max_seconds — so the UI can tell the user exactly what it heard (D24: legible recognition).
+    The tonic alone hears up to TONIC_SECONDS (more audio, a more reliable Sa; see config).
     phrases holds each window's swara phrases (cut from the same frames), which a model with
     swara chains scores alongside the TDMS.
     Returns ([], None, 0.0, None, []) when the tonic or pitch can't be estimated (no clear melody/drone).
@@ -101,13 +102,18 @@ def audio_to_features(audio, sr, max_seconds: float = INFER_SECONDS, max_windows
     import librosa
 
     melodia, tonic_algo = _extractors()
-    y = np.asarray(audio, dtype=np.float32)
-    if y.ndim > 1:
-        y = y.mean(axis=1).astype(np.float32)
+    full = np.asarray(audio, dtype=np.float32)
+    if full.ndim > 1:
+        full = full.mean(axis=1).astype(np.float32)
+    # The tonic hears up to TONIC_SECONDS, the melody up to max_seconds: Sa accuracy keeps rising
+    # with length long after the melody analysis has enough. Trim before resampling, so a long
+    # upload is not resampled in full only to be thrown away.
+    span = max(TONIC_SECONDS, max_seconds or 0) if max_seconds else None
+    if span:
+        full = full[: int(span * sr)]
     if sr != TONIC_SR:
-        y = librosa.resample(y, orig_sr=sr, target_sr=TONIC_SR).astype(np.float32)
-    if max_seconds:
-        y = y[: int(max_seconds * TONIC_SR)]
+        full = librosa.resample(full, orig_sr=sr, target_sr=TONIC_SR).astype(np.float32)
+    y = full[: int(max_seconds * TONIC_SR)] if max_seconds else full
     if y.size < int(MIN_CLIP_SECONDS * TONIC_SR):
         return [], None, 0.0, None, []
     analysed_seconds = y.size / TONIC_SR
@@ -120,7 +126,7 @@ def audio_to_features(audio, sr, max_seconds: float = INFER_SECONDS, max_windows
     # Before this, every early failure reported 0.0 and the three were indistinguishable in
     # telemetry, which is why our biggest production failure mode was unreadable.
     try:
-        tonic = float(tonic_algo.extract(y, input_sr=TONIC_SR))
+        tonic = float(tonic_algo.extract(full, input_sr=TONIC_SR))
     except Exception:  # noqa: BLE001 — essentia raises "No peak locations" on unclear audio
         return [], None, analysed_seconds, None, []
     if not tonic or tonic <= 0:
