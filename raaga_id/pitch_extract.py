@@ -8,8 +8,9 @@ own pitch+tonic instead.
 
 Tonic was compiam TonicIndianMultiPitch until 2026-09-14. Swapped after the first
 ground-truth benchmark (tools/tonic_bench, vs Saraga ctonic, identical audio, 150s, n=39):
-TonicIndianArtMusic scores 90% vs 87% clean and 59% vs 46% on degraded audio. compiam is no
-longer imported here, but stays in the env because it pins numpy<2.
+TonicIndianArtMusic scores 90% vs 87% clean and 59% vs 46% on degraded audio. On all 197
+annotated Saraga Carnatic recordings (2026-11) it scores 80%, and 33 of its 38 misses are Pa or Ma
+taken for Sa. compiam is no longer imported here, but stays in the env because it pins numpy<2.
 
 REQUIRES the numpy<2 inference env (environment-inference.yml): essentia's compute is
 broken under numpy 2.x. essentia is imported lazily so this module still imports
@@ -41,7 +42,7 @@ class _TonicEstimator:
     """Sa from the drone, via essentia TonicIndianArtMusic.
 
     Benchmarked against Saraga's ground-truth ctonic (tools/tonic_bench), identical audio, 150s,
-    n=39: this beats the previous compiam TonicIndianMultiPitch wrapper 90% vs 87% on clean and
+    n=39 (80% on all n=197, 2026-11): this beat the previous compiam TonicIndianMultiPitch wrapper 90% vs 87% on clean and
     **59% vs 46% on degraded audio**, which is where we actually lose (a wrong Sa mis-normalises the
     TDMS and yields a confident WRONG raaga, the worst failure a learning tool can have).
 
