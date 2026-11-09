@@ -204,7 +204,8 @@ test('POST /event with a malformed body is a 400 and writes nothing', async () =
 test('the funnel allowlist is exactly the steps the pages can reach', () => {
   assert.deepEqual([...FUNNEL_EVENTS].sort(), [
     'contribute_sent', 'contribute_view', 'correct_open', 'correct_sent',
-    'listen_start', 'mic_denied', 'result', 'view',
+    'listen_start', 'mic_blocked', 'mic_busy', 'mic_denied', 'mic_missing', 'mic_unsupported',
+    'result', 'view',
   ]);
 });
 
