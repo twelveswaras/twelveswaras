@@ -32,6 +32,9 @@ INFER_MAX_WINDOWS = 60     # analyse ~first 10 min of a long upload (matches tra
 INFER_SECONDS = 150        # cap raw-audio analysed at inference; wild benchmark is monotonic in
                            # listen time (90s -> 0.475, 150s -> 0.512), and tonic salience keeps
                            # improving to ~150s, so listen long. Hard/ambiguous clips benefit most.
+TONIC_SECONDS = 300        # the tonic (Sa) hears more than the melody: on 197 annotated recordings
+                           # usable Sa is 0.68 at 30 s, 0.81 at 150 s, 0.86 at 300 s (tools/tonic_bench),
+                           # and real-world top-1 rose 0.688 -> 0.713. Only long uploads reach it.
 PCD_BINS = 120             # pitch-class-distribution resolution (10-cent bins); the display feature
 
 # Production model feature = windowed Time-Delayed Melody Surface (D28). The gate benchmark

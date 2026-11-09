@@ -288,3 +288,34 @@ the wrong key before any model runs.
 The Indian Art Music Tonic Dataset (Zenodo 1257113, 597 annotated recordings) could not be used:
 it distributes features only, its recordings do not overlap the local Saraga audio, and the audio
 of the overlapping raaga-recognition recordings is restricted.
+
+### The tonic needs listening time, not tuning (2026-11-09)
+
+`TonicIndianArtMusic`'s own settings were swept on half the `tools/tonic_bench` concerts (number of
+harmonics, harmonic weight, salience peaks, magnitude threshold); none beat the defaults, and
+several lost up to 0.10. The 100-375 Hz search range stays fixed on purpose (see 2026-09-14). The one
+thing that mattered is how much audio the estimator hears. All 197 recordings, clean audio:
+
+| audio heard | usable Sa | Pa/Ma taken for Sa |
+|---|---|---|
+| 15 s | 0.584 | 0.249 |
+| 30 s | 0.680 | 0.228 |
+| 45 s | 0.761 | 0.173 |
+| 60 s | 0.777 | 0.162 |
+| 90 s | 0.797 | 0.157 |
+| 150 s (the old cap) | 0.807 | 0.168 |
+| **300 s (the tonic's new cap)** | **0.858** | 0.137 |
+
+On the held-out half of the concerts (64 recordings, never used to choose), 300 s took usable Sa
+0.766 -> 0.812 (7 fixed, 4 broken). On the real-world benchmark, with the melody analysis unchanged
+at 150 s:
+
+| tonic from | top-1 | top-3 |
+|---|---|---|
+| first 150 s | 0.688 | 0.787 |
+| **first 300 s** | **0.713** | **0.800** |
+
+(4 clips fixed, 2 broken.) Each test alone is small; they agree. Only uploads benefit: in the last 30
+days 98 of 142 uploads ran past 150 s, while live listens averaged **33.5 s**, where Sa is right only
+about two times in three even on clean audio. Keeping live listeners going from 30 to 45 s is worth
+more to the tonic (+8 points) than any setting.
