@@ -130,16 +130,14 @@
   .top .nav a:hover{color:var(--paper)}
   /* faint middots so the links read as separate nav items, not one running phrase */
   .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
-  .top .gh{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
-  .top .gh:hover{color:var(--paper)}
   /* mobile: the three links won't fit on the brand's row, so drop them to their own
      centered row instead of letting "train your ear" wrap mid-label */
   @media (max-width:560px){
     .top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:max(16px,env(safe-area-inset-top))}
     .top .nav{flex-basis:100%;justify-content:center;gap:14px}
-    .top .nav a,.top .gh{white-space:nowrap}
+    .top .nav a{white-space:nowrap}
   }
-  @media (max-width:400px){.top .nav{gap:11px} .top .nav a,.top .gh{font-size:.72rem}}
+  @media (max-width:400px){.top .nav{gap:11px} .top .nav a{font-size:.72rem}}
 
   /* ---- hero ---- */
   .hero{padding:40px 0 8px;text-align:center}
@@ -180,10 +178,6 @@
   .stepp .lab{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
 
   /* ---- about ---- */
-  .facts{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0}
-  .chip{font-family:var(--mono);font-size:.74rem;letter-spacing:.03em;color:var(--muted);
-    background:var(--raise);border:1px solid var(--line);border-radius:999px;padding:.42rem .8rem}
-  .chip b{color:var(--jade-hi);font-weight:600}
 
   /* ---- faq ---- */
   details{border-bottom:1px solid var(--line)}
@@ -206,7 +200,7 @@
   .rec{display:flex;flex-direction:column;align-items:center;margin:14px auto 0;max-width:420px}
   .rec-status{font-family:var(--mono);font-size:.7rem;letter-spacing:.26em;text-indent:.26em;text-transform:uppercase;
     color:var(--muted);margin:0 0 4px;transition:color .3s}
-  .rec-status.warm{color:var(--amber-hi)} .rec-status.done{color:#74c69d}
+  .rec-status.warm{color:var(--amber-hi)} .rec-status.done{color:var(--jade-hi)}
   .rec-orb{appearance:none;border:0;background:transparent;padding:0;margin:6px auto 0;display:block;cursor:pointer;border-radius:50%;line-height:0}
   .rec-orb canvas{display:block;width:248px;height:248px;touch-action:manipulation}
   .rec-meta{min-height:24px;display:flex;justify-content:center;align-items:center;margin-top:10px}
@@ -227,14 +221,14 @@
   .rec-tr{grid-column:1 / -1;height:6px;border-radius:3px;background:#ffffff12;overflow:hidden}
   .rec-fl{display:block;height:100%;width:0;border-radius:3px;background:var(--amber);transition:width .35s}
   .rec-row.lead .rec-fl{background:linear-gradient(90deg,var(--amber),var(--amber-hi));box-shadow:0 0 8px rgba(251,191,36,.5)}
-  .rec-top3.done .rec-row.lead .rec-fl{background:linear-gradient(90deg,#5aa87f,#74c69d);box-shadow:0 0 8px rgba(116,198,157,.5)}
+  .rec-top3.done .rec-row.lead .rec-fl{background:linear-gradient(90deg,var(--jade),var(--jade-hi));box-shadow:0 0 8px rgba(116,198,157,.5)}
   .rec-controls{margin-top:16px;min-height:46px;display:flex;justify-content:center;align-items:center}
   .rec-entry{display:flex;flex-direction:column;align-items:center;gap:8px}
   .rbtn{appearance:none;font-family:var(--sans);font-weight:700;font-size:1rem;cursor:pointer;border-radius:12px;
     padding:.8rem 1.6rem;border:1px solid transparent;transition:transform .12s,border-color .15s,background .15s}
   .rbtn:active{transform:translateY(1px)}
   .rbtn.stop{background:transparent;color:var(--paper);border-color:var(--line-2)} .rbtn.stop:hover{border-color:var(--amber);color:var(--amber-hi)}
-  .rbtn.again{background:#ffffff0d;color:var(--paper);border-color:var(--line-2)} .rbtn.again:hover{border-color:#74c69d;color:#fff}
+  .rbtn.again{background:#ffffff0d;color:var(--paper);border-color:var(--line-2)} .rbtn.again:hover{border-color:var(--jade-hi);color:#fff}
   .rbtn.cancel{background:transparent;color:var(--muted);border-color:var(--line-2)}
   .rghost{appearance:none;background:transparent;border:0;cursor:pointer;font-family:var(--mono);font-size:.76rem;color:var(--amber-hi);padding:.3rem .5rem;border-radius:8px}
   .rghost:hover{color:#fff;text-decoration:underline}
@@ -415,7 +409,8 @@
     // right 48% of the time at 30 s, 64% at 60 s and 81% at 150 s (measured 2026-11-09), and visitors
     // used to stop at ~33 s on an early name. The first minute shows the listening instead (Sa, the
     // swaras, a ring filling to one minute); no seconds counter at any point.
-    var HOLD=10.0, MIN_LISTEN=60, MAX_S=150, SEND_EVERY=3500, FIRST_SEND=4500;
+    var HOLD=10.0, MIN_LISTEN=60, MAX_S=150, SEND_EVERY=3500, FIRST_SEND=4500, SEND_TIMEOUT=60000;
+    var MAX_CONTRIB_BYTES=25*1024*1024;   // the commons' limit (the worker refuses larger clips)
     // A sleeping recognizer took 42.6 s to give its first answer (measured 2026-10-24) and most
     // visitors gave up inside that window. Say so after WAKE_NOTE s of waiting, and when Stop is
     // tapped with an answer already on its way, wait up to FINISH_WAIT for it rather than drop it.
@@ -425,7 +420,7 @@
     var netFails=0; // live sends in a row that never reached the server
     var offline=function(){ return navigator.onLine===false; };
     // Abstention: below this calibrated confidence, do not present a confident raaga name; say the
-    // model is not sure (it may be a raaga outside the 40, or the audio lacks a clear drone). The
+    // model is not sure (it may be a raaga outside the 70, or the audio lacks a clear drone). The
     // threshold is from a wild-set experiment: ~0.45 lifts shown-accuracy 0.46 -> 0.54 while
     // abstaining on ~19% of clips (catches many wrong answers for few correct ones).
     var ABSTAIN_CONF=0.45;
@@ -441,8 +436,6 @@
     // contribute-to-commons: the clip + tonic that produced the last result, so a donation sends the
     // exact audio the model heard. Nothing is captured or sent until the listener taps Donate.
     var contribEl=g('rec-contrib'), curMime='', curFile=null, curTonic=null, curHeard=null, curReason='', CONSENT='2026-07-06-own-v1';
-    // Commons contribute flow: live as of 2026-07-07 (D1 schema migrated, worker /contribute deployed).
-    var CONTRIB_ENABLED=true;
     var RAAGAS=["Aṭāna","Behāg","Bhairavi","Bilahari","Bēgaḍa","Dhanyāsi","Dēvagāndhāri","Gauḷa","Harikāmbhōji","Hussēnī","Kalyāṇi","Kamās","Karaharapriya","Kāmavardani","Kānaḍa","Kāpi","Kāṁbhōji","Kēdāragauḷa","Madhyamāvati","Mukhāri","Māyāmāḷavagauḷa","Mōhanaṁ","Nāṭa","Nāṭakurinji","Pūrvīkaḷyāṇi","Rītigauḷa","Sahānā","Sencuruṭṭi","Sindhubhairavi","Suraṭi","Sāma","Sāvēri","Tōḍi","Varāḷi","Yadukula kāṁbōji","Ānandabhairavi","Śankarābharaṇaṁ","Śrī","Śrīranjani","Ṣanmukhapriya"];
     // Hindustani-30 (the raagas the dual model covers), shown as a second group in the contribute
     // picker so a listener can donate a Hindustani clip. Tradition travels with the donation.
@@ -464,7 +457,7 @@
     async function startLive(){
       reset('live'); showRec(); statusEl.textContent='Identifying'; statusEl.className='rec-status warm';
       guides.className='rec-guides recording'; leadEl.textContent='Finding the swaras…'; top3El.className='rec-top3 show';
-      setC('<button class="rbtn stop" id="r-stop">Stop early</button>'); g('r-stop').onclick=stopNow;
+      setC('<button class="rbtn stop" id="r-stop">Stop early</button>');
       orb.setAttribute('aria-label','Listening. Raaga names appear after a minute.');
       ev('listen_start','live');
       if(offline()) return fail(NO_NET);
@@ -476,13 +469,18 @@
       var mime=pickMime(); curMime=mime; curFile=null; rec=new MediaRecorder(stream, mime?{mimeType:mime}:undefined); chunks=[];
       rec.ondataavailable=function(e){ if(e.data&&e.data.size) chunks.push(e.data); };
       rec.start(1000); t0=performance.now();
-      uiTimer=setInterval(tick,33); sendTimer=setInterval(function(){maybeSend(mime);}, SEND_EVERY);
+      // The first send goes out at FIRST_SEND exactly (the 3.5 s interval alone would wait to 7 s, the
+      // first tick after it), so Sa shows sooner; the interval takes over from there.
+      uiTimer=setInterval(tick,33);
+      sendTimer=setTimeout(function(){ if(mode!=='listening') return; elapsed=(performance.now()-t0)/1000;
+        maybeSend(mime); sendTimer=setInterval(function(){maybeSend(mime);}, SEND_EVERY); }, FIRST_SEND);
     }
     async function maybeSend(mime){
       if(mode!=='listening'||sending||elapsed<FIRST_SEND/1000||!chunks.length) return;
       // Back off the send cadence as the buffer grows: the API re-extracts pitch on the WHOLE
-      // buffer each send, so late sends cost most. Keeps 3.5s early (cheap, responsive), widens to
-      // 5s then 7s. Confirmed on the lock-point sim: same 0.450 top-1, ~36% less backend CPU.
+      // buffer each send, so late sends cost most. maybeSend runs every SEND_EVERY (3.5 s) and
+      // skips ticks inside the gap, so in practice: first send at ~7 s, then every 3.5 s to 30 s,
+      // every 7 s to 60 s, then every 7 or 10.5 s. (The 5 s / 7 s figures below are minimum gaps.)
       var gap = elapsed<30 ? 0 : (elapsed<60 ? 5 : 7);
       if(gap && lastSent && elapsed-lastSent < gap) return;
       lastSent=elapsed;
@@ -490,18 +488,21 @@
       try{ var fd=new FormData(); fd.append('audio', new Blob(chunks,{type:mime||'audio/webm'}), 'clip.webm');
         var r;
         // A send that never reaches the server: stop on the second in a row (or at once when the
-        // phone knows it is offline), instead of "listening" forever with no answer.
-        try{ r=await fetch(API+'/identify',{method:'POST',body:fd}); }
-        catch(e){ if(mode==='listening'&&(offline()||++netFails>=2)) fail(NO_NET); return; }
+        // phone knows it is offline), instead of "listening" forever with no answer. A send that
+        // hangs is abandoned after SEND_TIMEOUT, or it would block every later send.
+        var ac=new AbortController(), hang=setTimeout(function(){ ac.abort(); }, SEND_TIMEOUT);
+        try{ r=await fetch(API+'/identify',{method:'POST',body:fd,signal:ac.signal}); }
+        catch(e){ clearTimeout(hang); if(mode==='listening'&&(offline()||++netFails>=2)) fail(NO_NET); return; }
         netFails=0;
-        var d=await r.json();
+        var d=await r.json();                     // still under the timeout: a stalled body aborts too
+        clearTimeout(hang);
         if(mode==='listening'||mode==='finishing') apply(d);
-      }catch(e){} finally{ sending=false; if(mode==='finishing') finish(); }
+      }catch(e){} finally{ clearTimeout(hang); sending=false; if(mode==='finishing') finish(); }
     }
     async function startFile(file){
       reset('file'); showRec(); curFile=file; curMime=file.type||''; statusEl.textContent='Analysing recording'; statusEl.className='rec-status warm';
       guides.className='rec-guides recording'; leadEl.textContent='Reading '+file.name.slice(0,28)+'…'; top3El.className='rec-top3 show';
-      setC('<button class="rbtn cancel" id="r-cancel">Cancel</button>'); g('r-cancel').onclick=toIdle;
+      setC('<button class="rbtn cancel" id="r-cancel">Cancel</button>');
       ev('listen_start','file');
       if(offline()) return fail(NO_NET);
       t0=performance.now(); uiTimer=setInterval(tick,33);
@@ -565,7 +566,7 @@
       if(!top3.length) return noRes();
       lockName=top3[0].raaga; lockConf=conf;
       // Tradition travels per prediction (API top3[].tradition); default carnatic for the current
-      // single-tradition model. Drives the Hindustani label + the learn-link guard below.
+      // dual-tradition model's untagged classes. Drives the Hindustani label + the learn-link guard below.
       lockTrad=(top3[0]&&top3[0].tradition)||'carnatic';
       // "Confident" (green wheel + check) needs a real read: a high score AND, for a live listen,
       // enough time. A quick manual stop can't be confident even if the number briefly crossed 0.6,
@@ -579,7 +580,6 @@
         top3El.classList.remove('done'); rows(top3,true); guides.className='rec-guides hide';
         setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Try again</button>'
           +'<button class="rghost" id="r-up2">or upload a recording ↑</button></div>');
-        g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
         mountContrib(true); logResult();
         return;
       }
@@ -605,7 +605,6 @@
       setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Listen again</button>'
         +learn
         +'<button class="rghost" id="r-up2">or upload a recording ↑</button></div>');
-      g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
       mountContrib();
       logResult();
     }
@@ -614,7 +613,6 @@
       leadEl.textContent='No clear melody or drone was heard. Move closer, or upload a clip with a tanpura.'; guides.className='rec-guides';
       setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Try again</button>'
         +'<button class="rghost" id="r-up2">or upload a recording ↑</button></div>');
-      g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
       logResult();
     }
     // Log one row per finished session (the locked result, or a no-prediction), posted to the
@@ -706,7 +704,6 @@
           +'<button class="rghost" id="r-again">or try again</button></div>'
         : '<div class="rec-entry"><button class="rbtn again" id="r-again">Try again</button>'
           +'<button class="rghost" id="r-up2">upload a recording ↑</button></div>');
-      g('r-again').onclick=startLive; g('r-up2').onclick=function(){g('rec-file').click();};
     }
     function stopCap(){ orb.setAttribute('aria-label','Tap to identify the raaga');
       try{ if(rec&&rec.state!=='inactive') rec.stop(); }catch(e){}
@@ -720,14 +717,20 @@
       top3El.className='rec-top3'; top3El.innerHTML=''; guides.className='rec-guides'; contribEl.innerHTML='';
       setC('<div class="rec-entry"><span class="rhint">Point your phone at the music, then tap</span>'
         +'<button class="rghost" id="r-up">or upload a recording ↑</button></div>');
-      g('r-up').onclick=function(){g('rec-file').click();};
-      orb.setAttribute('aria-label','Tap to identify the raaga');
     }
+    // Every button in the controls row, wherever it was drawn: one handler, by id.
+    controls.addEventListener('click', function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      if(b.id==='r-again') startLive();
+      else if(b.id==='r-up'||b.id==='r-up2') g('rec-file').click();
+      else if(b.id==='r-stop') stopNow();
+      else if(b.id==='r-cancel') toIdle();
+    });
     // ---- contribute to the commons (opt-in) ---------------------------------------------------
     // Correction-first: the default ask is to correct the recognizer when it's wrong; the audio
     // stays private and is used only to verify the label. Rights are attested here AND re-checked
-    // in the worker. The
-    // exact clip that produced the result is sent, so the label matches what the model heard.
+    // in the worker. The exact clip that produced the result is sent, so the label matches what
+    // the model heard.
     function clipBlob(){ return curFile ? curFile
       : (chunks.length ? new Blob(chunks, {type: curMime || 'audio/webm'}) : null); }
     function contribHTML(r, abstain){
@@ -741,7 +744,7 @@
         + '<option data-trad="" value="__other__">Another raaga (not listed)</option>';
       var chips = ['Vocal','Violin','Veena','Flute','Nadaswaram','Other'].map(function(n){
         return '<button type="button" class="cc-chip" data-inst="'+n+'">'+n+'</button>'; }).join('');
-      var openTxt = abstain ? '+ Know this raaga? Tell me' : '+ Wrong? Correct it';
+      var openTxt = openText(abstain);
       var q = abstain ? "I couldn't place this one. If you know the raaga, add it and teach me:"
                       : 'We heard <b>'+r+'</b>. Is that right?';
       // Quick-pick chips for the candidates we just showed: the non-leader top-3 on a confident
@@ -775,14 +778,15 @@
         +   '<button type="button" class="cc-send" id="cc-send" disabled>'+(abstain?'Add this raaga':'Send correction')+'</button>'
         +   '<p class="cc-err" id="cc-err" hidden></p></div>';
     }
+    function openText(abstain){ return abstain ? '+ Know this raaga? Tell me' : '+ Wrong? Correct it'; }
     function mountContrib(abstain){
-      if(!CONTRIB_ENABLED){ contribEl.innerHTML=''; return; }            // commons not live yet
-      if(!lockName || !clipBlob()){ contribEl.innerHTML=''; return; }   // nothing to donate
+      var clip=clipBlob();
+      if(!lockName || !clip || clip.size>MAX_CONTRIB_BYTES){ contribEl.innerHTML=''; return; }   // nothing the commons can take
       contribEl.innerHTML = contribHTML(lockName, abstain);
       var open=g('cc-open'), card=g('cc-card'), yes=g('cc-yes'), sel=g('cc-sel'),
           other=g('cc-other'), otherTrad=g('cc-other-trad'), own=g('cc-own'), send=g('cc-send'),
           altBtns=card.querySelectorAll('.cc-alt');
-      var openTxt = abstain ? '+ Know this raaga? Tell me' : '+ Wrong? Correct it';
+      var openTxt = openText(abstain);
       open.onclick=function(){ card.hidden=!card.hidden; open.textContent = card.hidden ? openTxt : 'Never mind';
         if(!card.hidden) ev('correct_open', source); };
       var oTrad='', tchips=otherTrad.querySelectorAll('.cc-chip');
@@ -846,7 +850,8 @@
         var res=await fetch(API+'/contribute',{method:'POST',body:fd}); var d=await res.json();
         if(!res.ok || (d&&d.error)) throw new Error((d&&d.error)||'failed');
         g('cc-card').innerHTML='<p class="cc-done"><b>Thank you.</b> Your correction is queued for review, '
-          +'it teaches the recognizer '+raaga+'.</p>';
+          +'it teaches the recognizer <span id="cc-done-raaga"></span>.</p>';
+        g('cc-done-raaga').textContent=raaga;
         g('cc-open').style.display='none';
         ev('correct_sent', source);
       }catch(e){ err.textContent='Could not send just now. Please try again.'; err.hidden=false;
@@ -916,8 +921,13 @@
         ctx.beginPath(); ctx.arc(0,-2,13,0.15*Math.PI,0.85*Math.PI); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(0,11); ctx.lineTo(0,18); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-8,18); ctx.lineTo(8,18); ctx.stroke(); }
       ctx.restore();
-      requestAnimationFrame(draw);
+      if(orbVisible) requestAnimationFrame(draw);
     }
+    // Draw only while the orb is on screen; scrolled away, the loop stops and resumes on return.
+    var orbVisible=true;
+    if('IntersectionObserver' in window) new IntersectionObserver(function(es){
+      var v=es[es.length-1].isIntersecting; if(v && !orbVisible){ orbVisible=true; requestAnimationFrame(draw); } else orbVisible=v;
+    }).observe(cv);
     requestAnimationFrame(draw);
 
     g('rec-file').onchange=function(e){ var f=e.target.files&&e.target.files[0]; if(f) startFile(f); e.target.value=''; };

@@ -1,8 +1,5 @@
-"""Model: architecture + load/save (PRD §17).
-
-Framework is PyTorch (D15). The v0 floor (D16 step 1) is an XGBoost classifier over
-the fixed-length frame vector — cheap, strong, trains in minutes on CPU. The CNN /
-TDMS / transformer rungs come later; `RaagaCNN` is a stub marking that seam.
+"""Model: the XGBoost classifier over windowed TDMS surfaces, its swara-chain sidecar, top-k
+decoding with calibrated confidence, and load/save.
 """
 from __future__ import annotations
 
@@ -22,7 +19,7 @@ class Prediction:
 
 
 class RaagaXGB:
-    """XGBoost floor over frame vectors. Wraps label<->index + top-k decode.
+    """XGBoost over per-window TDMS vectors. Wraps label<->index + top-k decode.
 
     With `chains` (swara.SwaraChains, saved as the <model>.chain.npz sidecar) a clip's answer
     fuses the windows' probabilities with how well each raaga's swara chain fits the clip's
@@ -55,10 +52,6 @@ class RaagaXGB:
         if self._booster is None:
             raise RuntimeError("model is not trained/loaded")
         return self._booster.predict_proba(X)
-
-    def top_k(self, x: np.ndarray, k: int = TOP_K, phrases=None) -> list[Prediction]:
-        """Top-k raagas + confidence for one frame vector (D6: always top-3)."""
-        return self.aggregate_top_k(x.reshape(1, -1), k, phrases=None if phrases is None else [phrases])
 
     def aggregate_top_k(self, X: np.ndarray, k: int = TOP_K, phrases=None) -> list[Prediction]:
         """Top-k for a clip given its per-window vectors: mean the window
@@ -110,10 +103,3 @@ class RaagaXGB:
             chains = SwaraChains.load(chain_path, classes)
         return cls(classes, booster, temperature=load_temperature(path), chains=chains)
 
-
-class RaagaCNN:
-    """PHASE 2 SEAM (D16). CNN on tonic-normalized mel/CQT, in torch/Lightning.
-    Benchmark target: compIAM `DEEPSRGM`."""
-
-    def __init__(self, *_, **__):
-        raise NotImplementedError("CNN rung — implement after the XGBoost floor lands")

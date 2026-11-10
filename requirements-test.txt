@@ -1,0 +1,10 @@
+# What CI's test job installs: only what the test path imports (no essentia, no pytorch).
+# librosa/soundfile cover audio helpers, xgboost covers RaagaXGB, pandas reads pitch files.
+numpy
+scipy
+pandas
+scikit-learn
+xgboost
+librosa
+soundfile
+pytest

@@ -85,7 +85,6 @@
   .btn.primary{background:var(--jade);border-color:var(--jade);color:#07130c}
   .btn.primary:hover{background:var(--jade-hi);border-color:var(--jade-hi)}
   .btn.primary:disabled{opacity:.4;cursor:not-allowed;background:var(--jade);border-color:var(--jade)}
-  .btn.stop{background:transparent;border-color:#e0574a;color:#ff8a7a}
   .btn.ghost{background:transparent;border:0;color:var(--muted);font-weight:600;font-size:.9rem;padding:.5rem}
   .btn.ghost:hover{color:var(--paper)}
   .btn .dot{width:9px;height:9px;border-radius:50%;background:#ff5a4d;display:inline-block}
@@ -228,7 +227,11 @@
   document.addEventListener('visibilitychange', function(){ if(rec && rec.state==='recording' && document.visibilityState==='visible' && !wake) reqWake(); });
 
   // ---- idle ----
+  // The review screen's audio preview holds the whole clip in memory until it is released.
+  var preview=null;
+  function releasePreview(){ if(preview){ try{ URL.revokeObjectURL(preview); }catch(e){} preview=null; } }
   function renderIdle(){
+    releasePreview();
     cx.innerHTML =
       '<div class="steps"><h2>Before you record</h2><ul>'
       + '<li>Record about <b>20 to 45 seconds</b> of the raaga.</li>'
@@ -319,7 +322,7 @@
       + '<p class="err" id="cx-err" style="display:none"></p>'
       + '<div class="divider">or</div>'
       + '<div class="row"><button class="btn ghost" id="cx-redo">Start over</button></div>';
-    try{ g('cx-audio').src=URL.createObjectURL(clip); }catch(e){}
+    try{ releasePreview(); preview=URL.createObjectURL(clip); g('cx-audio').src=preview; }catch(e){}
     var raaga=g('cx-raaga'), other=g('cx-other'), otherTrad=g('cx-other-trad'), own=g('cx-own'), send=g('cx-send');
     var inst='', oTrad='';
     var tradEls=otherTrad.querySelectorAll('.chip');
@@ -391,12 +394,13 @@
   }
 
   function renderDone(raaga){
-    relWake();
+    relWake(); releasePreview();
     cx.innerHTML =
       '<div class="done"><h2>Thank you.</h2>'
-      + '<p>Your clip is queued for community verification. It helps the recognizer learn '+raaga+', and joins an open commons anyone can build on.</p>'
+      + '<p>Your clip is queued for community verification. It helps the recognizer learn <span id="cx-done-raaga"></span>, and joins an open commons anyone can build on.</p>'
       + '<div class="row"><button class="btn primary" id="cx-again">Contribute another</button>'
       + '<a class="btn" href="../">Back to identify</a></div></div>';
+    g('cx-done-raaga').textContent=raaga;
     clip=null; g('cx-again').onclick=renderIdle;
   }
 

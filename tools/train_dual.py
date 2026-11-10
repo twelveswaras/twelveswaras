@@ -1,24 +1,16 @@
-"""Phase 0 Hindustani spike (derisking, no deploy, nothing existing is modified).
+"""Training recipe for the live dual-tradition model (40 Carnatic + 30 Hindustani raagas).
 
-Question this answers: if we train ONE unified model over Carnatic-40 + Hindustani-30,
-how good is it, and does the model confuse the two traditions on scale-identical pairs
-(Bhup/Mohanam, Yaman/Kalyani, Malkauns/Hindolam)? That go/no-go decides unified-vs-router.
+    python -m tools.train_dual extract          # windowed TDMS for every IAMRRD track -> CACHE
+    python -m tools.train_dual fitfull [400]    # chunked, resumable XGBoost fit -> FULL_MODEL
+    python -m tools.train_dual calib            # temperature on the held-out tracks
+    python -m tools.train_swara phrases && python -m tools.train_swara fit   # then the swara chains
 
-Design notes (why this is safe):
-  - The existing Carnatic model, vocab, API and site are untouched. This is a standalone tool.
-  - Carnatic clips come through the PROVEN path (data.iter_pitch_clips, IAMRRD, 40-vocab).
-  - Hindustani clips are read directly from the IAMRRD feature files already in the repo
-    (data/compmusic_raga/RagaDataset/Hindustani/features/<ragaId>/.../<title>.pitch + .tonic),
-    which mirdata's compmusic_raga index does not expose. Same 2-column pitch format and same
-    single-float .tonic as the Carnatic side, so features are numerically comparable.
-  - Labels are tradition-tagged ("<name> (Carnatic)" / "<name> (Hindustani)") so the two Todi
-    and the two Sri never collapse into one class.
-  - The feature matrix is cached to the scratchpad; the trained dual model is written to a NEW
-    path (models/raaga_xgb.dual.json), never over the shipped models/raaga_xgb.json.
-
-Usage:
-    python -m tools.hindustani_spike extract   # build + cache the combined TDMS features
-    python -m tools.hindustani_spike analyze    # grouped CV + cross-tradition confusion + save dual model
+Carnatic tracks come through data.iter_pitch_clips (IAMRRD, 40-raaga vocabulary). Hindustani
+tracks are read straight from the IAMRRD feature files (Hindustani/features/<ragaId>/.../*.pitch
++ .tonic), which mirdata's index does not expose; same pitch format and tonic, so the features
+are comparable. Every label carries its tradition ("<name> (Carnatic)"), so the two Todi and the
+two Sri stay distinct classes. The model trains on the first 75/25 GroupKFold split by track
+(load_split), clean plus one degraded copy (degrade); the held-out 25% calibrates it.
 """
 from __future__ import annotations
 
@@ -31,14 +23,13 @@ import numpy as np
 
 from raaga_id import data, features
 from raaga_id.config import DATA_DIR, MODELS_DIR, TDMS_MAX_WINDOWS
+from raaga_id.tradition import tag
 
 HRD_ROOT = DATA_DIR / "compmusic_raga" / "RagaDataset" / "Hindustani"
 HRD_MAP = HRD_ROOT / "_info_" / "ragaId_to_ragaName_mapping.json"
 CACHE = Path(__file__).resolve().parent.parent / "supporting-docs" / "hindustani_spike_cache.npz"
 # scratchpad path is session-specific; keep the cache in the gitignored supporting-docs so a
 # re-run of analyze does not recompute features.
-DUAL_MODEL = MODELS_DIR / "raaga_xgb.dual.json"
-RESULTS_JSON = Path(__file__).resolve().parent.parent / "supporting-docs" / "hindustani_spike_results.json"
 
 CARNATIC = "Carnatic"
 HINDUSTANI = "Hindustani"
@@ -86,14 +77,6 @@ def iter_hindustani_clips():
         )
 
 
-def tag(raaga: str, tradition: str) -> str:
-    """'<name> (<tradition>)', stripping any tag already there so nothing is double-tagged. This
-    is what keeps the two Todi and the two Sri as distinct classes."""
-    for suf in (f" ({CARNATIC})", f" ({HINDUSTANI})"):
-        raaga = raaga.removesuffix(suf)
-    return f"{raaga} ({tradition})"
-
-
 def _windows_for(pc):
     return features.model_windows(pc.times, pc.freqs, pc.tonic_hz, max_windows=TDMS_MAX_WINDOWS)
 
@@ -138,8 +121,6 @@ def extract() -> None:
 
 def _support(y, trad):
     from collections import Counter
-    tracks_by_class = {}
-    # count DISTINCT tracks per class using the groups is better, but a window count is a proxy here
     print("\nclass support (windows):")
     c = Counter(y)
     for tradition in (CARNATIC, HINDUSTANI):
@@ -147,124 +128,31 @@ def _support(y, trad):
         print(f"  {tradition}: {len(names)} classes")
 
 
-def analyze(n_estimators: int = 250) -> None:
-    """ONE grouped (by track) 75/25 split over the combined set: train once, evaluate on the
-    held-out tracks, report per-tradition accuracy and cross-tradition confusion, and save the
-    trained model to a NEW path. A single split (not k-fold) is enough for a go/no-go and is one
-    XGBoost fit instead of five; the shipped model is never touched.
+FULL_MODEL = MODELS_DIR / "raaga_xgb.dual.json"       # RaagaXGB-loadable (booster + .classes.json)
+FULL_RESULTS = Path(__file__).resolve().parent.parent / "supporting-docs" / "hindustani_dual_full_results.json"
 
-    Results (metrics + the confusion pairs) are written to a json next to the cache BEFORE the
-    model save, so a kill during save still leaves the numbers on disk.
-    """
-    from collections import Counter, defaultdict
 
+def load_split():
+    """(X, labels, groups, traditions, classes, class index per window, train rows, held-out rows).
+    The split is the first GroupKFold(4) split by track: the one the live model held out. It
+    depends on the scikit-learn version (1.5 and 1.9 split differently), so train and evaluate
+    in the same environment the model was trained in."""
     from sklearn.model_selection import GroupKFold
-    from xgboost import XGBClassifier
 
     d = np.load(CACHE, allow_pickle=True)
     X, y, groups, trad = d["X"], d["y"], d["groups"], d["trad"]
     classes = sorted(set(y.tolist()))
     cidx = {c: i for i, c in enumerate(classes)}
     yi = np.array([cidx[v] for v in y])
-    trad_of_class = {c: (CARNATIC if c.endswith(f"({CARNATIC})") else HINDUSTANI) for c in classes}
-    track_true = {g: lab for g, lab in zip(groups, y)}
-    track_trad = {g: tr for g, tr in zip(groups, trad)}
-    print(f"{X.shape[0]} windows x {X.shape[1]}d | {len(classes)} classes "
-          f"({sum(v==CARNATIC for v in trad_of_class.values())} C / "
-          f"{sum(v==HINDUSTANI for v in trad_of_class.values())} H) | "
-          f"{len(set(groups.tolist()))} tracks | n_estimators={n_estimators}", flush=True)
-
-    # one 75/25 grouped split (first fold of a 4-way group split)
-    tr_i, te_i = next(GroupKFold(n_splits=4).split(X, yi, groups))
-    t0 = time.time()
-    # PCA-reduce the 2304-d TDMS surface to a compact basis BEFORE XGBoost. A full-dim,
-    # 70-class softprob fit does not finish inside this environment's compute limit; PCA(150)
-    # keeps almost all of the surface's variance while making the fit finish in minutes. This is
-    # a separability spike estimate; the shipped model would train on the full TDMS vector.
-    from sklearn.decomposition import PCA
-    pca = PCA(n_components=150, random_state=0).fit(X[tr_i])
-    Xtr, Xte = pca.transform(X[tr_i]), pca.transform(X[te_i])
-    print(f"PCA 2304 -> 150 (retains {pca.explained_variance_ratio_.sum():.2f} variance)", flush=True)
-    clf = XGBClassifier(objective="multi:softprob", num_class=len(classes), tree_method="hist",
-                        n_estimators=n_estimators, max_depth=6, learning_rate=0.1, n_jobs=-1)
-    clf.fit(Xtr, yi[tr_i])
-    print(f"fit {len(tr_i)} windows on {len(set(groups[tr_i].tolist()))} tracks  ({time.time()-t0:.0f}s)", flush=True)
-
-    proba = clf.predict_proba(Xte)
-    agg = defaultdict(lambda: np.zeros(len(classes)))
-    cnt = defaultdict(int)
-    for row, gi in zip(proba, groups[te_i]):
-        agg[gi] += row
-        cnt[gi] += 1
-    track_pred = {gi: classes[int((agg[gi] / cnt[gi]).argmax())] for gi in agg}
-
-    def acc(pt):
-        return float(np.mean([p == t for p, t in pt])) if pt else float("nan")
-
-    tested = [g for g in track_pred]
-    all_pt = [(track_pred[g], track_true[g]) for g in tested]
-    car_pt = [(track_pred[g], track_true[g]) for g in tested if track_trad[g] == CARNATIC]
-    hin_pt = [(track_pred[g], track_true[g]) for g in tested if track_trad[g] == HINDUSTANI]
-
-    leak = 0
-    cross_pairs = Counter()
-    for g in tested:
-        tt, pt = track_trad[g], trad_of_class[track_pred[g]]
-        if tt != pt:
-            leak += 1
-            cross_pairs[(track_true[g], track_pred[g])] += 1
-
-    pairs_of_interest = []
-    for h, c in [("Bhūp", "Mōhanaṁ"), ("Yaman kalyāṇ", "Kalyāṇi"), ("Mālkauns", "Hindōḷaṁ"),
-                 ("Tōḍī", "Tōḍi"), ("Śrī", "Śrī")]:
-        hl, cl = f"{h} ({HINDUSTANI})", f"{c} ({CARNATIC})"
-        both = hl in classes and cl in classes
-        conf = cross_pairs.get((hl, cl), 0) + cross_pairs.get((cl, hl), 0) if both else None
-        pairs_of_interest.append({"hindustani": hl, "carnatic": cl, "both_present": both, "cross": conf})
-
-    results = {
-        "windows": int(X.shape[0]), "dims": int(X.shape[1]), "classes": len(classes),
-        "carnatic_classes": sum(v == CARNATIC for v in trad_of_class.values()),
-        "hindustani_classes": sum(v == HINDUSTANI for v in trad_of_class.values()),
-        "test_tracks": len(tested), "n_estimators": n_estimators,
-        "overall_top1": acc(all_pt), "carnatic_top1": acc(car_pt), "hindustani_top1": acc(hin_pt),
-        "cross_tradition_leak": leak, "cross_tradition_leak_frac": leak / len(all_pt),
-        "top_cross_confusions": [{"true": t, "pred": p, "n": n} for (t, p), n in cross_pairs.most_common(15)],
-        "scale_identical_pairs": pairs_of_interest,
-    }
-    RESULTS_JSON.write_text(json.dumps(results, ensure_ascii=False, indent=2))
-
-    print("\n================ RESULTS (track-level, held-out 25%) ================")
-    print(f"overall top-1:     {acc(all_pt):.3f}  (n={len(all_pt)})")
-    print(f"  Carnatic top-1:  {acc(car_pt):.3f}  (n={len(car_pt)})")
-    print(f"  Hindustani top-1:{acc(hin_pt):.3f}  (n={len(hin_pt)})")
-    print(f"\ncross-tradition leakage: {leak}/{len(all_pt)} = {leak/len(all_pt):.3f}")
-    print("  (a Carnatic recording predicted as a Hindustani raaga, or vice versa)")
-    if cross_pairs:
-        print("  top cross-tradition confusions (true -> predicted):")
-        for (t, p), n in cross_pairs.most_common(12):
-            print(f"    {n:2d}x  {t}  ->  {p}")
-    print("\nscale-identical pairs (told apart? 0 = never cross-predicted on held-out set):")
-    for pr in pairs_of_interest:
-        if pr["both_present"]:
-            print(f"  {pr['hindustani']}  vs  {pr['carnatic']}:  {pr['cross']} cross-predictions")
-        else:
-            print(f"  {pr['hindustani']}  vs  {pr['carnatic']}:  n/a (not both in held-out classes)")
-    print(f"\nresults json -> {RESULTS_JSON}", flush=True)
-
-    # save the spike artifact (PCA + classifier + classes) to a NEW path. It takes the full
-    # TDMS vector in and applies PCA internally, so it is self-contained. The shipped
-    # models/raaga_xgb.json is never touched. A full-dim, full-data dual model is a later step
-    # (needs a longer compute budget than this environment's per-run limit).
-    import joblib
-    artifact = DUAL_MODEL.with_suffix(".pkl")
-    joblib.dump({"pca": pca, "clf": clf, "classes": classes,
-                 "note": "Phase 0 spike: PCA(150)+XGBoost on IAMRRD C40+H30, 75% grouped split"}, artifact)
-    print(f"saved spike artifact -> {artifact}  (shipped model untouched)")
+    tr, te = next(GroupKFold(n_splits=4).split(X, yi, groups))
+    return X, y, groups, trad, classes, yi, tr, te
 
 
-FULL_MODEL = MODELS_DIR / "raaga_xgb.dual.json"       # RaagaXGB-loadable (booster + .classes.json)
-FULL_RESULTS = Path(__file__).resolve().parent.parent / "supporting-docs" / "hindustani_dual_full_results.json"
+def track_means(proba, groups):
+    """(tracks in first-seen order, per-track mean of the window probabilities): the
+    granularity the app answers at."""
+    tracks = list(dict.fromkeys(groups.tolist()))
+    return tracks, np.vstack([proba[groups == t].astype(np.float64).mean(0) for t in tracks])
 
 
 def degrade(X, seed: int = 0):
@@ -307,17 +195,9 @@ def fitfull(total: int = 400, chunk: int = 50, augment: bool = True) -> None:
     the shipped recipe — it beat the un-augmented incumbent on every eval (CV, frozen benchmark,
     and the in-the-wild set). augment=False reproduces the old clean-only model.
     """
-    from collections import defaultdict
-
     import xgboost as xgb
-    from sklearn.model_selection import GroupKFold
 
-    d = np.load(CACHE, allow_pickle=True)
-    X, y, groups, trad = d["X"], d["y"], d["groups"], d["trad"]
-    classes = sorted(set(y.tolist()))
-    cidx = {c: i for i, c in enumerate(classes)}
-    yi = np.array([cidx[v] for v in y])
-    tr_i, te_i = next(GroupKFold(n_splits=4).split(X, yi, groups))
+    X, y, groups, trad, classes, yi, tr_i, te_i = load_split()
     params = {"objective": "multi:softprob", "num_class": len(classes),
               "max_depth": 6, "eta": 0.1, "tree_method": "hist", "max_bin": 128, "nthread": 0}
     if augment:
@@ -330,7 +210,8 @@ def fitfull(total: int = 400, chunk: int = 50, augment: bool = True) -> None:
 
     booster, done = None, 0
     if FULL_MODEL.exists():
-        booster = xgb.Booster(); booster.load_model(str(FULL_MODEL))
+        booster = xgb.Booster()
+        booster.load_model(str(FULL_MODEL))
         done = booster.num_boosted_rounds()
         print(f"resuming from {done}/{total} rounds", flush=True)
     print(f"train {len(tr_i)} windows x {X.shape[1]}d, {len(classes)} classes, "
@@ -345,15 +226,12 @@ def fitfull(total: int = 400, chunk: int = 50, augment: bool = True) -> None:
         done = booster.num_boosted_rounds()
         print(f"  rounds {done}/{total} saved ({time.time()-t0:.0f}s for {step})", flush=True)
 
-    # held-out evaluation (track-level), same shape as analyze()
-    proba = booster.predict(xgb.DMatrix(X[te_i]))
-    agg = defaultdict(lambda: np.zeros(len(classes))); cnt = defaultdict(int)
-    for row, g in zip(proba, groups[te_i]):
-        agg[g] += row; cnt[g] += 1
+    # held-out evaluation, per track
+    tracks, P = track_means(booster.predict(xgb.DMatrix(X[te_i])), groups[te_i])
     track_true = {g: lab for g, lab in zip(groups, y)}
     track_trad = {g: t for g, t in zip(groups, trad)}
     trad_of_class = {c: (CARNATIC if c.endswith(f"({CARNATIC})") else HINDUSTANI) for c in classes}
-    pred = {g: classes[int((agg[g] / cnt[g]).argmax())] for g in agg}
+    pred = {g: classes[int(p.argmax())] for g, p in zip(tracks, P)}
 
     def acc(sel):
         pts = [(pred[g], track_true[g]) for g in pred if sel(g)]
@@ -377,36 +255,22 @@ def fitfull(total: int = 400, chunk: int = 50, augment: bool = True) -> None:
 def calib() -> None:
     """Fit the dual model's temperature and analyze abstention, on the leak-free held-out 25%.
 
-    Full k-fold OOF calibration (tools/calibrate.py) would retrain the model k times, ~1.5h at
+    Full k-fold OOF calibration would retrain the model k times, ~1.5h at
     full-dim. The held-out split the model never trained on is a valid, cheap calibration set for
     a single temperature scalar. Writes <dual>.calib.json (picked up automatically by
     RaagaXGB.load) and prints an abstention table to pick the site thresholds for BOTH traditions.
     """
-    from collections import defaultdict
-
     import xgboost as xgb
-    from sklearn.model_selection import GroupKFold
 
     from raaga_id import calibrate as C
 
-    d = np.load(CACHE, allow_pickle=True)
-    X, y, groups, trad = d["X"], d["y"], d["groups"], d["trad"]
-    classes = sorted(set(y.tolist()))
-    cidx = {c: i for i, c in enumerate(classes)}
-    yi = np.array([cidx[v] for v in y])
-    _, te_i = next(GroupKFold(n_splits=4).split(X, yi, groups))
-
-    booster = xgb.Booster(); booster.load_model(str(FULL_MODEL))
-    proba = booster.predict(xgb.DMatrix(X[te_i]))
-    # aggregate per track (mean softmax over windows) -> the granularity the UI shows
-    agg = defaultdict(lambda: np.zeros(len(classes))); cnt = defaultdict(int)
-    tt, ttrad = {}, {}
-    for row, g, lab, tr in zip(proba, groups[te_i], y[te_i], trad[te_i]):
-        agg[g] += row; cnt[g] += 1; tt[g] = cidx[lab]; ttrad[g] = tr
-    tracks = list(agg)
-    P = np.vstack([agg[g] / cnt[g] for g in tracks])
-    ytrue = np.array([tt[g] for g in tracks])
-    trad_arr = np.array([ttrad[g] for g in tracks])
+    X, y, groups, trad, classes, yi, _, te_i = load_split()
+    booster = xgb.Booster()
+    booster.load_model(str(FULL_MODEL))
+    tracks, P = track_means(booster.predict(xgb.DMatrix(X[te_i])), groups[te_i])
+    first = {g: i for i, g in reversed(list(enumerate(groups[te_i].tolist())))}
+    ytrue = np.array([yi[te_i][first[g]] for g in tracks])
+    trad_arr = np.array([trad[te_i][first[g]] for g in tracks])
 
     T = C.fit_temperature(P, ytrue)
     Pc = C.apply_temperature(P, T)
@@ -439,8 +303,6 @@ if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "extract"
     if cmd == "extract":
         extract()
-    elif cmd == "analyze":
-        analyze()
     elif cmd == "calib":
         calib()
     elif cmd == "fitfull":
@@ -448,4 +310,4 @@ if __name__ == "__main__":
         chunk = int(sys.argv[3]) if len(sys.argv) > 3 else 50
         fitfull(total, chunk)
     else:
-        raise SystemExit("usage: python -m tools.hindustani_spike [extract|analyze|calib|fitfull [total] [chunk]]")
+        raise SystemExit("usage: python -m tools.train_dual [extract|calib|fitfull [total] [chunk]]")

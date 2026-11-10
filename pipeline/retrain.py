@@ -7,7 +7,7 @@ contributor data can be clean CC-BY (vs the CC-BY-NC-SA Saraga-seeded model, D9)
 from __future__ import annotations
 
 # The commons -> corpus half is done: pipeline.pull_commons pulls verified contributions
-# into data/commons/, and `raaga_id.train --datasets saraga_carnatic commons` folds them in.
+# into data/commons/; folding them into tools/train_swara is the planned next step.
 # TODO(v1+): the promotion half: retrain, score against benchmark/test_track_ids.json, and
 # publish only if it beats the incumbent.
 #

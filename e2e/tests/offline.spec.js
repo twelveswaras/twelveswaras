@@ -3,17 +3,15 @@
 // that never answers, or a message that blames their recording.
 const { test, expect } = require('@playwright/test');
 const path = require('path');
-const { stubApi } = require('./helpers');
+const { stubApi, FAKE_MIC } = require('./helpers');
+
+test.use(FAKE_MIC);
 
 const FIXTURE = path.join(__dirname, '..', 'fixtures', 'clip.wav');
 const NO_NET = /No connection\. Identifying a raaga needs the internet/;
 
 /** The API as if the network were down: /identify fails like a dropped connection. */
-async function apiOffline(page) {
-  await page.route(/twelveswaras-api|\/api\//, (route) =>
-    route.request().url().endsWith('/identify') ? route.abort('internetdisconnected') : route.fulfill({ status: 200, body: '{}' }),
-  );
-}
+const apiOffline = (page) => stubApi(page, { identify: (route) => route.abort('internetdisconnected') });
 
 test('opening the site with no connection shows its own offline page, not the browser error', async ({ page, context }) => {
   await stubApi(page);
@@ -43,14 +41,18 @@ test('an upload with the connection gone says so, and does not blame the recordi
 });
 
 test('already offline: says so straight away, without asking for the microphone or uploading', async ({ page, context }) => {
-  let identifyCalls = 0;
-  await page.route(/twelveswaras-api|\/api\//, (route) => {
-    if (route.request().url().endsWith('/identify')) identifyCalls++;
-    return route.fulfill({ status: 200, body: '{}' });
-  });
+  const api = await stubApi(page);
   await page.goto('/');
   await context.setOffline(true);
   await page.setInputFiles('#rec-file', FIXTURE);
   await expect(page.locator('.rerr')).toHaveText(NO_NET);
-  expect(identifyCalls).toBe(0);
+  expect(api.calls.identify).toBe(0);
+});
+
+test('live listening stops and says so when the connection drops, instead of listening forever', async ({ page }) => {
+  await apiOffline(page);
+  await page.goto('/');
+  await page.locator('#rec-orb').click();
+  await expect(page.locator('.rerr')).toHaveText(NO_NET, { timeout: 20_000 });
+  await expect(page.locator('#rec-status')).toHaveText('Identify a raaga');
 });

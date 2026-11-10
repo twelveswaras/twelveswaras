@@ -157,7 +157,7 @@ Top-level layout: `raaga_id/` (core library: pitch, TDMS features, model, traini
 evaluation), `apps/` (local demo + contribute / verify entry points), `space/` (source of the
 recognizer API, bundled into the Cloudflare container), `cloudflare/` (the Worker API, D1 schema,
 recognizer container), `site/` (the website), `tools/` (training, benchmark and site-build scripts),
-`pipeline/` (consolidate + retrain jobs), and `benchmark/` (the frozen evaluation set + leaderboard).
+`pipeline/` (commons pull and import jobs), and `benchmark/` (the frozen evaluation set + leaderboard).
 
 ## Contributing
 

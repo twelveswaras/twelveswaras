@@ -2,9 +2,10 @@ name: CI
 
 # The dev-process gate (lint -> verify -> e2e) on every PR and every push to main, plus a
 # deploy stage that ships the site to Cloudflare Pages once those pass on a merge to main.
-# verify/lint do NOT need the heavy stack: essentia, gradio, pytorch, and the frozen model
-# are all imported lazily (or not at all) by the test path, so a lean pip install runs the
-# full suite. The audio-to-pitch path (essentia/compiam) is exercised locally, not in CI.
+# verify/lint do NOT need the heavy stack: essentia, gradio and the trained models are
+# imported lazily (or not at all) by the test path, so a lean, cached pip install
+# (requirements-test.txt) runs the full suite. The audio-to-pitch path (essentia) is
+# exercised locally, not in CI.
 # e2e drives the real site in headless Chromium with the recognizer API stubbed.
 on:
   pull_request:
@@ -29,10 +30,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-test.txt
       - name: Install lean test deps
-        # Only what the test path imports. librosa/soundfile cover the lazy tonic
-        # estimate in raaga_id.features; xgboost covers RaagaXGB. No pytorch/essentia.
-        run: pip install numpy scipy pandas scikit-learn xgboost librosa soundfile pytest
+        run: pip install -r requirements-test.txt
       - name: Run the full test suite
         run: pytest tests/ -q
 
@@ -77,12 +78,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Worker JavaScript parses
-        run: node --check cloudflare/worker/src/index.js && echo "worker ok"
       - name: Worker unit tests
-        # The sanitizers that stand between an arbitrary POST and a D1 column, plus the /event
-        # allowlist and the keep-warm cron. No Workers runtime and no network: the module is
-        # imported directly and D1 is a stub.
+        # The sanitizers that stand between an arbitrary POST and a D1 or R2 write, the /event
+        # allowlist, and the CORS and error replies. No Workers runtime and no network: the module
+        # is imported directly (so a parse error fails here too) and D1/R2 are stubs.
         working-directory: cloudflare/worker
         run: node --test
 
@@ -99,11 +98,21 @@ jobs:
           node-version: "20"
           cache: npm
           cache-dependency-path: e2e/package-lock.json
+      - name: Cache Playwright's Chromium
+        id: pw
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('e2e/package-lock.json') }}
       - name: Install Playwright + Chromium
         working-directory: e2e
         run: |
           npm ci
-          npx playwright install --with-deps chromium
+          if [ "${{ steps.pw.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install-deps chromium   # system libraries only; the browser is cached
+          else
+            npx playwright install --with-deps chromium
+          fi
       - name: Run the browser user tests
         working-directory: e2e
         run: npx playwright test

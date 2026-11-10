@@ -14,9 +14,9 @@ ALLOW_ORIGIN = "https://twelveswaras.com"
 # Container is BILLED while running, so a 5-min ping would keep it always-on and blow past the
 # Workers Paid container allowance (~$30/mo). The container scales to zero and cold-starts in
 # ~10s (vs the Space's ~30s), which is fine at current traffic.
-# NOTE: crons must be an EXPLICIT empty array to REMOVE the schedule already deployed on the
-# worker; merely commenting out [triggers] leaves the old schedule live. Re-enable a keep-warm
-# ping (and accept the always-on cost) only if traffic grows enough to justify no cold starts.
+# NOTE: crons must stay an EXPLICIT empty array: it removes the old keep-warm schedule that was
+# once deployed on this worker (merely deleting [triggers] would leave it live). The page now wakes
+# the recognizer itself with /api/warm, so the worker has no scheduled handler.
 [triggers]
 crons = []
 

@@ -68,7 +68,7 @@ unreliable, but concert/TV audio (has a tanpura) is fine.
 ### Calibration (2026-07-03)
 
 Window-averaging left the softmax **under-confident**, so displayed %s read as falsely flat.
-Temperature scaling (one scalar, fit on 4-fold OOF predictions; `tools/calibrate.py`):
+Temperature scaling (one scalar, fit on 4-fold OOF predictions; `tools/calibrate.py`, since retired):
 
 | metric | before | after |
 |--------|--------|-------|
@@ -159,7 +159,7 @@ The studio to in-the-wild gap is an ACOUSTIC problem, not a data-coverage one: r
 a weak/absent drone corrupt the melody surface. Pooling more *clean* data (Saraga, contributor
 clips) sharpens studio but *hurts* wild (measured: +0.027 studio / -0.075 wild). Instead,
 regularise against that corruption directly, train on the clean train split PLUS one
-surface-degraded copy of every window (`tools/hindustani_spike.degrade`: gaussian blur + spurious
+surface-degraded copy of every window (`tools/train_dual.degrade`, then named `hindustani_spike`: gaussian blur + spurious
 mass + a +-1-bin tonic jitter). The model learns raaga structure that survives the wild, and it
 improves BOTH benchmarks at once:
 
@@ -170,7 +170,7 @@ improves BOTH benchmarks at once:
 
 Carnatic CV +0.05, Hindustani flat (no cross-tradition damage), and it beats the incumbent with
 *fewer* rounds (300 vs 400). The gain is stable across degradation seeds; the in-the-wild range
-reflects seed variation on the 80-clip set. Rebuild with `python -m tools.hindustani_spike fitfull`
+reflects seed variation on the 80-clip set. Rebuild with `python -m tools.train_dual fitfull`
 (augment defaults on). Corrects an earlier note that "augmentation regressed", that was pitch/tempo
 augmentation; *surface* degradation is a different, and clearly positive, lever. Ships on the next
 recognizer redeploy.

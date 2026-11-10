@@ -12,11 +12,11 @@ changes to point here.
   `export PATH="$HOME/.local/share/mise/installs/node/22.22.0/bin:$PATH"`
 - Cloudflare auth: `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (already in repo `.env`).
 
-## Step 1: build the app bundle (CARNATIC first)
+## Step 1: build the app bundle
 
 ```
 cd cloudflare/recognizer
-./assemble.sh            # carnatic model (default): pure reliability cutover, IDENTICAL predictions
+./assemble.sh swara      # the current build; the model is a required argument (dual, carnatic = rollbacks)
 npm install
 ```
 

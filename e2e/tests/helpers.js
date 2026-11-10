@@ -7,28 +7,46 @@
 // added to the page, these tests fail loudly instead of quietly logging from CI.
 const ACT = [0.9, 0.1, 0.2, 0.05, 0.7, 0.3, 0.1, 0.8, 0.1, 0.2, 0.05, 0.6];
 
+// A fake microphone that grants permission without a prompt: `test.use(FAKE_MIC)`.
+const FAKE_MIC = {
+  launchOptions: { args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'] },
+  permissions: ['microphone'],
+};
+
+/** Fulfil a route with a JSON body. */
+function answer(route, body, status = 200) {
+  return route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
+}
+
 /**
- * Stub /identify with a chosen top-3 and swallow the two logging endpoints.
- * Returns the array that /event bodies are pushed into, so a test can assert the funnel
- * (`events.contributions` counts accepted /contribute posts).
- * Call this BEFORE page.goto(): the `view` event fires as the page initialises.
+ * Own every API call for the page. /identify answers with the chosen top-3, unless `identify`
+ * (a route handler) says otherwise; the logging endpoints are swallowed and recorded.
+ * Returns the array that /event bodies are pushed into, so a test can assert the funnel, with:
+ *   .results        /result bodies
+ *   .calls          { warm, identify } counts
+ *   .contributions  accepted /contribute posts
+ * Call this BEFORE page.goto(): the `view` event and the /warm ping fire as the page initialises.
  */
-async function stubApi(page, { top3 = [], tonicHz = 146 } = {}) {
+async function stubApi(page, { top3 = [], tonicHz = 146, identify = null } = {}) {
   const events = [];
+  events.results = [];
+  events.calls = { warm: 0, identify: 0 };
+  events.contributions = 0;
   await page.route(/twelveswaras-api|\/api\//, (route) => {
     const url = route.request().url();
     if (url.endsWith('/identify')) {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ tonic_hz: tonicHz, swara_activation: ACT, top3 }),
-      });
+      events.calls.identify += 1;
+      if (identify) return identify(route);
+      return answer(route, { tonic_hz: tonicHz, swara_activation: ACT, top3 });
     }
-    if (url.endsWith('/warm')) return route.fulfill({ status: 200, body: '{"warm":true}' });
-    if (url.endsWith('/result')) return route.fulfill({ status: 200, body: '{}' });
+    if (url.endsWith('/warm')) { events.calls.warm += 1; return route.fulfill({ status: 200, body: '{"warm":true}' }); }
+    if (url.endsWith('/result')) {
+      try { events.results.push(JSON.parse(route.request().postData() || '{}')); } catch { /* ignore */ }
+      return route.fulfill({ status: 200, body: '{}' });
+    }
     if (url.endsWith('/contribute')) {
-      events.contributions = (events.contributions || 0) + 1;
-      return route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' });
+      events.contributions += 1;
+      return answer(route, { ok: true });
     }
     if (url.endsWith('/event')) {
       try { events.push(JSON.parse(route.request().postData() || '{}')); } catch { /* ignore */ }
@@ -39,4 +57,11 @@ async function stubApi(page, { top3 = [], tonicHz = 146 } = {}) {
   return events;
 }
 
-module.exports = { stubApi, ACT };
+/** Jump the page clock (each due timer fires once, as after a real wait), then let replies land. */
+async function jump(page, ms) {
+  await page.clock.fastForward(ms);
+  await page.waitForTimeout(500);
+  await page.clock.fastForward(100);
+}
+
+module.exports = { stubApi, answer, jump, ACT, FAKE_MIC };

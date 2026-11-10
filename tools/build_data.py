@@ -21,6 +21,8 @@ import json
 import unicodedata
 from pathlib import Path
 
+from raaga_id.features import SWARA_LABELS
+
 ROOT = Path(__file__).resolve().parent.parent
 GUIDE = ROOT / "raaga_guide.json"
 SITE = ROOT / "site"
@@ -31,7 +33,7 @@ SITE_URL = "https://twelveswaras.com"
 SCHEMA_VERSION = "0.1"
 
 # canonical 12-position swara alphabet (index = semitones from Sa)
-SWARA12 = ["S", "R1", "R2", "G2", "G3", "M1", "M2", "P", "D1", "D2", "N2", "N3"]
+SWARA12 = SWARA_LABELS
 SEMITONE = {s: i for i, s in enumerate(SWARA12)}
 
 
@@ -47,11 +49,11 @@ def _n_hindustani() -> int:
     return len(json.load(open(ROOT / "raagas.hindustani.json", encoding="utf-8"))["canonical"])
 
 
-def slug(name: str) -> str:
+def slug(name: str, suffix: str = "") -> str:
     """URL/id slug: strip diacritics, drop spaces, lowercase. Mirrors the page path."""
     d = unicodedata.normalize("NFKD", name)
     d = "".join(c for c in d if not unicodedata.combining(c))
-    return d.lower().replace("ṁ", "m").replace(" ", "-")
+    return d.lower().replace("ṁ", "m").replace(" ", "-") + suffix
 
 
 def build_records(guide: dict) -> list[dict]:

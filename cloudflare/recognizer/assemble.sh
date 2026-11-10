@@ -1,16 +1,13 @@
 #!/usr/bin/env bash
 # Assemble the container build context (./app) for the recognizer worker.
 #
-#   ./assemble.sh            # CARNATIC model (default) — reliability-only cutover, no behaviour change
-#   ./assemble.sh dual       # DUAL model (Carnatic + Hindustani) — the Hindustani launch build
-#   ./assemble.sh swara      # DUAL classes + swara chains (tools/train_swara) — the current build
+#   ./assemble.sh swara      # the current build: dual-tradition model + swara chains (tools/train_swara)
+#   ./assemble.sh dual       # the dual model without swara chains (rollback)
+#   ./assemble.sh carnatic   # the original 40-raaga Carnatic model (rollback)
 #
-# Default is carnatic ON PURPOSE: the first cutover should only move hosting off the sleeping HF
-# Space with IDENTICAL predictions, so it is a pure, low-risk reliability win. Build `dual` only
-# once the site's frontend guard is live (a Hindustani result links to raaga/<slug>.html, which
-# does not exist yet, so an un-guarded dual model would 404 the learn link). See DEPLOY.md.
+# The model is a required argument, so a bare ./assemble.sh can never ship an old model. See DEPLOY.md.
 set -euo pipefail
-MODEL="${1:-carnatic}"
+MODEL="${1:?usage: assemble.sh swara|dual|carnatic}"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 SRC="$(cd "$HERE/../.." && pwd)"           # repo root
 APP="$HERE/app"
@@ -19,15 +16,15 @@ case "$MODEL" in
   carnatic) STEM="raaga_xgb" ;;
   dual)     STEM="raaga_xgb.dual" ;;
   swara)    STEM="raaga_xgb.swara" ;;
-  *) echo "usage: assemble.sh [carnatic|dual|swara]"; exit 1 ;;
+  *) echo "usage: assemble.sh swara|dual|carnatic"; exit 1 ;;
 esac
 
 rm -rf "$APP"; mkdir -p "$APP/models"
-cp "$SRC/space/api.py" "$APP/api.py"                 # updated api.py (surfaces tradition)
+cp "$SRC/space/api.py" "$APP/api.py"
 cp "$SRC/space/requirements-api.txt" "$APP/"
 cp -r "$SRC/raaga_id" "$APP/raaga_id"
 cp "$SRC/raagas.json" "$SRC/raagas.hindustani.json" "$APP/"   # tradition.py loads the hindustani vocab
-cp "$SRC/schema.py" "$SRC/raaga_profiles.json" "$SRC/raaga_guide.json" "$APP/" 2>/dev/null || true
+cp "$SRC/raaga_profiles.json" "$SRC/raaga_guide.json" "$APP/"
 # the chosen model, named raaga_xgb.* so MODEL_PATH=/app/models/raaga_xgb.json picks it up
 cp "$SRC/models/$STEM.json"         "$APP/models/raaga_xgb.json"
 cp "$SRC/models/$STEM.classes.json" "$APP/models/raaga_xgb.classes.json"

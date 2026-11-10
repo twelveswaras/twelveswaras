@@ -38,7 +38,7 @@ Fully automatic; the only input is audio.
 4. **Classifier**: XGBoost (`multi:softprob`, 40 classes). Per-clip prediction averages the
    softmax over the clip's window surfaces (`RaagaXGB.aggregate_top_k`).
 5. **Calibrated confidence**: a single temperature scalar (fit offline on leak-free 4-fold
-   out-of-fold predictions; `tools/calibrate.py`) reshapes the softmax so the number means what
+   held-out tracks the model never trained on; `tools/train_swara`) reshapes the softmax so the number means what
    it says. A **confidence state** turns a tight top-2 into an honest *"close call: X vs Y"*
    instead of a false-precise single answer.
 

@@ -16,19 +16,18 @@ RAAGAS_PATH = ROOT / "raagas.json"
 SAMPLE_RATE = 16_000       # 16 kHz mono throughout
 CLIP_SECONDS = 10.0        # D7: 10 s analysis window
 MIN_CLIP_SECONDS = 5.0     # D7: accept >=5 s with a warning
-HOP_SECONDS = 5.0          # stride when aggregating predictions across a long clip
 
 # Output UX (D6).
 TOP_K = 3                  # always show top-3 + confidence
-# Below this averaged top-1 probability -> "not sure". Calibrated to the v0 floor:
-# real clips average ~0.28-0.60 for the top class, near-random/percussion ~0.08-0.12
-# (uniform = 1/12 = 0.083), so 0.15 shows top-3 for real music and gates only noise.
+# Below this averaged top-1 probability -> "not sure" in the local demo and the API's state (the
+# site applies its own, stricter threshold). Set on the first model, where real clips averaged
+# ~0.28-0.60 for the top class and noise ~0.08-0.12; it gates only noise.
 LOW_CONFIDENCE = 0.15
 # When the top two raagas are within this (calibrated) margin, call it a "close call — X vs Y"
 # rather than a confident single answer (D25). Allied raagas (Mōhanaṁ/Bilahari/Bēgaḍa …) share
 # a pitch-class profile, so an honest close-call is common and correct.
 CLOSE_MARGIN = 0.06
-INFER_MAX_WINDOWS = 60     # analyse ~first 10 min of a long upload (matches training)
+INFER_MAX_WINDOWS = 60     # cap on windows per clip; at INFER_SECONDS and a 15 s hop it is never reached
 INFER_SECONDS = 150        # cap raw-audio analysed at inference; wild benchmark is monotonic in
                            # listen time (90s -> 0.475, 150s -> 0.512), and tonic salience keeps
                            # improving to ~150s, so listen long. Hard/ambiguous clips benefit most.
@@ -49,10 +48,6 @@ TDMS_MAX_WINDOWS = 20      # cap windows/track in training (20 x 30 s = 600 s, m
 # of the time — i.e. percussion solos, speech, applause, long silences, where there's no stable
 # melody for Melodia to track. Real melody is voiced most of the window; junk is mostly unvoiced.
 MIN_VOICED_FRAC = 0.5
-
-# Verification (D13). Configurable; these are the v0 defaults.
-PROMOTE_MIN_VOTES = 3
-PROMOTE_MIN_AGREEMENT = 0.80
 
 
 def load_raagas() -> dict:

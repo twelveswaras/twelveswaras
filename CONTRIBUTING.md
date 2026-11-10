@@ -106,7 +106,7 @@ Top-level directories:
 | `cloudflare/` | The Cloudflare Worker API, D1 schema, and Pages config behind twelveswaras.com. |
 | `site/`       | The static website front-end. |
 | `tools/`      | Developer and data scripts: cross-validation, real-world eval, page/data builders, clip fetchers. |
-| `pipeline/`   | Batch jobs: `consolidate` (commons) and `retrain`. |
+| `pipeline/`   | Commons jobs: `pull_commons` (verified contributions to a local corpus), `import_shaale` (licensed bulk import), and the planned `retrain`. |
 | `benchmark/`  | The frozen evaluation set, leaderboard, and real-world clips. |
 
 Please do not edit `site/` or `cloudflare/` casually; those are the live deployment.

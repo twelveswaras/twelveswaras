@@ -17,7 +17,10 @@ function stubDB() {
     prepare(sql) {
       return {
         bind(...values) {
-          return { run: async () => { rows.push({ sql, values }); return { success: true }; } };
+          return {
+            run: async () => { rows.push({ sql, values }); return { success: true }; },
+            first: async () => null,                  // the contribute dedup lookup: never a duplicate
+          };
         },
       };
     },
@@ -209,33 +212,6 @@ test('the funnel allowlist is exactly the steps the pages can reach', () => {
   ]);
 });
 
-// ---- scheduled (keep-warm) -------------------------------------------------------------------
-test('the cron pings the Space so a visitor never pays the cold start', async () => {
-  const seen = [];
-  const realFetch = globalThis.fetch;
-  globalThis.fetch = async (u) => { seen.push(String(u)); return new Response('{}', { status: 200 }); };
-  try {
-    const ctx = stubCtx();
-    await worker.scheduled({ cron: '*/5 * * * *' }, { ...ENV, SPACE_URL: 'https://space.invalid' }, ctx);
-    await ctx.settle();
-  } finally {
-    globalThis.fetch = realFetch;
-  }
-  assert.deepEqual(seen, ['https://space.invalid/health']);
-});
-
-test('a failing keep-warm ping never throws (a dead cron is worse than a cold Space)', async () => {
-  const realFetch = globalThis.fetch;
-  globalThis.fetch = async () => { throw new Error('space is down'); };
-  try {
-    const ctx = stubCtx();
-    await worker.scheduled({ cron: '*/5 * * * *' }, ENV, ctx);
-    await ctx.settle();                     // must resolve, not reject
-  } finally {
-    globalThis.fetch = realFetch;
-  }
-});
-
 // ---- POST /result telemetry columns ------------------------------------------------------------
 // heard_s used to receive the BROWSER's wall-clock, which for an upload is processing time, not
 // audio duration. Conflating the two made our biggest failure mode (~46% of sessions end with no
@@ -406,4 +382,86 @@ test('POST /result accepts the page-side reasons not_sent and no_reply', async (
     await ctx.settle();
     assert.equal(db.rows[0].values[11], reason);
   }
+});
+
+// ---- hostile input: nothing unbounded reaches D1 or R2 ---------------------------------------
+test('POST /result stores at most 3 bounded {raaga, confidence} entries and numbers only', async () => {
+  const db = stubDB();
+  const ctx = stubCtx();
+  const huge = 'x'.repeat(5000);
+  const top3 = Array.from({ length: 10 }, (_, i) => ({ raaga: huge, confidence: i ? 0.1 : 'high', extra: huge }));
+  await worker.fetch(postJSON('/api/result', { top3, tonic_hz: 'abc', heard_seconds: { a: 1 } }), { ...ENV, DB: db }, ctx);
+  await ctx.settle();
+  const v = db.rows[0].values;
+  assert.equal(v[1].length, 80);                         // top1, capped
+  assert.equal(v[2], null);                              // a non-numeric confidence is not stored
+  const stored = JSON.parse(v[3]);
+  assert.equal(stored.length, 3);
+  assert.deepEqual(Object.keys(stored[0]).sort(), ['confidence', 'raaga', 'tradition']);
+  assert.ok(stored.every((e) => e.raaga.length <= 80));
+  assert.equal(v[4], null);                              // tonic_hz 'abc'
+  assert.equal(v[5], null);                              // heard_seconds object
+});
+
+function contribute(fields, bytes = 1000) {
+  const fd = new FormData();
+  fd.append('audio', new Blob([new Uint8Array(bytes)], { type: 'audio/webm' }), 'clip.webm');
+  for (const [k, v] of Object.entries(fields)) fd.append(k, v);
+  return new Request('https://twelveswaras.com/api/contribute', { method: 'POST', body: fd, headers: { Origin: 'https://twelveswaras.com' } });
+}
+
+function stubR2() {
+  const keys = [];
+  return { keys, put: async (k) => { keys.push(k); } };
+}
+
+test('POST /contribute without the rights attestation is a 403 and stores nothing', async () => {
+  const db = stubDB(); const r2 = stubR2(); const ctx = stubCtx();
+  const res = await worker.fetch(contribute({ raaga: 'Kalyāṇi' }), { ...ENV, DB: db, CLIPS: r2 }, ctx);
+  await ctx.settle();
+  assert.equal(res.status, 403);
+  assert.equal(db.rows.length + r2.keys.length, 0);
+});
+
+test('POST /contribute stores a bounded row and the clip', async () => {
+  const db = stubDB(); const r2 = stubR2(); const ctx = stubCtx();
+  const long = 'K'.repeat(500);
+  const res = await worker.fetch(contribute({ raaga: long, model_pred: long, is_own: 'true' }), { ...ENV, DB: db, CLIPS: r2 }, ctx);
+  await ctx.settle();
+  assert.equal(res.status, 200);
+  assert.equal(r2.keys.length, 1);
+  const v = db.rows[0].values;
+  assert.equal(v[3].length, 80);                         // raaga
+  assert.equal(v[5].length, 80);                         // model_pred
+});
+
+test('POST /contribute rejects audio larger than the site allows (413), storing nothing', async () => {
+  const db = stubDB(); const r2 = stubR2(); const ctx = stubCtx();
+  const res = await worker.fetch(contribute({ raaga: 'Kalyāṇi', is_own: 'true' }, 27 * 1024 * 1024), { ...ENV, DB: db, CLIPS: r2 }, ctx);
+  await ctx.settle();
+  assert.equal(res.status, 413);
+  assert.equal(db.rows.length + r2.keys.length, 0);
+});
+
+test('every kind of reply carries the CORS header', async () => {
+  const ctx = stubCtx();
+  const replies = [
+    await worker.fetch(new Request('https://twelveswaras.com/api/nope', { headers: { Origin: 'https://twelveswaras.com' } }), ENV, ctx),
+    await worker.fetch(contribute({ raaga: 'x' }), { ...ENV, DB: stubDB(), CLIPS: stubR2() }, ctx),
+    await worker.fetch(postJSON('/api/event', { event: 'view' }), { ...ENV, DB: stubDB() }, ctx),
+    await worker.fetch(new Request('https://twelveswaras.com/api/result', { method: 'OPTIONS', headers: { Origin: 'https://twelveswaras.com' } }), ENV, ctx),
+  ];
+  await ctx.settle();
+  for (const r of replies) assert.equal(r.headers.get('Access-Control-Allow-Origin'), 'https://twelveswaras.com');
+});
+
+test('POST /result keeps each prediction\'s tradition (Tōḍī exists in both)', async () => {
+  const db = stubDB(); const ctx = stubCtx();
+  const top3 = [{ raaga: 'Tōḍī', tradition: 'hindustani', confidence: 0.6 },
+                { raaga: 'Tōḍi', tradition: 'carnatic', confidence: 0.3 },
+                { raaga: 'Śrī', tradition: 'martian', confidence: 0.1 }];
+  await worker.fetch(postJSON('/api/result', { top3 }), { ...ENV, DB: db }, ctx);
+  await ctx.settle();
+  const stored = JSON.parse(db.rows[0].values[3]);
+  assert.deepEqual(stored.map((e) => e.tradition), ['hindustani', 'carnatic', null]);
 });

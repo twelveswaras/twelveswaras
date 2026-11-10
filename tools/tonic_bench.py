@@ -3,8 +3,8 @@
     python -m tools.tonic_bench [--root data/saraga_carnatic] [--seconds 150]   # inference env
 
 Each Saraga recording ships a `.ctonic.txt` (the annotated Sa, Hz) beside its mix `.mp3`. The
-estimator runs exactly as in production (raaga_id.pitch_extract: 44.1 kHz, the first
-INFER_SECONDS) and each estimate is classified (see classify): only `pa` / `ma` and `other` are
+estimator runs as in production (raaga_id.pitch_extract: 44.1 kHz) on the first --seconds
+(default INFER_SECONDS; production's tonic hears up to TONIC_SECONDS) and each estimate is classified (see classify): only `pa` / `ma` and `other` are
 harmful, because every model feature folds octaves. Results are appended per recording to
 supporting-docs/tonic_bench.jsonl, so a stopped run resumes and a finished one does no new work.
 

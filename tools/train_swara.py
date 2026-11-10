@@ -11,7 +11,7 @@ scores (log p + weight * score). Measured 2026-10-24 on the 80 real-world clips:
 0.537 / 0.762 top-1 / top-3, with chains 0.688 / 0.787 (16 clips fixed, 4 broken).
 
 Tuning uses only the 25% of tracks the shipped model never trained on (the first 75/25
-GroupKFold split by track, as tools/hindustani_spike.fitfull), each cut to its first 150 s
+GroupKFold split by track, as tools/train_dual.fitfull), each cut to its first 150 s
 (what the app analyses), with chains fit on the other 75%. The weight minimises held-out
 log-loss; the temperature is then fit on the fused output. The saved chains use every track.
 
@@ -32,7 +32,8 @@ import numpy as np
 from raaga_id import data, features
 from raaga_id.config import MODELS_DIR, TDMS_MAX_WINDOWS
 from raaga_id.swara import SwaraChains, fuse
-from tools.hindustani_spike import CACHE, CARNATIC, HINDUSTANI, FULL_MODEL, iter_hindustani_clips, tag
+from raaga_id.tradition import tag
+from tools.train_dual import CACHE, CARNATIC, HINDUSTANI, FULL_MODEL, iter_hindustani_clips, load_split
 
 PHRASES = CACHE.with_name("swara_phrases_cache.pkl")
 MODEL = MODELS_DIR / "raaga_xgb.swara.json"
@@ -70,20 +71,15 @@ def phrases() -> None:
 
 
 def fit() -> None:
-    from sklearn.model_selection import GroupKFold
-
     from raaga_id import calibrate as C
     from raaga_id.model import RaagaXGB
 
-    d = np.load(CACHE, allow_pickle=True)
-    X, groups = d["X"], d["groups"]
+    X, _, groups, _, classes, yi, tr, te = load_split()
     with open(PHRASES, "rb") as f:
         ph = [[np.array(p) for p in w] for w in pickle.load(f)]
     shipped = RaagaXGB.load(FULL_MODEL)
-    classes = shipped.classes
-    yi = np.array([classes.index(v) for v in d["y"]])
+    assert shipped.classes == classes, "the shipped model's classes differ from the cached labels"
     n = len(classes)
-    tr, te = next(GroupKFold(n_splits=4).split(X, yi, groups))
 
     Pw = shipped.predict_proba(X[te])
     unseen = float((Pw.argmax(1) == yi[te]).mean())
