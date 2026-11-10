@@ -1,7 +1,7 @@
 # Local planning / context — not for publication
 supporting-docs/
 
-# HF Space staging dir (assembled by space/assemble.sh)
+# Old Hugging Face Space build folder (retired; may still exist locally)
 space_build/
 
 # Python

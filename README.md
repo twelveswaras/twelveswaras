@@ -20,7 +20,7 @@ Cloudflare (Worker + container); no third-party embed
 > **Both traditions, one tool:** Carnatic and Hindustani share the twelve-swara space, so
 > the name, schema, and pipeline are **tradition-neutral** by design (Carnatic came first).
 > **Scope:** Non-commercial, open-source only. A public good stewarded in the neutral
-> [`twelveswaras`](https://github.com/twelveswaras) GitHub + HF org, not owned by any company.
+> [`twelveswaras`](https://github.com/twelveswaras) GitHub organisation, not owned by any company.
 
 <p align="center"><img src="assets/screenshot.png" alt="The recognizer naming a raaga, with a confidence bar chart and the detected tonic (Sa)" width="340"></p>
 
@@ -43,19 +43,24 @@ full detail and citations):
 
 1. **Predominant-melody pitch** from the audio (essentia `PredominantPitchMelodia`).
 2. **Tonic (Sa)** from the tanpura drone (essentia `TonicIndianArtMusic`, the
-   Salamon–Gulati–Serra multipitch method). *Tonic-normalization, heard relative to Sa, is the key unlock the
-   Harvard reference thesis skipped.*
+   Salamon–Gulati–Serra multipitch method), from up to 300 s of audio: Sa accuracy keeps rising with
+   listening time. *Tonic-normalization, heard relative to Sa, is the key unlock the Harvard
+   reference thesis skipped.*
 3. **Feature:** a tonic-normalized, windowed **Time-Delayed Melody Surface (TDMS)**, a 2-D
    histogram of `(pitch(t), pitch(t+delay))` that captures **gamaka** (the *movement* between
    notes), not just which notes occur.
-4. **Classifier:** XGBoost over the surfaces, window-aggregated, with **temperature-calibrated**
-   confidences (a shown "70%" is right ~70% of the time).
+4. **Classifier:** XGBoost over the surfaces, window-aggregated.
+5. **Swara chains:** a second-order Markov chain per raaga over the sung swaras captures the
+   *order* of notes (phrases, zig-zag movement) that TDMS cannot see; its evidence is fused with the
+   classifier's, then **temperature-calibrated** (a shown "70%" is right about 70% of the time).
+
+On a live listen the page shows no raaga name for the first minute: answers before then are right
+only about half the time (see the listening-time curve in the leaderboard).
 
 **Accuracy.** On the frozen 129-track studio benchmark: top-1 **0.830** (chance 0.025), after
 surface augmentation and a junk gate that drops non-melodic windows. On the 80-clip **real-world**
-benchmark, which is the number that actually matters: top-1 **0.688**, top-3 **0.787**, since
-per-raaga swara chains (the order of notes, not just how they move) joined the model; it was
-0.537 / 0.762 without them. The gap
+benchmark, which is the number that actually matters: top-1 **0.713**, top-3 **0.800** (0.537 /
+0.762 before the swara chains, 0.688 / 0.787 before the tonic heard up to 300 s). The gap
 between those two is the whole problem, and closing it is what the data commons is for. Full progression in
 [`benchmark/leaderboard.md`](benchmark/leaderboard.md). Needs a drone: concert/TV audio works;
 solo voice with no drone is unreliable.
@@ -68,19 +73,20 @@ expert review, so treat this tradition as a preview.
 
 ## Data & attribution
 
-Trained on openly-available research corpora, **attribution required by their licenses**:
+Built on openly-available research corpora, **attribution required by their licenses**:
 
-- **Saraga Carnatic** (CompMusic / MTG-UPF): CC-BY-**NC-SA**. Predominant pitch + tonic annotations.
-- **Indian Art Music Raga Recognition Dataset** (CompMusic / MTG-UPF; Gulati et al.): the
-  **pitch + tonic features** we train on are **CC-BY-4.0**
+- **Indian Art Music Raga Recognition Dataset** (CompMusic / MTG-UPF; Gulati et al.): the current
+  model is trained on its **pitch + tonic features**, **CC-BY-4.0**
   ([Zenodo](https://doi.org/10.5281/zenodo.7278506)); the audio is separate and access-restricted.
-  Its **Carnatic (CMD)** set backs the 40 Carnatic raagas, and its paired **Hindustani (HMD)** set
-  (30 raagas, same CC-BY-4.0 features) now powers the Hindustani half of the model.
+  Its **Carnatic (CMD)** set backs the 40 Carnatic raagas and its **Hindustani (HMD)** set the 30
+  Hindustani raagas.
+- **Saraga Carnatic** (CompMusic / MTG-UPF): CC-BY-**NC-SA**. Its annotated tonics are the
+  ground truth for the tonic benchmark (`tools/tonic_bench`); earlier seed models trained on it.
 - **Community and partner contributions** (the data commons): opt-in recordings, CC-BY-4.0 when
   contributors release them publicly. Some are shared under a **train-only** licence (for example
-  student recordings from **[Shaale](https://shaale.com)**): the model learns from them, but the
-  audio stays private and is not redistributed, so like Saraga they keep the current model in the
-  non-commercial bucket. Credited in [`CONTRIBUTORS.md`](CONTRIBUTORS.md).
+  recordings from **[Shaale](https://shaale.com)**): they may be used to train and evaluate models,
+  but the audio stays private and is never redistributed. They are not in the current model.
+  Credited in [`CONTRIBUTORS.md`](CONTRIBUTORS.md).
 
 Built with **essentia** (**AGPL**; the deployed recognizer carries AGPL obligations, satisfied by
 publishing all source), plus librosa and xgboost. `gradio` is used only by the local demo
@@ -107,16 +113,22 @@ Full bibliography in [`METHODOLOGY.md`](METHODOLOGY.md).
 - **Raaga Explorer:** a browsable reference for all 40 Carnatic raagas grouped by melakarta (plus 30 Hindustani, pages still draft), an ear-trainer, and open data at `/data/raagas.json` (facts are draft, pending expert review).
 - **v1 commons:** the opt-in contribute-to-the-commons loop, rights-gated and quarantined, audio private unless released CC-BY.
 - **Abstention:** below a confidence threshold it says "not sure" and invites you to teach it the raaga.
+- **Hindustani:** 30 raagas in the same model as the 40 Carnatic ones.
+- **Swara chains:** the order of notes, fused with the classifier (real-world top-1 0.537 to 0.688).
+- **Listening:** first-party recognizer with no cold start, the tonic heard up to 300 s, no names
+  before a minute on a live listen, and plain reasons when the microphone fails.
 
 **Next:**
 
 - **Deepen the commons before widening it.** The highest-value contribution is more in-the-wild
-  audio of the *current* 40 raagas; raagas beyond the 40 are pooled and trained in only once one
-  reaches critical mass, always quarantined from the 40 (an unknown raaga can never be model-confirmed).
+  audio of the *current* 70 raagas (about 12 varied recordings per raaga is the floor for learning
+  one); new raagas are trained in only once they reach that, always quarantined from the 70 (an
+  unknown raaga can never be model-confirmed).
 - **Verify and publish.** Community verification of pending clips, the consolidation job, and the
   public CC-BY contributor dataset.
-- **Quality (v2).** TDMS to CNN, allied-raaga disambiguation, an out-of-distribution detector for
-  the confident-but-wrong cases, an expert-annotation tier, and Hindustani.
+- **Quality (v2).** Audio-based methods (pretrained music models) once the dataset audio is
+  available, allied-raaga disambiguation, an out-of-distribution detector for the
+  confident-but-wrong cases, a real-world Hindustani benchmark, and an expert-annotation tier.
 
 ## Getting started (developers)
 
@@ -142,10 +154,10 @@ pytest tests/
 ```
 
 Top-level layout: `raaga_id/` (core library: pitch, TDMS features, model, training,
-evaluation), `apps/` (identify / contribute / verify entry points), `space/` (source of the recognizer API,
-bundled into the Cloudflare container), `cloudflare/` (the Worker API, D1 schema, Pages), `site/` (the website),
-`tools/` (dev + data scripts), `pipeline/` (consolidate + retrain jobs), and `benchmark/`
-(the frozen evaluation set + leaderboard).
+evaluation), `apps/` (local demo + contribute / verify entry points), `space/` (source of the
+recognizer API, bundled into the Cloudflare container), `cloudflare/` (the Worker API, D1 schema,
+recognizer container), `site/` (the website), `tools/` (training, benchmark and site-build scripts),
+`pipeline/` (consolidate + retrain jobs), and `benchmark/` (the frozen evaluation set + leaderboard).
 
 ## Contributing
 
@@ -166,8 +178,9 @@ have grown the data commons are credited in [`CONTRIBUTORS.md`](CONTRIBUTORS.md)
 ## Citing this work
 
 If you use twelveswaras in your research, please cite it. Machine-readable metadata is in
-[`CITATION.cff`](CITATION.cff) (GitHub renders a "Cite this repository" button from it),
-which also lists the key prior work the model builds on.
+[`CITATION.cff`](CITATION.cff) (GitHub renders a "Cite this repository" button from it), which
+also lists the datasets and prior work the model builds on. Releases are archived on Zenodo with a
+DOI; please cite the version you used.
 
 ## Principles
 
@@ -180,8 +193,9 @@ is a public, honest scorecard of how each one is implemented, and where we still
 - **Code:** MIT.
 - **Contributor dataset (the commons):** CC-BY-4.0, kept **separate** from non-commercial source
   data so it stays cleanly reusable.
-- **Seed model:** trained on Saraga (CC-BY-**NC-SA**), so the seed weights carry CC-BY-NC-SA; a
-  later model retrained purely on the contributor commons can be clean CC-BY.
+- **Model:** the current model is trained on the Raga Recognition Dataset features (CC-BY-4.0,
+  attribution required); earlier seed models trained on Saraga carried its CC-BY-NC-SA terms. Like
+  the rest of the project, models are published for non-commercial use.
 
 This is a non-commercial, open-source public good. See [`GOVERNANCE.md`](GOVERNANCE.md) for
 stewardship and [`METHODOLOGY.md`](METHODOLOGY.md) for the full method + references.

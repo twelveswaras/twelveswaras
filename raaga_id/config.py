@@ -38,7 +38,7 @@ TONIC_SECONDS = 300        # the tonic (Sa) hears more than the melody: on 197 a
 PCD_BINS = 120             # pitch-class-distribution resolution (10-cent bins); the display feature
 
 # Production model feature = windowed Time-Delayed Melody Surface (D28). The gate benchmark
-# (tools/tdms_benchmark) put TDMS-30s at top1 0.866 / top3 0.954 vs windowed-PCD 0.780 / 0.926,
+# (benchmark/leaderboard.md, 2026-07-03) put TDMS-30s at top1 0.866 / top3 0.954 vs windowed-PCD 0.780 / 0.926,
 # and the allied triple at 0.881 vs 0.714 — gamaka/movement is what the static PCD threw away.
 TDMS_BINS = 48             # surface is TDMS_BINS x TDMS_BINS (10-cent-ish, 25-cent bins over an octave)
 TDMS_DELAY = 0.3           # seconds; the (pitch(t), pitch(t+delay)) lag that exposes gamaka
