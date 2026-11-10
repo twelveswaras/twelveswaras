@@ -198,12 +198,13 @@ __JSONLD__
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
   .brand svg{width:26px;height:26px;flex:0 0 auto}
   .top .nav{display:inline-flex;align-items:center;gap:12px}
-  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
+  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted);display:inline-flex;align-items:center;min-height:44px}
   .top .nav a:hover,.top .nav a.here{color:var(--paper)}
   .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
+  @media (max-width:360px){.top .nav .sep{display:none} .top .nav{column-gap:12px} .top .nav a{font-size:.68rem;letter-spacing:0}}
   @media (max-width:560px){.top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:max(16px,env(safe-area-inset-top))}
-    .top .nav{flex-basis:100%;justify-content:center;gap:14px} .top .nav a{white-space:nowrap}}
-  @media (max-width:400px){.top .nav{gap:11px} .top .nav a{font-size:.72rem}}
+    .top .nav{flex-basis:100%;justify-content:center;flex-wrap:wrap;column-gap:14px;row-gap:0} .top .nav a{white-space:nowrap}}
+  @media (max-width:400px){.top .nav{column-gap:11px} .top .nav a{font-size:.72rem}}
   .crumb{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);padding:20px 0 0}
   .crumb a{color:var(--muted);text-decoration:underline;text-underline-offset:2px} .crumb a:hover{color:var(--paper)}
   .hero{padding:14px 0 8px}
@@ -305,6 +306,7 @@ __JSONLD__
       <a href="../about/">about</a>
     </span>
   </nav>
+<main>
   <p class="crumb"><a href="../">home</a> / <a href="./">raagas</a> / __CRUMB__</p>
 
   <header class="hero">
@@ -335,6 +337,7 @@ __JSONLD__
 __HEAR____CONFUSE____LISTEN____COUSINS__
   <div class="cta-row"><a class="cta" href="../">Identify a raaga →</a></div>
   <p class="draftbar">◐ Draft: the reference facts on this page are compiled from public sources and are pending review by a musician. Corrections welcome via GitHub.</p>
+</main>
 </div>
 
 <footer>
@@ -704,12 +707,13 @@ INDEX_TEMPLATE = """<!doctype html>
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
   .brand svg{width:26px;height:26px;flex:0 0 auto}
   .top .nav{display:inline-flex;align-items:center;gap:12px}
-  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
+  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted);display:inline-flex;align-items:center;min-height:44px}
   .top .nav a:hover,.top .nav a.here{color:var(--paper)}
   .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
+  @media (max-width:360px){.top .nav .sep{display:none} .top .nav{column-gap:12px} .top .nav a{font-size:.68rem;letter-spacing:0}}
   @media (max-width:560px){.top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:max(16px,env(safe-area-inset-top))}
-    .top .nav{flex-basis:100%;justify-content:center;gap:14px} .top .nav a{white-space:nowrap}}
-  @media (max-width:400px){.top .nav{gap:11px} .top .nav a{font-size:.72rem}}
+    .top .nav{flex-basis:100%;justify-content:center;flex-wrap:wrap;column-gap:14px;row-gap:0} .top .nav a{white-space:nowrap}}
+  @media (max-width:400px){.top .nav{column-gap:11px} .top .nav a{font-size:.72rem}}
   header.hero{padding:26px 0 6px}
   .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin:0 0 10px}
   h1{font-size:clamp(1.9rem,7vw,2.8rem);font-weight:800;letter-spacing:-.03em;margin:0;text-wrap:balance}
@@ -768,6 +772,7 @@ INDEX_TEMPLATE = """<!doctype html>
       <a href="../about/">about</a>
     </span>
   </nav>
+<main>
 
   <header class="hero">
     <p class="eyebrow">The raagas</p>
@@ -781,6 +786,7 @@ __SECTIONS__
     Grouped from our draft reference; a few parent-mēḷa placements (marked mēḷa?) are debated and pending a musician's review. ·
     <a href="../">identify a raaga →</a> · <a href="../listen/">train your ear →</a> · <a href="https://github.com/twelveswaras">github →</a> · <a href="https://github.com/twelveswaras/twelveswaras/blob/main/PDGI.md">a digital commons →</a>
   </p>
+</main>
 </div>
 </body>
 </html>

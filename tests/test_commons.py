@@ -294,5 +294,6 @@ def test_og_card_is_generated_dual_and_correctly_sized():
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_") and callable(fn):
-            fn(); print("ok", name)
+            fn()
+            print("ok", name)
     print("COMMONS OK")

@@ -1,29 +1,35 @@
 # twelveswaras
 
-> An open-source, non-commercial 'Shazam for raagas': play it a short clip of Carnatic music and it identifies the raaga, then helps a beginner learn to hear it. Paired with an openly-licensed (CC-BY) data commons. Owned by no company; a public good.
+> An open-source, non-commercial 'Shazam for raagas': play it about a minute of Carnatic or Hindustani music and it identifies the raaga, then helps a beginner learn to hear it. Paired with an openly-licensed (CC-BY) data commons. Owned by no company; a public good.
 
 Site: https://twelveswaras.com
-Code: https://github.com/twelveswaras (MIT)
-Recognizer model: XGBoost on a tonic-normalized Time-Delayed Melody Surface (TDMS); 70 raagas (40 Carnatic, 30 Hindustani). See METHODOLOGY.md in the repo for the full pipeline + citations.
+Code: https://github.com/twelveswaras/twelveswaras (MIT; the running recognizer is AGPL-3.0 because it uses Essentia)
+Cite: Sankaran, S. (2026). twelveswaras [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.24096813
+Recognizer model: XGBoost on tonic-normalized Time-Delayed Melody Surfaces (TDMS), fused with per-raaga swara-sequence chains; 70 raagas (40 Carnatic, 30 Hindustani). See METHODOLOGY.md in the repo for the full pipeline + citations.
 
 ## How to use the recognizer
 
-- Give it about a minute of Carnatic or Hindustani melody WITH a tanpura/shruti drone (a live concert always has one). It needs at least 30s before it can read anything. The tonic (Sa) is found from the drone; solo singing with no drone is unreliable.
-- It returns the top-3 raagas with calibrated confidence, the detected Sa, and a plain note on how to hear that raaga.
+- Give it about a minute of Carnatic or Hindustani melody WITH a tanpura/shruti drone (a live concert always has one). A live listen shows the notes it hears for the first minute and names raagas only after that; it settles within two and a half minutes. The tonic (Sa) is found from the drone; solo singing with no drone is unreliable.
+- It returns the top-3 raagas with calibrated confidence, the detected Sa, and a plain note on how to hear that raaga. Below a confidence threshold it says it is not sure.
 
-## Open data
+## Accuracy
+
+- On 80 real-world recordings (phone, concert, YouTube), analysed for 150 s: the top answer is right 71% of the time and the right raaga is in the top three 80% of the time. Allied raagas (same scale, different phrasing) are the main confusion. Full benchmarks, including negative results: benchmark/leaderboard.md in the repo.
+
+## Open data and licences
 
 - Machine-readable raaga reference: https://twelveswaras.com/data/raagas.json (CC-BY-4.0).
-  40 raagas; 34 have note-sets; 0 are musician-reviewed so far.
+  40 Carnatic raagas; 34 have note-sets; 0 are musician-reviewed so far.
+- Model weights: CC-BY-4.0, downloadable from the v1.0.0 release on GitHub. Trained only on the Indian Art Music Raga Recognition Dataset features (CC-BY-4.0).
 - Please attribute as: twelveswaras (twelveswaras.com), CC-BY-4.0.
 - Per-raaga pages carry schema.org DefinedTerm JSON-LD.
 
-## Accuracy & honesty
+## Honesty
 
-- Reference facts (scale, phrases, ornaments) are being verified by a musician; records marked reviewed=false in raagas.json are provisional. Do not present provisional raaga facts as authoritative. When in doubt, cite the raaga page and note it is under review.
+- Reference facts (scale, phrases, ornaments) are being verified by a musician; records marked reviewed=false in raagas.json are provisional, and the Hindustani pages are drafts. Do not present provisional raaga facts as authoritative. When in doubt, cite the raaga page and note it is under review.
 - twelveswaras does not offer musical instruction as fact until it is expert-verified.
 
-## Raaga pages
+## Carnatic raaga pages
 
 - [Ānandabhairavi](https://twelveswaras.com/raaga/anandabhairavi)
 - [Aṭāna](https://twelveswaras.com/raaga/atana)
@@ -65,3 +71,36 @@ Recognizer model: XGBoost on a tonic-normalized Time-Delayed Melody Surface (TDM
 - [Tōḍi](https://twelveswaras.com/raaga/todi)
 - [Varāḷi](https://twelveswaras.com/raaga/varali)
 - [Yadukula kāṁbōji](https://twelveswaras.com/raaga/yadukula-kamboji)
+
+## Hindustani raaga pages (draft)
+
+- [Yaman kalyāṇ](https://twelveswaras.com/raaga/yaman-kalyan-hindustani)
+- [Bhūp](https://twelveswaras.com/raaga/bhup-hindustani)
+- [Mālkauns](https://twelveswaras.com/raaga/malkauns-hindustani)
+- [Bhairav](https://twelveswaras.com/raaga/bhairav-hindustani)
+- [Dēś](https://twelveswaras.com/raaga/des-hindustani)
+- [Bihāg](https://twelveswaras.com/raaga/bihag-hindustani)
+- [Bāgēśrī](https://twelveswaras.com/raaga/bagesri-hindustani)
+- [Darbāri](https://twelveswaras.com/raaga/darbari-hindustani)
+- [Kēdār](https://twelveswaras.com/raaga/kedar-hindustani)
+- [Khamāj](https://twelveswaras.com/raaga/khamaj-hindustani)
+- [Mārvā](https://twelveswaras.com/raaga/marva-hindustani)
+- [Puriyā dhanaśrī](https://twelveswaras.com/raaga/puriya-dhanasri-hindustani)
+- [Lalit](https://twelveswaras.com/raaga/lalit-hindustani)
+- [Basant](https://twelveswaras.com/raaga/basant-hindustani)
+- [Śrī](https://twelveswaras.com/raaga/sri-hindustani)
+- [Ahira bhairav](https://twelveswaras.com/raaga/ahira-bhairav-hindustani)
+- [Alahaiyā bilāval](https://twelveswaras.com/raaga/alahaiya-bilaval-hindustani)
+- [Tōḍī](https://twelveswaras.com/raaga/todi-hindustani)
+- [Bilāsakhānī tōḍī](https://twelveswaras.com/raaga/bilasakhani-todi-hindustani)
+- [Bairāgi](https://twelveswaras.com/raaga/bairagi-hindustani)
+- [Hamsadhvāni](https://twelveswaras.com/raaga/hamsadhvani-hindustani)
+- [Jōg](https://twelveswaras.com/raaga/jog-hindustani)
+- [Ābhōgī](https://twelveswaras.com/raaga/abhogi-hindustani)
+- [Madhukauns](https://twelveswaras.com/raaga/madhukauns-hindustani)
+- [Madhuvanti](https://twelveswaras.com/raaga/madhuvanti-hindustani)
+- [Miyān malhār](https://twelveswaras.com/raaga/miyan-malhar-hindustani)
+- [Gauḍ malhār](https://twelveswaras.com/raaga/gaud-malhar-hindustani)
+- [Mārūbihāg](https://twelveswaras.com/raaga/marubihag-hindustani)
+- [Rāgēśrī](https://twelveswaras.com/raaga/ragesri-hindustani)
+- [Śuddh sāraṅg](https://twelveswaras.com/raaga/suddh-sarang-hindustani)
