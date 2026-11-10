@@ -15,9 +15,10 @@ organisation, so the project and its commons stay independent of any one employe
   AGPL obligations, satisfied because we publish all source.
 - **Contributor commons**: CC-BY-4.0, in a repo kept **separate** from
   Saraga-derived artifacts so it stays cleanly reusable.
-- **Seed model**: trained on Saraga (CC-BY-**NC-SA**) and the CMD / Indian Art Music
-  Raga Recognition Dataset (CC-BY-**NC-ND** 3.0), so the released seed weights are treated
-  as non-commercial. A model retrained purely on the CC-BY contributor commons can be clean CC-BY.
+- **Model weights**: CC-BY-4.0. The live model is trained only on the Indian Art Music Raga
+  Recognition Dataset features (Carnatic and Hindustani, CC-BY-4.0, doi:10.5281/zenodo.7278506).
+  Saraga (CC-BY-NC-SA) is used for evaluation only (the tonic benchmark); nothing derived from it
+  is in the live model or this repository.
 
 ## Contribution & consent
 

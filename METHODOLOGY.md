@@ -137,10 +137,11 @@ phrase-matching work.
    idea is worth revisiting for our **tonic/drone-robustness** work; it targets the exact failure
    mode (drone-less audio) where our explicit tonic estimation breaks.
 7. M. Müller. *Fundamentals of Music Processing.* Springer, 2016. (chroma, CENS, STFT).
-8. **Datasets:** Saraga Carnatic (CompMusic / MTG-UPF, CC-BY-NC-SA); *Indian Art Music Raga
-   Recognition Dataset*: Carnatic Music Dataset (CMD) (CompMusic, CC-BY-NC-ND 3.0,
-   doi:10.5281/zenodo.7278510), accessed via `mirdata` (`compmusic_raga`). The paired Hindustani
-   dataset (HMD) is the corpus for the planned Hindustani fast-follow. Because the seed model is
-   trained on this CC-BY-NC-SA and CC-BY-NC-ND 3.0 material, the released seed weights are treated
-   as non-commercial; a model retrained purely on the CC-BY contributor commons can be cleanly CC-BY.
+8. **Datasets:** *Indian Art Music Raga Recognition Dataset* (CompMusic / MTG-UPF): the
+   Carnatic (CMD) and Hindustani (HMD) pitch and tonic features, CC-BY-4.0
+   (doi:10.5281/zenodo.7278506), accessed via `mirdata` (`compmusic_raga`); its audio is a
+   separate, access-restricted record. The live model and the reference swara profiles are built
+   from these features only, so the weights are released under CC-BY-4.0. Saraga Carnatic
+   (CompMusic / MTG-UPF, CC-BY-NC-SA) is used only for evaluation (tools/tonic_bench); nothing
+   derived from it is in the live model or this repository.
 9. **Libraries:** essentia (AGPL); librosa; xgboost. gradio is used only by the local demo.

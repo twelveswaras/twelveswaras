@@ -194,11 +194,16 @@ is a public, honest scorecard of how each one is implemented, and where we still
 ## Licensing
 
 - **Code:** MIT.
+- **The running recognizer:** AGPL-3.0. It uses [Essentia](https://essentia.upf.edu) (AGPL-3.0) for
+  pitch and tonic detection, so the recognizer service as a whole is covered by the AGPL: if you
+  run a modified copy for others over a network, you must offer them its source. The MIT files in
+  this repository stay MIT on their own.
+- **Model weights:** CC-BY-4.0. The model is trained on the Raga Recognition Dataset features
+  (CC-BY-4.0); credit both those authors and twelveswaras (see [`CITATION.cff`](CITATION.cff)).
+- **Reference swara profiles** (`raaga_profiles.json`, the learner panel): CC-BY-4.0, built from
+  the same Raga Recognition Dataset features.
 - **Contributor dataset (the commons):** CC-BY-4.0, kept **separate** from non-commercial source
-  data so it stays cleanly reusable.
-- **Model:** the current model is trained on the Raga Recognition Dataset features (CC-BY-4.0,
-  attribution required); earlier seed models trained on Saraga carried its CC-BY-NC-SA terms. Like
-  the rest of the project, models are published for non-commercial use.
+  data (such as Saraga, CC-BY-NC-SA) so it stays cleanly reusable.
 
 This is a non-commercial, open-source public good. See [`GOVERNANCE.md`](GOVERNANCE.md) for
 stewardship and [`METHODOLOGY.md`](METHODOLOGY.md) for the full method + references.
