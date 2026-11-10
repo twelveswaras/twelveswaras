@@ -469,7 +469,11 @@
       var mime=pickMime(); curMime=mime; curFile=null; rec=new MediaRecorder(stream, mime?{mimeType:mime}:undefined); chunks=[];
       rec.ondataavailable=function(e){ if(e.data&&e.data.size) chunks.push(e.data); };
       rec.start(1000); t0=performance.now();
-      uiTimer=setInterval(tick,33); sendTimer=setInterval(function(){maybeSend(mime);}, SEND_EVERY);
+      // The first send goes out at FIRST_SEND exactly (the 3.5 s interval alone would wait to 7 s, the
+      // first tick after it), so Sa shows sooner; the interval takes over from there.
+      uiTimer=setInterval(tick,33);
+      sendTimer=setTimeout(function(){ if(mode!=='listening') return; elapsed=(performance.now()-t0)/1000;
+        maybeSend(mime); sendTimer=setInterval(function(){maybeSend(mime);}, SEND_EVERY); }, FIRST_SEND);
     }
     async function maybeSend(mime){
       if(mode!=='listening'||sending||elapsed<FIRST_SEND/1000||!chunks.length) return;

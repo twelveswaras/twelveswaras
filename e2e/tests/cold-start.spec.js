@@ -103,3 +103,14 @@ test('a send that hangs is abandoned after a minute, so the listen keeps sending
   await page.clock.fastForward(4000);                       // the next tick sends again
   await expect.poll(() => api.calls.identify, { timeout: 5000 }).toBeGreaterThan(1);
 });
+
+test('the first audio goes out at 4.5 s, not at the next 3.5 s tick after it', async ({ page }) => {
+  const api = await stub(page, (route) => answer(route, { no_prediction: false, tonic_hz: 146, heard_seconds: 4, top3: TOP3 }));
+  await page.clock.install();
+  await page.goto('/');
+  await page.clock.pauseAt(new Date(Date.now() + 5000));    // page time now moves only when told to
+  await page.locator('#rec-orb').click();
+  await page.waitForTimeout(1500);                          // the recorder produces audio in real time
+  await page.clock.runFor(4600);                            // timers fire at their real times, to just past 4.5 s
+  await expect.poll(() => api.calls.identify, { timeout: 3000 }).toBe(1);
+});
