@@ -321,3 +321,20 @@ at 150 s:
 days 98 of 142 uploads ran past 150 s, while live listens averaged **33.5 s**, where Sa is right only
 about two times in three even on clean audio. Keeping live listeners going from 30 to 45 s is worth
 more to the tonic (+8 points) than any setting.
+
+### The first minute: notes heard, and a count that was dropped (2026-11-10)
+
+The live screen shows no raaga names for the first minute (2026-11-09). To keep visitors listening it
+now shows the evidence building up: Sa, then each swara as it is heard. Both thresholds were measured
+on the 80 real-world clips through the production path, at 15 to 60 s of audio.
+
+**Notes heard.** A swara lights when its strongest sthana holds at least 5% of the melody in two
+replies in a row. Median swaras lit (of 7): 2% lights 6-7 (gamaka smears light almost everything), 5%
+lights 4-5 (close to a raaga's own five to seven), 8% lights 4.
+
+**"Raagas still in the running" (designed, not shipped).** Counting raagas at or above a calibrated
+probability does not hold up: at 1%, the true raaga is inside the count only 54% / 66% / 77% of the
+time at 15 / 30 / 60 s, and the count sits at 4-5 from 15 s on instead of shrinking. The model is
+confident early even when wrong, so the number would be a guess presented as evidence. A count of
+raagas whose scale fits the notes heard was also ruled out: the data-derived swara profiles
+(raaga_profiles.json) are too smeared by gamaka to define a raaga's notes.

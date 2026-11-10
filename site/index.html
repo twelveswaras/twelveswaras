@@ -212,7 +212,24 @@
   .rec-raga{font-size:2.1rem;font-weight:800;letter-spacing:-.02em;line-height:1.04;color:var(--paper);
     opacity:0;transform:translateY(6px);transition:opacity .45s,transform .45s}
   .rec-raga.show{opacity:1;transform:none} .rec-raga.done{color:#fff}
-  .rec-top3{list-style:none;margin:12px 0 0;padding:0;width:100%;max-width:320px;display:flex;flex-direction:column;gap:8px;opacity:0;transition:opacity .4s}
+  /* The first minute: the notes heard so far and, from the minute on, the answers share one space and
+     cross-fade in place, so nothing else on the screen moves when the names arrive. */
+  .rec-stage{display:grid;width:100%;max-width:340px;margin-top:12px}
+  .rec-stage.live{min-height:150px}
+  .rec-phase{grid-area:1/1;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;
+    transition:opacity .6s ease,transform .6s ease}
+  .rec-phase.off{opacity:0;transform:translateY(-8px);pointer-events:none}
+  #rec-answers.off{transform:translateY(10px)}
+  .rec-label{font-family:var(--mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);min-height:1em}
+  .rec-pills{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;width:100%}
+  .rec-pill{min-width:0;padding:.3rem 0;border-radius:10px;border:1px dashed var(--line-2);color:var(--faint);font-size:.84rem;
+    display:flex;flex-direction:column;align-items:center;line-height:1.15;transition:border-color .4s,background .4s,color .4s,box-shadow .4s}
+  .rec-pill small{font-family:var(--mono);font-size:.58rem;opacity:.8;min-height:1.15em}
+  .rec-pill.on{border-style:solid;border-color:#f59e0b40;background:#f59e0b1a;color:var(--paper)}
+  .rec-pill.new{border-color:var(--amber-hi);box-shadow:0 0 0 3px #f59e0b1a}
+  .rec-caption{font-size:.82rem;color:var(--amber-hi);min-height:1.3em}
+  @media (prefers-reduced-motion:reduce){.rec-phase,.rec-pill{transition:none}}
+  .rec-top3{list-style:none;margin:0;padding:0;width:100%;max-width:320px;display:flex;flex-direction:column;gap:8px;opacity:0;transition:opacity .4s}
   .rec-top3.show{opacity:1}
   .rec-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:5px 10px}
   .rec-row .rn{font-size:.96rem;color:var(--muted)} .rec-row.lead .rn{color:var(--paper);font-weight:650}
@@ -327,7 +344,17 @@
         <span class="rec-lead" id="rec-lead">Tap and hold your phone to the music. It names the raaga when it's sure.</span>
         <span class="rec-raga" id="rec-raga"></span>
       </div>
-      <ul class="rec-top3" id="rec-top3" aria-live="polite"></ul>
+      <div class="rec-stage" id="rec-stage">
+        <div class="rec-phase off" id="rec-notes">
+          <div class="rec-label">Notes heard so far</div>
+          <div class="rec-pills" id="rec-pills"></div>
+          <div class="rec-caption" id="rec-caption" aria-live="polite"></div>
+        </div>
+        <div class="rec-phase" id="rec-answers">
+          <div class="rec-label" id="rec-bridge"></div>
+          <ul class="rec-top3" id="rec-top3" aria-live="polite"></ul>
+        </div>
+      </div>
       <div class="rec-controls" id="rec-controls"></div>
       <div class="rec-contrib" id="rec-contrib"></div>
       <div class="rec-guides" id="rec-guides">
@@ -399,7 +426,9 @@
     function g(x){return document.getElementById(x);}
     var cv=g('rec-cv'), ctx=cv.getContext('2d'), reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
     var statusEl=g('rec-status'), saEl=g('rec-sa'), leadEl=g('rec-lead'), ragaEl=g('rec-raga'),
-        top3El=g('rec-top3'), controls=g('rec-controls'), orb=g('rec-orb'), guides=g('rec-guides');
+        top3El=g('rec-top3'), controls=g('rec-controls'), orb=g('rec-orb'), guides=g('rec-guides'),
+        stageEl=g('rec-stage'), notesEl=g('rec-notes'), answersEl=g('rec-answers'), bridgeEl=g('rec-bridge'),
+        pillsEl=g('rec-pills'), captionEl=g('rec-caption');
     // Listen long: in-the-wild accuracy is monotonic in listening time (benchmark: 0.33@45s ->
     // 0.475@90s -> 0.512@150s) and the old snappy 15s lock scored 0.215 (below baseline). Conservative
     // lock — don't commit before MIN_LISTEN, need a long stable hold + high confidence — else run to
@@ -411,6 +440,12 @@
     // swaras, a ring filling to one minute); no seconds counter at any point.
     var HOLD=10.0, MIN_LISTEN=60, MAX_S=150, SEND_EVERY=3500, FIRST_SEND=4500, SEND_TIMEOUT=60000;
     var MAX_CONTRIB_BYTES=25*1024*1024;   // the commons' limit (the worker refuses larger clips)
+    // Notes heard so far: the seven swaras, each lit with the sthana heard (Ri -> R2) once it holds at
+    // least NOTE_MIN of the melody in two replies in a row. 5% lights about five of the seven on the
+    // 80 real-world clips, close to a raaga's own five to seven notes; lower lights all seven.
+    var SLOTS=[[0],[1,2],[3,4],[5,6],[7],[8,9],[10,11]], SLOT_NAMES=['Sa','Ri','Ga','Ma','Pa','Da','Ni'],
+        STHANA=['S','R1','R2','G2','G3','M1','M2','P','D1','D2','N2','N3'], NOTE_MIN=0.05;
+    var noteOn=[], noteSeen=[], noteAt=-1e9, lastLit=-1;
     // A sleeping recognizer took 42.6 s to give its first answer (measured 2026-10-24) and most
     // visitors gave up inside that window. Say so after WAKE_NOTE s of waiting, and when Stop is
     // tapped with an answer already on its way, wait up to FINISH_WAIT for it rather than drop it.
@@ -447,7 +482,28 @@
     function reset(src){ source=src; mode='listening'; elapsed=0; conf=0; top3=[]; swaraAct=new Array(12).fill(0);
       leader=''; leaderSince=0; lastSent=0; phase=''; nextTip=6; tipUntil=0; tipIdx=-1; curTonic=null; curHeard=null; curReason=''; sentOnce=false; gotReply=false; contribEl.innerHTML='';
       saEl.className='rec-sa'; saEl.textContent=''; ragaEl.className='rec-raga'; ragaEl.textContent='';
-      top3El.innerHTML=''; rows._k=''; named=false; top3El.classList.remove('done'); }
+      top3El.innerHTML=''; rows._k=''; named=false; top3El.classList.remove('done');
+      noteOn=new Array(7).fill(''); noteSeen=new Array(7).fill(false); noteAt=-1e9; lastLit=-1; drawNotes();
+      setPhase(src==='live'); }
+    // Which of the two phases fills the stage: the notes heard so far (the first minute of a live
+    // listen) or the answers. `live` keeps the stage at a fixed height so the swap moves nothing.
+    function setPhase(notes, bridge){
+      notesEl.classList.toggle('off', !notes); answersEl.classList.toggle('off', notes);
+      stageEl.classList.toggle('live', mode==='listening' && source==='live'); bridgeEl.textContent=bridge||''; }
+    function drawNotes(){
+      pillsEl.innerHTML=SLOT_NAMES.map(function(n,i){
+        var on=noteOn[i], fresh=on && elapsed-noteAt<2.5 && lastLit===i;
+        return '<span class="rec-pill'+(on?' on':'')+(fresh?' new':'')+'">'+n+'<small>'+(on||'')+'</small></span>'; }).join(''); }
+    // A swara slot is heard when its strongest sthana holds NOTE_MIN of the melody in this reply AND the
+    // previous one, so a passing gamaka or a stray pitch never lights a note.
+    function hearNotes(act){
+      var total=act.reduce(function(a,b){return a+b;},0); if(!(total>0)) return;
+      SLOTS.forEach(function(slot,i){
+        var best=slot.reduce(function(a,b){return act[b]>act[a]?b:a;}, slot[0]), heard=act[best]/total>=NOTE_MIN;
+        if(heard && noteSeen[i] && !noteOn[i]){ noteOn[i]=STHANA[best]; lastLit=i; noteAt=elapsed;
+          captionEl.textContent=SLOT_NAMES[i]+' just appeared'; }
+        noteSeen[i]=heard; });
+      drawNotes(); }
     // Bring the recognizer into view when a listen starts. On mobile the locked result renders
     // below the fold, so without this the listener has to scroll to see it. Center it (not 'start',
     // which jams it to the very top) and only scroll when it is not already fully in view.
@@ -513,7 +569,7 @@
     }
     function apply(d){
       gotReply=true;
-      if(d&&Array.isArray(d.swara_activation)) swaraAct=d.swara_activation;
+      if(d&&Array.isArray(d.swara_activation)){ swaraAct=d.swara_activation; if(source==='live') hearNotes(swaraAct); }
       // Keep what the SERVER measured. curHeard is seconds of audio actually analysed, which is not
       // the same as the browser's `elapsed` wall-clock (for an upload, elapsed is just processing
       // time), and curReason says why a no-prediction happened. Both go to /result.
@@ -532,7 +588,8 @@
         if(statusEl.textContent!==st) statusEl.textContent=st;
         // Once, at the minute, even if no answer has arrived yet (a cold recognizer, empty replies):
         // the labels change now, and the names appear here or when apply() gets the first answer.
-        if(!early && !named){ named=true;
+        if(early && elapsed-noteAt>4 && captionEl.textContent) captionEl.textContent='';
+        if(!early && !named){ named=true; setPhase(false, 'Most likely so far');
           var sb=g('r-stop'); if(sb) sb.textContent='Stop now';
           orb.setAttribute('aria-label','Listening. Tap Stop now for the answer so far.');
           if(top3.length) rows(top3); }
@@ -544,7 +601,9 @@
       else{ if(elapsed>=nextTip && elapsed<MAX_S-3){ tipUntil=elapsed+2.6; nextTip+=7; tipIdx=(tipIdx+1)%TIPS.length; }
         if(elapsed<tipUntil) s=TIPS[tipIdx];
         else if(conf>0&&elapsed>=MIN_LISTEN&&held>=HOLD*0.85) s='Locking it in…';
-        else if(!namesShown()) s = curTonic ? 'Sa found. Listening to the phrases…' : 'Finding Sa from the drone…';
+        else if(!namesShown()) s = !curTonic ? 'Finding Sa from the drone…'
+          : (noteOn.filter(Boolean).length>=5 && elapsed>=40) ? 'Listening to how the notes move…'
+          : 'Sa found. Hearing the notes of the raaga…';
         else s=VERBS[Math.floor(elapsed/2.6)%VERBS.length]; }
       if(s!==phase){phase=s; leadEl.innerHTML=s;}
       var ready = conf>0&&leader&&(elapsed-leaderSince)>=HOLD&&elapsed>=MIN_LISTEN&&conf>=0.80;
@@ -560,7 +619,7 @@
       finishTimer=setTimeout(finish, FINISH_WAIT);
     }
     function finish(){
-      if(mode!=='listening'&&mode!=='finishing') return; mode='locked'; stopCap();
+      if(mode!=='listening'&&mode!=='finishing') return; mode='locked'; stopCap(); setPhase(false, '');
       clearTimeout(finishTimer);
       clearInterval(uiTimer); clearInterval(sendTimer);
       if(!top3.length) return noRes();
@@ -715,6 +774,7 @@
       saEl.className='rec-sa'; saEl.textContent=''; ragaEl.className='rec-raga'; ragaEl.textContent='';
       leadEl.textContent="Tap and hold your phone to the music. It names the raaga when it's sure.";
       top3El.className='rec-top3'; top3El.innerHTML=''; guides.className='rec-guides'; contribEl.innerHTML='';
+      setPhase(false);
       setC('<div class="rec-entry"><span class="rhint">Point your phone at the music, then tap</span>'
         +'<button class="rghost" id="r-up">or upload a recording ↑</button></div>');
     }
