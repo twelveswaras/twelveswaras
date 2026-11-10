@@ -9,6 +9,8 @@ repository-code: "https://github.com/twelveswaras/twelveswaras"
 url: "https://twelveswaras.com"
 license: MIT
 version: 1.0.0
+# The concept DOI: resolves to the latest release on Zenodo. Version DOIs are listed there.
+doi: 10.5281/zenodo.24096813
 date-released: "2026-11-10"
 abstract: >-
   twelveswaras is an open-source "Shazam for raagas": given a recording of Indian classical

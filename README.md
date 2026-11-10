@@ -4,6 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Live at twelveswaras.com](https://img.shields.io/badge/live-twelveswaras.com-brightgreen.svg)](https://twelveswaras.com)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24096813.svg)](https://doi.org/10.5281/zenodo.24096813)
 
 An open-source "Shazam for raagas": play it a clip of Indian classical music (Carnatic, and now
 Hindustani in preview) and it identifies the **raaga**, shows the top-3 with honest confidence
@@ -179,8 +180,10 @@ have grown the data commons are credited in [`CONTRIBUTORS.md`](CONTRIBUTORS.md)
 
 If you use twelveswaras in your research, please cite it. Machine-readable metadata is in
 [`CITATION.cff`](CITATION.cff) (GitHub renders a "Cite this repository" button from it), which
-also lists the datasets and prior work the model builds on. Releases are archived on Zenodo with a
-DOI; please cite the version you used.
+also lists the datasets and prior work the model builds on. Releases are archived on Zenodo:
+[10.5281/zenodo.24096813](https://doi.org/10.5281/zenodo.24096813) always resolves to the latest
+version, and each version has its own DOI on that page (1.0.0 is
+[10.5281/zenodo.24096814](https://doi.org/10.5281/zenodo.24096814)). Please cite the version you used.
 
 ## Principles
 
