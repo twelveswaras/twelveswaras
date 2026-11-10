@@ -21,16 +21,15 @@ from __future__ import annotations
 import html
 import json
 import re
-import unicodedata
 from pathlib import Path
+
+from tools.build_data import SEMITONE, slug
 
 ROOT = Path(__file__).resolve().parent.parent
 GUIDE = ROOT / "raaga_guide.json"
 REF = ROOT / "supporting-docs" / "raaga_reference_draft.json"
 OUT = ROOT / "site" / "raaga"
 
-SWARA12 = ["S", "R1", "R2", "G2", "G3", "M1", "M2", "P", "D1", "D2", "N2", "N3"]
-SEMITONE = {s: i for i, s in enumerate(SWARA12)}
 COUNT_LABEL = {5: "audava (five-note)", 6: "shadava (six-note)", 7: "sampurna (seven-note)"}
 LETTER_WORDS = {
     "S": ["sa", "shadja", "shadjam", "shadjamam"],
@@ -71,10 +70,6 @@ TRAD = {
 }
 
 
-def slug(name: str, suffix: str = "") -> str:
-    d = unicodedata.normalize("NFKD", name)
-    d = "".join(c for c in d if not unicodedata.combining(c))
-    return d.lower().replace("ṁ", "m").replace(" ", "-") + suffix
 
 
 def esc(s: str) -> str:
@@ -202,7 +197,6 @@ __JSONLD__
   .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
   .brand svg{width:26px;height:26px;flex:0 0 auto}
-  .top .gh{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
   .top .nav{display:inline-flex;align-items:center;gap:12px}
   .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
   .top .nav a:hover,.top .nav a.here{color:var(--paper)}
@@ -210,7 +204,6 @@ __JSONLD__
   @media (max-width:560px){.top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:max(16px,env(safe-area-inset-top))}
     .top .nav{flex-basis:100%;justify-content:center;gap:14px} .top .nav a{white-space:nowrap}}
   @media (max-width:400px){.top .nav{gap:11px} .top .nav a{font-size:.72rem}}
-  .top .gh:hover{color:var(--paper)}
   .crumb{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);padding:20px 0 0}
   .crumb a{color:var(--muted);text-decoration:underline;text-underline-offset:2px} .crumb a:hover{color:var(--paper)}
   .hero{padding:14px 0 8px}
@@ -710,7 +703,6 @@ INDEX_TEMPLATE = """<!doctype html>
   .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
   .brand svg{width:26px;height:26px;flex:0 0 auto}
-  .top .gh{font-family:var(--mono);font-size:.76rem;color:var(--muted)}
   .top .nav{display:inline-flex;align-items:center;gap:12px}
   .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
   .top .nav a:hover,.top .nav a.here{color:var(--paper)}
@@ -718,7 +710,6 @@ INDEX_TEMPLATE = """<!doctype html>
   @media (max-width:560px){.top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:max(16px,env(safe-area-inset-top))}
     .top .nav{flex-basis:100%;justify-content:center;gap:14px} .top .nav a{white-space:nowrap}}
   @media (max-width:400px){.top .nav{gap:11px} .top .nav a{font-size:.72rem}}
-  .top .gh:hover{color:var(--paper)}
   header.hero{padding:26px 0 6px}
   .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin:0 0 10px}
   h1{font-size:clamp(1.9rem,7vw,2.8rem);font-weight:800;letter-spacing:-.03em;margin:0;text-wrap:balance}

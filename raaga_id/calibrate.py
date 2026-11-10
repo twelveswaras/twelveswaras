@@ -4,7 +4,7 @@ The shown %s are the mean of XGBoost softmax over a clip's windows — a *relati
 not a true likelihood. Two fixes live here:
 
 1. **Temperature scaling** — one scalar T (fit offline on leak-free out-of-fold predictions,
-   `tools/calibrate.py`) reshapes the probabilities so the number means what it says, WITHOUT
+   `tools/train_swara`) reshapes the probabilities so the number means what it says, WITHOUT
    changing which raaga wins (argmax-preserving). Stored in a `<model>.calib.json` sidecar.
 2. **Confidence state** — turns a flat top-2 into an honest "close call — X vs Y" instead of a
    falsely-precise single answer.

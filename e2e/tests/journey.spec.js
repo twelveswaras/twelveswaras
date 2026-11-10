@@ -75,3 +75,12 @@ test('contributing from the contribute page reports contribute_sent', async ({ p
   expect(events.contributions).toBe(1);
   expect(events[0].session).toMatch(/^[a-z0-9]+$/);
 });
+
+test('an upload too large to contribute is not offered the correction card', async ({ page }) => {
+  await stubApi(page, { top3: CONFIDENT });
+  await page.goto('/');
+  // 26 MB of silence: over the 25 MB the commons accepts, but still identifiable.
+  await page.setInputFiles('#rec-file', { name: 'long.wav', mimeType: 'audio/wav', buffer: Buffer.alloc(26 * 1024 * 1024) });
+  await expect(page.locator('#rec-raga')).toHaveText('Kalyāṇi');
+  await expect(page.locator('#cc-open')).toHaveCount(0);
+});

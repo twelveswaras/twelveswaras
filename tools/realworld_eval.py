@@ -1,14 +1,14 @@
 """Real-world benchmark: score the production recognizer on YOUR clips (concert / phone / YT).
 
     python -m tools.realworld_eval [--clips benchmark/realworld/clips.csv] \
-                                   [--model models/raaga_xgb.json]
+                                   [--model models/raaga_xgb.swara.json]
 
-Our frozen benchmark is clean *studio* audio (top1 0.798). This measures the number that
+The frozen benchmark is clean *studio* audio. This measures the number that
 actually matters — accuracy on real-world clips (phone mics, room acoustics, concert halls) —
 and breaks it down BY DRONE PRESENCE, which directly tests the tonic/drone-dependency
 hypothesis. You supply a clip-list CSV (see benchmark/realworld/README.md); each clip runs
-through the EXACT production pipeline (audio_to_features -> model). Requires the numpy<2
-inference env (essentia + compiam), same as the demo.
+through the EXACT production pipeline (decode -> audio_to_features -> model). Requires the
+numpy<2 inference env (essentia), same as the demo.
 
 Legal line: use clips privately to MEASURE accuracy. Do not redistribute copyrighted audio;
 that is separate from the rights-clean CC-BY commons. The audio dir + filled clips.csv are
@@ -179,7 +179,7 @@ def main() -> None:
             print(f"  MISSING {path}", flush=True)
             continue
         try:
-            y, sr = librosa.load(str(path), sr=None, mono=True)
+            y, sr = librosa.load(str(path), sr=None, mono=True, duration=pitch_extract.ANALYSED_SECONDS)
         except Exception as e:  # noqa: BLE001
             print(f"  DECODE-FAIL {c.file}: {e}", flush=True)
             continue
@@ -198,7 +198,7 @@ def main() -> None:
 
     s = summarize(results)
     print(f"\nREAL-WORLD: n={s['n']} scored={s['scored']} no-prediction={s['no_prediction']}")
-    print(f"  top1={s['top1']:.3f}  top3={s['top3']:.3f}   (studio frozen: top1 0.798 / top3 0.938)")
+    print(f"  top1={s['top1']:.3f}  top3={s['top3']:.3f}")
     for k, v in s["by_drone"].items():
         print(f"  drone={k:7s} n={v['n']:2d}  top1={v['top1']:.3f}  top3={v['top3']:.3f}")
     for k, v in s.get("by_instrument", {}).items():

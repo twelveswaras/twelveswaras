@@ -1,8 +1,9 @@
-"""v0 "Shazam for raagas" — mic/upload -> top-3 (PRD build-order step 7).
+"""Local desktop demo of the recognizer: mic/upload -> top-3.
 
     python -m apps.identify        # launches the Gradio app (needs the inference env)
 
-Runs the PCD path (essentia pitch + tonic -> pooled model), shows top-3 as confidence
+Runs the production path (essentia pitch + tonic -> windowed TDMS and swara phrases -> the
+model), shows top-3 as confidence
 bars + the estimated Sa + recognition time. Styled to the shared urbanmorph design
 system (dark #0a0a0a canvas, system-ui, hairline borders) with twelveswaras' amber hue.
 """
@@ -112,7 +113,7 @@ def _theme():
 
 def _load_model() -> RaagaXGB:
     if not MODEL_PATH.exists():
-        raise SystemExit(f"no model at {MODEL_PATH} — run `python -m raaga_id.train` first.")
+        raise SystemExit(f"no model at {MODEL_PATH} — build one with `python -m tools.train_swara fit` first.")
     return RaagaXGB.load(MODEL_PATH)
 
 

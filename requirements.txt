@@ -15,8 +15,6 @@ soundfile          # wav/flac I/O
 
 # --- Data + loaders (§6.3) ---
 mirdata            # one-line loaders for Saraga Carnatic/Hindustani
-huggingface_hub    # push/pull the commons + model
-datasets           # datasets.Features spec (schema.py)
 
 # --- Modeling — PyTorch (D15), baseline-first ladder (D16) ---
 torch              # arm64 wheels ship MPS support

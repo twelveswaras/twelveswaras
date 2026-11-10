@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS identifications (
                                            -- processing time, NOT audio duration. Kept separate from
                                            -- heard_s so the two are never conflated again.
   reason        TEXT                       -- why a no_prediction happened: 'too_short' |
-                                           -- 'tonic_failed' | 'no_windows'. NULL when a raaga was
+                                           -- 'tonic_failed' | 'no_windows' (from the recognizer) or
+                                           -- 'not_sent' | 'no_reply' (from the page). NULL when a raaga was
                                            -- returned. ~46% of sessions end without a prediction and
                                            -- until this column existed the cause was unrecorded.
                                            -- On a live DB that predates these columns, run once:
@@ -47,8 +48,9 @@ CREATE INDEX IF NOT EXISTS idx_ident_ref  ON identifications(referrer);
 CREATE TABLE IF NOT EXISTS events (
   id       INTEGER PRIMARY KEY AUTOINCREMENT,
   ts       TEXT NOT NULL,               -- ISO8601
-  event    TEXT NOT NULL,               -- view | listen_start | mic_denied | result
-                                        -- (the worker enforces exactly this set; see FUNNEL_EVENTS)
+  event    TEXT NOT NULL,               -- a funnel step from the allowlist in the worker
+                                        -- (FUNNEL_EVENTS: view, listen_start, mic_*, result,
+                                        -- correct_*, contribute_*)
                                         -- plus identify_failed, written by the worker itself when
                                         -- a recognition fails (source = the reason, e.g.
                                         -- unreachable, bad_reply:503, rejected:400, error:500)

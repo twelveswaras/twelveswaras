@@ -1,8 +1,8 @@
 """Inference-time audio -> model feature windows.
 
 Extracts the predominant-melody pitch (essentia PredominantPitchMelodia) and the tonic
-(essentia TonicIndianArtMusic, which exploits the drone), then builds windowed TDMS (D28)
-via features.model_windows — the SAME feature the model trains on. This is the audio->feature
+(essentia TonicIndianArtMusic, which exploits the drone), then builds windowed TDMS (D28) and
+each window's swara phrases via features.model_windows, the SAME features the model trains on. This is the audio->feature
 path for a RAW upload; the annotated-corpus path (data.iter_pitch_clips) uses each dataset's
 own pitch+tonic instead.
 
@@ -24,6 +24,9 @@ from . import features
 from .config import INFER_MAX_WINDOWS, INFER_SECONDS, MIN_CLIP_SECONDS, PCD_BINS, TDMS_HOP_S, TONIC_SECONDS
 
 TONIC_SR = 44100          # essentia's native rate for pitch + tonic
+# The most of any upload that is ever analysed (the tonic hears TONIC_SECONDS, the melody
+# INFER_SECONDS), so callers decode only this much instead of a whole concert.
+ANALYSED_SECONDS = max(TONIC_SECONDS, INFER_SECONDS)
 MELODIA_HOP = 128
 
 _MELODIA = None

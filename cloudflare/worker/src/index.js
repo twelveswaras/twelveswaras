@@ -3,74 +3,53 @@
  *
  * The browser talks only to this worker (same-origin via a route on twelveswaras.com), so there is
  * no cross-origin iframe and no CORS pain. The worker:
- *   - forwards the audio to the headless recognizer Space (server-to-server),
+ *   - forwards the audio to the recognizer container (server-to-server),
  *   - logs RESULT METADATA ONLY to D1 (never the audio — privacy is the product),
  *   - optionally stores an opt-in clip to R2 for the CC-BY commons (only when the client consents),
  *   - returns the JSON to the page.
  *
- * Bindings (wrangler.toml): SPACE_URL (var), ALLOW_ORIGIN (var), DB (D1), CLIPS (R2).
+ * Bindings (wrangler.toml): SPACE_URL (var, the recognizer's URL), ALLOW_ORIGIN (var), DB (D1),
+ * CLIPS (R2).
  */
 
 export default {
   async fetch(request, env, ctx) {
-    const url = new URL(request.url);
-
-    if (request.method === 'OPTIONS') return cors(new Response(null, { status: 204 }), env, request);
-
-    // match /identify and /health with or without the /api prefix, so the same worker serves both
-    // same-origin (twelveswaras.com/api/identify) and the direct staging URL (…workers.dev/identify)
-    if (request.method === 'POST' && url.pathname.endsWith('/identify')) {
-      return handleIdentify(request, env, ctx);
-    }
-    if (request.method === 'POST' && url.pathname.endsWith('/contribute')) {
-      return handleContribute(request, env, ctx);
-    }
-    // one row per finished session: the wheel posts the final (locked) result here when it stops
-    if (request.method === 'POST' && url.pathname.endsWith('/result')) {
-      return handleResult(request, env, ctx);
-    }
-    // one row per funnel step reached (view -> listen_start -> result), so a visit that produces
-    // nothing is legible rather than invisible
-    if (request.method === 'POST' && url.pathname.endsWith('/event')) {
-      return handleEvent(request, env, ctx);
-    }
-    if (url.pathname.endsWith('/health')) {
-      return proxyRecognizerGet('/health', { status: 'backend unavailable' }, 502, env, request);
-    }
-    // The page pings this on load. A sleeping recognizer took 42.6 s to give its first answer, and
-    // most visitors gave up inside that window; waking it while they read the page moves that wait
-    // off their critical path. Deliberately not logged: it is not usage.
-    if (url.pathname.endsWith('/warm')) {
-      return proxyRecognizerGet('/warm', { warm: false }, 503, env, request);
-    }
-    return cors(json({ error: 'not found', path: url.pathname }, 404), env, request);
-  },
-
-  // Cron (wrangler.toml [triggers]): keep the recognizer Space warm. A sleeping HF Space costs the
-  // FIRST visitor a ~34s cold start with no feedback, which is well past the point where anyone
-  // waits; measured usage was ~100 visitors/day producing zero recognitions. Cheaper to pay that
-  // cold start on a schedule than to charge it to whoever shows up.
-  async scheduled(event, env, ctx) {
-    ctx.waitUntil(keepWarm(env));
+    return cors(await route(request, env, ctx), env, request);
   },
 };
 
-// A warm Space answers /health in ~1s. Anything slower means it had gone to sleep and this ping
-// just absorbed the cold start on a visitor's behalf. Logged either way (`wrangler tail`) so the
-// cron cadence can be tuned from evidence about how fast the Space actually sleeps.
-const COLD_MS = 5000;
+async function route(request, env, ctx) {
+  const url = new URL(request.url);
 
-async function keepWarm(env) {
-  const t0 = Date.now();
-  try {
-    const r = await fetch(env.SPACE_URL + '/health');
-    const ms = Date.now() - t0;
-    console.log('keepwarm', { status: r.status, ms, cold: ms > COLD_MS });
-  } catch (e) {
-    // Never throw: an unhandled rejection here would mark the cron as failing, and a dead cron is
-    // worse than a cold Space (it fails silently and the cold start comes back).
-    console.error('keepwarm failed', { err: String((e && e.message) || e), ms: Date.now() - t0 });
+  if (request.method === 'OPTIONS') return new Response(null, { status: 204 });
+
+  // match /identify and /health with or without the /api prefix, so the same worker serves both
+  // same-origin (twelveswaras.com/api/identify) and the direct staging URL (…workers.dev/identify)
+  if (request.method === 'POST' && url.pathname.endsWith('/identify')) {
+    return handleIdentify(request, env, ctx);
   }
+  if (request.method === 'POST' && url.pathname.endsWith('/contribute')) {
+    return handleContribute(request, env, ctx);
+  }
+  // one row per finished session: the wheel posts the final (locked) result here when it stops
+  if (request.method === 'POST' && url.pathname.endsWith('/result')) {
+    return handleResult(request, env, ctx);
+  }
+  // one row per funnel step reached (view -> listen_start -> result), so a visit that produces
+  // nothing is legible rather than invisible
+  if (request.method === 'POST' && url.pathname.endsWith('/event')) {
+    return handleEvent(request, env, ctx);
+  }
+  if (url.pathname.endsWith('/health')) {
+    return proxyRecognizerGet('/health', { status: 'backend unavailable' }, 502, env);
+  }
+  // The page pings this on load. A sleeping recognizer took 42.6 s to give its first answer, and
+  // most visitors gave up inside that window; waking it while they read the page moves that wait
+  // off their critical path. Deliberately not logged: it is not usage.
+  if (url.pathname.endsWith('/warm')) {
+    return proxyRecognizerGet('/warm', { warm: false }, 503, env);
+  }
+  return json({ error: 'not found', path: url.pathname }, 404);
 }
 
 // Reflect the request Origin when it's one of ours (production, *.pages.dev previews, or localhost
@@ -101,28 +80,42 @@ function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), { status, headers: { 'content-type': 'application/json' } });
 }
 
+const country = (request) => (request.cf && request.cf.country) || null;
+const errText = (e) => String((e && e.message) || e);
+const isTrue = (v) => v === 'true' || v === '1';
+// A free-text form field, bounded: at most n characters, '' -> NULL.
+const field = (form, name, n) => (form.get(name) || '').toString().trim().slice(0, n) || null;
+async function jsonBody(request) {
+  try { return await request.json(); } catch { return undefined; }
+}
+
+// One row in the events table. Best effort: analytics must never break a reply.
+async function insertEvent(env, row) {
+  try {
+    await env.DB.prepare(
+      `INSERT INTO events (ts, event, session, source, country, referrer) VALUES (?, ?, ?, ?, ?, ?)`
+    ).bind(new Date().toISOString(), row.event, row.session, row.source, row.country, row.referrer).run();
+  } catch { /* D1 unavailable */ }
+}
+
 // A failed recognition: why, in Workers Logs (with the detail) and as one events row (the reason
 // only, with country; no audio, no session) so the ops dashboard can count failures by reason.
 // Best effort: recording it must never change the reply.
 function identifyFailed(env, ctx, request, reason, detail) {
   console.error(`identify failed: ${reason}: ${String(detail).slice(0, 200)}`);
   try {
-    ctx.waitUntil(
-      env.DB.prepare(
-        `INSERT INTO events (ts, event, session, source, country, referrer) VALUES (?, ?, ?, ?, ?, ?)`
-      ).bind(new Date().toISOString(), 'identify_failed', null, reason.slice(0, 40),
-        (request.cf && request.cf.country) || null, null).run().catch(() => {})
-    );
-  } catch { /* D1 unavailable: the log line above still has it */ }
+    ctx.waitUntil(insertEvent(env, { event: 'identify_failed', session: null, source: reason.slice(0, 40),
+      country: country(request), referrer: null }));
+  } catch { /* no DB binding: the log line above still has it */ }
 }
 
 // GET a recognizer endpoint and relay its JSON, or a fixed fallback if it is unreachable.
-async function proxyRecognizerGet(path, fallback, fallbackStatus, env, request) {
+async function proxyRecognizerGet(path, fallback, fallbackStatus, env) {
   try {
     const r = await fetch(env.SPACE_URL + path);
-    return cors(json(await r.json()), env, request);
+    return json(await r.json());
   } catch {
-    return cors(json(fallback, fallbackStatus), env, request);
+    return json(fallback, fallbackStatus);
   }
 }
 
@@ -131,10 +124,10 @@ async function handleIdentify(request, env, ctx) {
   try {
     form = await request.formData();
   } catch {
-    return cors(json({ error: 'expected multipart/form-data with an "audio" field' }, 400), env, request);
+    return json({ error: 'expected multipart/form-data with an "audio" field' }, 400);
   }
   const audio = form.get('audio');
-  if (!audio || typeof audio === 'string') return cors(json({ error: 'no audio' }, 400), env, request);
+  if (!audio || typeof audio === 'string') return json({ error: 'no audio' }, 400);
 
   // forward to the headless recognizer
   const fwd = new FormData();
@@ -143,8 +136,8 @@ async function handleIdentify(request, env, ctx) {
   try {
     r = await fetch(env.SPACE_URL + '/identify', { method: 'POST', body: fwd });
   } catch (e) {
-    identifyFailed(env, ctx, request, 'unreachable', String(e && e.message || e));
-    return cors(json({ error: 'recognizer unavailable' }, 502), env, request);
+    identifyFailed(env, ctx, request, 'unreachable', errText(e));
+    return json({ error: 'recognizer unavailable' }, 502);
   }
   const text = await r.text();
   let data;
@@ -152,7 +145,7 @@ async function handleIdentify(request, env, ctx) {
   catch {
     // e.g. the container restarting answers with a plain-text error page
     identifyFailed(env, ctx, request, `bad_reply:${r.status}`, text);
-    return cors(json({ error: 'recognizer unavailable' }, 502), env, request);
+    return json({ error: 'recognizer unavailable' }, 502);
   }
 
   if (!data || data.error) {
@@ -160,34 +153,43 @@ async function handleIdentify(request, env, ctx) {
     // server error: keep its status. Anything else from the recognizer is a 502.
     const rejected = r.status >= 400 && r.status < 500;
     identifyFailed(env, ctx, request, `${rejected ? 'rejected' : 'error'}:${r.status}`, (data && data.error) || 'empty reply');
-    return cors(json(data || { error: 'bad response' }, rejected ? r.status : 502), env, request);
+    return json(data || { error: 'bad response' }, rejected ? r.status : 502);
   }
 
   // NB: identify is NOT logged. The wheel polls /identify every few seconds while listening, so
   // logging here over-counted usage many times over. The browser posts the final locked result to
   // /result once per session instead (handleResult).
-  return cors(json(data), env, request);
+  return json(data);
 }
 
 // POST /result — log ONE row per finished session (the locked result, or a no-prediction). The
 // browser sends the same result-metadata shape /identify returns (top3, tonic_hz, heard_seconds,
 // no_prediction). No audio, never PII.
 async function handleResult(request, env, ctx) {
-  let data;
-  try { data = await request.json(); }
-  catch { return cors(json({ error: 'expected json' }, 400), env, request); }
+  const data = await jsonBody(request);
+  if (data === undefined) return json({ error: 'expected json' }, 400);
   if (env.DB) ctx.waitUntil(logToD1(env, data, request));
-  return cors(json({ ok: true }), env, request);
+  return json({ ok: true });
 }
 
 // A closed set, so a malformed/hostile body cannot write arbitrary strings into the column.
 // too_short / tonic_failed / no_windows come from the recognizer. not_sent / no_reply come from the
 // page: the session ended before any audio was sent, or audio was sent and no answer came back.
 const RESULT_REASONS = new Set(['too_short', 'tonic_failed', 'no_windows', 'not_sent', 'no_reply']);
-const RESULT_SOURCES = new Set(['live', 'file']);
+const NAME_MAX = 80;   // a raaga name is never this long; the cap keeps the columns from being storage
+
+// The posted top-3, reduced to what it is: at most 3 {raaga, tradition, confidence}, bounded. The
+// tradition is kept because a name like Tōḍī or Śrī exists in both traditions.
+function cleanTop3(v) {
+  if (!Array.isArray(v)) return [];
+  return v.slice(0, 3).filter((e) => e && typeof e.raaga === 'string')
+    .map((e) => ({ raaga: e.raaga.slice(0, NAME_MAX), tradition: cleanTradition(e.tradition),
+      confidence: numOrNull(e.confidence) }));
+}
 
 async function logToD1(env, data, request) {
-  const top = (data.top3 && data.top3[0]) || null;
+  const top3 = cleanTop3(data.top3);
+  const top = top3[0] || null;
   try {
     await env.DB.prepare(
       `INSERT INTO identifications (ts, top1, confidence, top3, tonic_hz, heard_s, no_prediction, country, referrer, source, elapsed_s, reason)
@@ -196,17 +198,17 @@ async function logToD1(env, data, request) {
       new Date().toISOString(),
       top ? top.raaga : null,
       top ? top.confidence : null,
-      JSON.stringify(data.top3 || []),
-      data.tonic_hz ?? null,
-      data.heard_seconds ?? null,
+      JSON.stringify(top3),
+      numOrNull(data.tonic_hz),
+      numOrNull(data.heard_seconds),
       data.no_prediction ? 1 : 0,
-      (request.cf && request.cf.country) || null,
+      country(request),
       cleanReferrer(data.referrer),
       // heard_s is now the SERVER's analysed seconds; elapsed_s keeps the browser wall-clock
       // separately so the two are never conflated again, and `source` tells them apart (an
       // upload's elapsed is processing time, not audio duration). `reason` says why a
       // no-prediction happened, which was previously unrecorded and unknowable.
-      RESULT_SOURCES.has(data.source) ? data.source : null,
+      cleanSource(data.source),
       typeof data.elapsed_s === 'number' ? data.elapsed_s : null,
       RESULT_REASONS.has(data.reason) ? data.reason : null
     ).run();
@@ -236,32 +238,16 @@ const FUNNEL_EVENTS = new Set([
 ]);
 
 async function handleEvent(request, env, ctx) {
-  let data;
-  try { data = await request.json(); }
-  catch { return cors(json({ error: 'expected json' }, 400), env, request); }
+  const data = await jsonBody(request);
+  if (data === undefined) return json({ error: 'expected json' }, 400);
   // Unknown step names are dropped, not stored: the allowlist is what keeps this table a funnel
   // rather than an open write endpoint. Still a 200, because analytics must never surface to the
   // page as an error.
-  if (env.DB && FUNNEL_EVENTS.has(data.event)) ctx.waitUntil(logEvent(env, data, request));
-  return cors(json({ ok: true }), env, request);
-}
-
-async function logEvent(env, data, request) {
-  try {
-    await env.DB.prepare(
-      `INSERT INTO events (ts, event, session, source, country, referrer)
-       VALUES (?, ?, ?, ?, ?, ?)`
-    ).bind(
-      new Date().toISOString(),
-      data.event,
-      cleanId(data.session),
-      cleanSource(data.source),
-      (request.cf && request.cf.country) || null,
-      cleanReferrer(data.referrer)
-    ).run();
-  } catch {
-    /* logging must never break the page */
+  if (env.DB && data && FUNNEL_EVENTS.has(data.event)) {
+    ctx.waitUntil(insertEvent(env, { event: data.event, session: cleanId(data.session),
+      source: cleanSource(data.source), country: country(request), referrer: cleanReferrer(data.referrer) }));
   }
+  return json({ ok: true });
 }
 
 // The anonymous per-tab funnel id. Accept a short alphanumeric token and nothing else: dropping a
@@ -312,39 +298,41 @@ function cleanReferrer(v) {
 // HERE (server-side), not just in the UI. The clip is stored privately in R2 (to improve the model
 // and for human verification); we publish the model + non-reconstructable features, not the audio,
 // unless release_public=1. Row lands split='pending' and never trains until verified.
+const MAX_AUDIO_BYTES = 26 * 1024 * 1024;   // the contribute page accepts files up to 25 MB
+
 async function handleContribute(request, env, ctx) {
   let form;
   try { form = await request.formData(); }
-  catch { return cors(json({ error: 'expected multipart/form-data' }, 400), env, request); }
+  catch { return json({ error: 'expected multipart/form-data' }, 400); }
 
   const audio = form.get('audio');
-  const raaga = (form.get('raaga') || '').toString().trim();
-  const isOwn = form.get('is_own') === 'true' || form.get('is_own') === '1';
-  if (!audio || typeof audio === 'string') return cors(json({ error: 'no audio' }, 400), env, request);
-  if (!isOwn) return cors(json({ error: 'rights not attested' }, 403), env, request);
-  if (!raaga) return cors(json({ error: 'no raaga' }, 400), env, request);
+  const raaga = field(form, 'raaga', NAME_MAX);
+  if (!audio || typeof audio === 'string') return json({ error: 'no audio' }, 400);
+  if (!isTrue(form.get('is_own'))) return json({ error: 'rights not attested' }, 403);
+  if (!raaga) return json({ error: 'no raaga' }, 400);
+  if (audio.size > MAX_AUDIO_BYTES) return json({ error: 'audio too large' }, 413);
 
   const bytes = await audio.arrayBuffer();
   const sha = await sha256hex(bytes);
   const mime = audio.type || 'audio/webm';
   const key = `contrib/${new Date().toISOString().slice(0, 10)}/${sha.slice(0, 20)}.${extForType(mime)}`;
-  const modelPred = (form.get('model_pred') || '').toString() || null;
+  const modelPred = field(form, 'model_pred', NAME_MAX);
   const meta = {
     key, sha, raaga, model_pred: modelPred,
     confidence: numOrNull(form.get('confidence')),
     tonic_hz: numOrNull(form.get('tonic_hz')),
-    instrument: (form.get('instrument') || '').toString().slice(0, 40) || null,
-    release_public: (form.get('release_public') === 'true' || form.get('release_public') === '1') ? 1 : 0,
+    instrument: field(form, 'instrument', 40),
+    release_public: isTrue(form.get('release_public')) ? 1 : 0,
     label_source: modelPred && modelPred === raaga ? 'model_confirmed' : 'contributor_declared',
-    consent_version: (form.get('consent_version') || '').toString().slice(0, 40) || null,
-    country: (request.cf && request.cf.country) || null,
+    consent_version: field(form, 'consent_version', 40),
+    country: country(request),
     tradition: cleanTradition(form.get('tradition')),
     credit: cleanCredit(form.get('credit')),
   };
   if (env.CLIPS) ctx.waitUntil(env.CLIPS.put(key, bytes, { httpMetadata: { contentType: mime } })
-    .catch((e) => console.error('contribute: R2 put failed', { err: String((e && e.message) || e), key })));
+    .catch((e) => console.error('contribute: R2 put failed', { err: errText(e), key })));
   if (env.DB) ctx.waitUntil(insertContribution(env, meta));
-  return cors(json({ ok: true, status: 'queued' }), env, request);
+  return json({ ok: true, status: 'queued' });
 }
 
 function numOrNull(v) { const n = parseFloat(v); return Number.isFinite(n) ? n : null; }
@@ -386,7 +374,7 @@ async function insertContribution(env, m) {
     // Best-effort insert (never break the contributor's UX), but do NOT swallow silently:
     // log so a failed write shows up in `wrangler tail` instead of a contribution vanishing.
     console.error('contribute: insertContribution failed',
-      { err: String((e && e.message) || e), r2_key: m.key, raaga: m.raaga });
+      { err: errText(e), r2_key: m.key, raaga: m.raaga });
   }
 }
 

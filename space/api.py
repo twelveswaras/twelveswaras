@@ -13,11 +13,13 @@ branding: the front end renders everything.
         "swara_activation": [12 floats]   # tonic-normalized pitch-class mass, folded to the 12
                                           # swara positions (Sa first) — drives the wheel glow
       }
-    GET /health  ->  {"status": "ok", "raagas": 40, "traditions": {"carnatic": 40, "hindustani": 0}}
+    GET /health  ->  {"status": "ok", "raagas": 70, "traditions": {"carnatic": 40, "hindustani": 30}}
+    GET /warm    ->  {"warm": bool}   starts the cold-start priming once, answers at once
 
-Runs the EXACT production pipeline (essentia predominant pitch + compiam tonic -> windowed TDMS
--> XGBoost). Serves on port 7860 for a Hugging Face Docker Space, but is a plain FastAPI app
-runnable anywhere. Requires the numpy<2 inference stack (see requirements-api.txt).
+Runs the EXACT production pipeline (essentia predominant pitch + essentia tonic -> windowed TDMS
+and swara phrases -> XGBoost fused with the swara chains). A plain FastAPI app, served from a
+Cloudflare Container (cloudflare/recognizer). Requires the numpy<2 inference stack
+(requirements-api.txt).
 """
 from __future__ import annotations
 
@@ -71,7 +73,8 @@ _warm = {"started": False, "done": False}
 
 
 def decode(raw: bytes, suffix: str):
-    """Upload bytes -> (mono audio, its native sample rate). Shared by /identify and _prime, so
+    """Upload bytes -> (mono audio, its native sample rate), decoding only as much as is ever
+    analysed (ANALYSED_SECONDS) rather than a whole concert. Shared by /identify and _prime, so
     priming pays exactly the first-call costs a real upload would.
 
     Writes a temp file so librosa can fall back to ffmpeg (audioread) for compressed formats
@@ -83,7 +86,7 @@ def decode(raw: bytes, suffix: str):
     try:
         tmp.write(raw)
         tmp.close()
-        return librosa.load(tmp.name, sr=None, mono=True)
+        return librosa.load(tmp.name, sr=None, mono=True, duration=pitch_extract.ANALYSED_SECONDS)
     finally:
         try:
             os.unlink(tmp.name)
@@ -176,8 +179,7 @@ async def identify(audio: UploadFile = File(...), contribute: str = Form("no")):
         "no_prediction": False,
         "tonic_hz": round(float(tonic), 1),
         "heard_seconds": round(float(heard), 1),
-        # `raaga` is the display name (tradition tag split off into its own field). For the shipped
-        # Carnatic model every tradition is "carnatic"; a dual model tags Hindustani predictions.
+        # `raaga` is the display name; the tradition tag is split off into its own field.
         "top3": [_pred_json(p) for p in preds],
         "swara_activation": fold_swaras(pcd),
     }

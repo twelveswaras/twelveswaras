@@ -7,8 +7,8 @@ This is the step that stops the contribution pile being inert. It reads contribu
 of the D1 commons (read-only — never writes to prod), classifies each into exactly one
 bucket, and for the trainable ones downloads the audio from R2 into data/commons/ and
 appends a line to data/commons/manifest.jsonl. `raaga_id.data.iter_commons_clips` reads
-that manifest, so `python -m raaga_id.train --datasets saraga_carnatic commons` folds the
-contributions into the next model.
+that manifest, ready for training. Folding these contributions into the next model
+(tools/train_dual, tools/train_swara) is planned; see pipeline/retrain.py.
 
 Three buckets (a contribution lands in exactly one):
   * TRAIN        rights-attested + in the model's vocabulary + a TRUSTWORTHY label
@@ -238,7 +238,7 @@ def main() -> None:
             append_manifest(MANIFEST, entry)
             n_pulled += 1
     print(f"pulled {n_pulled} clip(s) into {COMMONS_DIR}\n"
-          f"next: python -m raaga_id.train --datasets saraga_carnatic commons")
+          f"next: fold into training (planned, see pipeline/retrain.py)")
 
 
 if __name__ == "__main__":

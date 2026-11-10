@@ -36,6 +36,15 @@ _HINDUSTANI_FOLDS = {fold_raaga(r) for r in HINDUSTANI_CANONICAL}
 _CARNATIC_FOLDS = {fold_raaga(r) for r in load_raagas()["canonical"]}
 
 
+def tag(name: str, tradition: str) -> str:
+    """The model class label for a raaga in a tradition: '<name> (Carnatic|Hindustani)'. Any tag
+    already on the name is replaced, so nothing is double-tagged; this is what keeps the two Todi
+    and the two Sri as distinct classes."""
+    for suffix in _TAGS:
+        name = name.removesuffix(suffix)
+    return f"{name} ({tradition.capitalize()})"
+
+
 def tradition_of(label: str) -> tuple[str, str]:
     """(display_name, tradition) for a model class label.
 
