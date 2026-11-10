@@ -125,3 +125,24 @@ test('an upload goes straight to the answers, with no notes phase', async ({ pag
   await expect(page.locator('#rec-top3 .rn').first()).toHaveText('Kalyāṇi');
   await expect(page.locator('#rec-notes')).toHaveClass(/\boff\b/);
 });
+
+// ---- after the minute, as the mock-up: settling, one steady line, no tips over the answer ------
+test('after the minute it says it is settling and to keep listening, with no tips over the answer', async ({ page }) => {
+  await stub(page);                                             // 0.55: never confident enough to lock
+  await listenUntilFirstAnswer(page);
+  await jump(page, 60_000);
+  await expect(page.locator('#rec-status')).toHaveText('Settling · it gets surer as you listen');
+  for (let i = 0; i < 8; i++) {                                 // ~25 s: tips would have come round 3 times
+    await expect(page.locator('#rec-lead')).toHaveText('Keep listening for a surer answer.');
+    await jump(page, 3_000);
+  }
+});
+
+test('the answer is labelled "The answer" once it settles', async ({ page }) => {
+  await stubApi(page, { identify: (route) => answer(route,
+    reply([{ raaga: 'Kalyāṇi', confidence: 0.95 }, { raaga: 'Tōḍi', confidence: 0.03 }])) });
+  await listenUntilFirstAnswer(page);
+  await jump(page, 72_000);
+  await expect(page.locator('#rec-status')).toHaveText('Confident');
+  await expect(page.locator('#rec-bridge')).toHaveText('The answer');
+});

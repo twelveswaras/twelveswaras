@@ -438,7 +438,7 @@
     // right 48% of the time at 30 s, 64% at 60 s and 81% at 150 s (measured 2026-11-09), and visitors
     // used to stop at ~33 s on an early name. The first minute shows the listening instead (Sa, the
     // swaras, a ring filling to one minute); no seconds counter at any point.
-    var HOLD=10.0, MIN_LISTEN=60, MAX_S=150, SEND_EVERY=3500, FIRST_SEND=4500, SEND_TIMEOUT=60000;
+    var HOLD=10.0, LOCK_CONF=0.80, MIN_LISTEN=60, MAX_S=150, SEND_EVERY=3500, FIRST_SEND=4500, SEND_TIMEOUT=60000;
     var MAX_CONTRIB_BYTES=25*1024*1024;   // the commons' limit (the worker refuses larger clips)
     // Notes heard so far: the seven swaras, each lit with the sthana heard (Ri -> R2) once it holds at
     // least NOTE_MIN of the melody in two replies in a row. 5% lights about five of the seven on the
@@ -584,7 +584,7 @@
     function tick(){
       elapsed=(performance.now()-t0)/1000; if(mode!=='listening') return;
       if(source==='live'){
-        var early=!namesShown(), st=early ? 'Listening · names after a minute' : 'Identifying';
+        var early=!namesShown(), st=early ? 'Listening · names after a minute' : 'Settling · it gets surer as you listen';
         if(statusEl.textContent!==st) statusEl.textContent=st;
         // Once, at the minute, even if no answer has arrived yet (a cold recognizer, empty replies):
         // the labels change now, and the names appear here or when apply() gets the first answer.
@@ -598,15 +598,16 @@
       if(source==='file'){ s = VERBS[Math.floor(elapsed/1.8)%VERBS.length]; }
       else if(sentOnce && !gotReply && elapsed>=FIRST_SEND/1000+WAKE_NOTE){
         s='Waking up the recognizer. The first answer can take half a minute.'; }
-      else{ if(elapsed>=nextTip && elapsed<MAX_S-3){ tipUntil=elapsed+2.6; nextTip+=7; tipIdx=(tipIdx+1)%TIPS.length; }
-        if(elapsed<tipUntil) s=TIPS[tipIdx];
-        else if(conf>0&&elapsed>=MIN_LISTEN&&held>=HOLD*0.85) s='Locking it in…';
+      // Sound tips help capture during the first minute; after it they would cover the answer.
+      else{ if(!namesShown() && elapsed>=nextTip){ tipUntil=elapsed+2.6; nextTip+=7; tipIdx=(tipIdx+1)%TIPS.length; }
+        if(!namesShown() && elapsed<tipUntil) s=TIPS[tipIdx];
+        else if(conf>=LOCK_CONF&&elapsed>=MIN_LISTEN&&held>=HOLD*0.85) s='Locking it in…';
         else if(!namesShown()) s = !curTonic ? 'Finding Sa from the drone…'
           : (noteOn.filter(Boolean).length>=5 && elapsed>=40) ? 'Listening to how the notes move…'
           : 'Sa found. Hearing the notes of the raaga…';
-        else s=VERBS[Math.floor(elapsed/2.6)%VERBS.length]; }
+        else s='Keep listening for a surer answer.'; }
       if(s!==phase){phase=s; leadEl.innerHTML=s;}
-      var ready = conf>0&&leader&&(elapsed-leaderSince)>=HOLD&&elapsed>=MIN_LISTEN&&conf>=0.80;
+      var ready = leader&&held>=HOLD&&elapsed>=MIN_LISTEN&&conf>=LOCK_CONF;
       if(ready||elapsed>=MAX_S) finish();
     }
     // Stop tapped while the first answer is still on its way: wait for it (finish() runs when the
@@ -631,7 +632,7 @@
       // enough time. A quick manual stop can't be confident even if the number briefly crossed 0.6,
       // it shows as a best guess (amber, no check). Uploads are judged on the score alone.
       var abstain=lockConf<ABSTAIN_CONF, sure=lockConf>=0.6 && (source==='file' || elapsed>=MIN_LISTEN);
-      lockSure=sure;
+      lockSure=sure; if(sure) bridgeEl.textContent='The answer';
       if(abstain){
         statusEl.textContent='Not sure'; statusEl.className='rec-status';
         leadEl.textContent="I couldn't place this confidently. It may be a raaga I don't know yet, or the audio needs a clearer drone. Closest guesses:";

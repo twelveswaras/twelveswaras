@@ -185,6 +185,24 @@ also lists the datasets and prior work the model builds on. Releases are archive
 version, and each version has its own DOI on that page (1.0.0 is
 [10.5281/zenodo.24096814](https://doi.org/10.5281/zenodo.24096814)). Please cite the version you used.
 
+> Sankaran, S. (2026). *twelveswaras: an open-source raaga recognizer for Carnatic and Hindustani
+> music* [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.24096813
+
+```bibtex
+@software{sankaran_twelveswaras,
+  author    = {Sankaran, Sathya},
+  title     = {twelveswaras: an open-source raaga recognizer for Carnatic and Hindustani music},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.24096813},
+  url       = {https://doi.org/10.5281/zenodo.24096813}
+}
+```
+
+For a specific version, add its version number and use that version's DOI from the Zenodo page.
+Other styles (Harvard, MLA, Chicago and more) are on the Zenodo page and behind GitHub's "Cite this
+repository" button.
+
 ## Principles
 
 twelveswaras is built on [People's Digital Goods and Infrastructure (PDGI)](https://pdgi.org)
