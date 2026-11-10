@@ -138,11 +138,15 @@ test('after the minute it says it is settling and to keep listening, with no tip
   }
 });
 
-test('the answer is labelled "The answer" once it settles', async ({ page }) => {
+// Once confident, the big name is the answer; the rows below are the comparison, with no heading
+// between them repeating the name, and the leading percentage in the settled colour like its bar.
+test('once confident, the rows are an unheaded comparison with a green leading percentage', async ({ page }) => {
   await stubApi(page, { identify: (route) => answer(route,
     reply([{ raaga: 'Kalyāṇi', confidence: 0.95 }, { raaga: 'Tōḍi', confidence: 0.03 }])) });
   await listenUntilFirstAnswer(page);
   await jump(page, 72_000);
   await expect(page.locator('#rec-status')).toHaveText('Confident');
-  await expect(page.locator('#rec-bridge')).toHaveText('The answer');
+  await expect(page.locator('#rec-bridge')).toHaveText('');
+  await expect(page.locator('#rec-top3 .rec-row.lead .rp')).toHaveCSS('color', 'rgb(116, 198, 157)');   // --jade-hi
+  await expect(page.locator('#rec-top3 .rec-row.lead .rn')).toHaveCSS('font-weight', '500');
 });

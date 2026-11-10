@@ -1,0 +1,23 @@
+/* The header on every page with navigation: the brand and the links (raagas · train your ear ·
+   contribute · about). One copy, so the pages cannot drift apart. The offline and 404 pages keep
+   their own logo-only header: the offline page must work from the service worker's cache alone.
+   Media rules run widest first, so each narrower one wins. */
+.top{display:flex;align-items:center;justify-content:space-between;padding:max(18px,env(safe-area-inset-top)) 0 0}
+.brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
+.brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
+.brand svg{width:26px;height:26px;flex:0 0 auto}
+.top .nav{display:inline-flex;align-items:center;gap:12px}
+/* 44 px tall: a comfortable tap target on a phone */
+.top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted);display:inline-flex;align-items:center;min-height:44px}
+.top .nav a:hover,.top .nav a.here{color:var(--paper)}
+/* faint middots so the links read as separate items, not one running phrase */
+.top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
+/* phones: the links drop to their own centred row under the brand */
+@media (max-width:560px){
+  .top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:max(16px,env(safe-area-inset-top))}
+  .top .nav{flex-basis:100%;justify-content:center;flex-wrap:wrap;column-gap:14px;row-gap:0}
+  .top .nav a{white-space:nowrap}
+}
+@media (max-width:400px){.top .nav{column-gap:11px} .top .nav a{font-size:.72rem}}
+/* the smallest phones: drop the middots and tighten, so all four links stay on one line */
+@media (max-width:360px){.top .nav .sep{display:none} .top .nav{column-gap:12px} .top .nav a{font-size:.68rem;letter-spacing:0}}
