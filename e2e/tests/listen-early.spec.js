@@ -91,3 +91,37 @@ test('nothing locks before a minute, even on a stable, confident answer', async 
   await jump(page, 20_000);
   await expect(page.locator('#rec-status')).toHaveText('Confident');
 });
+
+// ---- the first minute shows the evidence building up ------------------------------------------
+// The stub's swara_activation (helpers.ACT), normalised, puts at least 5% of the mass on Sa, G3, M1,
+// P and N3; Ri and Da peak just under it. A note lights only once two replies in a row agree.
+const lit = (page) => page.locator('#rec-pills .rec-pill.on');
+
+test('a note lights up only after two replies in a row have heard it', async ({ page }) => {
+  await stub(page);
+  await listenUntilFirstAnswer(page);                         // one reply so far
+  await expect(lit(page)).toHaveCount(0);
+  await jump(page, 4_000);                                    // a second reply
+  await expect(lit(page)).toHaveCount(5);
+  await expect(lit(page)).toContainText(['Sa', 'G3', 'M1', 'P', 'N3']);
+});
+
+test('the notes give way to the answers at the minute, in the same place', async ({ page }) => {
+  await stub(page);
+  await listenUntilFirstAnswer(page);
+  await jump(page, 4_000);
+  await expect(page.locator('#rec-notes')).not.toHaveClass(/\boff\b/);
+  await expect(page.locator('#rec-answers')).toHaveClass(/\boff\b/);
+  await jump(page, 60_000);
+  await expect(page.locator('#rec-notes')).toHaveClass(/\boff\b/);
+  await expect(page.locator('#rec-answers')).not.toHaveClass(/\boff\b/);
+  await expect(page.locator('#rec-bridge')).toHaveText('Most likely so far');
+});
+
+test('an upload goes straight to the answers, with no notes phase', async ({ page }) => {
+  await stubApi(page, { top3: TOP3 });
+  await page.goto('/');
+  await page.setInputFiles('#rec-file', require('path').join(__dirname, '..', 'fixtures', 'clip.wav'));
+  await expect(page.locator('#rec-top3 .rn').first()).toHaveText('Kalyāṇi');
+  await expect(page.locator('#rec-notes')).toHaveClass(/\boff\b/);
+});
