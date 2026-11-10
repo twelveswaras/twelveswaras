@@ -37,6 +37,9 @@ SWARA12 = SWARA_LABELS
 SEMITONE = {s: i for i, s in enumerate(SWARA12)}
 
 
+# The all-versions Zenodo DOI (always resolves to the latest release).
+DOI = "10.5281/zenodo.24096813"
+
 def _n_carnatic() -> int:
     """Size of the tracked Carnatic vocabulary (the model's Carnatic half)."""
     import json
@@ -104,52 +107,74 @@ def build_raagas_json(recs: list[dict]) -> dict:
     }
 
 
+def _hindustani_names() -> list[str]:
+    """The Hindustani raagas with reference pages (raaga/<slug>-hindustani), in guide order."""
+    guide = json.loads((ROOT / "raaga_guide.hindustani.json").read_text(encoding="utf-8"))
+    return [k for k in guide if not k.startswith("_")]
+
+
 def build_llms_txt(recs: list[dict]) -> str:
     reviewed = sum(1 for r in recs if r["reviewed"])
     with_swaras = sum(1 for r in recs if r["swaras"])
+    n_c, n_h = _n_carnatic(), _n_hindustani()
     lines = [
         "# twelveswaras",
         "",
-        "> An open-source, non-commercial 'Shazam for raagas': play it a short clip of Carnatic "
-        "music and it identifies the raaga, then helps a beginner learn to hear it. Paired with an "
-        "openly-licensed (CC-BY) data commons. Owned by no company; a public good.",
+        "> An open-source, non-commercial 'Shazam for raagas': play it about a minute of Carnatic or "
+        "Hindustani music and it identifies the raaga, then helps a beginner learn to hear it. "
+        "Paired with an openly-licensed (CC-BY) data commons. Owned by no company; a public good.",
         "",
         f"Site: {SITE_URL}",
-        "Code: https://github.com/twelveswaras (MIT)",
+        "Code: https://github.com/twelveswaras/twelveswaras (MIT; the running recognizer is "
+        "AGPL-3.0 because it uses Essentia)",
+        f"Cite: Sankaran, S. (2026). twelveswaras [Computer software]. Zenodo. https://doi.org/{DOI}",
         # Counts come from the tracked vocabularies, never from len(recs): recs is the Carnatic
         # REFERENCE dataset, and using it here described a 70-class dual-tradition model as
         # "40 Carnatic raagas" for as long as the Hindustani side has existed.
-        "Recognizer model: XGBoost on a tonic-normalized Time-Delayed Melody Surface (TDMS); "
-        f"{_n_carnatic() + _n_hindustani()} raagas ({_n_carnatic()} Carnatic, {_n_hindustani()} "
+        "Recognizer model: XGBoost on tonic-normalized Time-Delayed Melody Surfaces (TDMS), fused "
+        f"with per-raaga swara-sequence chains; {n_c + n_h} raagas ({n_c} Carnatic, {n_h} "
         "Hindustani). See METHODOLOGY.md in the repo for the full pipeline + citations.",
         "",
         "## How to use the recognizer",
         "",
         "- Give it about a minute of Carnatic or Hindustani melody WITH a tanpura/shruti drone (a "
-        "live concert always has one). It needs at least 30s before it can read anything. The tonic "
-        "(Sa) is found from the drone; solo singing with no drone is unreliable.",
+        "live concert always has one). A live listen shows the notes it hears for the first minute "
+        "and names raagas only after that; it settles within two and a half minutes. The tonic (Sa) "
+        "is found from the drone; solo singing with no drone is unreliable.",
         "- It returns the top-3 raagas with calibrated confidence, the detected Sa, and a plain note "
-        "on how to hear that raaga.",
+        "on how to hear that raaga. Below a confidence threshold it says it is not sure.",
         "",
-        "## Open data",
+        "## Accuracy",
+        "",
+        "- On 80 real-world recordings (phone, concert, YouTube), analysed for 150 s: the top answer "
+        "is right 71% of the time and the right raaga is in the top three 80% of the time. Allied "
+        "raagas (same scale, different phrasing) are the main confusion. Full benchmarks, including "
+        "negative results: benchmark/leaderboard.md in the repo.",
+        "",
+        "## Open data and licences",
         "",
         f"- Machine-readable raaga reference: {SITE_URL}/data/raagas.json (CC-BY-4.0).",
-        f"  {len(recs)} raagas; {with_swaras} have note-sets; {reviewed} are musician-reviewed so far.",
+        f"  {len(recs)} Carnatic raagas; {with_swaras} have note-sets; {reviewed} are "
+        "musician-reviewed so far.",
+        "- Model weights: CC-BY-4.0, downloadable from the v1.0.0 release on GitHub. Trained only on "
+        "the Indian Art Music Raga Recognition Dataset features (CC-BY-4.0).",
         "- Please attribute as: twelveswaras (twelveswaras.com), CC-BY-4.0.",
         "- Per-raaga pages carry schema.org DefinedTerm JSON-LD.",
         "",
-        "## Accuracy & honesty",
+        "## Honesty",
         "",
         "- Reference facts (scale, phrases, ornaments) are being verified by a musician; records "
-        "marked reviewed=false in raagas.json are provisional. Do not present provisional raaga "
-        "facts as authoritative. When in doubt, cite the raaga page and note it is under review.",
+        "marked reviewed=false in raagas.json are provisional, and the Hindustani pages are drafts. "
+        "Do not present provisional raaga facts as authoritative. When in doubt, cite the raaga page "
+        "and note it is under review.",
         "- twelveswaras does not offer musical instruction as fact until it is expert-verified.",
         "",
-        "## Raaga pages",
+        "## Carnatic raaga pages",
         "",
     ]
-    for r in recs:
-        lines.append(f"- [{r['name']}]({r['url']})")
+    lines += [f"- [{r['name']}]({r['url']})" for r in recs]
+    lines += ["", "## Hindustani raaga pages (draft)", ""]
+    lines += [f"- [{nm}]({SITE_URL}/raaga/{slug(nm, '-hindustani')})" for nm in _hindustani_names()]
     lines.append("")
     return "\n".join(lines)
 

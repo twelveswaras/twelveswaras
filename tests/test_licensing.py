@@ -28,6 +28,12 @@ def test_readme_states_the_recognizer_is_agpl_and_the_model_cc_by():
     assert "CC-BY-4.0" in lic and "non-commercial use" not in lic
 
 
+def test_pdgi_scorecard_matches_the_licences_and_traditions():
+    text = (ROOT / "PDGI.md").read_text(encoding="utf-8")
+    assert "Hindustani planned" not in text and "seed weights carry NC" not in text
+    assert "AGPL-3.0" in text and "releases/tag/v1.0.0" in text
+
+
 if __name__ == "__main__":
     import pytest
 

@@ -33,6 +33,8 @@ for (const c of CASES) {
     await page.locator('#rec-orb').click();
 
     await expect(page.locator('#rec-lead')).toContainText(c.says);
+    // no listen is running, so no empty notes row between the message and the way forward
+    await expect(page.locator('#rec-pills')).toBeHidden();
     // Upload is the main way forward; retrying a failed microphone is the secondary choice.
     const buttons = page.locator('#rec-controls button');
     await expect(buttons.first()).toHaveText(/Upload a recording/);

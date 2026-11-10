@@ -73,7 +73,7 @@
     {"@type": "Question", "name": "What happens to my recording?",
      "acceptedAnswer": {"@type": "Answer", "text": "If you are only identifying a raaga, your audio is analysed and then discarded, never stored. A clip is kept only if you choose to contribute it, and it is made public only if you also choose to release it under CC-BY."}},
     {"@type": "Question", "name": "Can I reuse the data or the model?",
-     "acceptedAnswer": {"@type": "Answer", "text": "The code is MIT and the community data commons is CC-BY-4.0, both freely reusable with attribution. The current model carries a non-commercial licence because of the research recordings it learned from; a future model trained only on the community commons can be cleanly reusable."}}
+     "acceptedAnswer": {"@type": "Answer", "text": "The code is MIT, and the model weights and the community data commons are CC-BY-4.0, all freely reusable with attribution. The running recognizer is AGPL-3.0 because it uses Essentia. The weights are on the v1.0.0 release on GitHub; cite twelveswaras with doi:10.5281/zenodo.24096813."}}
   ]
 }
 </script>
@@ -106,16 +106,17 @@
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
   .brand svg{width:26px;height:26px;flex:0 0 auto}
   .top .nav{display:inline-flex;align-items:center;gap:12px}
-  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
+  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted);display:inline-flex;align-items:center;min-height:44px}
   .top .nav a:hover{color:var(--paper)}
   .top .nav a.here{color:var(--paper)}
   .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
+  @media (max-width:360px){.top .nav .sep{display:none} .top .nav{column-gap:12px} .top .nav a{font-size:.68rem;letter-spacing:0}}
   @media (max-width:560px){
     .top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:max(16px,env(safe-area-inset-top))}
-    .top .nav{flex-basis:100%;justify-content:center;gap:14px}
+    .top .nav{flex-basis:100%;justify-content:center;flex-wrap:wrap;column-gap:14px;row-gap:0}
     .top .nav a{white-space:nowrap}
   }
-  @media (max-width:400px){.top .nav{gap:11px} .top .nav a{font-size:.72rem}}
+  @media (max-width:400px){.top .nav{column-gap:11px} .top .nav a{font-size:.72rem}}
 
   /* page head */
   .page-head{padding:40px 0 8px;text-align:center}
@@ -205,6 +206,7 @@
       <a class="here" href="./" aria-current="page">about</a>
     </span>
   </nav>
+<main>
 
   <header class="page-head">
     <p class="eyebrow">About the project</p>
@@ -263,7 +265,7 @@
 
   <section>
     <h2>How the licensing works</h2>
-    <p>The code is open source under the MIT licence. The community data commons is CC-BY-4.0, kept separate from the non-commercial research recordings the first model learned from, so the commons stays cleanly reusable by anyone. Because that first model learned partly from non-commercial research corpora, the current model carries a non-commercial licence; a future model trained only on the community commons can be freely reusable. Full detail is in the <a href="https://github.com/twelveswaras/twelveswaras/blob/main/GOVERNANCE.md">Governance</a> and <a href="https://github.com/twelveswaras/twelveswaras/blob/main/METHODOLOGY.md">Methodology</a> on GitHub.</p>
+    <p>The code is open source under the MIT licence; the running recognizer is AGPL-3.0, because it uses the Essentia audio library, so anyone who runs a modified copy for others must share its source. The model weights are CC-BY-4.0: the model learned only from the openly licensed Raga Recognition Dataset, and the weights are <a href="https://github.com/twelveswaras/twelveswaras/releases/tag/v1.0.0">downloadable from GitHub</a>. The community data commons is CC-BY-4.0 too, kept separate from non-commercial research recordings so it stays cleanly reusable by anyone. Cite twelveswaras with <a href="https://doi.org/10.5281/zenodo.24096813">doi:10.5281/zenodo.24096813</a>. Full detail is in the <a href="https://github.com/twelveswaras/twelveswaras/blob/main/GOVERNANCE.md">Governance</a> and <a href="https://github.com/twelveswaras/twelveswaras/blob/main/METHODOLOGY.md">Methodology</a> on GitHub.</p>
   </section>
 
   <section class="prose">
@@ -290,12 +292,13 @@
     <details><summary>What happens to my recording?</summary>
       <p>If you are only identifying, it is analysed and discarded, never stored. A clip is kept only if you choose to contribute it, and made public only if you also choose to release it. The section above has the full detail.</p></details>
     <details><summary>Can I reuse the data or the model?</summary>
-      <p>The code is MIT and the community data commons is CC-BY-4.0, both freely reusable with attribution. The current model carries a non-commercial licence because of the research recordings it learned from.</p></details>
+      <p>The code is MIT, and the model weights and the community data commons are CC-BY-4.0, all freely reusable with attribution. The running recognizer is AGPL-3.0 because it uses Essentia. The weights are on the v1.0.0 release on GitHub; cite twelveswaras with doi:10.5281/zenodo.24096813.</p></details>
   </section>
 
   <section class="cta">
     <a class="act" href="../">Identify a raaga</a>
   </section>
+</main>
 </div>
 
 <footer>

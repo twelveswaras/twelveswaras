@@ -131,7 +131,7 @@ test('after the minute it says it is settling and to keep listening, with no tip
   await stub(page);                                             // 0.55: never confident enough to lock
   await listenUntilFirstAnswer(page);
   await jump(page, 60_000);
-  await expect(page.locator('#rec-status')).toHaveText('Settling · it gets surer as you listen');
+  await expect(page.locator('#rec-status')).toHaveText('Settling · keep listening');
   for (let i = 0; i < 8; i++) {                                 // ~25 s: tips would have come round 3 times
     await expect(page.locator('#rec-lead')).toHaveText('Keep listening for a surer answer.');
     await jump(page, 3_000);

@@ -47,7 +47,10 @@
   "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
   "isAccessibleForFree": true,
   "license": "https://opensource.org/licenses/MIT",
-  "codeRepository": "https://github.com/twelveswaras"
+  "codeRepository": "https://github.com/twelveswaras/twelveswaras",
+  "softwareVersion": "1.0.0",
+  "identifier": "https://doi.org/10.5281/zenodo.24096813",
+  "sameAs": ["https://doi.org/10.5281/zenodo.24096813", "https://github.com/twelveswaras/twelveswaras"]
 }
 </script>
 <script type="application/ld+json">
@@ -56,15 +59,17 @@
   "@type": "FAQPage",
   "mainEntity": [
     {"@type": "Question", "name": "What is twelveswaras?",
-     "acceptedAnswer": {"@type": "Answer", "text": "twelveswaras is a free, open-source 'Shazam for raagas'. Give it a short clip of Carnatic or Hindustani music and it identifies the raaga, showing the top-3 with confidence, plus the tonic (Sa) it detected, and a note on how to hear that raaga."}},
+     "acceptedAnswer": {"@type": "Answer", "text": "twelveswaras is a free, open-source 'Shazam for raagas'. Play it about a minute of Carnatic or Hindustani music and it identifies the raaga, showing the top three with confidence, the tonic (Sa) it detected, and a note on how to hear that raaga."}},
     {"@type": "Question", "name": "How do I identify a raaga?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Open the recognizer, record (or upload) about a minute of melody, and it names the raaga. A tanpura or shruti-box drone under the melody gives the best results because the tonic is found from it."}},
+     "acceptedAnswer": {"@type": "Answer", "text": "Tap the microphone and hold your phone near the music, or upload a recording. For the first minute it shows the notes it hears; then it names the raaga. A tanpura or shruti-box drone under the melody gives the best results, because the tonic is found from it."}},
     {"@type": "Question", "name": "Does it work at a live concert?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Yes. A concert always has a tanpura drone, which is exactly what the tool uses to find the tonic. Point your phone at the stage for a minute or so. Solo singing with no drone is unreliable."}},
-    {"@type": "Question", "name": "Is twelveswaras free and open source?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Yes, it is a non-commercial, open-source public good. The code is MIT-licensed and the contributor data commons is CC-BY-4.0. It is not a commercial product."}},
+     "acceptedAnswer": {"@type": "Answer", "text": "Yes. A concert always has a tanpura drone, which is exactly what it uses to find the tonic. Point your phone at the stage for a minute or more. Solo singing with no drone is unreliable."}},
+    {"@type": "Question", "name": "How accurate is it?",
+     "acceptedAnswer": {"@type": "Answer", "text": "On 80 real-world recordings (phone, concert and YouTube), analysed for two and a half minutes, its top answer is right 71% of the time and the right raaga is in its top three 80% of the time. It is surer the longer it listens, which is why it waits a minute before naming a raaga, and when it is not sure it says so. Allied raagas, which share a scale, are the hardest to tell apart."}},
     {"@type": "Question", "name": "How many raagas does it recognise?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Seventy raagas: 40 Carnatic and 30 Hindustani, recognised by one dual-tradition model. The Hindustani reference pages are still draft, pending a musician's review. The name, schema and pipeline are tradition-neutral by design."}},
+     "acceptedAnswer": {"@type": "Answer", "text": "Seventy raagas: 40 Carnatic and 30 Hindustani, recognised by one dual-tradition model. The Hindustani reference pages are still draft, pending a musician's review."}},
+    {"@type": "Question", "name": "Is twelveswaras free and open source?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Yes, it is a non-commercial, open-source public good. The code is MIT-licensed (the running recognizer is AGPL-3.0, because it uses Essentia), and the model weights and the contributor data commons are CC-BY-4.0."}},
     {"@type": "Question", "name": "Do I need to install an app?",
      "acceptedAnswer": {"@type": "Answer", "text": "No. It runs in your browser. On a phone you can 'Add to Home Screen' for an app-like, full-screen experience, with no App Store or Play Store needed."}}
   ]
@@ -126,18 +131,19 @@
   .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
   .brand svg{width:26px;height:26px;flex:0 0 auto}
   .top .nav{display:inline-flex;align-items:center;gap:12px}
-  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted)}
+  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted);display:inline-flex;align-items:center;min-height:44px}
   .top .nav a:hover{color:var(--paper)}
   /* faint middots so the links read as separate nav items, not one running phrase */
   .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
+  @media (max-width:360px){.top .nav .sep{display:none} .top .nav{column-gap:12px} .top .nav a{font-size:.68rem;letter-spacing:0}}
   /* mobile: the three links won't fit on the brand's row, so drop them to their own
      centered row instead of letting "train your ear" wrap mid-label */
   @media (max-width:560px){
     .top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:max(16px,env(safe-area-inset-top))}
-    .top .nav{flex-basis:100%;justify-content:center;gap:14px}
+    .top .nav{flex-basis:100%;justify-content:center;flex-wrap:wrap;column-gap:14px;row-gap:0}
     .top .nav a{white-space:nowrap}
   }
-  @media (max-width:400px){.top .nav{gap:11px} .top .nav a{font-size:.72rem}}
+  @media (max-width:400px){.top .nav{column-gap:11px} .top .nav a{font-size:.72rem}}
 
   /* ---- hero ---- */
   .hero{padding:40px 0 8px;text-align:center}
@@ -215,6 +221,7 @@
   /* The first minute: the notes heard so far and, from the minute on, the answers share one space and
      cross-fade in place, so nothing else on the screen moves when the names arrive. */
   .rec-stage{display:grid;width:100%;max-width:340px;margin-top:12px}
+  .rec-stage[hidden]{display:none}
   .rec-stage.live{min-height:150px}
   .rec-phase{grid-area:1/1;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;
     transition:opacity .6s ease,transform .6s ease}
@@ -247,10 +254,9 @@
   .rbtn.stop{background:transparent;color:var(--paper);border-color:var(--line-2)} .rbtn.stop:hover{border-color:var(--amber);color:var(--amber-hi)}
   .rbtn.again{background:#ffffff0d;color:var(--paper);border-color:var(--line-2)} .rbtn.again:hover{border-color:var(--jade-hi);color:#fff}
   .rbtn.cancel{background:transparent;color:var(--muted);border-color:var(--line-2)}
-  .rghost{appearance:none;background:transparent;border:0;cursor:pointer;font-family:var(--mono);font-size:.76rem;color:var(--amber-hi);padding:.3rem .5rem;border-radius:8px}
+  .rghost{appearance:none;background:transparent;border:0;cursor:pointer;font-family:var(--mono);font-size:.76rem;color:var(--amber-hi);padding:.3rem .75rem;min-height:44px;border-radius:8px}
   .rghost:hover{color:#fff;text-decoration:underline}
   .rlearn{font-family:var(--mono);font-size:.78rem;color:var(--jade-hi);text-decoration:none;padding:.3rem} .rlearn:hover{text-decoration:underline}
-  .rhint{font-family:var(--mono);font-size:.74rem;color:var(--faint);text-align:center}
   /* contribute-to-commons card — jade "learning" motif; opt-in, never shown until a raaga is named */
   .rec-contrib{margin:14px auto 0;max-width:412px}
   .rec-contrib:empty{margin:0}
@@ -328,11 +334,12 @@
       <a href="about/">about</a>
     </span>
   </nav>
+<main>
 
   <header class="hero">
     <p class="eyebrow">Shazam for raagas</p>
     <h1 class="title">What's the raaga?<br><span class="b">Learn to hear it.</span></h1>
-    <p class="thesis">Play it about a minute of Carnatic or Hindustani music: it names the raaga, and shows you how to recognise it yourself.</p>
+    <p class="thesis">Play about a minute of Carnatic or Hindustani music: it names the raaga, and shows you how to recognise it yourself.</p>
 
     <div class="rec" id="rec">
       <p class="rec-status" id="rec-status" aria-live="polite">Identify a raaga</p>
@@ -341,10 +348,10 @@
       </button>
       <div class="rec-meta"><span class="rec-sa" id="rec-sa"></span></div>
       <div class="rec-say">
-        <span class="rec-lead" id="rec-lead">Tap and hold your phone to the music. It names the raaga when it's sure.</span>
+        <span class="rec-lead" id="rec-lead">Tap the mic, then hold your phone near the music for a minute.</span>
         <span class="rec-raga" id="rec-raga"></span>
       </div>
-      <div class="rec-stage" id="rec-stage">
+      <div class="rec-stage" id="rec-stage" hidden>
         <div class="rec-phase off" id="rec-notes">
           <div class="rec-label">Notes heard so far</div>
           <div class="rec-pills" id="rec-pills"></div>
@@ -391,12 +398,23 @@
 
   <section id="faq">
     <h2>Questions</h2>
+    <details><summary>What is twelveswaras?</summary>
+      <p>twelveswaras is a free, open-source ’Shazam for raagas’. Play it about a minute of Carnatic or Hindustani music and it identifies the raaga, showing the top three with confidence, the tonic (Sa) it detected, and a note on how to hear that raaga.</p></details>
+    <details><summary>How do I identify a raaga?</summary>
+      <p>Tap the microphone and hold your phone near the music, or upload a recording. For the first minute it shows the notes it hears; then it names the raaga. A tanpura or shruti-box drone under the melody gives the best results, because the tonic is found from it.</p></details>
     <details open><summary>Does it work at a live concert?</summary>
-      <p>Yes, a concert has a tanpura drone, which is exactly what it needs to find the tonic. Point your phone at the stage for a minute or so. Solo singing with no drone is unreliable.</p></details>
-    <details><summary>Do I need to install anything?</summary>
-      <p>No, it runs in your browser. On a phone, use “Add to Home Screen” for a full-screen, app-like experience.</p></details>
+      <p>Yes. A concert always has a tanpura drone, which is exactly what it uses to find the tonic. Point your phone at the stage for a minute or more. Solo singing with no drone is unreliable.</p></details>
+    <details><summary>How accurate is it?</summary>
+      <p>On 80 real-world recordings (phone, concert and YouTube), analysed for two and a half minutes, its top answer is right 71% of the time and the right raaga is in its top three 80% of the time. It is surer the longer it listens, which is why it waits a minute before naming a raaga, and when it is not sure it says so. Allied raagas, which share a scale, are the hardest to tell apart.</p></details>
+    <details><summary>How many raagas does it recognise?</summary>
+      <p>Seventy raagas: 40 Carnatic and 30 Hindustani, recognised by one dual-tradition model. The Hindustani reference pages are still draft, pending a musician’s review.</p></details>
+    <details><summary>Is twelveswaras free and open source?</summary>
+      <p>Yes, it is a non-commercial, open-source public good. The code is MIT-licensed (the running recognizer is AGPL-3.0, because it uses Essentia), and the model weights and the contributor data commons are CC-BY-4.0.</p></details>
+    <details><summary>Do I need to install an app?</summary>
+      <p>No. It runs in your browser. On a phone you can ’Add to Home Screen’ for an app-like, full-screen experience, with no App Store or Play Store needed.</p></details>
     <p class="faq-more"><a href="about/">What it is, who is behind it, and what happens to your recording →</a></p>
   </section>
+</main>
 </div>
 
 <footer>
@@ -439,6 +457,7 @@
     // used to stop at ~33 s on an early name. The first minute shows the listening instead (Sa, the
     // swaras, a ring filling to one minute); no seconds counter at any point.
     var HOLD=10.0, LOCK_CONF=0.80, MIN_LISTEN=60, MAX_S=150, SEND_EVERY=3500, FIRST_SEND=4500, SEND_TIMEOUT=60000;
+    var IDLE_LEAD='Tap the mic, then hold your phone near the music for a minute.';
     var MAX_CONTRIB_BYTES=25*1024*1024;   // the commons' limit (the worker refuses larger clips)
     // Notes heard so far: the seven swaras, each lit with the sthana heard (Ri -> R2) once it holds at
     // least NOTE_MIN of the melody in two replies in a row. 5% lights about five of the seven on the
@@ -484,7 +503,7 @@
       saEl.className='rec-sa'; saEl.textContent=''; ragaEl.className='rec-raga'; ragaEl.textContent='';
       top3El.innerHTML=''; rows._k=''; named=false; top3El.classList.remove('done');
       noteOn=new Array(7).fill(''); noteSeen=new Array(7).fill(false); noteAt=-1e9; lastLit=-1; drawNotes();
-      setPhase(src==='live'); }
+      stageEl.hidden=false; setPhase(src==='live'); }
     // Which of the two phases fills the stage: the notes heard so far (the first minute of a live
     // listen) or the answers. `live` keeps the stage at a fixed height so the swap moves nothing.
     function setPhase(notes, bridge){
@@ -584,7 +603,7 @@
     function tick(){
       elapsed=(performance.now()-t0)/1000; if(mode!=='listening') return;
       if(source==='live'){
-        var early=!namesShown(), st=early ? 'Listening · names after a minute' : 'Settling · it gets surer as you listen';
+        var early=!namesShown(), st=early ? 'Listening · names after a minute' : 'Settling · keep listening';
         if(statusEl.textContent!==st) statusEl.textContent=st;
         // Once, at the minute, even if no answer has arrived yet (a cold recognizer, empty replies):
         // the labels change now, and the names appear here or when apply() gets the first answer.
@@ -756,7 +775,7 @@
       unsupported:"This browser can't record audio. If you opened this link inside another app, open it in Chrome or Safari instead. Or upload a recording."
     };
     function fail(msg, uploadFirst){
-      stopCap(); clearInterval(uiTimer); clearInterval(sendTimer); mode='idle';
+      stopCap(); clearInterval(uiTimer); clearInterval(sendTimer); mode='idle'; stageEl.hidden=true;
       statusEl.textContent='Identify a raaga'; statusEl.className='rec-status';
       leadEl.innerHTML='<span class="rerr">'+msg+'</span>'; guides.className='rec-guides';
       setC(uploadFirst
@@ -773,11 +792,10 @@
       mode='idle'; source='live'; elapsed=0; conf=0; top3=[]; swaraAct=new Array(12).fill(0); leader=''; phase='';
       statusEl.textContent='Identify a raaga'; statusEl.className='rec-status';
       saEl.className='rec-sa'; saEl.textContent=''; ragaEl.className='rec-raga'; ragaEl.textContent='';
-      leadEl.textContent="Tap and hold your phone to the music. It names the raaga when it's sure.";
+      leadEl.textContent=IDLE_LEAD;
       top3El.className='rec-top3'; top3El.innerHTML=''; guides.className='rec-guides'; contribEl.innerHTML='';
-      setPhase(false);
-      setC('<div class="rec-entry"><span class="rhint">Point your phone at the music, then tap</span>'
-        +'<button class="rghost" id="r-up">or upload a recording ↑</button></div>');
+      stageEl.hidden=true;
+      setC('<div class="rec-entry"><button class="rbtn again" id="r-up">Upload a recording ↑</button></div>');
     }
     // Every button in the controls row, wherever it was drawn: one handler, by id.
     controls.addEventListener('click', function(e){
