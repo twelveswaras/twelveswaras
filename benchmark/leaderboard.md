@@ -13,7 +13,9 @@ top-k with window probabilities averaged. **Chance: top1 = 0.025, top3 = 0.075.*
 | 2026-07-03 | **PCD + IAMRRD pooled** (Saraga 45 + IAMRRD 131 train tracks) | XGBoost | **0.667** | **0.917** | cross-dataset: train includes IAMRRD, test = held-out Saraga. More data on top of the feature win. |
 
 **Cross-validated (the reliable estimate).** 4-fold track-level CV, every track held out
-once, reproduce with `python -m tools.cross_validate [--datasets ...]`:
+once (`tools/cross_validate`, retired 2026-11-10 with the other one-off experiment scripts behind
+this page's older entries: `tdms_experiment`, `tdms_benchmark`, `cnn_spike`; all are in git history
+at commit 2f52340):
 
 | feature / data | tracks | CV top1 | CV top3 |
 |---|---|---|---|

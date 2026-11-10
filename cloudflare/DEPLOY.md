@@ -19,16 +19,6 @@ Everything below needs YOUR Cloudflare account. The code is all in this repo.
 
 ## 1. Headless recognizer on a Cloudflare Container
 
-```bash
-bash space/assemble.sh                 # stages raaga_id/, apps/, models/, schema.py, etc. into space_build/
-cp space/api.py space/Dockerfile space/requirements-api.txt space_build/
-cp space/README-api.md space_build/README.md    # Docker SDK front-matter (sdk: docker, app_port: 7860)
-cd space_build
-git init && git add -A && git commit -m "headless recognizer API"
-git remote add origin https://huggingface.co/spaces/twelveswaras/recognizer-api
-git push -u origin main
-```
-
 Build and deploy it with `cloudflare/recognizer/assemble.sh swara` then `wrangler deploy` (see
 `cloudflare/recognizer/DEPLOY.md`). The first build takes ~20 minutes: essentia compiles, and the
 image cross-builds to linux/amd64. Verify:

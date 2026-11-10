@@ -70,7 +70,10 @@ relevant, corroborating the pitch-focused choice.
   before it; 0.798 / 0.938 without the junk gate; chance 0.025 / 0.075).
 - **Real-world benchmark**: 80 in-the-wild clips, the number that actually matters. Current:
   top-1 **0.688**, top-3 **0.787** with swara chains; 0.537 / 0.762 without (`tools/realworld_eval`).
-- **k-fold track-level cross-validation** (`tools/cross_validate.py`) for lower-variance estimates.
+- **Held-out tracks**: the 25% of IAMRRD tracks the shipped model never trained on, scored per
+  track and on the first 150 s (`tools/train_swara`, which checks the split really is unseen).
+- **Tonic benchmark** (`tools/tonic_bench.py`): the production Sa estimator against hand-annotated
+  tonics on 197 Saraga Carnatic recordings.
 - **Real-world benchmark harness** (`tools/realworld_eval.py`): scores the model on
   concert/phone clips broken down **by drone presence**, to measure the studio→real-world gap the
   frozen (studio) benchmark can't.

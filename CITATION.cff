@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "If you use twelveswaras in your research, please cite it as below."
-title: twelveswaras
+message: "If you use twelveswaras in your research, please cite the version you used, as below."
+title: "twelveswaras: an open-source raaga recognizer for Carnatic and Hindustani music"
 type: software
 authors:
   - family-names: Sankaran
@@ -8,26 +8,65 @@ authors:
 repository-code: "https://github.com/twelveswaras/twelveswaras"
 url: "https://twelveswaras.com"
 license: MIT
-year: 2026
+version: 1.0.0
+date-released: "2026-11-10"
 abstract: >-
-  twelveswaras is an open-source "Shazam for raagas": given a clip of Indian
-  classical music (Carnatic or Hindustani) it identifies the raaga, shows the top
-  three candidates with calibrated confidence and the detected tonic (Sa), and
-  helps the listener learn to hear that raaga. It pairs a tonic-normalized
-  Time-Delayed Melody Surface (TDMS) feature with an XGBoost classifier over a
-  shared 12-swara space, and is paired with a community-contributed,
-  openly-licensed data commons (CC-BY-4.0) so the model improves over time. The
-  project is a non-commercial public good stewarded in the neutral twelveswaras
-  organization and is not owned by any company.
+  twelveswaras is an open-source "Shazam for raagas": given a recording of Indian classical
+  music (Carnatic or Hindustani) it identifies the raaga among 70 (40 Carnatic, 30 Hindustani),
+  shows the top three candidates with calibrated confidence and the detected tonic (Sa), and
+  helps the listener learn to hear that raaga. The tonic is estimated from the drone; a
+  tonic-normalized, windowed Time-Delayed Melody Surface (TDMS) feeds an XGBoost classifier,
+  whose evidence is fused with per-raaga second-order Markov chains over the sung swaras, which
+  capture the order of notes that the surface cannot see. The project reports its measurements
+  openly, including on a real-world benchmark of phone, concert and broadcast audio, a tonic
+  benchmark against hand-annotated tonics, and negative results. It is paired with a
+  community-contributed, openly-licensed data commons (CC-BY-4.0), and is a non-commercial
+  public good stewarded in the neutral twelveswaras organization, not owned by any company.
 keywords:
   - Carnatic music
   - Hindustani music
-  - Indian classical music
+  - Indian art music
   - raaga recognition
+  - tonic estimation
   - music information retrieval
   - TDMS
+  - Markov chains
   - XGBoost
 references:
+  - type: data
+    title: "Indian Art Music Raga Recognition Dataset (features)"
+    authors:
+      - family-names: Gulati
+        given-names: Sankalp
+      - family-names: Serrà
+        given-names: Joan
+      - family-names: Ganguli
+        given-names: Kaustuv Kanti
+      - family-names: Şentürk
+        given-names: Sertan
+      - family-names: Serra
+        given-names: Xavier
+    doi: 10.5281/zenodo.7278506
+    year: 2016
+    version: "1.0"
+    license: CC-BY-4.0
+    publisher:
+      name: Zenodo
+  - type: data
+    title: "Saraga: research datasets of Indian Art Music"
+    authors:
+      - family-names: Bozkurt
+        given-names: Baris
+      - family-names: Srinivasamurthy
+        given-names: Ajay
+      - family-names: Gulati
+        given-names: Sankalp
+      - family-names: Serra
+        given-names: Xavier
+    doi: 10.5281/zenodo.4301737
+    year: 2018
+    publisher:
+      name: Zenodo
   - type: conference-paper
     title: "Time-Delayed Melody Surfaces for Raga Recognition"
     authors:
@@ -48,6 +87,19 @@ references:
     end: 233
     location:
       name: "New York City, USA"
+  - type: conference-paper
+    title: "A Multipitch Approach to Tonic Identification in Indian Classical Music"
+    authors:
+      - family-names: Salamon
+        given-names: Justin
+      - family-names: Gulati
+        given-names: Sankalp
+      - family-names: Serra
+        given-names: Xavier
+    collection-title: "Proceedings of the 13th International Society for Music Information Retrieval Conference (ISMIR)"
+    year: 2012
+    location:
+      name: "Porto, Portugal"
   - type: thesis
     title: "Computational Approaches for Melodic Description in Indian Art Music Corpora"
     authors:
@@ -59,3 +111,14 @@ references:
     year: 2016
     location:
       name: "Barcelona, Spain"
+  - type: thesis
+    title: "Classifying Ragams in Carnatic Music with Machine Learning Models: A Shazam for South Indian Classical Music"
+    authors:
+      - family-names: Narayanan
+        given-names: Hari
+    institution:
+      name: "Harvard College"
+    thesis-type: "Bachelor's thesis"
+    year: 2024
+    location:
+      name: "Cambridge, MA, USA"
