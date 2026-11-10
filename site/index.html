@@ -104,6 +104,7 @@
 }
 </script>
 
+<link rel="stylesheet" href="/nav.css">
 <style>
   :root{
     /* warm-biased dark; neutrals chosen toward the amber accent, not default cool grey */
@@ -126,24 +127,6 @@
   .wrap{width:100%;max-width:780px;margin:0 auto;padding:0 max(22px,env(safe-area-inset-right)) 0 max(22px,env(safe-area-inset-left))}
 
   /* ---- topbar ---- */
-  .top{display:flex;align-items:center;justify-content:space-between;padding:max(18px,env(safe-area-inset-top)) 0 0}
-  .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
-  .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
-  .brand svg{width:26px;height:26px;flex:0 0 auto}
-  .top .nav{display:inline-flex;align-items:center;gap:12px}
-  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted);display:inline-flex;align-items:center;min-height:44px}
-  .top .nav a:hover{color:var(--paper)}
-  /* faint middots so the links read as separate nav items, not one running phrase */
-  .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
-  @media (max-width:360px){.top .nav .sep{display:none} .top .nav{column-gap:12px} .top .nav a{font-size:.68rem;letter-spacing:0}}
-  /* mobile: the three links won't fit on the brand's row, so drop them to their own
-     centered row instead of letting "train your ear" wrap mid-label */
-  @media (max-width:560px){
-    .top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:max(16px,env(safe-area-inset-top))}
-    .top .nav{flex-basis:100%;justify-content:center;flex-wrap:wrap;column-gap:14px;row-gap:0}
-    .top .nav a{white-space:nowrap}
-  }
-  @media (max-width:400px){.top .nav{column-gap:11px} .top .nav a{font-size:.72rem}}
 
   /* ---- hero ---- */
   .hero{padding:40px 0 8px;text-align:center}
@@ -246,6 +229,10 @@
   .rec-fl{display:block;height:100%;width:0;border-radius:3px;background:var(--amber);transition:width .35s}
   .rec-row.lead .rec-fl{background:linear-gradient(90deg,var(--amber),var(--amber-hi));box-shadow:0 0 8px rgba(251,191,36,.5)}
   .rec-top3.done .rec-row.lead .rec-fl{background:linear-gradient(90deg,var(--jade),var(--jade-hi));box-shadow:0 0 8px rgba(116,198,157,.5)}
+  /* settled: the big name is the answer, so the rows are a plain comparison (the leading name no
+     brighter than the rest) and the leading percentage takes the settled colour, like its bar */
+  .rec-top3.done .rec-row.lead .rn{color:var(--muted);font-weight:500}
+  .rec-top3.done .rec-row.lead .rp{color:var(--jade-hi)}
   .rec-controls{margin-top:16px;min-height:46px;display:flex;justify-content:center;align-items:center}
   .rec-entry{display:flex;flex-direction:column;align-items:center;gap:8px}
   .rbtn{appearance:none;font-family:var(--sans);font-weight:700;font-size:1rem;cursor:pointer;border-radius:12px;
@@ -651,7 +638,7 @@
       // enough time. A quick manual stop can't be confident even if the number briefly crossed 0.6,
       // it shows as a best guess (amber, no check). Uploads are judged on the score alone.
       var abstain=lockConf<ABSTAIN_CONF, sure=lockConf>=0.6 && (source==='file' || elapsed>=MIN_LISTEN);
-      lockSure=sure; if(sure) bridgeEl.textContent='The answer';
+      lockSure=sure;
       if(abstain){
         statusEl.textContent='Not sure'; statusEl.className='rec-status';
         leadEl.textContent="I couldn't place this confidently. It may be a raaga I don't know yet, or the audio needs a clearer drone. Closest guesses:";

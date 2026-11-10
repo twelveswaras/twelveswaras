@@ -23,7 +23,12 @@ COVER_PAGES = sorted(
 
 
 def _css(page: Path) -> str:
-    return "\n".join(re.findall(r"<style>(.*?)</style>", page.read_text(encoding="utf-8"), re.S))
+    """The page's own <style> blocks plus the site stylesheets it links (e.g. /nav.css, which
+    holds the header for every page with navigation)."""
+    html = page.read_text(encoding="utf-8")
+    linked = [(SITE / href.lstrip("/")).read_text(encoding="utf-8")
+              for href in re.findall(r'<link rel="stylesheet" href="(/[^"]+\.css)">', html)]
+    return "\n".join(linked + re.findall(r"<style>(.*?)</style>", html, re.S))
 
 
 def _rules(css: str, selector: str) -> list[str]:

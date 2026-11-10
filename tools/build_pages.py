@@ -175,6 +175,7 @@ TEMPLATE = """<!doctype html>
 <meta name="twitter:title" content="__NAME__: a __TRADWORD__ raaga">
 <meta name="twitter:image" content="https://twelveswaras.com/og.png">
 __JSONLD__
+<link rel="stylesheet" href="/nav.css">
 <style>
   :root{
     --ink:#0b0a08; --raise:#16130f; --raise-2:#1c1811; --line:#2a241c; --line-2:#39301f;
@@ -193,18 +194,6 @@ __JSONLD__
   a{color:var(--amber-hi);text-decoration:none} a:hover{color:#fff}
   :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
   .wrap{width:100%;max-width:780px;margin:0 auto;padding:0 max(22px,env(safe-area-inset-right)) 0 max(22px,env(safe-area-inset-left))}
-  .top{display:flex;align-items:center;justify-content:space-between;padding:max(18px,env(safe-area-inset-top)) 0 0}
-  .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
-  .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
-  .brand svg{width:26px;height:26px;flex:0 0 auto}
-  .top .nav{display:inline-flex;align-items:center;gap:12px}
-  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted);display:inline-flex;align-items:center;min-height:44px}
-  .top .nav a:hover,.top .nav a.here{color:var(--paper)}
-  .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
-  @media (max-width:360px){.top .nav .sep{display:none} .top .nav{column-gap:12px} .top .nav a{font-size:.68rem;letter-spacing:0}}
-  @media (max-width:560px){.top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:max(16px,env(safe-area-inset-top))}
-    .top .nav{flex-basis:100%;justify-content:center;flex-wrap:wrap;column-gap:14px;row-gap:0} .top .nav a{white-space:nowrap}}
-  @media (max-width:400px){.top .nav{column-gap:11px} .top .nav a{font-size:.72rem}}
   .crumb{font-family:var(--mono);font-size:.74rem;letter-spacing:.04em;color:var(--faint);padding:20px 0 0}
   .crumb a{color:var(--muted);text-decoration:underline;text-underline-offset:2px} .crumb a:hover{color:var(--paper)}
   .hero{padding:14px 0 8px}
@@ -686,6 +675,7 @@ INDEX_TEMPLATE = """<!doctype html>
 <meta property="og:image" content="https://twelveswaras.com/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://twelveswaras.com/og.png">
+<link rel="stylesheet" href="/nav.css">
 <style>
   :root{
     --ink:#0b0a08; --raise:#16130f; --raise-2:#1c1811; --line:#2a241c; --line-2:#39301f;
@@ -702,18 +692,6 @@ INDEX_TEMPLATE = """<!doctype html>
   a{color:var(--amber-hi);text-decoration:none} a:hover{color:#fff}
   :focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:6px}
   .wrap{width:100%;max-width:860px;margin:0 auto;padding:0 max(22px,env(safe-area-inset-right)) 0 max(22px,env(safe-area-inset-left))}
-  .top{display:flex;align-items:center;justify-content:space-between;padding:max(18px,env(safe-area-inset-top)) 0 0}
-  .brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;letter-spacing:-.4px;font-size:1.02rem}
-  .brand .a{color:var(--paper)} .brand .b{color:var(--amber)}
-  .brand svg{width:26px;height:26px;flex:0 0 auto}
-  .top .nav{display:inline-flex;align-items:center;gap:12px}
-  .top .nav a{font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;color:var(--muted);display:inline-flex;align-items:center;min-height:44px}
-  .top .nav a:hover,.top .nav a.here{color:var(--paper)}
-  .top .nav .sep{color:var(--faint);font-size:.76rem;pointer-events:none;user-select:none}
-  @media (max-width:360px){.top .nav .sep{display:none} .top .nav{column-gap:12px} .top .nav a{font-size:.68rem;letter-spacing:0}}
-  @media (max-width:560px){.top{flex-wrap:wrap;justify-content:center;row-gap:12px;padding-top:max(16px,env(safe-area-inset-top))}
-    .top .nav{flex-basis:100%;justify-content:center;flex-wrap:wrap;column-gap:14px;row-gap:0} .top .nav a{white-space:nowrap}}
-  @media (max-width:400px){.top .nav{column-gap:11px} .top .nav a{font-size:.72rem}}
   header.hero{padding:26px 0 6px}
   .eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin:0 0 10px}
   h1{font-size:clamp(1.9rem,7vw,2.8rem);font-weight:800;letter-spacing:-.03em;margin:0;text-wrap:balance}
