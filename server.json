@@ -1,12 +1,34 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.twelveswaras/twelveswaras",
+  "name": "io.github.sathya-sankaran/twelveswaras",
   "title": "twelveswaras",
   "description": "Identify the raaga in Carnatic or Hindustani music; look up 70 raagas' scales and notes.",
-  "repository": { "url": "https://github.com/twelveswaras/twelveswaras", "source": "github" },
+  "repository": {
+    "url": "https://github.com/twelveswaras/twelveswaras",
+    "source": "github"
+  },
   "websiteUrl": "https://twelveswaras.com",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "remotes": [
-    { "type": "streamable-http", "url": "https://twelveswaras.com/mcp" }
+    {
+      "type": "streamable-http",
+      "url": "https://twelveswaras.com/mcp"
+    }
+  ],
+  "icons": [
+    {
+      "src": "https://twelveswaras.com/favicon.svg",
+      "mimeType": "image/svg+xml",
+      "sizes": [
+        "any"
+      ]
+    },
+    {
+      "src": "https://twelveswaras.com/apple-touch-icon.png",
+      "mimeType": "image/png",
+      "sizes": [
+        "180x180"
+      ]
+    }
   ]
 }
