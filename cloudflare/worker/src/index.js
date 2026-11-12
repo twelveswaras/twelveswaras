@@ -231,6 +231,7 @@ const FUNNEL_EVENTS = new Set([
   'mic_busy',      //   another app holds it
   'mic_unsupported', // the browser cannot record at all (often a browser built into another app)
   'result',        // a result was shown (a lock, an abstention, or a no-prediction)
+  'share',         // shared a named result (share sheet or copied link)
   'correct_open',  // opened "Wrong? Correct it" / "Know this raaga?" under a result
   'correct_sent',  // a correction or confirmation from a result was accepted
   'contribute_view', // the contribute page rendered (site/contribute/)

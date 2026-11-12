@@ -672,13 +672,12 @@
       // "How to hear" page: Carnatic at raaga/<slug>.html, Hindustani at raaga/<slug>-hindustani.html
       // (the -hindustani suffix keeps the two Todi/Sri pages distinct). Only offered for a known
       // tradition, so an unknown label never links to a 404.
-      var learn = lockTrad==='carnatic'
-        ? '<a class="rlearn" id="r-learn" href="raaga/'+slug(lockName)+'.html">↗ How to hear '+lockName+'</a>'
-        : lockTrad==='hindustani'
-        ? '<a class="rlearn" id="r-learn" href="raaga/'+slug(lockName)+'-hindustani.html">↗ How to hear '+lockName+'</a>'
-        : '';
+      var page = lockTrad==='carnatic' ? slug(lockName)+'.html'
+        : lockTrad==='hindustani' ? slug(lockName)+'-hindustani.html' : '';
+      shared = page ? { page: page, name: lockName, trad: lockTrad, sure: sure } : null;
       setC('<div class="rec-entry"><button class="rbtn again" id="r-again">Listen again</button>'
-        +learn
+        +(page ? '<a class="rlearn" id="r-learn" href="raaga/'+page+'">↗ How to hear '+lockName+'</a>'
+               + '<button class="rghost" id="r-share">Share this result</button>' : '')
         +'<button class="rghost" id="r-up2">or upload a recording ↑</button></div>');
       mountContrib();
       logResult();
@@ -800,7 +799,21 @@
       else if(b.id==='r-up'||b.id==='r-up2') g('rec-file').click();
       else if(b.id==='r-stop') stopNow();
       else if(b.id==='r-cancel') toIdle();
+      else if(b.id==='r-share') shareResult(b);
     });
+    // Share a named result: the raaga's own page, with a line saying what was heard ("thinks this
+    // is" for a best guess). The phone's share sheet where there is one, else copy to the clipboard.
+    var shared=null;
+    function shareResult(b){
+      if(!shared) return;
+      var url='https://twelveswaras.com/raaga/'+shared.page;
+      var text='twelveswaras '+(shared.sure?'heard ':'thinks this is ')+shared.name
+        +' ('+(shared.trad==='hindustani'?'Hindustani':'Carnatic')+'). How to hear it:';
+      ev('share');
+      if(navigator.share){ navigator.share({title:'twelveswaras', text:text, url:url}).catch(function(){}); return; }
+      try{ navigator.clipboard.writeText(text+' '+url).then(function(){ b.textContent='Copied'; },
+        function(){ b.textContent=url; }); }catch(e){ b.textContent=url; }
+    }
     // ---- contribute to the commons (opt-in) ---------------------------------------------------
     // Correction-first: the default ask is to correct the recognizer when it's wrong; the audio
     // stays private and is used only to verify the label. Rights are attested here AND re-checked
