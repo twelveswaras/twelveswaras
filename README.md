@@ -125,8 +125,9 @@ Full bibliography in [`METHODOLOGY.md`](METHODOLOGY.md).
   audio of the *current* 70 raagas (about 12 varied recordings per raaga is the floor for learning
   one); new raagas are trained in only once they reach that, always quarantined from the 70 (an
   unknown raaga can never be model-confirmed).
-- **Verify and publish.** Community verification of pending clips, the consolidation job, and the
-  public CC-BY contributor dataset.
+- **Train on contributions and publish them.** Performers' own labels are trusted for training;
+  next are folding contributed clips into a retrain, the consolidation job, and the public CC-BY
+  contributor dataset.
 - **Quality (v2).** Audio-based methods (pretrained music models) once the dataset audio is
   available, allied-raaga disambiguation, an out-of-distribution detector for the
   confident-but-wrong cases, a real-world Hindustani benchmark, and an expert-annotation tier.

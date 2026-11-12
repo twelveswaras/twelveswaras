@@ -485,7 +485,7 @@
     var stream=null, rec=null, chunks=[], sendTimer=null, uiTimer=null, sending=false, lastSent=0, lockName='', lockConf=0, lockSure=false, lockTrad='carnatic';
     // contribute-to-commons: the clip + tonic that produced the last result, so a donation sends the
     // exact audio the model heard. Nothing is captured or sent until the listener taps Donate.
-    var contribEl=g('rec-contrib'), curMime='', curFile=null, curTonic=null, curHeard=null, curReason='', CONSENT='2026-07-06-own-v1';
+    var contribEl=g('rec-contrib'), curMime='', curFile=null, curTonic=null, curHeard=null, curReason='', CONSENT='2026-11-12-own-v2';
     var RAAGAS=["Aṭāna","Behāg","Bhairavi","Bilahari","Bēgaḍa","Dhanyāsi","Dēvagāndhāri","Gauḷa","Harikāmbhōji","Hussēnī","Kalyāṇi","Kamās","Karaharapriya","Kāmavardani","Kānaḍa","Kāpi","Kāṁbhōji","Kēdāragauḷa","Madhyamāvati","Mukhāri","Māyāmāḷavagauḷa","Mōhanaṁ","Nāṭa","Nāṭakurinji","Pūrvīkaḷyāṇi","Rītigauḷa","Sahānā","Sencuruṭṭi","Sindhubhairavi","Suraṭi","Sāma","Sāvēri","Tōḍi","Varāḷi","Yadukula kāṁbōji","Ānandabhairavi","Śankarābharaṇaṁ","Śrī","Śrīranjani","Ṣanmukhapriya"];
     // Hindustani-30 (the raagas the dual model covers), shown as a second group in the contribute
     // picker so a listener can donate a Hindustani clip. Tradition travels with the donation.
@@ -816,7 +816,7 @@
     }
     // ---- contribute to the commons (opt-in) ---------------------------------------------------
     // Correction-first: the default ask is to correct the recognizer when it's wrong; the audio
-    // stays private and is used only to verify the label. Rights are attested here AND re-checked
+    // stays private and is used only to train the recognizer (the contributor's label is trusted). Rights are attested here AND re-checked
     // in the worker. The exact clip that produced the result is sent, so the label matches what
     // the model heard.
     function clipBlob(){ return curFile ? curFile
@@ -858,7 +858,7 @@
         +   '<label class="cc-lab req"><input type="checkbox" id="cc-own">'
         +     '<span>This is <b>my own performance</b>, or I have the rights to share it publicly.</span></label>'
         +   '<p class="cc-note">Your correction teaches it where it got a raaga <b>wrong</b>, which is what '
-        +     'helps most. The audio stays private, used only to check the label; we publish the model, never your recording. '
+        +     'helps most. The audio stays private and is used only to train the recognizer; we publish the model, never your recording. '
         +     '<a href="about/#faq" style="color:var(--jade-hi)">How we handle your clip &rarr;</a></p>'
         +   '<div class="cc-inst" role="group" aria-label="Instrument (optional)">'+chips+'</div>'
         +   '<label class="cc-lab"><input type="checkbox" id="cc-pub">'

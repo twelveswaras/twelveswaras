@@ -32,6 +32,6 @@ by opening an issue or writing to the contact in [`SECURITY.md`](SECURITY.md).
 
 ---
 
-*Contributions are held in a verification queue before they train any model. See
-[`CONTRIBUTING.md`](CONTRIBUTING.md) and [`GOVERNANCE.md`](GOVERNANCE.md) for how clips are
-verified and promoted.*
+*A contributor's own label for their own performance is trusted for training; a disputed clip
+goes to an expert queue. See [`CONTRIBUTING.md`](CONTRIBUTING.md) and
+[`GOVERNANCE.md`](GOVERNANCE.md) for how clips are checked and promoted.*

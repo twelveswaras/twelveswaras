@@ -30,9 +30,16 @@ organisation, so the project and its commons stay independent of any one employe
 
 ## Verification
 
-Community votes promote a clip to `train` at **≥3 agree AND ≥80% agreement**.
-Disagreement routes it to `disputed` → an expert queue (Sathya + a small trusted
-circle). Thresholds are configurable (`raaga_id/config.py`).
+A clip can train a model once the person who performed it, or holds its rights, has named its
+raaga. They know what they played or sang, so their label is trusted without a vote. A clip the
+model already recognised as the raaga they named is trusted too.
+
+Anyone may still dispute a label. A disputed clip leaves training and goes to an expert queue
+(Sathya and a small trusted circle). Community votes promote a clip at **≥3 agree AND ≥80%
+agreement** (configurable in `raaga_id/config.py`); no voting page is live yet.
+
+Contributed clips are also scored as a real-world test before each retrain, so we can see how the
+model does on recordings from the people who use it.
 
 ## Moderation
 

@@ -64,4 +64,14 @@ async function jump(page, ms) {
   await page.clock.fastForward(100);
 }
 
-module.exports = { stubApi, answer, jump, ACT, FAKE_MIC };
+/** A silent mono 16-bit WAV of the given length, small enough to upload quickly (8 kHz). */
+function wav(seconds) {
+  const sr = 8000, n = Math.round(seconds * sr), b = Buffer.alloc(44 + n * 2);
+  b.write('RIFF', 0); b.writeUInt32LE(36 + n * 2, 4); b.write('WAVE', 8); b.write('fmt ', 12);
+  b.writeUInt32LE(16, 16); b.writeUInt16LE(1, 20); b.writeUInt16LE(1, 22); b.writeUInt32LE(sr, 24);
+  b.writeUInt32LE(sr * 2, 28); b.writeUInt16LE(2, 32); b.writeUInt16LE(16, 34);
+  b.write('data', 36); b.writeUInt32LE(n * 2, 40);
+  return { name: `clip-${seconds}s.wav`, mimeType: 'audio/wav', buffer: b };
+}
+
+module.exports = { stubApi, answer, jump, ACT, FAKE_MIC, wav };

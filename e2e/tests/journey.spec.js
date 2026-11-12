@@ -3,7 +3,7 @@
 // do people drop off between hearing an answer and sending a recording".
 const { test, expect } = require('@playwright/test');
 const path = require('path');
-const { stubApi } = require('./helpers');
+const { stubApi, wav } = require('./helpers');
 
 const FIXTURE = path.join(__dirname, '..', 'fixtures', 'clip.wav');
 const CONFIDENT = [
@@ -66,7 +66,7 @@ test('the contribute page reports its view under the session that identified fir
 test('contributing from the contribute page reports contribute_sent', async ({ page }) => {
   const events = await stubApi(page, { top3: CONFIDENT });
   await page.goto('/contribute/');
-  await page.setInputFiles('#cx-file', FIXTURE);
+  await page.setInputFiles('#cx-file', wav(61));   // contributions must be a minute long
   await page.locator('#cx-raaga').selectOption('Kalyāṇi');
   await page.locator('#cx-own').check();
   await page.locator('#cx-send').click();

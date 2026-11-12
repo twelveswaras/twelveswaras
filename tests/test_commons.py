@@ -101,7 +101,8 @@ def test_contribute_page_survives_phone_sleep():
 
 def test_contribute_page_has_recording_instructions():
     c = _contribute().lower()
-    assert "20 to 45 seconds" in c                          # how much to record
+    assert "1 to 3 minutes" in c                            # how much to record (a minute at least)
+    assert "minrec=60" in c and "maxrec=180" in c
     assert "drone" in c                                     # needs a drone for the tonic
 
 

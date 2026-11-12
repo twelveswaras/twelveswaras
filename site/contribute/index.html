@@ -180,7 +180,9 @@
   var API=new URLSearchParams(location.search).get('api')
     || ((host==='twelveswaras.com'||host==='www.twelveswaras.com') ? '/api' : 'https://twelveswaras-api.knerav.workers.dev');
   var CONSENT='2026-07-07-contribute-v1';
-  var MAXREC=60, MINREC=8, MAXFILE=25*1024*1024;
+  // A clip must be a minute long to teach the recognizer (short ones rarely give a usable Sa;
+  // raaga_id/config.py MIN_CONTRIB_SECONDS is the training-side backstop). Up to three minutes.
+  var MAXREC=180, MINREC=60, MAXFILE=25*1024*1024;
   var RAAGAS=["Aṭāna","Behāg","Bhairavi","Bilahari","Bēgaḍa","Dhanyāsi","Dēvagāndhāri","Gauḷa","Harikāmbhōji","Hussēnī","Kalyāṇi","Kamās","Karaharapriya","Kāmavardani","Kānaḍa","Kāpi","Kāṁbhōji","Kēdāragauḷa","Madhyamāvati","Mukhāri","Māyāmāḷavagauḷa","Mōhanaṁ","Nāṭa","Nāṭakurinji","Pūrvīkaḷyāṇi","Rītigauḷa","Sahānā","Sencuruṭṭi","Sindhubhairavi","Suraṭi","Sāma","Sāvēri","Tōḍi","Varāḷi","Yadukula kāṁbōji","Ānandabhairavi","Śankarābharaṇaṁ","Śrī","Śrīranjani","Ṣanmukhapriya"];
   var HINDUSTANI_RAAGAS=["Ahira bhairav","Alahaiyā bilāval","Bairāgi","Basant","Bhairav","Bhūp","Bihāg","Bilāsakhānī tōḍī","Bāgēśrī","Darbāri","Dēś","Gauḍ malhār","Hamsadhvāni","Jōg","Kēdār","Khamāj","Lalit","Madhukauns","Madhuvanti","Miyān malhār","Mālkauns","Mārvā","Mārūbihāg","Puriyā dhanaśrī","Rāgēśrī","Tōḍī","Yaman kalyāṇ","Ābhōgī","Śrī","Śuddh sāraṅg"];
 
@@ -225,7 +227,7 @@
     releasePreview();
     cx.innerHTML =
       '<div class="steps"><h2>Before you record</h2><ul>'
-      + '<li>Record about <b>20 to 45 seconds</b> of the raaga.</li>'
+      + '<li>Record <b>1 to 3 minutes</b> of the raaga. A minute is the least it can learn from.</li>'
       + '<li>Have a <b>tanpura or shruti drone</b> under the melody, it is what lets the tonic (Sa) be found.</li>'
       + '<li><b>Keep the screen on</b> while recording so a phone lock does not cut it off.</li>'
       + '<li>Only share clips that are <b>your own performance</b>, or that you have the rights to.</li>'
@@ -252,7 +254,7 @@
       clearInterval(recTimer); relWake(); stopStream();
       var secs=(Date.now()-t0)/1000;
       clip=new Blob(chunks,{type:clipMime});
-      if(secs<MINREC){ clip=null; return renderIdleWithError('That was very short ('+Math.round(secs)+'s). Try 20 to 45 seconds so there is enough to hear.'); }
+      if(secs<MINREC){ clip=null; return renderIdle(); }   // Cancel before the minute keeps nothing
       renderReview();
     };
     rec.onerror=function(){ try{ rec.stop(); }catch(e){} };
@@ -262,6 +264,10 @@
     recTimer=setInterval(tickRec,250);
   }
   function tickRec(){ var s=(Date.now()-t0)/1000; var t=g('cx-timer'); if(t) t.textContent=fmt(s);
+    var ok=s>=MINREC, b=g('cx-stop'), h=g('cx-hint');
+    if(b){ b.textContent = ok ? 'Done, review it' : 'Cancel'; b.className = ok ? 'btn primary' : 'btn'; }
+    if(h) h.textContent = ok ? 'Good. Keep going if you can; it stops on its own at '+fmt(MAXREC)+'.'
+                             : 'Sing or play over the drone, keep going to '+fmt(MINREC)+'.';
     if(s>=MAXREC) stopRec(); }
   function stopRec(){ try{ if(rec&&rec.state!=='inactive') rec.stop(); }catch(e){} }
   function stopStream(){ if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; } }
@@ -269,8 +275,8 @@
     cx.innerHTML =
       '<div class="rec-live"><p style="margin:0;color:var(--muted);font-size:.9rem"><span class="pulse"></span>Recording</p>'
       + '<div class="timer" id="cx-timer">0:00</div>'
-      + '<p class="hint">Sing or play over the drone. Stops on its own at ' + MAXREC + 's.</p>'
-      + '<button class="btn primary" id="cx-stop">Stop and review</button>'
+      + '<p class="hint" id="cx-hint">Sing or play over the drone, keep going to ' + fmt(MINREC) + '.</p>'
+      + '<button class="btn" id="cx-stop">Cancel</button>'
       + '<p class="wake off" id="cx-wake">Keep the screen on so recording is not cut off</p></div>';
     g('cx-stop').onclick=stopRec;
   }
@@ -279,8 +285,29 @@
   fileEl.onchange=function(e){ var f=e.target.files&&e.target.files[0]; e.target.value='';
     if(!f) return;
     if(f.size>MAXFILE) return renderIdleWithError('That file is over 25 MB. Please share a shorter clip.');
-    clip=f; clipMime=f.type||'audio/webm'; renderReview();
+    fileSeconds(f).then(function(secs){
+      if(secs!=null && secs<MINREC) return renderIdleWithError('That clip is '+Math.round(secs)+' s. Please share at least a minute, so there is enough to learn from.');
+      clip=f; clipMime=f.type||'audio/webm'; renderReview();
+    });
   };
+  // The file's length in seconds, or null when the browser cannot tell (then it is let through and
+  // training skips it if short). Recorded webm often reports Infinity until decoded, so decode then.
+  function fileSeconds(f){
+    return new Promise(function(done){
+      var url=URL.createObjectURL(f), a=new Audio(), settled=false;
+      function finish(v){ if(settled) return; settled=true; try{ URL.revokeObjectURL(url); }catch(e){} done(v); }
+      a.preload='metadata';
+      a.onloadedmetadata=function(){ if(isFinite(a.duration)) return finish(a.duration); decode(); };
+      a.onerror=decode;
+      function decode(){
+        var AC=window.AudioContext||window.webkitAudioContext; if(!AC||settled) return finish(null);
+        f.arrayBuffer().then(function(buf){ var ac=new AC();
+          return ac.decodeAudioData(buf).then(function(b){ try{ ac.close(); }catch(e){} finish(b.duration); });
+        }).catch(function(){ finish(null); });
+      }
+      a.src=url;
+    });
+  }
 
   // ---- review + submit ----
   function renderReview(){
@@ -388,7 +415,7 @@
     relWake(); releasePreview();
     cx.innerHTML =
       '<div class="done"><h2>Thank you.</h2>'
-      + '<p>Your clip is queued for community verification. It helps the recognizer learn <span id="cx-done-raaga"></span>, and joins an open commons anyone can build on.</p>'
+      + '<p>Your clip joins the next training round under the raaga you named. It helps the recognizer learn <span id="cx-done-raaga"></span>, and joins an open commons anyone can build on.</p>'
       + '<div class="row"><button class="btn primary" id="cx-again">Contribute another</button>'
       + '<a class="btn" href="../">Back to identify</a></div></div>';
     g('cx-done-raaga').textContent=raaga;

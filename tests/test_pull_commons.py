@@ -96,12 +96,27 @@ def test_classify_skips_when_rights_not_attested():
     assert "rights" in reason.lower()
 
 
-def test_classify_skips_unverified_in_vocab():
+def test_classify_trusts_the_performers_own_label():
+    # Policy (2026-11-12): the person who performed and attested the clip naming its raaga is
+    # enough to train on. No community vote is needed.
     bucket, reason = P.classify(
         _row(verification_status="unverified", label_source="contributor_declared"), DUAL, set()
     )
+    assert bucket == P.TRAIN
+    assert "declared" in reason.lower()
+
+
+def test_classify_skips_an_unverified_label_of_unknown_origin():
+    bucket, reason = P.classify(_row(verification_status="unverified", label_source=None), DUAL, set())
     assert bucket == P.SKIP
     assert "unverified" in reason.lower()
+
+
+def test_a_dispute_still_overrides_the_performers_label():
+    bucket, _ = P.classify(
+        _row(verification_status="disputed", label_source="contributor_declared"), DUAL, set()
+    )
+    assert bucket == P.SKIP
 
 
 def test_classify_skips_disputed():

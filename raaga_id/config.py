@@ -16,6 +16,10 @@ RAAGAS_PATH = ROOT / "raagas.json"
 SAMPLE_RATE = 16_000       # 16 kHz mono throughout
 CLIP_SECONDS = 10.0        # D7: 10 s analysis window
 MIN_CLIP_SECONDS = 5.0     # D7: accept >=5 s with a warning
+# A contribution must be this long to train. On the wild set, named-and-right was 48% at 30 s and
+# 64% at 60 s; all six contributions under 40 s were wrong (2026-11-12). The contribute page asks
+# for it too; this is the backstop for clips that got past the page.
+MIN_CONTRIB_SECONDS = 60
 
 # Output UX (D6).
 TOP_K = 3                  # always show top-3 + confidence
