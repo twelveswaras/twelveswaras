@@ -161,10 +161,6 @@ def resolve_swaras(g_swaras: list[str], ref: dict) -> list[str]:
     return sorted(seen, key=lambda t: SEMITONE[t])
 
 
-def pcset(swaras: list[str]) -> frozenset:
-    return frozenset(SEMITONE[s] for s in swaras if s in SEMITONE)
-
-
 def necklace(pcs: frozenset) -> tuple:
     """Canonical form of a pitch-class set under transposition. Two raagas share a necklace iff one
     scale is the other with a different note taken as Sa, i.e. they are graha-bhedam related."""
@@ -251,6 +247,8 @@ __JSONLD__
   .lg-on{background:var(--amber)}
   .lg-jeeva{background:var(--amber-hi);box-shadow:0 0 0 3px rgba(251,191,36,.22)}
   .lg-nyasa{background:transparent;border:2px solid var(--jade-hi)}
+  .lg-anya{background:transparent;border:2px solid var(--amber)}
+  .wheel text.anya{fill:var(--muted)}
   .wheel .node{cursor:pointer}
   .play{display:flex;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap;justify-content:center}
   .play button{display:inline-flex;align-items:center;gap:.5rem;background:var(--raise-2);
@@ -347,7 +345,7 @@ __JSONLD__
       <div class="legend">
         <span><i class="lg-on"></i> in the raaga</span>
         <span><i class="lg-jeeva"></i> __LEGEND_JEEVA__</span>
-        <span><i class="lg-nyasa"></i> __LEGEND_NYASA__</span>
+        <span><i class="lg-nyasa"></i> __LEGEND_NYASA__</span>__ANYA_LEGEND__
       </div>
       <div class="play">
         <button id="playScale" type="button" aria-pressed="false">▶ play the scale</button>
@@ -376,7 +374,7 @@ __HEAR____CONFUSE____LISTEN____COUSINS__
 <script>
 (function () {
   var LABELS = __LABELS__;
-  var IN = __IN__, JEEVA = __JEEVA__, NYASA = __NYASA__;
+  var IN = __IN__, ANYA = __ANYA__, JEEVA = __JEEVA__, NYASA = __NYASA__;
   var cx=150, cy=150, rNode=104, rLabel=132, nodes={};
   var g = document.getElementById('wheel'), NS='http://www.w3.org/2000/svg';
   function el(t,a){ var e=document.createElementNS(NS,t); for(var k in a) e.setAttribute(k,a[k]); return e; }
@@ -388,15 +386,17 @@ __HEAR____CONFUSE____LISTEN____COUSINS__
   }
   function has(arr,i){ return arr.indexOf(i)>=0; }
   for (var i=0;i<12;i++){
-    var p=pt(i,rNode), lp=pt(i,rLabel), on=has(IN,i), je=has(JEEVA,i), ny=has(NYASA,i);
+    var p=pt(i,rNode), lp=pt(i,rLabel), on=has(IN,i), an=!on&&has(ANYA,i), je=has(JEEVA,i), ny=has(NYASA,i);
     if (ny) g.appendChild(el('circle',{cx:p[0],cy:p[1],r:9,fill:'none',stroke:'#74c69d','stroke-width':2}));
     if (je) g.appendChild(el('circle',{cx:p[0],cy:p[1],r:11,fill:'rgba(251,191,36,.20)'}));
-    var node=el('circle',{cx:p[0],cy:p[1],r:on?5:3,fill:on?(je?'#fbbf24':'#f59e0b'):'#39301f'});
-    if (on){ node.setAttribute('class','node'); nodes[i]=node;
+    // a note used only in phrases (anya swara): an outlined node, playable but not part of the scale
+    var node=an ? el('circle',{cx:p[0],cy:p[1],r:5,fill:'#0b0a08',stroke:'#f59e0b','stroke-width':1.6})
+                : el('circle',{cx:p[0],cy:p[1],r:on?5:3,fill:on?(je?'#fbbf24':'#f59e0b'):'#39301f'});
+    if (on||an){ node.setAttribute('class','node'); nodes[i]=node;
              node.addEventListener('click',(function(s){return function(){ voice(s); pulse(nodes[s]); };})(i)); }
     g.appendChild(node);
     var t=el('text',{x:lp[0],y:lp[1],'text-anchor':'middle','dominant-baseline':'middle'});
-    t.setAttribute('class', je?'jeeva':(on?'on':'')); t.textContent=LABELS[i]; g.appendChild(t);
+    t.setAttribute('class', je?'jeeva':(on?'on':(an?'anya':''))); t.textContent=LABELS[i]; g.appendChild(t);
   }
 
   // A spiccato violin note (Freesound #373854 by sgossner, CC0) tuned near Sa and pitch-shifted
@@ -581,10 +581,10 @@ def search_words(name: str, ref: dict, label: str, hin: bool, aro: str, ava: str
     return title, desc, names, faq
 
 
-def heading(swaras: list[str], ref: dict, hin: bool) -> tuple[str, str]:
-    """The note-count label ("audava (five-note)") and the eyebrow over the name, shared by the page
-    and its share card."""
-    n = len(swaras)
+def heading(n: int, ref: dict, hin: bool) -> tuple[str, str]:
+    """The note-count label ("audava (five-note)") for a raaga using `n` notes, and the eyebrow over
+    the name, shared by the page and its share card. More than seven: bhashanga (notes from outside
+    the parent)."""
     label = COUNT_LABEL.get(n, "bhashanga" if n > 7 else "")
     if hin:
         thaat = ref.get("thaat", "")
@@ -606,6 +606,55 @@ def notation(text):
         if len(run.split()) >= 3:
             return run
     return text.strip()
+
+
+CORRECTIONS = ROOT / "raaga_corrections.json"
+
+
+def corrected(ref: dict, fixes: dict) -> dict:
+    """The reference with the sourced corrections (raaga_corrections.json) applied; the reference
+    itself is not changed."""
+    out = {k: dict(v) if isinstance(v, dict) else v for k, v in ref.items()}
+    for name, items in fixes.items():
+        for f in items:
+            out.setdefault(name, {})[f["field"]] = f["now"]
+    return out
+
+
+# Wheel positions of the notes as the scales write them. Carnatic enharmonics (G1 at R2's pitch, R3 at
+# G2's, D3 at N2's, N1 at D2's) are lit under their own name; Hindustani uses komal lowercase and
+# tivra M.
+ENHARMONIC = {"G1": 2, "R3": 3, "D3": 10, "N1": 9}
+HINDUSTANI_POS = dict(zip("SrRgGmMPdDnN", range(12)))
+
+
+def notation_notes(text: str, hin: bool) -> dict[int, str]:
+    """{wheel position: the name the scale uses} for every swara in the notation."""
+    if hin:
+        return {HINDUSTANI_POS[t]: t for t in re.findall(r"[SrRgGmMPdDnN]", text)}
+    out = {}
+    for t in re.findall(r"[SRGMPDN][123]?", text):
+        pos = SEMITONE.get(t, ENHARMONIC.get(t))
+        if pos is not None:
+            out[pos] = t
+    return out
+
+
+def wheel_notes(swaras: list[str], aro: str, ava: str, trad: dict) -> dict:
+    """What the wheel shows. `scale`: the notes of the arohanam/avarohanam, lit and played.
+    `anya`: notes the raaga's full note set has (raaga_guide) that the scale lines don't, i.e. the
+    notes it uses only in phrases, drawn outlined. `labels`: the tradition's twelve, with a raaga's
+    own enharmonic names (Varali's G1, Nata's R3 and D3) where its scale uses them."""
+    hin = trad["word"] == "Hindustani"
+    named = notation_notes(f"{aro} {ava}", hin)
+    full = {SEMITONE[s] for s in swaras if s in SEMITONE}
+    scale_pos = sorted(named) if named else sorted(full)
+    labels = list(trad["labels"])
+    if not hin:
+        for pos, name in named.items():
+            if name in ENHARMONIC:
+                labels[pos] = name
+    return {"scale": scale_pos, "anya": sorted(full - set(scale_pos)), "labels": labels}
 
 
 def scale_fields(ref: dict, hin: bool) -> tuple[str, str]:
@@ -632,8 +681,11 @@ def card(name: str, swaras: list[str], ref: dict, trad: dict = TRAD["carnatic"])
     """What the raaga's share image shows (rendered by tools/build_og.py)."""
     hin = trad["word"] == "Hindustani"
     aro, ava = scale(ref, hin)
-    return {"slug": slug(name, trad["suffix"]), "name": name, "eyebrow": heading(swaras, ref, hin)[1],
-            "labels": trad["labels"], "semis": [SEMITONE[s] for s in swaras if s in SEMITONE],
+    w = wheel_notes(swaras, aro, ava, trad)
+    return {"slug": slug(name, trad["suffix"]), "name": name,
+            "eyebrow": heading(len(w["scale"]) + len(w["anya"]), ref, hin)[1],
+            "count": len(w["scale"]) + len(w["anya"]),
+            "labels": w["labels"], "semis": w["scale"], "anya": w["anya"],
             "aro": aro, "ava": ava,
             "aro_label": "aroh · ascending" if hin else "arohanam · ascending",
             "ava_label": "avroh · descending" if hin else "avarohanam · descending"}
@@ -643,13 +695,13 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
                trad: dict = TRAD["carnatic"]) -> str:
     hin = trad["word"] == "Hindustani"
     word = trad["word"]
-    semis = [SEMITONE[s] for s in swaras if s in SEMITONE]
     # The wheel highlights the "life" and "resting" notes; for Hindustani those are the vadi and
     # samvadi (the raaga's most and second-most important notes), which map cleanly onto the same
     # jeeva/nyasa highlight slots.
     jeeva = parse_positions(ref.get("vadi" if hin else "jeeva_swaras", ""), swaras)
     nyasa = parse_positions(ref.get("samvadi" if hin else "nyasa_swaras", ""), swaras)
-    label, eyebrow = heading(swaras, ref, hin)
+    c = card(name, swaras, ref, trad)
+    label, eyebrow = heading(c["count"], ref, hin)
     if hin:
         thaat = ref.get("thaat", "")
         thesis = (f"{name} is a raaga in the Hindustani tradition"
@@ -697,12 +749,11 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
         jsonld_html += ('\n<script type="application/ld+json">\n'
                         + json.dumps(faq_ld, ensure_ascii=False, indent=2).replace("</", "<\\/") + "\n</script>")
 
-    labels = card(name, swaras, ref, trad)
     page = TEMPLATE
     repl = {
         "__TITLE__": esc(title),
         "__DESC__": esc(desc), "__SLUG__": slug(name, trad["suffix"]), "__JSONLD__": jsonld_html,
-        "__TRADWORD__": word, "__LABELS__": json.dumps(trad["labels"], separators=(",", ":")),
+        "__TRADWORD__": word, "__LABELS__": json.dumps(c["labels"], ensure_ascii=False, separators=(",", ":")),
         "__LEGEND_JEEVA__": esc(trad["legend_jeeva"]), "__LEGEND_NYASA__": esc(trad["legend_nyasa"]),
         "__CRUMB__": esc(name), "__EYEBROW__": esc(eyebrow), "__NAME__": esc(name),
         "__THESIS__": esc(thesis_text),
@@ -713,9 +764,12 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
         "__AROHANA__": aro_html, "__AVAROHANA__": ava_html,
         "__HEAR__": hear_section(ref, trad), "__CONFUSE__": confuse_section(ref),
         "__LISTEN__": listen_section(ref, known),
-        "__ARO_LABEL__": labels["aro_label"], "__AVA_LABEL__": labels["ava_label"],
+        "__ARO_LABEL__": c["aro_label"], "__AVA_LABEL__": c["ava_label"],
         "__COUSINS__": cousins_section(cousins),
-        "__IN__": json.dumps(semis), "__JEEVA__": json.dumps(jeeva), "__NYASA__": json.dumps(nyasa),
+        "__IN__": json.dumps(c["semis"], separators=(",", ":")),
+        "__ANYA__": json.dumps(c["anya"], separators=(",", ":")),
+        "__ANYA_LEGEND__": ('\n        <span><i class="lg-anya"></i> used in phrases</span>' if c["anya"] else ""),
+        "__JEEVA__": json.dumps(jeeva), "__NYASA__": json.dumps(nyasa),
     }
     for k, v in repl.items():
         page = page.replace(k, v)
@@ -935,22 +989,27 @@ __SECTIONS__
 
 def main() -> None:
     guide = json.loads(GUIDE.read_text())
-    ref = json.loads(REF.read_text())
+    fixes = json.loads(CORRECTIONS.read_text())
+    ref = corrected(json.loads(REF.read_text()), fixes["carnatic"])
     OUT.mkdir(parents=True, exist_ok=True)
 
     # resolve each raaga's note-set once, then group by necklace for graha-bhedam (modal cousins)
     resolved = {nm: resolve_swaras(g.get("swaras") or [], ref.get(nm, {})) for nm, g in guide.items()}
     from collections import defaultdict
-    def qualifies(nm, sw):
-        return len(pcset(sw)) >= 4 and is_symmetric(ref.get(nm, {}))
+    # graha bhedam relates scales, so compare the scale's notes, not notes used only in phrases
+    scale_pcs = {nm: frozenset(wheel_notes(sw, *scale(ref.get(nm, {}), False), TRAD["carnatic"])["scale"])
+                 for nm, sw in resolved.items()}
+
+    def qualifies(nm):
+        return len(scale_pcs[nm]) >= 4 and is_symmetric(ref.get(nm, {}))
 
     groups: dict = defaultdict(list)
-    for nm, sw in resolved.items():
-        if qualifies(nm, sw):
-            groups[necklace(pcset(sw))].append(nm)
+    for nm in resolved:
+        if qualifies(nm):
+            groups[necklace(scale_pcs[nm])].append(nm)
     cousins_of = {}
-    for nm, sw in resolved.items():
-        grp = groups.get(necklace(pcset(sw)), []) if qualifies(nm, sw) else []
+    for nm in resolved:
+        grp = groups.get(necklace(scale_pcs[nm]), []) if qualifies(nm) else []
         cousins_of[nm] = [c for c in grp if c != nm]
 
     # Hindustani data (also feeds the index below): same template/CSS/wheel, tradition-aware labels
@@ -958,7 +1017,7 @@ def main() -> None:
     # match the Carnatic pages). Graha-bhedam (modal cousins) is a Carnatic construct, so empty here.
     htrad = TRAD["hindustani"]
     hguide = json.loads((ROOT / htrad["guide"]).read_text())
-    href = json.loads((ROOT / htrad["ref"]).read_text())
+    href = corrected(json.loads((ROOT / htrad["ref"]).read_text()), fixes["hindustani"])
     hnames = [k for k in hguide if not k.startswith("_")]
 
     cards = []

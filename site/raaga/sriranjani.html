@@ -115,6 +115,8 @@
   .lg-on{background:var(--amber)}
   .lg-jeeva{background:var(--amber-hi);box-shadow:0 0 0 3px rgba(251,191,36,.22)}
   .lg-nyasa{background:transparent;border:2px solid var(--jade-hi)}
+  .lg-anya{background:transparent;border:2px solid var(--amber)}
+  .wheel text.anya{fill:var(--muted)}
   .wheel .node{cursor:pointer}
   .play{display:flex;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap;justify-content:center}
   .play button{display:inline-flex;align-items:center;gap:.5rem;background:var(--raise-2);
@@ -270,7 +272,7 @@
 <script>
 (function () {
   var LABELS = ["S","R1","R2","G2","G3","M1","M2","P","D1","D2","N2","N3"];
-  var IN = [0, 2, 3, 5, 9, 10], JEEVA = [2, 3, 9, 10], NYASA = [5];
+  var IN = [0,2,3,5,9,10], ANYA = [], JEEVA = [2, 3, 9, 10], NYASA = [5];
   var cx=150, cy=150, rNode=104, rLabel=132, nodes={};
   var g = document.getElementById('wheel'), NS='http://www.w3.org/2000/svg';
   function el(t,a){ var e=document.createElementNS(NS,t); for(var k in a) e.setAttribute(k,a[k]); return e; }
@@ -282,15 +284,17 @@
   }
   function has(arr,i){ return arr.indexOf(i)>=0; }
   for (var i=0;i<12;i++){
-    var p=pt(i,rNode), lp=pt(i,rLabel), on=has(IN,i), je=has(JEEVA,i), ny=has(NYASA,i);
+    var p=pt(i,rNode), lp=pt(i,rLabel), on=has(IN,i), an=!on&&has(ANYA,i), je=has(JEEVA,i), ny=has(NYASA,i);
     if (ny) g.appendChild(el('circle',{cx:p[0],cy:p[1],r:9,fill:'none',stroke:'#74c69d','stroke-width':2}));
     if (je) g.appendChild(el('circle',{cx:p[0],cy:p[1],r:11,fill:'rgba(251,191,36,.20)'}));
-    var node=el('circle',{cx:p[0],cy:p[1],r:on?5:3,fill:on?(je?'#fbbf24':'#f59e0b'):'#39301f'});
-    if (on){ node.setAttribute('class','node'); nodes[i]=node;
+    // a note used only in phrases (anya swara): an outlined node, playable but not part of the scale
+    var node=an ? el('circle',{cx:p[0],cy:p[1],r:5,fill:'#0b0a08',stroke:'#f59e0b','stroke-width':1.6})
+                : el('circle',{cx:p[0],cy:p[1],r:on?5:3,fill:on?(je?'#fbbf24':'#f59e0b'):'#39301f'});
+    if (on||an){ node.setAttribute('class','node'); nodes[i]=node;
              node.addEventListener('click',(function(s){return function(){ voice(s); pulse(nodes[s]); };})(i)); }
     g.appendChild(node);
     var t=el('text',{x:lp[0],y:lp[1],'text-anchor':'middle','dominant-baseline':'middle'});
-    t.setAttribute('class', je?'jeeva':(on?'on':'')); t.textContent=LABELS[i]; g.appendChild(t);
+    t.setAttribute('class', je?'jeeva':(on?'on':(an?'anya':''))); t.textContent=LABELS[i]; g.appendChild(t);
   }
 
   // A spiccato violin note (Freesound #373854 by sgossner, CC0) tuned near Sa and pitch-shifted

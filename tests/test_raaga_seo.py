@@ -106,6 +106,7 @@ def test_the_parent_mela_is_read_from_its_free_text_and_said_one_way():
 
 def test_a_melakarta_raaga_says_so_and_composers_stay_out_of_the_description():
     ref = dict(MOHANAM, parent_mela="22nd melakarta (Kharaharapriya), it is itself the 22nd melakarta, not a janya",
+               arohana="S R2 G2 M1 P D2 N2 S", avarohana="S N2 D2 P M1 G2 R2 S",
                kritis="Marivere Gati – Syama Sastri; Chakkani Raja (Tyagaraja); Mitri Bhagyame, Tyagaraja")
     h = page("Karaharapriya", ref, swaras=("S", "R2", "G2", "M1", "P", "D2", "N2"))
     desc = re.search(r'<meta name="description" content="([^"]*)"', h).group(1)

@@ -114,21 +114,27 @@ def fit(text, width, start, per_char):
     return min(start, int(width / (per_char * max(len(text), 1))))
 
 
-def wheel(labels, semis):
-    lit = set(semis)
+def wheel(labels, semis, anya=()):
+    """Twelve spokes: the scale's notes lit, notes used only in phrases (anya) outlined, the rest dim."""
+    lit, phrase = set(semis), set(anya) - set(semis)
     out = []
     for i, lab in enumerate(labels):
         a = math.radians(-90 + i * 30)
         c, s_ = math.cos(a), math.sin(a)
-        on = i in lit
+        kind = "lit" if i in lit else "anya" if i in phrase else "off"
         x1, y1 = WHEEL_X + 108 * c, WHEEL_Y + 108 * s_
         x2, y2 = WHEEL_X + 172 * c, WHEEL_Y + 172 * s_
         lx, ly = WHEEL_X + 214 * c, WHEEL_Y + 214 * s_ + 8
-        out.append(
-            f'<line class="{"lit" if on else "off"}" x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
-            f'stroke="{AMBER if on else LINE2}" stroke-width="{14 if on else 6}" stroke-linecap="round"/>'
-            f'<text x="{lx:.1f}" y="{ly:.1f}" text-anchor="middle" font-family="{MONO}" font-size="24" '
-            f'fill="{PAPER if on else FAINT}">{html.escape(lab)}</text>')
+        line = f'x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke-linecap="round"'
+        if kind == "anya":   # an outlined spoke: an amber edge around the dark ground
+            spoke = (f'<line class="anya" {line} stroke="{AMBER}" stroke-width="14"/>'
+                     f'<line {line} stroke="{INK}" stroke-width="9"/>')
+        else:
+            spoke = (f'<line class="{kind}" {line} stroke="{AMBER if kind == "lit" else LINE2}" '
+                     f'stroke-width="{14 if kind == "lit" else 6}"/>')
+        fill = PAPER if kind == "lit" else MUTED if kind == "anya" else FAINT
+        out.append(spoke + f'<text x="{lx:.1f}" y="{ly:.1f}" text-anchor="middle" font-family="{MONO}" '
+                           f'font-size="24" fill="{fill}">{html.escape(lab)}</text>')
     return "\n  ".join(out)
 
 
@@ -157,7 +163,7 @@ def raaga_svg(card):
   <text x="90" y="578" font-family="{SANS}" font-weight="800" font-size="38" letter-spacing="-0.02em"><tspan fill="{PAPER}">twelve</tspan><tspan fill="{AMBER}">swaras</tspan></text>
   <text x="348" y="578" font-family="{SANS}" font-size="24" fill="{FAINT}">how to hear it</text>
   <circle cx="{WHEEL_X}" cy="{WHEEL_Y}" r="86" fill="none" stroke="{LINE2}" stroke-width="2"/>
-  {wheel(card["labels"], card["semis"])}
+  {wheel(card["labels"], card["semis"], card.get("anya", ()))}
 </svg>
 '''
 

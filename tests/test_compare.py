@@ -15,11 +15,11 @@ from raaga_id import learn
 
 
 def test_distinguish_by_missing_notes():
-    # Mōhanaṁ (S R2 G3 P D2) vs Bilahari (S R2 G3 M1 P D2 N3): Bilahari adds ma & ni.
+    # Mōhanaṁ (S R2 G3 P D2) vs Bilahari (S R2 G3 M1 P D2 N3, and N2 in phrases): Bilahari adds ma & ni.
     d = learn.distinguish("Mōhanaṁ", "Bilahari")
     assert d is not None
     assert d["same"] is False
-    assert set(d["b_only"]) == {"M1", "N3"}      # Bilahari has these, Mōhanaṁ doesn't
+    assert set(d["b_only"]) == {"M1", "N2", "N3"}   # Bilahari has these, Mōhanaṁ doesn't
     assert d["a_only"] == []                      # Mōhanaṁ adds nothing Bilahari lacks
 
 
