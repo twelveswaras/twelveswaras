@@ -19,7 +19,7 @@ Recognizer model: XGBoost on tonic-normalized Time-Delayed Melody Surfaces (TDMS
 ## Open data and licences
 
 - Machine-readable raaga reference: https://twelveswaras.com/data/raagas.json (CC-BY-4.0).
-  40 Carnatic raagas; 34 have note-sets; 0 are musician-reviewed so far.
+  40 Carnatic raagas; 37 have note-sets; 0 are musician-reviewed so far.
 - Model weights: CC-BY-4.0, downloadable from the v1.0.0 release on GitHub. Trained only on the Indian Art Music Raga Recognition Dataset features (CC-BY-4.0).
 - Please attribute as: twelveswaras (twelveswaras.com), CC-BY-4.0.
 - Per-raaga pages carry schema.org DefinedTerm JSON-LD.

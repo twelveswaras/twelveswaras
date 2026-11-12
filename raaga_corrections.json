@@ -1,0 +1,127 @@
+{
+ "_about": "Corrections to the reference scales (supporting-docs/raaga_reference_*.json), checked against published sources on 12 Nov 2026 and applied by tools/build_pages.py over the reference. Each entry keeps what the reference said ('was'). There is no musician review: the sources decide.",
+ "carnatic": {
+  "Hussēnī": [
+   {
+    "field": "avarohana",
+    "was": "S N2 D2 P M1 G2 R2 S  [karnatik/sujamusic notate D1 here but Huseni uses chatushruti dhaivatam D2, likely a typo, expert to verify]",
+    "now": "S N2 D1 P M1 G2 R2 S",
+    "why": "The descent takes shuddha dhaivatam (D1); the reference had called D1 a typo, but four sources give it.",
+    "sources": [
+     "https://www.karnatik.com/ragash.shtml",
+     "https://www.ragasurabhi.com/carnatic-music/raga/raga--huseni.html",
+     "https://darbar.org/raga/huseni/",
+     "Wikipedia, List of Janya ragas"
+    ]
+   }
+  ],
+  "Ānandabhairavi": [
+   {
+    "field": "parent_mela",
+    "was": "Kharaharapriya (22nd melakarta)",
+    "now": "20 Natabhairavi",
+    "why": "ragasurabhi, karnatik, darbar and the List of Janya ragas place it under the 20th mela.",
+    "sources": [
+     "https://www.ragasurabhi.com/carnatic-music/raga/raga--ananda-bhairavi.html",
+     "https://darbar.org/raga/anandabhairavi/",
+     "https://www.karnatik.com/ragasa.shtml",
+     "https://en.wikipedia.org/wiki/Anandabhairavi",
+     "Wikipedia, List of Janya ragas"
+    ]
+   }
+  ],
+  "Sāma": [
+   {
+    "field": "parent_mela",
+    "was": "Sources disagree: ragasurabhi and karnatik classify it as janya of 28th mela Harikambhoji; some sources place it under 29th mela Shankarabharanam (no nishadha, so fits either). Expert to confirm",
+    "now": "28 Harikambhoji",
+    "why": "Both sources give the 28th mela; none found for the 29th.",
+    "sources": [
+     "https://www.ragasurabhi.com/carnatic-music/raga/raga--sama.html",
+     "https://darbar.org/raga/sama/"
+    ]
+   }
+  ]
+ },
+ "hindustani": {
+  "Yaman kalyāṇ": [
+   {
+    "field": "avaroha",
+    "was": "S' N D P M G R S",
+    "now": "S' N D P M G, G m G R S",
+    "why": "Shuddh ma enters in the descent (G m G), which is what sets it apart from Yaman.",
+    "sources": [
+     "https://ragajunglism.org/ragas/yaman-kalyan/",
+     "https://en.wikipedia.org/wiki/Yaman_Kalyan"
+    ]
+   }
+  ],
+  "Jōg": [
+   {
+    "field": "aroha",
+    "was": "S G M P n S'",
+    "now": "S G m P n S'",
+    "why": "Jog's madhyam is shuddh (m); M on these pages means tivra.",
+    "sources": [
+     "https://tanarang.com/raag-jog/",
+     "https://en.wikipedia.org/wiki/Jog_(raga)"
+    ]
+   },
+   {
+    "field": "avaroha",
+    "was": "S' n P M g S",
+    "now": "S' n P m g S",
+    "why": "Shuddh ma (m), as in the aroh.",
+    "sources": [
+     "https://tanarang.com/raag-jog/",
+     "https://en.wikipedia.org/wiki/Jog_(raga)"
+    ]
+   }
+  ],
+  "Ābhōgī": [
+   {
+    "field": "aroha",
+    "was": "S R g M D S'",
+    "now": "S R g m D S'",
+    "why": "Abhogi's madhyam is shuddh (m).",
+    "sources": [
+     "https://tanarang.com/raag-abhogi/",
+     "https://en.wikipedia.org/wiki/Abhogi"
+    ]
+   },
+   {
+    "field": "avaroha",
+    "was": "S' D M g R S",
+    "now": "S' D m g R S",
+    "why": "Shuddh ma (m), as in the aroh.",
+    "sources": [
+     "https://tanarang.com/raag-abhogi/",
+     "https://en.wikipedia.org/wiki/Abhogi"
+    ]
+   }
+  ],
+  "Madhuvanti": [
+   {
+    "field": "aroha",
+    "was": ".N S g M P N S'",
+    "now": "N. S g M P N S'",
+    "why": "Notation: a lower-octave note is written with the dot after it (N.).",
+    "sources": [
+     "https://tanarang.com/raag-madhuvanti/"
+    ]
+   }
+  ],
+  "Tōḍī": [
+   {
+    "field": "aroha",
+    "was": "S r g M P d N S'",
+    "now": "S r g M d N S'",
+    "why": "The common aroh skips Pa; the form with Pa is also printed but is less usual.",
+    "sources": [
+     "https://tanarang.com/raag-todi/",
+     "https://en.wikipedia.org/wiki/Todi_(raga)"
+    ]
+   }
+  ]
+ }
+}

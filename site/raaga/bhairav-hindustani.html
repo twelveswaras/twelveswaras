@@ -12,12 +12,13 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Raag Bhairav (Hindustani): aroh, avroh and pakad · twelveswaras">
 <meta property="og:description" content="Raag Bhairav: Bhairav thaat, sampurna (7). Aroh S r G m P d N S&#x27;, avroh S&#x27; N d P m G r S. Pakad S r S, G m P, d P, G m r S. Vadi Dha, samvadi Re. How to hear it, and raagas it is confused with.">
-<meta property="og:image" content="https://twelveswaras.com/og.png">
+<meta property="og:image" content="https://twelveswaras.com/raaga/og/bhairav-hindustani.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bhairav, a Hindustani raaga: S R1 G3 M1 P D1 N3 on the swara wheel, with its ascending and descending scale.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Raag Bhairav (Hindustani): aroh, avroh and pakad · twelveswaras">
-<meta name="twitter:image" content="https://twelveswaras.com/og.png">
+<meta name="twitter:image" content="https://twelveswaras.com/raaga/og/bhairav-hindustani.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -122,6 +123,8 @@
   .lg-on{background:var(--amber)}
   .lg-jeeva{background:var(--amber-hi);box-shadow:0 0 0 3px rgba(251,191,36,.22)}
   .lg-nyasa{background:transparent;border:2px solid var(--jade-hi)}
+  .lg-anya{background:transparent;border:2px solid var(--amber)}
+  .wheel text.anya{fill:var(--muted)}
   .wheel .node{cursor:pointer}
   .play{display:flex;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap;justify-content:center}
   .play button{display:inline-flex;align-items:center;gap:.5rem;background:var(--raise-2);
@@ -137,6 +140,7 @@
   .scale .k{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 6px}
   .scale .v{font-family:var(--mono);font-size:1.06rem;letter-spacing:.05em;color:var(--paper);margin:0}
   .scale .v.pending{color:var(--faint);letter-spacing:0}
+  .scale .note{font-size:.8rem;line-height:1.5;color:var(--faint);margin:8px 0 0}
   section{padding:36px 0;border-top:1px solid var(--line)}
   h2{font-size:clamp(1.2rem,4.5vw,1.5rem);font-weight:800;letter-spacing:-.02em;margin:0 0 1rem;text-wrap:balance}
   p{color:var(--muted);max-width:var(--measure)}
@@ -265,7 +269,7 @@
 <script>
 (function () {
   var LABELS = ["S","r","R","g","G","m","M","P","d","D","n","N"];
-  var IN = [0, 1, 4, 5, 7, 8, 11], JEEVA = [8], NYASA = [];
+  var IN = [0,1,4,5,7,8,11], ANYA = [], JEEVA = [8], NYASA = [];
   var cx=150, cy=150, rNode=104, rLabel=132, nodes={};
   var g = document.getElementById('wheel'), NS='http://www.w3.org/2000/svg';
   function el(t,a){ var e=document.createElementNS(NS,t); for(var k in a) e.setAttribute(k,a[k]); return e; }
@@ -277,15 +281,17 @@
   }
   function has(arr,i){ return arr.indexOf(i)>=0; }
   for (var i=0;i<12;i++){
-    var p=pt(i,rNode), lp=pt(i,rLabel), on=has(IN,i), je=has(JEEVA,i), ny=has(NYASA,i);
+    var p=pt(i,rNode), lp=pt(i,rLabel), on=has(IN,i), an=!on&&has(ANYA,i), je=has(JEEVA,i), ny=has(NYASA,i);
     if (ny) g.appendChild(el('circle',{cx:p[0],cy:p[1],r:9,fill:'none',stroke:'#74c69d','stroke-width':2}));
     if (je) g.appendChild(el('circle',{cx:p[0],cy:p[1],r:11,fill:'rgba(251,191,36,.20)'}));
-    var node=el('circle',{cx:p[0],cy:p[1],r:on?5:3,fill:on?(je?'#fbbf24':'#f59e0b'):'#39301f'});
-    if (on){ node.setAttribute('class','node'); nodes[i]=node;
+    // a note used only in phrases (anya swara): an outlined node, playable but not part of the scale
+    var node=an ? el('circle',{cx:p[0],cy:p[1],r:5,fill:'#0b0a08',stroke:'#f59e0b','stroke-width':1.6})
+                : el('circle',{cx:p[0],cy:p[1],r:on?5:3,fill:on?(je?'#fbbf24':'#f59e0b'):'#39301f'});
+    if (on||an){ node.setAttribute('class','node'); nodes[i]=node;
              node.addEventListener('click',(function(s){return function(){ voice(s); pulse(nodes[s]); };})(i)); }
     g.appendChild(node);
     var t=el('text',{x:lp[0],y:lp[1],'text-anchor':'middle','dominant-baseline':'middle'});
-    t.setAttribute('class', je?'jeeva':(on?'on':'')); t.textContent=LABELS[i]; g.appendChild(t);
+    t.setAttribute('class', je?'jeeva':(on?'on':(an?'anya':''))); t.textContent=LABELS[i]; g.appendChild(t);
   }
 
   // A spiccato violin note (Freesound #373854 by sgossner, CC0) tuned near Sa and pitch-shifted

@@ -7,6 +7,10 @@ and wordmark are lifted verbatim from site/index.html's design tokens.
 
 Usage: python3 tools/build_og.py   (needs rsvg-convert: `brew install librsvg`)
 """
+import hashlib
+import html
+import json
+import math
 import subprocess
 import sys
 from pathlib import Path
@@ -95,6 +99,117 @@ def build_svg():
 {p1}{p2}
 </svg>
 '''
+
+
+# ---- one card per raaga page ------------------------------------------------------------------
+# The raaga's name, its scale and the swara wheel with its notes lit: what a shared raaga page
+# (and so a shared result) shows in WhatsApp, X or LinkedIn.
+RAAGA_OUT = ROOT / "site" / "raaga" / "og"
+RAAGA_SUMS = ROOT / "tools" / "og-raaga.sha256.json"   # skip cards whose SVG has not changed
+WHEEL_X, WHEEL_Y, WHEEL_R = 905, 300, 190
+
+
+def fit(text, width, start, per_char):
+    """The largest font size (up to `start`) at which `text` fits `width`, estimated per glyph."""
+    return min(start, int(width / (per_char * max(len(text), 1))))
+
+
+def wheel(labels, semis, anya=()):
+    """Twelve spokes: the scale's notes lit, notes used only in phrases (anya) outlined, the rest dim."""
+    lit, phrase = set(semis), set(anya) - set(semis)
+    out = []
+    for i, lab in enumerate(labels):
+        a = math.radians(-90 + i * 30)
+        c, s_ = math.cos(a), math.sin(a)
+        kind = "lit" if i in lit else "anya" if i in phrase else "off"
+        x1, y1 = WHEEL_X + 108 * c, WHEEL_Y + 108 * s_
+        x2, y2 = WHEEL_X + 172 * c, WHEEL_Y + 172 * s_
+        lx, ly = WHEEL_X + 214 * c, WHEEL_Y + 214 * s_ + 8
+        line = f'x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke-linecap="round"'
+        if kind == "anya":   # an outlined spoke: an amber edge around the dark ground
+            spoke = (f'<line class="anya" {line} stroke="{AMBER}" stroke-width="14"/>'
+                     f'<line {line} stroke="{INK}" stroke-width="9"/>')
+        else:
+            spoke = (f'<line class="{kind}" {line} stroke="{AMBER if kind == "lit" else LINE2}" '
+                     f'stroke-width="{14 if kind == "lit" else 6}"/>')
+        fill = PAPER if kind == "lit" else MUTED if kind == "anya" else FAINT
+        out.append(spoke + f'<text x="{lx:.1f}" y="{ly:.1f}" text-anchor="middle" font-family="{MONO}" '
+                           f'font-size="24" fill="{fill}">{html.escape(lab)}</text>')
+    return "\n  ".join(out)
+
+
+def raaga_svg(card):
+    e = html.escape
+    name_size = fit(card["name"], 560, 112, 0.58)
+    scale = [(card["aro_label"], card["aro"]), (card["ava_label"], card["ava"])]
+    lines = ""
+    for i, (label, notes) in enumerate(scale):
+        y = 360 + i * 92
+        lines += (f'\n  <text x="90" y="{y}" font-family="{MONO}" font-size="19" fill="{FAINT}">{e(label)}</text>'
+                  f'\n  <text x="90" y="{y + 40}" font-family="{MONO}" font-size="{fit(notes or "pending review", 620, 32, 0.62)}" '
+                  f'fill="{PAPER}">{e(notes or "pending review")}</text>')
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">
+  <defs>
+    <radialGradient id="glow" cx="0.75" cy="0.48" r="0.5">
+      <stop offset="0" stop-color="{AMBER}" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="{AMBER}" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="{W}" height="{H}" fill="{INK}"/>
+  <rect width="{W}" height="{H}" fill="url(#glow)"/>
+  <text x="90" y="138" font-family="{SANS}" font-size="28" fill="{MUTED}">{e(card["eyebrow"])}</text>
+  <text class="name" x="90" y="250" font-family="{SANS}" font-weight="800" font-size="{name_size}"
+        letter-spacing="-0.02em" fill="{PAPER}">{e(card["name"])}</text>{lines}
+  <text x="90" y="578" font-family="{SANS}" font-weight="800" font-size="38" letter-spacing="-0.02em"><tspan fill="{PAPER}">twelve</tspan><tspan fill="{AMBER}">swaras</tspan></text>
+  <text x="348" y="578" font-family="{SANS}" font-size="24" fill="{FAINT}">how to hear it</text>
+  <circle cx="{WHEEL_X}" cy="{WHEEL_Y}" r="86" fill="none" stroke="{LINE2}" stroke-width="2"/>
+  {wheel(card["labels"], card["semis"], card.get("anya", ()))}
+</svg>
+'''
+
+
+def render(svg, out):
+    tmp = out.with_suffix(".svg")
+    tmp.write_text(svg, encoding="utf-8")
+    try:
+        subprocess.run(["rsvg-convert", "-w", str(W), "-h", str(H), "-o", str(out), str(tmp)], check=True)
+    except FileNotFoundError:
+        sys.exit("rsvg-convert not found. Install with: brew install librsvg")
+    finally:
+        tmp.unlink(missing_ok=True)
+    shrink(out)
+
+
+def shrink(png):
+    """A 256-colour palette: the same card at under half the bytes (the dark gradient is what
+    makes the full-colour PNG heavy). Skipped where Pillow is missing; the full PNG still works."""
+    try:
+        from PIL import Image
+    except ImportError:
+        return
+    im = Image.open(png).convert("RGB")
+    im.quantize(colors=256, method=Image.Quantize.MEDIANCUT,
+                dither=Image.Dither.FLOYDSTEINBERG).save(png, "PNG", optimize=True)
+
+
+def write_raaga_cards(cards):
+    """Render each raaga's card, skipping any whose SVG is unchanged and whose PNG exists, so a
+    rebuild with nothing new rewrites nothing. Returns how many were rendered."""
+    RAAGA_OUT.mkdir(parents=True, exist_ok=True)
+    sums = json.loads(RAAGA_SUMS.read_text()) if RAAGA_SUMS.exists() else {}
+    done = 0
+    for card in cards:
+        svg = raaga_svg(card)
+        digest = hashlib.sha256(svg.encode()).hexdigest()
+        out = RAAGA_OUT / f"{card['slug']}.png"
+        if sums.get(card["slug"]) == digest and out.exists():
+            continue
+        render(svg, out)
+        sums[card["slug"]] = digest
+        done += 1
+    keep = {c["slug"] for c in cards}
+    RAAGA_SUMS.write_text(json.dumps({k: v for k, v in sorted(sums.items()) if k in keep}, indent=1) + "\n")
+    return done
 
 
 def main():

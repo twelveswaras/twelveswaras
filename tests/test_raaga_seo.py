@@ -106,6 +106,7 @@ def test_the_parent_mela_is_read_from_its_free_text_and_said_one_way():
 
 def test_a_melakarta_raaga_says_so_and_composers_stay_out_of_the_description():
     ref = dict(MOHANAM, parent_mela="22nd melakarta (Kharaharapriya), it is itself the 22nd melakarta, not a janya",
+               arohana="S R2 G2 M1 P D2 N2 S", avarohana="S N2 D2 P M1 G2 R2 S",
                kritis="Marivere Gati – Syama Sastri; Chakkani Raja (Tyagaraja); Mitri Bhagyame, Tyagaraja")
     h = page("Karaharapriya", ref, swaras=("S", "R2", "G2", "M1", "P", "D2", "N2"))
     desc = re.search(r'<meta name="description" content="([^"]*)"', h).group(1)
@@ -147,3 +148,31 @@ def test_homepage_faq_answers_which_raga_is_this_song_visibly_and_in_schema():
     # every schema question is shown on the page
     for q in qs:
         assert f"<summary>{q}</summary>" in h, q
+
+
+# --- a scale field that carries research notes: notation where the scale goes, notes kept below ----
+
+NOTED = dict(MOHANAM,
+             arohana="S R2 G3 P D2 S (most-cited form). Some sources add a vakra turn: S R2 G3 R2 P D2 S",
+             avarohana="Vakra. Wikipedia: S D2 P G3 R2 S (karnatik agrees).")
+
+
+def test_the_scale_shows_notation_and_keeps_the_research_note_below_it():
+    h = page("Mōhanaṁ", NOTED)
+    assert '<p class="v">S R2 G3 P D2 S</p>' in h
+    assert '<p class="v">S D2 P G3 R2 S</p>' in h
+    assert '<p class="note">Variants and sources: S R2 G3 P D2 S (most-cited form). Some sources add' in h
+    assert '<p class="note">Variants and sources: Vakra. Wikipedia:' in h
+
+
+def test_description_and_faq_carry_only_the_notation():
+    h = page("Mōhanaṁ", NOTED)
+    desc = re.search(r'<meta name="description" content="([^"]*)"', h).group(1)
+    assert "Arohanam S R2 G3 P D2 S, avarohanam S D2 P G3 R2 S." in desc
+    assert "most-cited" not in desc and "Wikipedia" not in desc
+    qa = {q["name"]: q["acceptedAnswer"]["text"] for q in ld(h)[1]["mainEntity"]}
+    assert qa["What is the arohanam and avarohanam of Mohanam?"] == "Arohanam: S R2 G3 P D2 S. Avarohanam: S D2 P G3 R2 S."
+
+
+def test_a_clean_scale_has_no_note():
+    assert '<p class="note">' not in page("Mōhanaṁ", MOHANAM)
