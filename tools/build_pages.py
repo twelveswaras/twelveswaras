@@ -24,6 +24,7 @@ import re
 import unicodedata
 from pathlib import Path
 
+from tools import build_og
 from tools.build_data import SEMITONE, slug
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -202,12 +203,13 @@ TEMPLATE = """<!doctype html>
 <meta property="og:type" content="article">
 <meta property="og:title" content="__TITLE__">
 <meta property="og:description" content="__DESC__">
-<meta property="og:image" content="https://twelveswaras.com/og.png">
+<meta property="og:image" content="https://twelveswaras.com/raaga/og/__SLUG__.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="__OGALT__">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="__TITLE__">
-<meta name="twitter:image" content="https://twelveswaras.com/og.png">
+<meta name="twitter:image" content="https://twelveswaras.com/raaga/og/__SLUG__.png">
 __JSONLD__
 <link rel="stylesheet" href="/nav.css">
 <style>
@@ -578,6 +580,32 @@ def search_words(name: str, ref: dict, label: str, hin: bool, aro: str, ava: str
     return title, desc, names, faq
 
 
+def heading(swaras: list[str], ref: dict, hin: bool) -> tuple[str, str]:
+    """The note-count label ("audava (five-note)") and the eyebrow over the name, shared by the page
+    and its share card."""
+    n = len(swaras)
+    label = COUNT_LABEL.get(n, "bhashanga" if n > 7 else "")
+    if hin:
+        thaat = ref.get("thaat", "")
+        return label, "Hindustani raaga" + (f" · {thaat.split()[0]} thaat" if thaat else "")
+    return label, (label.split()[0].capitalize() + " Carnatic raaga") if label else "Carnatic raaga"
+
+
+def scale(ref: dict, hin: bool) -> tuple[str, str]:
+    return (ref.get("aroha", ""), ref.get("avaroha", "")) if hin else (ref.get("arohana", ""), ref.get("avarohana", ""))
+
+
+def card(name: str, swaras: list[str], ref: dict, trad: dict = TRAD["carnatic"]) -> dict:
+    """What the raaga's share image shows (rendered by tools/build_og.py)."""
+    hin = trad["word"] == "Hindustani"
+    aro, ava = scale(ref, hin)
+    return {"slug": slug(name, trad["suffix"]), "name": name, "eyebrow": heading(swaras, ref, hin)[1],
+            "labels": trad["labels"], "semis": [SEMITONE[s] for s in swaras if s in SEMITONE],
+            "aro": aro, "ava": ava,
+            "aro_label": "aroh · ascending" if hin else "arohanam · ascending",
+            "ava_label": "avroh · descending" if hin else "avarohanam · descending"}
+
+
 def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
                trad: dict = TRAD["carnatic"]) -> str:
     hin = trad["word"] == "Hindustani"
@@ -588,15 +616,12 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
     # jeeva/nyasa highlight slots.
     jeeva = parse_positions(ref.get("vadi" if hin else "jeeva_swaras", ""), swaras)
     nyasa = parse_positions(ref.get("samvadi" if hin else "nyasa_swaras", ""), swaras)
-    n = len(swaras)
-    label = COUNT_LABEL.get(n, "bhashanga" if n > 7 else "")
+    label, eyebrow = heading(swaras, ref, hin)
     if hin:
         thaat = ref.get("thaat", "")
-        eyebrow = "Hindustani raaga" + (f" · {thaat.split()[0]} thaat" if thaat else "")
         thesis = (f"{name} is a raaga in the Hindustani tradition"
                   + (f" ({thaat.split()[0]} thaat)." if thaat else "."))
     else:
-        eyebrow = (label.split()[0].capitalize() + " Carnatic raaga") if label else "Carnatic raaga"
         thesis = (f"{name} is a {label} raaga in the Carnatic tradition."
                   if label else f"{name} is a Carnatic raaga (note-set pending expert review).")
     # a verified beginner "tell" becomes the hero line; the structural sentence drops below it
@@ -606,8 +631,7 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
     mood_html = f'\n    <p class="mood">{esc(rasa)}</p>' if rasa else ""
     struct_html = f'\n    <p class="struct">{esc(thesis)}</p>' if tell else ""
 
-    aro = ref.get("aroha", "") if hin else ref.get("arohana", "")
-    ava = ref.get("avaroha", "") if hin else ref.get("avarohana", "")
+    aro, ava = scale(ref, hin)
     title, desc, names, faq = search_words(name, ref, label, hin, aro, ava)
     known = plain(name)
     if known != name:
@@ -640,6 +664,7 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
         jsonld_html += ('\n<script type="application/ld+json">\n'
                         + json.dumps(faq_ld, ensure_ascii=False, indent=2).replace("</", "<\\/") + "\n</script>")
 
+    labels = card(name, swaras, ref, trad)
     page = TEMPLATE
     repl = {
         "__TITLE__": esc(title),
@@ -649,12 +674,14 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
         "__CRUMB__": esc(name), "__EYEBROW__": esc(eyebrow), "__NAME__": esc(name),
         "__THESIS__": esc(thesis_text),
         "__MOOD__": mood_html, "__STRUCT__": struct_html,
+        "__OGALT__": esc(f"{name}, a {word} raaga: {' '.join(swaras)} on the swara wheel, "
+                         "with its ascending and descending scale."),
         "__WHEEL_ALT__": esc(f"Swara wheel for {name}: {' '.join(swaras)}."),
         "__AROHANA__": aro_html, "__AVAROHANA__": ava_html,
         "__HEAR__": hear_section(ref, trad), "__CONFUSE__": confuse_section(ref),
         "__LISTEN__": listen_section(ref, known),
-        "__ARO_LABEL__": "aroh · ascending" if hin else "arohanam · ascending",
-        "__AVA_LABEL__": "avroh · descending" if hin else "avarohanam · descending", "__COUSINS__": cousins_section(cousins),
+        "__ARO_LABEL__": labels["aro_label"], "__AVA_LABEL__": labels["ava_label"],
+        "__COUSINS__": cousins_section(cousins),
         "__IN__": json.dumps(semis), "__JEEVA__": json.dumps(jeeva), "__NYASA__": json.dumps(nyasa),
     }
     for k, v in repl.items():
@@ -901,13 +928,16 @@ def main() -> None:
     href = json.loads((ROOT / htrad["ref"]).read_text())
     hnames = [k for k in hguide if not k.startswith("_")]
 
+    cards = []
     n = 0
     for nm, g in guide.items():
+        cards.append(card(nm, resolved[nm], ref.get(nm, {})))
         page = build_page(nm, resolved[nm], ref.get(nm, {}), cousins_of[nm])
         (OUT / f"{slug(nm)}.html").write_text(page)
         n += 1
     hn = 0
     for nm in hnames:
+        cards.append(card(nm, hguide[nm].get("swaras") or [], href.get(nm, {}), htrad))
         page = build_page(nm, hguide[nm].get("swaras") or [], href.get(nm, {}), [], trad=htrad)
         (OUT / f"{slug(nm, htrad['suffix'])}.html").write_text(page)
         hn += 1
@@ -924,6 +954,8 @@ def main() -> None:
                + "</urlset>\n")
     (ROOT / "site" / "sitemap.xml").write_text(sitemap)
 
+    drawn = build_og.write_raaga_cards(cards)
+    print(f"share cards: {drawn} drawn, {len(cards) - drawn} unchanged")
     linked = sum(1 for v in cousins_of.values() if v)
     print(f"wrote {n} Carnatic + {hn} Hindustani raaga pages + grouped index to "
           f"{OUT.relative_to(ROOT)}/ ({linked} have graha-bhedam cousins)")
