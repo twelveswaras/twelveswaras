@@ -266,6 +266,7 @@ __JSONLD__
   .scale .k{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 6px}
   .scale .v{font-family:var(--mono);font-size:1.06rem;letter-spacing:.05em;color:var(--paper);margin:0}
   .scale .v.pending{color:var(--faint);letter-spacing:0}
+  .scale .note{font-size:.8rem;line-height:1.5;color:var(--faint);margin:8px 0 0}
   section{padding:36px 0;border-top:1px solid var(--line)}
   h2{font-size:clamp(1.2rem,4.5vw,1.5rem);font-weight:800;letter-spacing:-.02em;margin:0 0 1rem;text-wrap:balance}
   p{color:var(--muted);max-width:var(--measure)}
@@ -591,8 +592,40 @@ def heading(swaras: list[str], ref: dict, hin: bool) -> tuple[str, str]:
     return label, (label.split()[0].capitalize() + " Carnatic raaga") if label else "Carnatic raaga"
 
 
-def scale(ref: dict, hin: bool) -> tuple[str, str]:
+# A swara as the references write it: S, R2, komal r, a dotted lower N. or an upper S'.
+_TOK = r"(?:[.][SRGMPDNsrgmpdn]|[SRGMPDNsrgmpdn][1-3]?['’.]?)"
+_RUN = re.compile(rf"(?<![A-Za-z]){_TOK}(?:[ ,;]+{_TOK})+(?![A-Za-z0-9])")
+
+
+def notation(text):
+    """The scale's swaras without the notes about it: the references sometimes follow (or lead) the
+    notation with sources and variants, which a card has no room for. The first run of three or more
+    swaras; the whole text when it is all notation."""
+    for m in _RUN.finditer(text):
+        run = m.group(0).rstrip(" ,;.")
+        if len(run.split()) >= 3:
+            return run
+    return text.strip()
+
+
+def scale_fields(ref: dict, hin: bool) -> tuple[str, str]:
+    """The reference's scale fields as written: notation, sometimes with research notes around it."""
     return (ref.get("aroha", ""), ref.get("avaroha", "")) if hin else (ref.get("arohana", ""), ref.get("avarohana", ""))
+
+
+def scale(ref: dict, hin: bool) -> tuple[str, str]:
+    """Just the notation, for every place that states the scale (page, description, FAQ, card)."""
+    return tuple(notation(f) for f in scale_fields(ref, hin))
+
+
+def scale_html(field: str) -> str:
+    """The scale cell: the notation, and the reference's own note below it when it has one, so the
+    variants and sources stay visible (the source is shown, not rewritten)."""
+    if not field:
+        return '<p class="v pending">pending review</p>'
+    shown = notation(field)
+    note = f'<p class="note">Variants and sources: {esc(field)}</p>' if shown != field.strip() else ""
+    return f'<p class="v">{esc(shown)}</p>{note}'
 
 
 def card(name: str, swaras: list[str], ref: dict, trad: dict = TRAD["carnatic"]) -> dict:
@@ -636,8 +669,8 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
     known = plain(name)
     if known != name:
         struct_html += f'\n    <p class="struct">Also written {esc(known)}.</p>'
-    aro_html = f'<p class="v">{esc(aro)}</p>' if aro else '<p class="v pending">pending review</p>'
-    ava_html = f'<p class="v">{esc(ava)}</p>' if ava else '<p class="v pending">pending review</p>'
+    aro_field, ava_field = scale_fields(ref, hin)
+    aro_html, ava_html = scale_html(aro_field), scale_html(ava_field)
 
     src = ref.get("sources", "")
     sameas = wikipedia_url("; ".join(src) if isinstance(src, list) else src)

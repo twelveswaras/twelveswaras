@@ -63,7 +63,7 @@ def test_every_raaga_page_has_its_card_committed_at_1200x630():
 
 
 def test_the_card_shows_the_notation_not_the_notes_about_it():
-    n = O.notation
+    n = B.notation
     assert n("S R2 G3 P D2 S") == "S R2 G3 P D2 S"
     assert n("S R1 G2 M1 P D1 N2 S (most-cited straight form). Bhashanga flexibility") == "S R1 G2 M1 P D1 N2 S"
     assert n("Vakra. Wikipedia/shivkumar: S N3 P M1 R3 S (dropping G3 and D3).") == "S N3 P M1 R3 S"

@@ -11,7 +11,6 @@ import hashlib
 import html
 import json
 import math
-import re
 import subprocess
 import sys
 from pathlib import Path
@@ -115,22 +114,6 @@ def fit(text, width, start, per_char):
     return min(start, int(width / (per_char * max(len(text), 1))))
 
 
-# A swara as the references write it: S, R2, komal r, a dotted lower N. or an upper S'.
-_TOK = r"(?:[.][SRGMPDNsrgmpdn]|[SRGMPDNsrgmpdn][1-3]?['’.]?)"
-_RUN = re.compile(rf"(?<![A-Za-z]){_TOK}(?:[ ,;]+{_TOK})+(?![A-Za-z0-9])")
-
-
-def notation(text):
-    """The scale's swaras without the notes about it: the references sometimes follow (or lead) the
-    notation with sources and variants, which a card has no room for. The first run of three or more
-    swaras; the whole text when it is all notation."""
-    for m in _RUN.finditer(text):
-        run = m.group(0).rstrip(" ,;.")
-        if len(run.split()) >= 3:
-            return run
-    return text.strip()
-
-
 def wheel(labels, semis):
     lit = set(semis)
     out = []
@@ -152,7 +135,7 @@ def wheel(labels, semis):
 def raaga_svg(card):
     e = html.escape
     name_size = fit(card["name"], 560, 112, 0.58)
-    scale = [(card["aro_label"], notation(card["aro"])), (card["ava_label"], notation(card["ava"]))]
+    scale = [(card["aro_label"], card["aro"]), (card["ava_label"], card["ava"])]
     lines = ""
     for i, (label, notes) in enumerate(scale):
         y = 360 + i * 92
