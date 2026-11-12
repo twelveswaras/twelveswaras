@@ -8,7 +8,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from .config import BENCHMARK_DIR, DATA_DIR, canonical_raaga, fold_raaga, load_raagas
+from .config import BENCHMARK_DIR, DATA_DIR, MIN_CONTRIB_SECONDS, canonical_raaga, fold_raaga, load_raagas
 
 FROZEN_TEST_PATH = BENCHMARK_DIR / "test_track_ids.json"
 
@@ -45,8 +45,8 @@ def iter_commons_clips(manifest_path: Path = COMMONS_MANIFEST):
 
     Extracts predominant-melody pitch + tonic from the raw audio, then windowed TDMS —
     identical to how the model sees a live upload — so a contribution pools with the Saraga/
-    IAMRRD clips in training. Skips clips whose audio is missing or yields no usable window
-    (no clear melody/drone). Commons track_ids never appear in the frozen benchmark, so these
+    IAMRRD clips in training. Skips clips whose audio is missing, shorter than MIN_CONTRIB_SECONDS, or yields no usable
+    window (no clear melody/drone). Commons track_ids never appear in the frozen benchmark, so these
     clips are training-only by construction (the frozen test set is never touched).
 
     REQUIRES the numpy<2 inference env (essentia); imported lazily so this module still
@@ -67,6 +67,8 @@ def iter_commons_clips(manifest_path: Path = COMMONS_MANIFEST):
         if not audio_path.exists():
             continue
         y = features.load_audio(str(audio_path), sr=TONIC_SR)
+        if y.size < MIN_CONTRIB_SECONDS * TONIC_SR:          # too short to train (config)
+            continue
         windows, _tonic, _secs, _pcd, _phrases = pitch_extract.audio_to_features(y, TONIC_SR)
         if not windows:
             continue
