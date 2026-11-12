@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>twelveswaras: identify the raaga · Carnatic and Hindustani · Shazam for raagas</title>
-<meta name="description" content="Point your phone at Indian classical music (Carnatic or Hindustani) and identify the raaga (raga). A free, open-source 'Shazam for raagas': a raga identifier with an open CC-BY data commons.">
+<title>Raga identifier: find the raga of a song (Carnatic and Hindustani) · twelveswaras</title>
+<meta name="description" content="Raga identifier for Carnatic and Hindustani music: play a song or a concert to your phone and it names the raga (raaga), with the top three, the tonic it heard and how to hear it. A free, open-source 'Shazam for raagas'.">
 <link rel="canonical" href="https://twelveswaras.com/">
 <meta name="theme-color" content="#0b0a08">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -22,7 +22,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="twelveswaras">
 <meta property="og:url" content="https://twelveswaras.com/">
-<meta property="og:title" content="twelveswaras: identify the raaga">
+<meta property="og:title" content="Raga identifier: find the raga of a song · twelveswaras">
 <meta property="og:description" content="A free, open-source 'Shazam for raagas'. Point your phone at Carnatic or Hindustani music; it names the raaga.">
 <meta property="og:image" content="https://twelveswaras.com/og.png">
 <meta property="og:image:width" content="1200">
@@ -30,7 +30,7 @@
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:alt" content="twelveswaras: identify the raaga, a Shazam for raagas (Carnatic and Hindustani)">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="twelveswaras: identify the raaga">
+<meta name="twitter:title" content="Raga identifier: find the raga of a song · twelveswaras">
 <meta name="twitter:description" content="A free, open-source 'Shazam for raagas' for Carnatic and Hindustani music.">
 <meta name="twitter:image" content="https://twelveswaras.com/og.png">
 
@@ -40,6 +40,7 @@
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "twelveswaras",
+  "alternateName": ["Raga identifier", "Raag identifier", "Raga finder", "Shazam for raagas"],
   "description": "An open 'Shazam for raagas' that identifies the raaga of Indian classical music (Carnatic or Hindustani) from audio.",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Web",
@@ -60,6 +61,10 @@
   "mainEntity": [
     {"@type": "Question", "name": "What is twelveswaras?",
      "acceptedAnswer": {"@type": "Answer", "text": "twelveswaras is a free, open-source 'Shazam for raagas'. Play it about a minute of Carnatic or Hindustani music and it identifies the raaga, showing the top three with confidence, the tonic (Sa) it detected, and a note on how to hear that raaga."}},
+    {"@type": "Question", "name": "Which raga is this song?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Play the song near your phone, or upload a recording, and twelveswaras names the most likely raaga from the 70 it knows (40 Carnatic, 30 Hindustani), with its top three and how sure it is. It listens for about a minute first. If the song is in a raaga it does not know yet, it says it is not sure and shows its closest guesses."}},
+    {"@type": "Question", "name": "Can I find the raga of a film song?",
+     "acceptedAnswer": {"@type": "Answer", "text": "It can, when the melody stays in one raaga. It is built for classical performance, so heavy orchestration, chords or a song that moves between raagas make it less reliable. Most raaga pages list well-known songs in that raaga, film songs among them."}},
     {"@type": "Question", "name": "How do I identify a raaga?",
      "acceptedAnswer": {"@type": "Answer", "text": "Tap the microphone and hold your phone near the music, or upload a recording. For the first minute it shows the notes it hears; then it names the raaga. A tanpura or shruti-box drone under the melody gives the best results, because the tonic is found from it."}},
     {"@type": "Question", "name": "Does it work at a live concert?",
@@ -387,6 +392,10 @@
     <h2>Questions</h2>
     <details><summary>What is twelveswaras?</summary>
       <p>twelveswaras is a free, open-source ’Shazam for raagas’. Play it about a minute of Carnatic or Hindustani music and it identifies the raaga, showing the top three with confidence, the tonic (Sa) it detected, and a note on how to hear that raaga.</p></details>
+    <details><summary>Which raga is this song?</summary>
+      <p>Play the song near your phone, or upload a recording, and twelveswaras names the most likely raaga from the 70 it knows (40 Carnatic, 30 Hindustani), with its top three and how sure it is. It listens for about a minute first. If the song is in a raaga it does not know yet, it says it is not sure and shows its closest guesses.</p></details>
+    <details><summary>Can I find the raga of a film song?</summary>
+      <p>It can, when the melody stays in one raaga. It is built for classical performance, so heavy orchestration, chords or a song that moves between raagas make it less reliable. <a href="raaga/">Most raaga pages</a> list well-known songs in that raaga, film songs among them.</p></details>
     <details><summary>How do I identify a raaga?</summary>
       <p>Tap the microphone and hold your phone near the music, or upload a recording. For the first minute it shows the notes it hears; then it names the raaga. A tanpura or shruti-box drone under the melody gives the best results, because the tonic is found from it.</p></details>
     <details open><summary>Does it work at a live concert?</summary>

@@ -7,6 +7,7 @@ headings and schema.org (alternate names and an FAQ), while the page keeps the n
 from __future__ import annotations
 
 import json
+from pathlib import Path
 import re
 
 from tools import build_pages as B
@@ -112,3 +113,37 @@ def test_a_melakarta_raaga_says_so_and_composers_stay_out_of_the_description():
     assert "Kritis: Marivere Gati, Chakkani Raja, Mitri Bhagyame." in desc
     qa = {q["name"]: q["acceptedAnswer"]["text"] for q in ld(h)[1]["mainEntity"]}
     assert qa["Is Karaharapriya a melakarta raga?"] == "Yes: melakarta 22."
+
+
+# --- the homepage answers the searches for what the app does -------------------------------------
+
+def _home():
+    return (Path(__file__).resolve().parent.parent / "site" / "index.html").read_text()
+
+
+def test_homepage_title_and_description_lead_with_raga_identifier():
+    h = _home()
+    title = re.search(r"<title>(.*?)</title>", h).group(1)
+    assert title.startswith("Raga identifier: find the raga of a song")
+    assert "twelveswaras" in title
+    desc = re.search(r'<meta name="description" content="([^"]*)"', h).group(1)
+    assert desc.startswith("Raga identifier for Carnatic and Hindustani music")
+    assert re.search(r'<meta property="og:title" content="Raga identifier[^"]*"', h)
+
+
+def test_homepage_app_schema_names_what_people_search():
+    app = next(x for x in ld(_home()) if x["@type"] == "SoftwareApplication")
+    for name in ["Raga identifier", "Raag identifier", "Raga finder", "Shazam for raagas"]:
+        assert name in app["alternateName"]
+
+
+def test_homepage_faq_answers_which_raga_is_this_song_visibly_and_in_schema():
+    h = _home()
+    faq = next(x for x in ld(h) if x["@type"] == "FAQPage")
+    qs = [q["name"] for q in faq["mainEntity"]]
+    for q in ["Which raga is this song?", "Can I find the raga of a film song?"]:
+        assert q in qs, q
+        assert f"<summary>{q}</summary>" in h, q   # schema mirrors the visible FAQ
+    # every schema question is shown on the page
+    for q in qs:
+        assert f"<summary>{q}</summary>" in h, q
