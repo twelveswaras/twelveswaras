@@ -151,8 +151,16 @@ def build_llms_txt(recs: list[dict]) -> str:
         "raagas (same scale, different phrasing) are the main confusion. Full benchmarks, including "
         "negative results: benchmark/leaderboard.md in the repo.",
         "",
+        "## MCP server (for AI agents)",
+        "",
+        f"- Endpoint: {SITE_URL}/mcp (Streamable HTTP, no sign-in). Tools: find_raaga (look a raaga up "
+        "by any spelling), raagas_with_notes (raagas by their notes, Carnatic or Hindustani), "
+        "list_raagas, identify_raaga (the raaga in a recording at a public URL; not stored).",
+        "",
         "## Open data and licences",
         "",
+        f"- The raaga pages as data: {SITE_URL}/data/raaga-reference.json (CC-BY-4.0): 70 raagas "
+        "with scale, parent, scale and phrase notes, key notes, songs.",
         f"- Machine-readable raaga reference: {SITE_URL}/data/raagas.json (CC-BY-4.0).",
         f"  {len(recs)} Carnatic raagas; {with_swaras} have note-sets; {reviewed} are "
         "musician-reviewed so far.",

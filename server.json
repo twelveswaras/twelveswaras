@@ -1,0 +1,12 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.twelveswaras/twelveswaras",
+  "title": "twelveswaras",
+  "description": "Identify the raaga in Carnatic or Hindustani music; look up 70 raagas' scales and notes.",
+  "repository": { "url": "https://github.com/twelveswaras/twelveswaras", "source": "github" },
+  "websiteUrl": "https://twelveswaras.com",
+  "version": "1.0.0",
+  "remotes": [
+    { "type": "streamable-http", "url": "https://twelveswaras.com/mcp" }
+  ]
+}

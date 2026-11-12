@@ -691,6 +691,33 @@ def card(name: str, swaras: list[str], ref: dict, trad: dict = TRAD["carnatic"])
             "ava_label": "avroh · descending" if hin else "avarohanam · descending"}
 
 
+def reference_record(name: str, swaras: list[str], ref: dict, trad: dict = TRAD["carnatic"]) -> dict:
+    """One raaga in site/data/raaga-reference.json: what its page states, as data (CC-BY). The MCP
+    server answers from this file."""
+    hin = trad["word"] == "Hindustani"
+    c = card(name, swaras, ref, trad)
+    label = heading(c["count"], ref, hin)[0]
+    _, _, names, _ = search_words(name, ref, label, hin, c["aro"], c["ava"])
+    rec = {
+        "name": name, "tradition": trad["word"].lower(), "url": f"https://twelveswaras.com/raaga/{c['slug']}",
+        "also_known_as": names, "kind": label,
+        "parent": ref.get("thaat" if hin else "parent_mela", ""),
+        "arohanam": c["aro"], "avarohanam": c["ava"],
+        "notes": {"scale": [c["labels"][i] for i in c["semis"]],
+                  "used_in_phrases": [c["labels"][i] for i in c["anya"]]},
+        "scale_positions": c["semis"], "phrase_positions": c["anya"],
+        "how_to_hear": ref.get("tell", ""),
+        "confused_with": ref.get("confusing_with", ""),
+    }
+    if hin:
+        rec.update({"vadi": ref.get("vadi", ""), "samvadi": ref.get("samvadi", ""),
+                    "pakad": ref.get("pakad", ""), "time": ref.get("samay", "")})
+    else:
+        rec.update({"jeeva_swaras": ref.get("jeeva_swaras", ""), "nyasa_swaras": ref.get("nyasa_swaras", ""),
+                    "songs": items(ref.get("kritis", "")), "film_songs": items(ref.get("film_songs", ""))})
+    return rec
+
+
 def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
                trad: dict = TRAD["carnatic"]) -> str:
     hin = trad["word"] == "Hindustani"
@@ -1020,16 +1047,18 @@ def main() -> None:
     href = corrected(json.loads((ROOT / htrad["ref"]).read_text()), fixes["hindustani"])
     hnames = [k for k in hguide if not k.startswith("_")]
 
-    cards = []
+    cards, records = [], []
     n = 0
     for nm, g in guide.items():
         cards.append(card(nm, resolved[nm], ref.get(nm, {})))
+        records.append(reference_record(nm, resolved[nm], ref.get(nm, {})))
         page = build_page(nm, resolved[nm], ref.get(nm, {}), cousins_of[nm])
         (OUT / f"{slug(nm)}.html").write_text(page)
         n += 1
     hn = 0
     for nm in hnames:
         cards.append(card(nm, hguide[nm].get("swaras") or [], href.get(nm, {}), htrad))
+        records.append(reference_record(nm, hguide[nm].get("swaras") or [], href.get(nm, {}), htrad))
         page = build_page(nm, hguide[nm].get("swaras") or [], href.get(nm, {}), [], trad=htrad)
         (OUT / f"{slug(nm, htrad['suffix'])}.html").write_text(page)
         hn += 1
@@ -1046,6 +1075,17 @@ def main() -> None:
                + "</urlset>\n")
     (ROOT / "site" / "sitemap.xml").write_text(sitemap)
 
+    reference = {
+        "project": "twelveswaras", "homepage": "https://twelveswaras.com",
+        "license": "https://creativecommons.org/licenses/by/4.0/",
+        "attribution": "twelveswaras (twelveswaras.com), CC-BY-4.0",
+        "provenance": ("The facts on the twelveswaras raaga pages: scales, parents and note sets checked against "
+                       "published sources (corrections and their sources in raaga_corrections.json); not reviewed "
+                       "by a musician. Positions count semitones from Sa (0-11)."),
+        "count": len(records), "raagas": records,
+    }
+    (ROOT / "site" / "data" / "raaga-reference.json").write_text(
+        json.dumps(reference, ensure_ascii=False, indent=1) + "\n")
     drawn = build_og.write_raaga_cards(cards)
     print(f"share cards: {drawn} drawn, {len(cards) - drawn} unchanged")
     linked = sum(1 for v in cousins_of.values() if v)

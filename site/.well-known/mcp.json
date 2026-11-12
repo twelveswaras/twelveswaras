@@ -1,0 +1,11 @@
+{
+  "name": "twelveswaras",
+  "title": "twelveswaras: identify and learn raagas",
+  "description": "Identify the raaga in a Carnatic or Hindustani recording, and look up 70 raagas: scale, parent, notes, songs. Free, no sign-in.",
+  "homepage": "https://twelveswaras.com",
+  "remotes": [
+    { "type": "streamable-http", "url": "https://twelveswaras.com/mcp" }
+  ],
+  "tools": ["find_raaga", "raagas_with_notes", "list_raagas", "identify_raaga"],
+  "license": "Data CC-BY-4.0; code MIT (recognizer AGPL-3.0)"
+}
