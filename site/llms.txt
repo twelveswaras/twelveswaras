@@ -24,15 +24,14 @@ Recognizer model: XGBoost on tonic-normalized Time-Delayed Melody Surfaces (TDMS
 
 - The raaga pages as data: https://twelveswaras.com/data/raaga-reference.json (CC-BY-4.0): 70 raagas with scale, parent, scale and phrase notes, key notes, songs.
 - Machine-readable raaga reference: https://twelveswaras.com/data/raagas.json (CC-BY-4.0).
-  40 Carnatic raagas; 37 have note-sets; 0 are musician-reviewed so far.
+  40 Carnatic raagas; 37 have note-sets.
 - Model weights: CC-BY-4.0, downloadable from the v1.0.0 release on GitHub. Trained only on the Indian Art Music Raga Recognition Dataset features (CC-BY-4.0).
 - Please attribute as: twelveswaras (twelveswaras.com), CC-BY-4.0.
 - Per-raaga pages carry schema.org DefinedTerm JSON-LD.
 
 ## Honesty
 
-- Reference facts (scale, phrases, ornaments) are being verified by a musician; records marked reviewed=false in raagas.json are provisional, and the Hindustani pages are drafts. Do not present provisional raaga facts as authoritative. When in doubt, cite the raaga page and note it is under review.
-- twelveswaras does not offer musical instruction as fact until it is expert-verified.
+- The reference facts (scales, parents, note sets) were checked against published sources (Wikipedia and its List of Janya ragas, karnatik.com, ragasurabhi, darbar.org, tanarang); the corrections and their sources are in raaga_corrections.json in the repo. They are not reviewed by a musician. Where sources disagree, the raaga page lists the variants; say so rather than presenting one form as the only one, and cite the raaga page.
 
 ## Carnatic raaga pages
 
@@ -77,7 +76,7 @@ Recognizer model: XGBoost on tonic-normalized Time-Delayed Melody Surfaces (TDMS
 - [Varāḷi](https://twelveswaras.com/raaga/varali)
 - [Yadukula kāṁbōji](https://twelveswaras.com/raaga/yadukula-kamboji)
 
-## Hindustani raaga pages (draft)
+## Hindustani raaga pages
 
 - [Yaman kalyāṇ](https://twelveswaras.com/raaga/yaman-kalyan-hindustani)
 - [Bhūp](https://twelveswaras.com/raaga/bhup-hindustani)

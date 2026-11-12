@@ -114,7 +114,6 @@ def _hindustani_names() -> list[str]:
 
 
 def build_llms_txt(recs: list[dict]) -> str:
-    reviewed = sum(1 for r in recs if r["reviewed"])
     with_swaras = sum(1 for r in recs if r["swaras"])
     n_c, n_h = _n_carnatic(), _n_hindustani()
     lines = [
@@ -162,8 +161,7 @@ def build_llms_txt(recs: list[dict]) -> str:
         f"- The raaga pages as data: {SITE_URL}/data/raaga-reference.json (CC-BY-4.0): 70 raagas "
         "with scale, parent, scale and phrase notes, key notes, songs.",
         f"- Machine-readable raaga reference: {SITE_URL}/data/raagas.json (CC-BY-4.0).",
-        f"  {len(recs)} Carnatic raagas; {with_swaras} have note-sets; {reviewed} are "
-        "musician-reviewed so far.",
+        f"  {len(recs)} Carnatic raagas; {with_swaras} have note-sets.",
         "- Model weights: CC-BY-4.0, downloadable from the v1.0.0 release on GitHub. Trained only on "
         "the Indian Art Music Raga Recognition Dataset features (CC-BY-4.0).",
         "- Please attribute as: twelveswaras (twelveswaras.com), CC-BY-4.0.",
@@ -171,17 +169,17 @@ def build_llms_txt(recs: list[dict]) -> str:
         "",
         "## Honesty",
         "",
-        "- Reference facts (scale, phrases, ornaments) are being verified by a musician; records "
-        "marked reviewed=false in raagas.json are provisional, and the Hindustani pages are drafts. "
-        "Do not present provisional raaga facts as authoritative. When in doubt, cite the raaga page "
-        "and note it is under review.",
-        "- twelveswaras does not offer musical instruction as fact until it is expert-verified.",
+        "- The reference facts (scales, parents, note sets) were checked against published sources "
+        "(Wikipedia and its List of Janya ragas, karnatik.com, ragasurabhi, darbar.org, tanarang); "
+        "the corrections and their sources are in raaga_corrections.json in the repo. They are not "
+        "reviewed by a musician. Where sources disagree, the raaga page lists the variants; say so "
+        "rather than presenting one form as the only one, and cite the raaga page.",
         "",
         "## Carnatic raaga pages",
         "",
     ]
     lines += [f"- [{r['name']}]({r['url']})" for r in recs]
-    lines += ["", "## Hindustani raaga pages (draft)", ""]
+    lines += ["", "## Hindustani raaga pages", ""]
     lines += [f"- [{nm}]({SITE_URL}/raaga/{slug(nm, '-hindustani')})" for nm in _hindustani_names()]
     lines.append("")
     return "\n".join(lines)
