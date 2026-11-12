@@ -11,7 +11,7 @@ raaga, shows the tonic (Sa) it heard, and helps you learn to hear that raaga you
 [![MCP Registry: io.github.sathya-sankaran/twelveswaras](https://img.shields.io/badge/MCP%20Registry-io.github.sathya--sankaran%2Ftwelveswaras-6f42c1.svg)](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.sathya-sankaran/twelveswaras)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24096813.svg)](https://doi.org/10.5281/zenodo.24096813)
 [![Runs on Cloudflare](https://img.shields.io/badge/runs%20on-Cloudflare-F38020.svg?logo=cloudflare&logoColor=white)](cloudflare/DEPLOY.md)
-<!-- GLAMA_BADGE -->
+[![twelveswaras MCP connector: tool definition quality and endpoint health on Glama](https://glama.ai/mcp/connectors/io.github.sathya-sankaran/twelveswaras/badges/score.svg)](https://glama.ai/mcp/connectors/io.github.sathya-sankaran/twelveswaras)
 
 <p align="center">
   <a href="https://twelveswaras.com"><img src="docs/screenshots/home-desktop.png" alt="The twelveswaras.com home page: 'What's the raaga? Learn to hear it.' above the microphone button that starts a listen" width="820"></a>
