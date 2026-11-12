@@ -21,6 +21,7 @@ from __future__ import annotations
 import html
 import json
 import re
+import unicodedata
 from pathlib import Path
 
 from tools.build_data import SEMITONE, slug
@@ -74,6 +75,39 @@ TRAD = {
 
 def esc(s: str) -> str:
     return html.escape(s or "", quote=True)
+
+
+def plain(name: str) -> str:
+    """The name as people type it in a search box: no diacritics (Mōhanaṁ -> Mohanam)."""
+    return "".join(c for c in unicodedata.normalize("NFKD", name) if not unicodedata.combining(c))
+
+
+# The 72 melakartas, by number, as they are commonly written (the parent scale of every Carnatic raaga).
+MELAKARTAS = (
+    "Kanakangi Ratnangi Ganamurti Vanaspati Manavati Tanarupi Senavati Hanumatodi Dhenuka Natakapriya Kokilapriya "
+    "Rupavati Gayakapriya Vakulabharanam Mayamalavagowla Chakravakam Suryakantam Hatakambari Jhankaradhwani "
+    "Natabhairavi Keeravani Kharaharapriya Gourimanohari Varunapriya Mararanjani Charukesi Sarasangi Harikambhoji "
+    "Dheerasankarabharanam Naganandini Yagapriya Ragavardhini Gangeyabhushani Vagadheeswari Shulini Chalanata Salagam "
+    "Jalarnavam Jhalavarali Navaneetam Pavani Raghupriya Gavambhodi Bhavapriya Shubhapantuvarali Shadvidamargini "
+    "Suvarnangi Divyamani Dhavalambari Namanarayani Kamavardhini Ramapriya Gamanashrama Vishwambari Shamalangi "
+    "Shanmukhapriya Simhendramadhyamam Hemavati Dharmavati Neetimati Kantamani Rishabhapriya Latangi Vachaspati "
+    "Mechakalyani Chitrambari Sucharitra Jyotiswarupini Dhatuvardhani Nasikabhushani Kosalam Rasikapriya").split()
+
+
+def mela(text: str):
+    """The parent melakarta from the reference's free text: (number, name, the raaga is that melakarta itself), or
+    None when the text gives none or says the sources disagree. The first number is the mela; the name is the
+    standard one for that number, whatever spelling and notes the text carries."""
+    text = text or ""
+    found = re.search(r"\b(\d{1,2})(?:st|nd|rd|th)?\b", text)
+    if not found or re.match(r"\s*sources disagree", text, re.I) or not 1 <= int(found.group(1)) <= 72:
+        return None
+    n = int(found.group(1))
+    return n, MELAKARTAS[n - 1], bool(re.search(r"\bitself\b|not a janya", text, re.I))
+
+
+def article(word: str) -> str:
+    return "an" if word[:1].lower() in "aeiou" else "a"
 
 
 def parse_positions(text: str, swaras: list[str]) -> list[int]:
@@ -166,13 +200,13 @@ TEMPLATE = """<!doctype html>
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <meta property="og:type" content="article">
-<meta property="og:title" content="__NAME__: a __TRADWORD__ raaga · twelveswaras">
+<meta property="og:title" content="__TITLE__">
 <meta property="og:description" content="__DESC__">
 <meta property="og:image" content="https://twelveswaras.com/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="__NAME__: a __TRADWORD__ raaga">
+<meta name="twitter:title" content="__TITLE__">
 <meta name="twitter:image" content="https://twelveswaras.com/og.png">
 __JSONLD__
 <link rel="stylesheet" href="/nav.css">
@@ -319,8 +353,8 @@ __JSONLD__
     </div>
 
     <div class="scale">
-      <div class="cell"><p class="k">arohana / ascending</p>__AROHANA__</div>
-      <div class="cell"><p class="k">avarohana / descending</p>__AVAROHANA__</div>
+      <div class="cell"><p class="k">__ARO_LABEL__</p>__AROHANA__</div>
+      <div class="cell"><p class="k">__AVA_LABEL__</p>__AVAROHANA__</div>
     </div>
   </header>
 __HEAR____CONFUSE____LISTEN____COUSINS__
@@ -462,14 +496,17 @@ def confuse_section(ref: dict) -> str:
             + cards + "\n    </div>\n  </section>")
 
 
-def listen_section(ref: dict) -> str:
+def listen_section(ref: dict, known_as: str = "") -> str:
     kritis = items(ref.get("kritis", ""))
     films = items(ref.get("film_songs", ""))
     if not kritis and not films:
         return ""
     lis = "".join(f"      <li>{esc(x)}</li>\n" for x in kritis)
     lis += "".join(f'      <li>{esc(x)} <small style="color:var(--faint);font-family:var(--mono);font-size:.72rem">film</small></li>\n' for x in films)
-    return ('\n  <section>\n    <h2>Listen for it</h2>\n    <ul class="listen">\n'
+    # the heading says what people search for: "<raaga> songs", "<raaga> kritis"
+    kinds = " and ".join(k for k, have in (("kritis", kritis), ("film songs", films)) if have)
+    heading = f"Songs in {known_as}: {kinds}" if known_as else "Listen for it"
+    return (f'\n  <section>\n    <h2>{esc(heading)}</h2>\n    <ul class="listen">\n'
             + lis + "    </ul>\n  </section>")
 
 
@@ -482,6 +519,63 @@ def cousins_section(cousins: list[str]) -> str:
             '    <p style="margin:0 0 12px">The same set of notes heard with a different note as Sa'
             ' (graha bhedam). These raagas share this scale-shape.</p>\n'
             '    <div class="cards">\n' + cards + "\n    </div>\n  </section>")
+
+
+def search_words(name: str, ref: dict, label: str, hin: bool, aro: str, ava: str):
+    """The page's title, description, alternate names and FAQ, in the words people search with: the name without
+    diacritics, "raga"/"ragam" (Carnatic) or "raag" (Hindustani), arohanam and avarohanam (aroh and avroh), the parent
+    melakarta or thaat, and the songs. Only facts the reference has; a missing one leaves no empty sentence."""
+    p = plain(name)
+    also = f" ({name})" if p != name else ""
+    kritis, films = items(ref.get("kritis", "")), items(ref.get("film_songs", ""))
+    songs = " ".join(x for x in (f"Kritis: {'; '.join(kritis)}." if kritis else "",
+                                 f"Film songs: {'; '.join(films)}." if films else "") if x)
+    faq = []
+    if hin:
+        thaat, jati, pakad, samay = (ref.get(k, "") for k in ("thaat", "jati", "pakad", "samay"))
+        title = f"Raag {p} (Hindustani): aroh, avroh and pakad · twelveswaras"
+        head = ", ".join(x for x in (f"{thaat} thaat" if thaat else "", jati) if x) or "a Hindustani raaga"
+        desc = " ".join(x for x in (
+            f"Raag {p}{also}: {head}.",
+            f"Aroh {aro}, avroh {ava}." if aro and ava else "",
+            f"Pakad {pakad}." if pakad else "",
+            f"Vadi {ref['vadi']}, samvadi {ref['samvadi']}." if ref.get("vadi") and ref.get("samvadi") else "",
+            "How to hear it, and raagas it is confused with.") if x)
+        names = [p, f"Raag {p}", f"Rag {p}"]
+        if aro and ava:
+            faq.append((f"What is the aroh and avroh of raag {p}?", f"Aroh: {aro}. Avroh: {ava}."))
+        if thaat:
+            faq.append((f"Which thaat is raag {p} in?", f"{thaat} thaat."))
+        if pakad:
+            faq.append((f"What is the pakad of raag {p}?", f"{pakad}."))
+        if samay:
+            faq.append((f"When is raag {p} sung?", f"{'' if samay.lower().startswith('the ') else 'The '}{samay}."))
+    else:
+        m = mela(ref.get("parent_mela", ""))
+        kriti_names = [re.split(r" [–—-] | \(|, ", k)[0] for k in kritis[:3]]   # the song, not its composer
+        title = f"{p} raga: arohanam, avarohanam and songs · twelveswaras"
+        kind = f"{article(label)} {label}" if label else "a"
+        if m and m[2]:
+            head = f"{kind} raaga, melakarta {m[0]}"
+        elif m:
+            head = f"{kind} janya of melakarta {m[0]}, {m[1]}"
+        else:
+            head = f"{kind} Carnatic raaga"
+        desc = " ".join(x for x in (
+            f"{p}{also} raga: {head}.",
+            f"Arohanam {aro}, avarohanam {ava}." if aro and ava else "",
+            f"Kritis: {', '.join(kriti_names)}." if kritis else "",
+            "How to hear it, and raagas it is confused with.") if x)
+        names = [p, f"{p} raga", f"{p} ragam"]
+        if aro and ava:
+            faq.append((f"What is the arohanam and avarohanam of {p}?", f"Arohanam: {aro}. Avarohanam: {ava}."))
+        if m and m[2]:
+            faq.append((f"Is {p} a melakarta raga?", f"Yes: melakarta {m[0]}."))
+        elif m:
+            faq.append((f"What is the parent melakarta of {p}?", f"{p} is a janya of melakarta {m[0]}, {m[1]}."))
+    if songs:
+        faq.append((f"Which songs are in {'raag ' + p if hin else p + ' raga'}?", songs))
+    return title, desc, names, faq
 
 
 def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
@@ -501,14 +595,10 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
         eyebrow = "Hindustani raaga" + (f" · {thaat.split()[0]} thaat" if thaat else "")
         thesis = (f"{name} is a raaga in the Hindustani tradition"
                   + (f" ({thaat.split()[0]} thaat)." if thaat else "."))
-        desc = f"{name}: a Hindustani raaga. Its swaras, how to hear it, and raagas it is confused with."
     else:
         eyebrow = (label.split()[0].capitalize() + " Carnatic raaga") if label else "Carnatic raaga"
         thesis = (f"{name} is a {label} raaga in the Carnatic tradition."
                   if label else f"{name} is a Carnatic raaga (note-set pending expert review).")
-        desc = (f"{name}: a {label} Carnatic raaga. Its swaras, how to hear it, allied raagas, and "
-                f"kritis to listen for." if label
-                else f"{name}: a Carnatic raaga. How to hear it, allied raagas, and kritis.")
     # a verified beginner "tell" becomes the hero line; the structural sentence drops below it
     tell = ref.get("tell", "")
     rasa = ref.get("rasa", "")
@@ -518,6 +608,10 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
 
     aro = ref.get("aroha", "") if hin else ref.get("arohana", "")
     ava = ref.get("avaroha", "") if hin else ref.get("avarohana", "")
+    title, desc, names, faq = search_words(name, ref, label, hin, aro, ava)
+    known = plain(name)
+    if known != name:
+        struct_html += f'\n    <p class="struct">Also written {esc(known)}.</p>'
     aro_html = f'<p class="v">{esc(aro)}</p>' if aro else '<p class="v pending">pending review</p>'
     ava_html = f'<p class="v">{esc(ava)}</p>' if ava else '<p class="v pending">pending review</p>'
 
@@ -527,6 +621,7 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
         "@context": "https://schema.org", "@type": "DefinedTerm", "name": name,
         "inDefinedTermSet": {"@type": "DefinedTermSet", "name": trad["termset"],
                              "url": "https://twelveswaras.com/raaga/"},
+        "alternateName": names,
         "description": desc, "url": f"https://twelveswaras.com/raaga/{slug(name, trad['suffix'])}",
         # Machine-readable rights that travel with the data, so an agent reading a single raaga
         # page (not just /data/raagas.json) gets the licence + the exact attribution string.
@@ -539,11 +634,16 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
         jsonld["sameAs"] = sameas
     jsonld_html = ('<script type="application/ld+json">\n'
                    + json.dumps(jsonld, ensure_ascii=False, indent=2) + "\n</script>")
+    if faq:   # the questions people ask, answered from the reference (AI answers and search features read these)
+        faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+            {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}
+        jsonld_html += ('\n<script type="application/ld+json">\n'
+                        + json.dumps(faq_ld, ensure_ascii=False, indent=2).replace("</", "<\\/") + "\n</script>")
 
     page = TEMPLATE
     repl = {
-        "__TITLE__": f"{name}: a {word} raaga, and how to hear it · twelveswaras",
-        "__DESC__": desc, "__SLUG__": slug(name, trad["suffix"]), "__JSONLD__": jsonld_html,
+        "__TITLE__": esc(title),
+        "__DESC__": esc(desc), "__SLUG__": slug(name, trad["suffix"]), "__JSONLD__": jsonld_html,
         "__TRADWORD__": word, "__LABELS__": json.dumps(trad["labels"], separators=(",", ":")),
         "__LEGEND_JEEVA__": esc(trad["legend_jeeva"]), "__LEGEND_NYASA__": esc(trad["legend_nyasa"]),
         "__CRUMB__": esc(name), "__EYEBROW__": esc(eyebrow), "__NAME__": esc(name),
@@ -552,7 +652,9 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
         "__WHEEL_ALT__": esc(f"Swara wheel for {name}: {' '.join(swaras)}."),
         "__AROHANA__": aro_html, "__AVAROHANA__": ava_html,
         "__HEAR__": hear_section(ref, trad), "__CONFUSE__": confuse_section(ref),
-        "__LISTEN__": listen_section(ref), "__COUSINS__": cousins_section(cousins),
+        "__LISTEN__": listen_section(ref, known),
+        "__ARO_LABEL__": "aroh · ascending" if hin else "arohanam · ascending",
+        "__AVA_LABEL__": "avroh · descending" if hin else "avarohanam · descending", "__COUSINS__": cousins_section(cousins),
         "__IN__": json.dumps(semis), "__JEEVA__": json.dumps(jeeva), "__NYASA__": json.dumps(nyasa),
     }
     for k, v in repl.items():
