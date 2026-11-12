@@ -12,8 +12,15 @@
  * CLIPS (R2).
  */
 
+import { handleMcp } from './mcp.js';
+
 export default {
   async fetch(request, env, ctx) {
+    // the MCP server answers any origin (agents and their inspectors), so it sets its own CORS
+    if (new URL(request.url).pathname.endsWith('/mcp')) {
+      return handleMcp(request, env, ctx, (event) => insertEvent(env, {
+        event, session: null, source: 'mcp', country: country(request), referrer: null }));
+    }
     return cors(await route(request, env, ctx), env, request);
   },
 };

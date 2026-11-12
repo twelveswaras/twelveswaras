@@ -72,6 +72,19 @@ it), with cross-tradition confusion only ~3%. That is the studio ceiling only: a
 Hindustani benchmark is still pending**, and the Hindustani reference pages are draft awaiting
 expert review, so treat this tradition as a preview.
 
+## Use it from an AI assistant (MCP)
+
+twelveswaras is an MCP server at `https://twelveswaras.com/mcp` (Streamable HTTP, no sign-in). Add it
+as a remote/custom connector in Claude, ChatGPT, Cursor or any MCP client. Four tools:
+
+- `find_raaga`: look a raaga up by any spelling (Mohanam, Mōhanaṁ, Bhoop, "kalyani ragam").
+- `raagas_with_notes`: the raagas that use a set of notes (Carnatic `S R2 G3 P D2` or Hindustani `S R G P D`).
+- `list_raagas`: the 70 raagas (40 Carnatic, 30 Hindustani).
+- `identify_raaga`: the raaga in a recording at a public URL. The recording is not stored.
+
+The same facts are published as data at
+[`/data/raaga-reference.json`](https://twelveswaras.com/data/raaga-reference.json) (CC-BY-4.0).
+
 ## Data & attribution
 
 Built on openly-available research corpora, **attribution required by their licenses**:

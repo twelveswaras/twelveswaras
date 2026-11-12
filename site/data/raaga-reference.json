@@ -1,0 +1,3225 @@
+{
+ "project": "twelveswaras",
+ "homepage": "https://twelveswaras.com",
+ "license": "https://creativecommons.org/licenses/by/4.0/",
+ "attribution": "twelveswaras (twelveswaras.com), CC-BY-4.0",
+ "provenance": "The facts on the twelveswaras raaga pages: scales, parents and note sets checked against published sources (corrections and their sources in raaga_corrections.json); not reviewed by a musician. Positions count semitones from Sa (0-11).",
+ "count": 70,
+ "raagas": [
+  {
+   "name": "Aṭāna",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/atana",
+   "also_known_as": [
+    "Atana",
+    "Atana raga",
+    "Atana ragam"
+   ],
+   "kind": "bhashanga",
+   "parent": "29th melakarta – Dhīra Śankarābharaṇam",
+   "arohanam": "S R2 M1 P N3 S",
+   "avarohanam": "S N3 D2 P M1 P G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2",
+     "N3"
+    ],
+    "used_in_phrases": [
+     "N2"
+    ]
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    11
+   ],
+   "phrase_positions": [
+    10
+   ],
+   "how_to_hear": "The raaga of valour and defiance: martial, zig-zag phrases (P M P G R), as in Tyagaraja's 'Ela Nee Daya Raadu'.",
+   "confused_with": "",
+   "jeeva_swaras": "R (chatusruti rishabha R2), P (panchama) and N (kakali nishada N3) are the vital/emphasised notes; an uttaranga-pradhana raga that does not go much below madhyama.",
+   "nyasa_swaras": "Shadja (S) and Panchama (P), on which Atana typically resolves in the upper register.",
+   "songs": [
+    "Ela Nee Daya Radu (Tyagaraja)",
+    "Anupama Gunambudhi (Tyagaraja)"
+   ],
+   "film_songs": [
+    "Yaar Tharuvaar (listed on ragasurabhi)"
+   ]
+  },
+  {
+   "name": "Behāg",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/behag",
+   "also_known_as": [
+    "Behag",
+    "Behag raga",
+    "Behag ragam"
+   ],
+   "kind": "bhashanga",
+   "parent": "29 Dheera Shankarabharanam (sources place Behag under Shankarabharanam, NOT Harikambhoji)",
+   "arohanam": "S G3 M1 P N3 D2 N3 S",
+   "avarohanam": "S N3 D2 P M2 G3 M1 G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "M2",
+     "P",
+     "D2",
+     "N3"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    6,
+    7,
+    9,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "A soft, romantic raaga: the sweetness of 'Suttum Vizhi Sudar' (Kandukondain Kandukondain) and Lalgudi's beloved Behag thillana.",
+   "confused_with": "Bihag (Hindustani); Khamas",
+   "jeeva_swaras": "G3 and N3 (Ga = vadi, Ni = samvadi of the parent Bihag; N3 kakali nishada is prominent and is typically the note from which alapana/tanam is launched).",
+   "nyasa_swaras": "S, G3, P, N3 (phrases resolve chiefly to S, with G3, P and N3 as sustained landing notes; R2 and D2 are never rested upon).",
+   "songs": [
+    "Vanajaksha (varnam)",
+    "Saaramaina (javali) - Swati Thirunal"
+   ],
+   "film_songs": [
+    "Suttum Vizhi (cited on ragasurabhi)",
+    "several A.R. Rahman film songs"
+   ]
+  },
+  {
+   "name": "Bhairavi",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/bhairavi",
+   "also_known_as": [
+    "Bhairavi",
+    "Bhairavi raga",
+    "Bhairavi ragam"
+   ],
+   "kind": "bhashanga",
+   "parent": "Natabhairavi (20th melakarta); bhashanga janya that borrows chatushruti dhaivatam (D2) from Kharaharapriya",
+   "arohanam": "S G2 R2 G2 M1 P D2 N2 S",
+   "avarohanam": "S N2 D1 P M1 G2 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G2",
+     "M1",
+     "P",
+     "D1",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    8,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "One of the grandest raagas: the 'Viriboni' Ata-tala varnam every student learns; deep, devotional, tinged with pathos (karuna).",
+   "confused_with": "Mukhari ('Bhairavi is distinguished from Mukhaari'); also Manji and Huseni",
+   "jeeva_swaras": "Nishada (N2, kaisiki) is an important jeeva swara, rendered with varying degrees of gamaka; gandhara (G2) and the two dhaivatas (D2/D1) are the notes whose gamaka handling gives the raga its flavour.",
+   "nyasa_swaras": "Panchama (P) is the purna (full) nyasa swara, on which one may sustain at length; chatusruti dhaivata (D2) is an alpa (minor) nyasa used to conclude phrases without stress, e.g. tara-sthayi S n d and R S n d.",
+   "songs": [
+    "Kamakshi (swarajati) – Syama Sastri",
+    "Koluvaiyunnade – Tyagaraja",
+    "Balagopala – Muthuswami Dikshitar"
+   ],
+   "film_songs": [
+    "Unnai Kandu Mayangatha – Ashok Kumar",
+    "Thiruparkadalil – Swami Ayyappan"
+   ]
+  },
+  {
+   "name": "Bilahari",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/bilahari",
+   "also_known_as": [
+    "Bilahari",
+    "Bilahari raga",
+    "Bilahari ragam"
+   ],
+   "kind": "bhashanga",
+   "parent": "29th melakarta – Dhīra Śankarābharaṇam",
+   "arohanam": "S R2 G3 P D2 S",
+   "avarohanam": "S N3 D2 P M1 G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2",
+     "N3"
+    ],
+    "used_in_phrases": [
+     "N2"
+    ]
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    11
+   ],
+   "phrase_positions": [
+    10
+   ],
+   "how_to_hear": "A bright, auspicious raaga of joy and celebration; sunny, upward-lifting phrases, often opens concerts and sounds at weddings.",
+   "confused_with": "Mohanam (shares the pentatonic ascent); also Shankarabharanam, Mohanakalyani, Garudadhvani, Desakshi",
+   "jeeva_swaras": "R, D, N (chatushruti rishabha R2, chatushruti dhaivata D2, kakali nishada N3).",
+   "nyasa_swaras": "Rishabha (R2), Panchama (P) and Dhaivata (D2).",
+   "songs": [
+    "Paridanamichite (varnam, Patnam Subramania Iyer)",
+    "Kanukontini (Tyagaraja)",
+    "Dorakuna Ituvanti (Tyagaraja)"
+   ],
+   "film_songs": [
+    "Koonthalile Megam (listed on ragasurabhi)"
+   ]
+  },
+  {
+   "name": "Bēgaḍa",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/begada",
+   "also_known_as": [
+    "Begada",
+    "Begada raga",
+    "Begada ragam"
+   ],
+   "kind": "bhashanga",
+   "parent": "29th melakarta – Dhīra Śankarābharaṇam",
+   "arohanam": "S G3 R2 G3 M1 P D2 N2 D2 P S",
+   "avarohanam": "S N3 D2 P M1 G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2",
+     "N2",
+     "N3"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "A gently smiling, majestic raaga of winding zig-zag phrases, heard in Tyagaraja's 'Nadopasana'; graceful rather than grave.",
+   "confused_with": "Shankarabharanam (same parent mela; beginners slide into it if the P D N D P phrase is not kept crisp)",
+   "jeeva_swaras": "Dhaivata (D2) emphasised as the life/defining note, secondary source",
+   "nyasa_swaras": "N (nishada) is an important resting point, with a characteristic resting gamaka at N in phrases like pdp N, D, p and N dpmgr.",
+   "songs": [
+    "Nadopasana (Tyagaraja)",
+    "Vallabha Nayakasya (Muthuswami Dikshitar)",
+    "Gajavadana Beduve (Purandara Dasa)"
+   ],
+   "film_songs": [
+    "Poonilave (listed on ragasurabhi)"
+   ]
+  },
+  {
+   "name": "Dhanyāsi",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/dhanyasi",
+   "also_known_as": [
+    "Dhanyasi",
+    "Dhanyasi raga",
+    "Dhanyasi ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Janya of 8th melakarta Hanumatodi (Dikshitar school derives it from 20th melakarta Natabhairavi)",
+   "arohanam": "S G2 M1 P N2 S",
+   "avarohanam": "S N2 D1 P M1 G2 R1 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R1",
+     "G2",
+     "M1",
+     "P",
+     "D1",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    3,
+    5,
+    7,
+    8,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "A plaintive bhakti raaga, Tyagaraja's 'Sangeetha Gnanamu'; listen for its soulful, winding descent (S N D P M G R S).",
+   "confused_with": "Suddha Dhanyasi / Udayaravichandrika (symmetric pentatonic = Dhanyasi's arohana notes); Salaga Bhairavi; compared with Todi",
+   "jeeva_swaras": "G, N (sung with kampita gamakam)",
+   "nyasa_swaras": "P (per karnatik.com)",
+   "songs": [
+    "Sangeetha Gnanamu (Tyagaraja)",
+    "Sri Ranganathaya Namasthe (Muthuswami Dikshitar)",
+    "Meenalochana Brova (Shyama Sastri)"
+   ],
+   "film_songs": [
+    "Katuka Kantineeru (Bhakta Potana)",
+    "Sakala Kalyanabhusha (Sri Venkateswara Mahatyam)"
+   ]
+  },
+  {
+   "name": "Dēvagāndhāri",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/devagandhari",
+   "also_known_as": [
+    "Devagandhari",
+    "Devagandhari raga",
+    "Devagandhari ragam"
+   ],
+   "kind": "bhashanga",
+   "parent": "29th melakarta – Dhīra Śankarābharaṇam",
+   "arohanam": "S R2 M1 P D2 S",
+   "avarohanam": "S N3 D2 N2 D2 P M1 G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2",
+     "N2",
+     "N3"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Arabhi's softer twin: a prayerful, slow-moving raaga of Tyagaraja's 'Ksheera Sagara Sayana'; listen for its gamaka-rich descent.",
+   "confused_with": "Arabhi (identical basic arohana/avarohana; Devagandhari differs by gamakas, elongated G3 and the N2 bhashanga usage). Name-confused with Devamanohari",
+   "jeeva_swaras": "Rishabha (R2), Gandhara (G3) and Dhaivata (D2) are the ragachaya (identity) svaras; the gamaka-laden rishabha and elongated (deergha) gandhara are the defining features.",
+   "nyasa_swaras": "Rishabha (R2), Panchama (P) and Dhaivata (D2).",
+   "songs": [
+    "Ksheera Sagara Shayana (Tyagaraja)",
+    "Sharade Veena Vadana (Papanasam Sivan)"
+   ],
+   "film_songs": []
+  },
+  {
+   "name": "Gauḷa",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/gaula",
+   "also_known_as": [
+    "Gaula",
+    "Gaula raga",
+    "Gaula ragam"
+   ],
+   "kind": "shadava (six-note)",
+   "parent": "Janya of 15th melakarta Mayamalavagowla",
+   "arohanam": "S R1 M1 P N3 S",
+   "avarohanam": "S N3 P M1 R1 G3 M1 R1 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R1",
+     "G3",
+     "M1",
+     "P",
+     "N3"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    4,
+    5,
+    7,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The raaga of Dikshitar's 'Sri Maha Ganapati Ravatu Mam': an angular, auspicious Ghana raga invoking Ganesha at a concert's opening.",
+   "confused_with": "",
+   "jeeva_swaras": "R1 (ekasruti / gaula rishabha) is the key life-note carrying the raga's grave bhava, assisted by S (shadja) and N3 (kakali nishada).",
+   "nyasa_swaras": "R1, and the region around M P N to which the raga always returns.",
+   "songs": [
+    "Dudukugala Nannu (Tyagaraja, Pancharatna kriti)",
+    "Mahishasura Mardini (Muthuswami Dikshitar)",
+    "Kaama Janaka (Swathi Thirunal)"
+   ],
+   "film_songs": [
+    "Vedham Nee (Koyil Puraa)",
+    "Mazhai Varum (Chinna Captain)"
+   ]
+  },
+  {
+   "name": "Harikāmbhōji",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/harikambhoji",
+   "also_known_as": [
+    "Harikambhoji",
+    "Harikambhoji raga",
+    "Harikambhoji ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "28 Harikambhoji",
+   "arohanam": "S R2 G3 M1 P D2 N2 S",
+   "avarohanam": "S N2 D2 P M1 G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The 28th melakarta and parent scale of Mohanam, Kambhoji and Khamas, heard in Tyagaraja's 'Dina Mani Vamsa'; warm and expansive.",
+   "confused_with": "Its janyas Kambhoji, Mohanam, Yadukula Kambhoji, Kedaragaula, Kamas, Natakurinji, Sahana, Surutti, Andolika; also Vachaspati (its prati-madhyama 64th-mela counterpart)",
+   "jeeva_swaras": "N2 (kaisiki nishada) and M1 (madhyama); R2 and N2 are the two notes that carry the characteristic oscillation.",
+   "nyasa_swaras": "G3 and D2 (nyasa swaram ga, dha); graha swara S.",
+   "songs": [
+    "Rama Nannu Brovara (Tyagaraja)",
+    "Enadhu Manam Kavalai (Papanasam Sivan)",
+    "Neeye En Gathi (Koteeswara Iyer)"
+   ],
+   "film_songs": [
+    "Kannukku Mai Azhaghu (Tamil, listed as the cine-song example on Raga Surabhi)"
+   ]
+  },
+  {
+   "name": "Hussēnī",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/husseni",
+   "also_known_as": [
+    "Husseni",
+    "Husseni raga",
+    "Husseni ragam"
+   ],
+   "kind": "bhashanga",
+   "parent": "22nd melakarta (Kharaharapriya), janya",
+   "arohanam": "S R2 G2 M1 P N2 D2 N2 S",
+   "avarohanam": "S N2 D1 P M1 G2 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G2",
+     "M1",
+     "P",
+     "D1",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    8,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "A tender, plaintive raaga, a rare phrase-oriented cousin of Bhairavi, recognised by its wistful, gamaka-laden phrases around the gandhara.",
+   "confused_with": "Bhairavi, Mukhari, Anandabhairavi (distinguished by its sharp steady chatushruti dhaivatam vs Mukhari's shuddha dhaivatam, and by 'ri ga ma ga ri sa')",
+   "jeeva_swaras": "R2 (rishabha) and P (pancama); rishabha is especially important and typically elongated or parked on. Elongated ri and pa immediately establish the ragabhava.",
+   "nyasa_swaras": "S and P are the principal resting/parking notes (phrases sa-pa-Sa, sa sa pa pa); ri is also frequently held. No source uses the formal term nyasa for Huseni explicitly (inferred from resting behavior).",
+   "songs": [
+    "Rāmā Ninnē (Rāma Ninne Nammi), Tyagaraja",
+    "Raghuvīra Raṇadhīra, Tyagaraja",
+    "Bhaja Rāmam Satatam, Tyagaraja"
+   ],
+   "film_songs": []
+  },
+  {
+   "name": "Kalyāṇi",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/kalyani",
+   "also_known_as": [
+    "Kalyani",
+    "Kalyani raga",
+    "Kalyani ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "65th melakarta, Mechakalyani",
+   "arohanam": "S R2 G3 M2 P D2 N3 S",
+   "avarohanam": "S N3 D2 P M2 G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M2",
+     "P",
+     "D2",
+     "N3"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    6,
+    7,
+    9,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The queen of raagas, Ilaiyaraaja's 'Janani Janani'; bright and grand, built entirely on sharp notes (Hindustani Yaman).",
+   "confused_with": "Shankarabharanam (same notes but different gamaka treatment); also compared with Vachaspati and Lathangi",
+   "jeeva_swaras": "Ga and Ni (per Subbarama Dikshitar, Ri and Ga are the jiva swaras; Ni is also prominent)",
+   "nyasa_swaras": "Ri, Ga, Dha and Ni (all swaras except Ma can serve as nyasa swaras)",
+   "songs": [
+    "Kamalambam Bhajare, Muthuswami Dikshitar",
+    "Nidhi Chala Sukhama, Tyagaraja"
+   ],
+   "film_songs": [
+    "Kalaivaniye (rendered in Kalyani, per Ragasurabhi)"
+   ]
+  },
+  {
+   "name": "Kamās",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/kamas",
+   "also_known_as": [
+    "Kamas",
+    "Kamas raga",
+    "Kamas ragam"
+   ],
+   "kind": "bhashanga",
+   "parent": "28 Harikambhoji",
+   "arohanam": "S M1 G3 M1 P D2 N2 S",
+   "avarohanam": "S N2 D2 P M1 G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": [
+     "N3"
+    ]
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [
+    11
+   ],
+   "how_to_hear": "The raaga of the beloved 'Brochevarevarura': warm and romantic (sringara), a late-night favourite for javalis and love songs.",
+   "confused_with": "Khamaj (Hindustani); Nattakurinji",
+   "jeeva_swaras": "M1 (madhyama) and D2 (dhaivata), an uttaranga-pradhana raga.",
+   "nyasa_swaras": "M1 is the primary resting note, rendered as (G3)M1; P (panchama) also used as nyasa.",
+   "songs": [
+    "Seethapathe - Tyagaraja"
+   ],
+   "film_songs": [
+    "Uyirum Neeye (cited on ragasurabhi)"
+   ]
+  },
+  {
+   "name": "Karaharapriya",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/karaharapriya",
+   "also_known_as": [
+    "Karaharapriya",
+    "Karaharapriya raga",
+    "Karaharapriya ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "22nd melakarta (Kharaharapriya), it is itself the 22nd melakarta, not a janya",
+   "arohanam": "S R2 G2 M1 P D2 N2 S",
+   "avarohanam": "S N2 D2 P M1 G2 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G2",
+     "M1",
+     "P",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The raaga of Tyagaraja's 'Chakkani Raja Margamu': a majestic, expansive full-octave scale (the 22nd melakarta) rich in sweeping phrases.",
+   "confused_with": "Hemavati (its prati-madhyamam / 58th melakarta counterpart)",
+   "jeeva_swaras": "R2 (ri) and P (pa) are the amsa/predominant (sonant) svaras; the raga's chaya (identity) notes are ri, ga, dha, ni.",
+   "nyasa_swaras": "R2, G2, D2, N2 (ri, ga, dha, ni), listed together as the chaya and nyasa svaras.",
+   "songs": [
+    "Chakkani Rājamārgamu, Tyagaraja",
+    "Pakkala Nilabaḍi, Tyagaraja",
+    "Mitri Bhāgyame, Tyagaraja"
+   ],
+   "film_songs": []
+  },
+  {
+   "name": "Kāmavardani",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/kamavardani",
+   "also_known_as": [
+    "Kamavardani",
+    "Kamavardani raga",
+    "Kamavardani ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "51st Melakarta – Kamavardhini (also called Pantuvarali); prati madhyama counterpart of the 15th mela Mayamalavagowla",
+   "arohanam": "S R1 G3 M2 P D1 N3 S",
+   "avarohanam": "S N3 D1 P M2 G3 R1 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R1",
+     "G3",
+     "M2",
+     "P",
+     "D1",
+     "N3"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    4,
+    6,
+    7,
+    8,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The poignant morning raaga of Ilaiyaraaja's 'Roja Vai Thalattum' (Pantuvarali): pensive, devotional, all-sharp with a plaintive edge.",
+   "confused_with": "Poorvikalyani (sounds similar, differs in dhaivata swara); also compared with Varali and Shubha Pantuvarali (different gandharam)",
+   "jeeva_swaras": "G, D, M, P (per Subbarama Dikshitar, Sangeetha Sampradaya Pradarshini)",
+   "nyasa_swaras": "S, R, G, M, P, N, of which R, G and M are hrswa (short) nyasa swaras",
+   "songs": [
+    "Sambho Mahadeva, Tyagaraja",
+    "Ramanatham Bhajeham, Muthuswami Dikshitar",
+    "Amba Manam Kaninthu, Papanasam Sivan"
+   ],
+   "film_songs": [
+    "Hai Rama (Rangeela), A. R. Rahman",
+    "Om Shiva Om (Naan Kadavul), Ilaiyaraaja"
+   ]
+  },
+  {
+   "name": "Kānaḍa",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/kanada",
+   "also_known_as": [
+    "Kanada",
+    "Kanada raga",
+    "Kanada ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "22nd melakarta (Kharaharapriya), janya",
+   "arohanam": "S R2 G2 M1 D2 N2 S",
+   "avarohanam": "S N2 P M1 G2 M1 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G2",
+     "M1",
+     "P",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The majestic, Hindustani-derived raaga of Tyagaraja's 'Sri Narada': listen for its serious, weighty, zig-zag phrases (gravitas).",
+   "confused_with": "",
+   "jeeva_swaras": "Gandhara (G2) is the raga's defining/identity note (singing it alone would suffice); the rishabha (R2) is cited as the jiva svara of the mela-22 family.",
+   "nyasa_swaras": "Beyond the universal Shadja (S) and Panchama (P), the distinctive nyasa svaras are Rishabha (R2), Gandhara (G2) and Dhaivata (D2).",
+   "songs": [
+    "Alai Pāyudē (Kanna), Oothukkadu Venkata Subbaiyer",
+    "Amudam Unnuvōm, Suddhananda Bharati"
+   ],
+   "film_songs": []
+  },
+  {
+   "name": "Kāpi",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/kapi",
+   "also_known_as": [
+    "Kapi",
+    "Kapi raga",
+    "Kapi ragam"
+   ],
+   "kind": "bhashanga",
+   "parent": "Kharaharapriya (22nd melakarta)",
+   "arohanam": "S R2 M1 P N3 S",
+   "avarohanam": "S N2 D2 N2 P M1 G2 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G2",
+     "M1",
+     "P",
+     "D2",
+     "N2",
+     "N3"
+    ],
+    "used_in_phrases": [
+     "G3",
+     "D1"
+    ]
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    9,
+    10,
+    11
+   ],
+   "phrase_positions": [
+    4,
+    8
+   ],
+   "how_to_hear": "The raaga of 'Kanne Kalaimane' (Moondram Pirai) and Purandaradasa's 'Jagadodharana': soft, tender, pleading, devotional.",
+   "confused_with": "Hindustani Kafi/thaat and raag Pilu; Desh",
+   "jeeva_swaras": "Gandhara (G2) and Rishabha (R2); per the SSP the gandhara and rishabha are the jiva and nyasa svaras, and the elongated/oscillated ga is the strongest identity note.",
+   "nyasa_swaras": "Rishabha (R2) and Gandhara (G2) (the SSP names gandhara and rishabha as both jiva and nyasa).",
+   "songs": [
+    "Jagadoddharana – Purandara Dasa",
+    "Enna Tavam Seidhanai – Papanasam Sivan",
+    "Inta Saukhyamani – Tyagaraja"
+   ],
+   "film_songs": [
+    "Chinnanchiru Kiliye Kannamma – Manamagal",
+    "Dheenamaana Nee – Ashok Kumar"
+   ]
+  },
+  {
+   "name": "Kāṁbhōji",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/kambhoji",
+   "also_known_as": [
+    "Kambhoji",
+    "Kambhoji raga",
+    "Kambhoji ragam"
+   ],
+   "kind": "bhashanga",
+   "parent": "28 Harikambhoji",
+   "arohanam": "S R2 G3 M1 P D2 S",
+   "avarohanam": "S N2 D2 P M1 G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": [
+     "N3"
+    ]
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [
+    11
+   ],
+   "how_to_hear": "The raaga of Tyagaraja's grand 'O Rangasayee' and the concert-favourite 'Kaana Kann Kodi Vendum': majestic, expansive sweep.",
+   "confused_with": "",
+   "jeeva_swaras": "Chaya/jeeva swaras are M1 (madhyama), D2 (dhaivata) and N2 (nishada); the raga's identity also leans on S R G P D.",
+   "nyasa_swaras": "G3, M1, P, D2 (ga, ma, pa, dha).",
+   "songs": [
+    "O Rangashayi (Tyagaraja)",
+    "Sri Subrahmanyaya Namaste (Muthuswami Dikshitar)",
+    "Marakata Vallim (Muthuswami Dikshitar)"
+   ],
+   "film_songs": [
+    "Aarupadai Veedu Konda (listed as a film example for Kambhoji on ragasurabhi.com",
+    "film/composer not specified)"
+   ]
+  },
+  {
+   "name": "Kēdāragauḷa",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/kedaragaula",
+   "also_known_as": [
+    "Kedaragaula",
+    "Kedaragaula raga",
+    "Kedaragaula ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "28 Harikambhoji",
+   "arohanam": "S R2 M1 P N2 S",
+   "avarohanam": "S N2 D2 P M1 G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "A breezy morning raaga of many moods, heard in Tyagaraja's 'Venugana Loluni' (rendered by MS Subbulakshmi); bright and free-flowing.",
+   "confused_with": "Madhyamavati (identical ascending notes S R2 M1 P N2 S); Narayanagowla; Vivardhini; Yadukulakamboji; Surutti",
+   "jeeva_swaras": "Rishabha (R2) and Nishada (N2) are the ragachaya (identity) svaras; the elongated, heavily oscillated rishabha is the signature.",
+   "nyasa_swaras": "Rishabha (R2) and Panchama (P); Shadja (S) is also a common landing.",
+   "songs": [
+    "Tulasi Bilva Mallikadi (Tyagaraja)",
+    "Neelakantham Bhajeham (Muthuswami Dikshitar)",
+    "Paraakela Nannu (Shyama Shastri)"
+   ],
+   "film_songs": [
+    "Vacchiti Dootaga (verse) - film Palnati Yuddham (Telugu)"
+   ]
+  },
+  {
+   "name": "Madhyamāvati",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/madhyamavati",
+   "also_known_as": [
+    "Madhyamavati",
+    "Madhyamavati raga",
+    "Madhyamavati ragam"
+   ],
+   "kind": "audava (five-note)",
+   "parent": "22nd melakarta (Kharaharapriya), janya",
+   "arohanam": "S R2 M1 P N2 S",
+   "avarohanam": "S N2 P M1 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "M1",
+     "P",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    5,
+    7,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The auspicious raaga concerts traditionally close on (the Mangalam), heard in Tyagaraja's 'Ramakatha Sudha'; a bright, protective mood.",
+   "confused_with": "Manirangu and Brindāvana Sāranga (scale-similar); graha bhedam relates it to Mohanam, Hindolam, Shuddha Sāveri",
+   "jeeva_swaras": "R2 (chatushruti rishabha) and N2 (kaisiki nishada) are the life/identity notes (Ri always oscillated, Ni kampita); one source adds M1, listing R, M, N.",
+   "nyasa_swaras": "R, M, N (per carnaticmusicexams.in, the same set it calls jeeva/chaya). No primary lakshana-grantha statement of the nyasa swaras was located.",
+   "songs": [
+    "Aadaadu Asangaadu Vaa, Oothukkadu Venkata Subbaiyer",
+    "Ananda Poorna, Sadashiva Brahmendra"
+   ],
+   "film_songs": []
+  },
+  {
+   "name": "Mukhāri",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/mukhari",
+   "also_known_as": [
+    "Mukhari",
+    "Mukhari raga",
+    "Mukhari ragam"
+   ],
+   "kind": "bhashanga",
+   "parent": "Kharaharapriya (22nd melakarta)",
+   "arohanam": "S R2 M1 P N2 D2 S",
+   "avarohanam": "S N2 D1 P M1 G2 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G2",
+     "M1",
+     "P",
+     "D1",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    8,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The classic raaga of grief and pathos, Tyagaraja's 'Entani Ne'; famed for its power to move listeners to tears.",
+   "confused_with": "Bhairavi (esp.), Huseni, Salagabhairavi, Kokilavarali, Maanji (allied ragas)",
+   "jeeva_swaras": "Rishabha (R2), Madhyama (M1) and Nishada (N2) are the ragachaya (character-defining) svaras; stress falls on Madhyama (e.g. S R M G R S) and shifts to Rishabha (e.g. P D S R). Sources use 'ragachaya svara' rather than the literal 'jiva svara'.",
+   "nyasa_swaras": "Rishabha (R2) and Madhyama (M1) are the stated nyasa svaras; Chatusruti Dhaivata (D2) functions as an alpa-nyasa (concluding without stress) in tara-sthayi phrases like S n d and R S n d.",
+   "songs": [
+    "Sivakama Sundari – Papanasam Sivan",
+    "Entani Ne – Tyagaraja",
+    "Gnanamu – Tyagaraja"
+   ],
+   "film_songs": [
+    "Vaada Malare – Ambikapathy (1957)",
+    "Yaar Poi Solluvar – Harichandra (1968)"
+   ]
+  },
+  {
+   "name": "Māyāmāḷavagauḷa",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/mayamalavagaula",
+   "also_known_as": [
+    "Mayamalavagaula",
+    "Mayamalavagaula raga",
+    "Mayamalavagaula ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "15th melakarta (Mayamalavagowla is itself the janaka/melakarta raga)",
+   "arohanam": "S R1 G3 M1 P D1 N3 S",
+   "avarohanam": "S N3 D1 P M1 G3 R1 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R1",
+     "G3",
+     "M1",
+     "P",
+     "D1",
+     "N3"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    4,
+    5,
+    7,
+    8,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The very first raaga every Carnatic student learns (the sarali varisai exercises): calm, morning-fresh and devotional.",
+   "confused_with": "Corresponds to Hindustani Bhairav (equivalent, not a Carnatic confusion)",
+   "jeeva_swaras": "G (antara gandhara, G3) and N (kakali nishada, N3).",
+   "nyasa_swaras": "R (shuddha rishabha R1), M (shuddha madhyama M1) and D (shuddha dhaivata D1). Amsa swaras G and P; graha swaras S, G, D, N.",
+   "songs": [
+    "Tulasidalamulache - Tyagaraja",
+    "Merusamanadhira - Tyagaraja",
+    "Srinathadi Guruguho - Muthuswami Dikshitar"
+   ],
+   "film_songs": [
+    "Pannedum Naalaai (Sakuntalai, 1940)",
+    "Raajamathangi (Bharatham, 1991, Raveendran)"
+   ]
+  },
+  {
+   "name": "Mōhanaṁ",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/mohanam",
+   "also_known_as": [
+    "Mohanam",
+    "Mohanam raga",
+    "Mohanam ragam"
+   ],
+   "kind": "audava (five-note)",
+   "parent": "28 Harikambhoji",
+   "arohanam": "S R2 G3 P D2 S",
+   "avarohanam": "S D2 P G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "P",
+     "D2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    7,
+    9
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The raaga of 'Ninnukori Varnam' (Agni Natchathiram): listen for its bright, sunny pentatonic scale that skips two notes (no ma, no ni).",
+   "confused_with": "Shivaranjani (same scale but with sadharana gandharam); Bilahari and Mohanakalyani (share Mohanam's arohana); Hindustani equivalent Bhoop/Bhopali",
+   "jeeva_swaras": "R2, G3, D2",
+   "nyasa_swaras": "G3, P",
+   "songs": [
+    "Mohana Rama (Tyagaraja)",
+    "Nannu Palimpa (Tyagaraja)",
+    "Kapali (Papanasam Sivan)"
+   ],
+   "film_songs": [
+    "Sri Ranga Ranganathanin / Nilavum Malarum (Then Nilavu, A.M. Rajah–P. Susheela)",
+    "Paarkathey Paarkathey (Gentleman, A.R. Rahman)"
+   ]
+  },
+  {
+   "name": "Nāṭa",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/nata",
+   "also_known_as": [
+    "Nata",
+    "Nata raga",
+    "Nata ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "36th melakarta – Chalanata (Nāṭa is a janya of this mela)",
+   "arohanam": "S R3 G3 M1 P D3 N3 S",
+   "avarohanam": "S N3 P M1 R3 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R3",
+     "G3",
+     "M1",
+     "P",
+     "D3",
+     "N3"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    3,
+    4,
+    5,
+    7,
+    10,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The bold, festive raaga that opens concerts, Dikshitar's 'Maha Ganapatim' and Tyagaraja's 'Jagadananda Karaka'; heroic and martial.",
+   "confused_with": "Gambhiranata (Gambheera Nattai); also compared with its parent Chalanata",
+   "jeeva_swaras": "Rishabha: R3 (shatsruti rishabha) is Nata's jiva svara; another reading lists R, M, N as the jiva swaras.",
+   "nyasa_swaras": "Sa and Pa are the principal graha/nyasa; apart from Sa and Pa, Ri and Ga are the take-off notes, with Ga (G3) also functioning as a nyasa swara.",
+   "songs": [
+    "Jagadananda Karaka, Tyagaraja (first Pancharatna kriti)",
+    "Mahaganapatim, Muthuswami Dikshitar",
+    "Swaminatha Paripalaya, Muthuswami Dikshitar"
+   ],
+   "film_songs": [
+    "Maha Ganapathim, Sindhu Bhairavi (Ilaiyaraaja)",
+    "Narumugaiye, Iruvar"
+   ]
+  },
+  {
+   "name": "Nāṭakurinji",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/natakurinji",
+   "also_known_as": [
+    "Natakurinji",
+    "Natakurinji raga",
+    "Natakurinji ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "28 Harikambhoji",
+   "arohanam": "S R2 G3 M1 N2 D2 N2 P D2 N2 S",
+   "avarohanam": "S N2 D2 M1 G3 M1 P G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "A graceful, meandering raaga, a favourite for elaborate ragam-tanam-pallavi, heard in Tyagaraja's 'Manavyalakincharada'; serpentine curves.",
+   "confused_with": "Ravichandrika; Kurinji (janya of Shankarabharanam)",
+   "jeeva_swaras": "All swaras except R2 are jeeva swaras (and may double as nyasa); D2 and P are the strong life-notes, with G3, M1 and N2 prominent.",
+   "nyasa_swaras": "P and N2 for repose (and S); R2 used sparingly, usually paired with S.",
+   "songs": [
+    "Manasu Vishaya - Tyagaraja"
+   ],
+   "film_songs": [
+    "Kavalaiyai Theerpathu Nadhiya Kalaiye (film Sivakavi) - Papanasam Sivan / G. Ramanathan"
+   ]
+  },
+  {
+   "name": "Pūrvīkaḷyāṇi",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/purvikalyani",
+   "also_known_as": [
+    "Purvikalyani",
+    "Purvikalyani raga",
+    "Purvikalyani ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "53rd melakarta Gamanashrama",
+   "arohanam": "S R1 G3 M2 P D2 P S",
+   "avarohanam": "S N3 D2 P M2 G3 R1 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R1",
+     "G3",
+     "M2",
+     "P",
+     "D2",
+     "N3"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    4,
+    6,
+    7,
+    9,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "A calm, tender raaga, Dikshitar's 'Meenakshi Memudam Dehi'; soothing yet touched with a gentle, wistful longing.",
+   "confused_with": "Pantuvarali/Ramakriya (shares poorvanga characteristics; distinguished by Dwisruti Rishabha and arohana vakratva)",
+   "jeeva_swaras": "R, M, D, N",
+   "nyasa_swaras": "G, P, D",
+   "songs": [
+    "Meenakshi Me Mudam Dehi, Muthuswami Dikshitar",
+    "Gnanamosagarada, Tyagaraja",
+    "Ninnuvinagamari, Syama Sastri"
+   ],
+   "film_songs": [
+    "Sandhikka Thudithen"
+   ]
+  },
+  {
+   "name": "Rītigauḷa",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/ritigaula",
+   "also_known_as": [
+    "Ritigaula",
+    "Ritigaula raga",
+    "Ritigaula ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Kharaharapriya (22nd melakarta)",
+   "arohanam": "S G2 R2 G2 M1 N2 D2 M1 N2 N2 S",
+   "avarohanam": "S N2 D2 M1 G2 M1 P M1 G2 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G2",
+     "M1",
+     "P",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The raaga of 'Chinna Kannan Azhaikkiran' (Kavikkuyil) and Subbaraya Sastri's 'Janani Ninnuvina': soft, meditative, winding phrases.",
+   "confused_with": "Anandabhairavi and Huseni (allied ragas)",
+   "jeeva_swaras": "Gandhara (G2), Madhyama (M1) and Nishada (N2) are the jiva swaras, with kaisiki nishada (N2) the primary life-giving note; the phrase N2 N2 S gives the raga its unique personality, and Madhyama is a secondary life-swara.",
+   "nyasa_swaras": "Sa and Ma, with Ma the anchor in the lower half of the octave (one source only; other sources do not state nyasa swaras).",
+   "songs": [
+    "Janani Ninnuvina – Subbaraya Sastri",
+    "Nannu Vidachi Kadalakura – Tyagaraja",
+    "Vanajaksha (Ata tala varnam) – Veena Kuppayyar"
+   ],
+   "film_songs": [
+    "Chinna Kannan Azhaikiran – Kavikkuyil",
+    "Thennavan Thaai Naatu – Tenali Raman"
+   ]
+  },
+  {
+   "name": "Sahānā",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/sahana",
+   "also_known_as": [
+    "Sahana",
+    "Sahana raga",
+    "Sahana ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "28 Harikambhoji",
+   "arohanam": "S R2 G3 M1 P M1 D2 N2 S",
+   "avarohanam": "S N2 D2 P M1 G3 M1 R2 G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The raaga of Tyagaraja's 'Giripai': listen for its winding, zigzag (vakra) phrases that ache with tenderness and surrender.",
+   "confused_with": "Malavi; Dwijavanti (Jujavanti); historically linked to Sri raga (mela 22)",
+   "jeeva_swaras": "R2 (rishabham), G3 (gandharam), N2 (nishadham)",
+   "nyasa_swaras": "R2 rishabham (graha/nyasa/amsa svara); dhaivatham also noted as an important rest note; gandhara is an amsa but never used as a nyasa",
+   "songs": [
+    "Vandanamu Raghunandana (Tyagaraja)",
+    "Sri Kamalambikayam (Muthuswami Dikshitar)",
+    "Giripai Nelakonna (Tyagaraja)"
+   ],
+   "film_songs": [
+    "Azhage Sugama - Parthale Paravasam (A.R. Rahman)",
+    "Paarthen Sirithen Pakkathil Azhaithen - Veera Abhimanyu (K.V. Mahadevan)"
+   ]
+  },
+  {
+   "name": "Sencuruṭṭi",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/sencurutti",
+   "also_known_as": [
+    "Sencurutti",
+    "Sencurutti raga",
+    "Sencurutti ragam"
+   ],
+   "kind": "bhashanga",
+   "parent": "28 Harikambhoji",
+   "arohanam": "D2 S R2 G3 M1 P D2 N2",
+   "avarohanam": "N2 D2 P M1 G3 R2 S N2 D2 P D2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": [
+     "G2"
+    ]
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [
+    3
+   ],
+   "how_to_hear": "A light, folk-flavoured raaga of thillanas and javalis with a gentle pleading lilt, heard in Oothukkadu's 'Maadu Meikkum Kanne'.",
+   "confused_with": "Jhinjhoti (Hindustani, which takes sadharana gandhara G2 as a foreign note); Surutti",
+   "jeeva_swaras": "",
+   "nyasa_swaras": "",
+   "songs": [
+    "Rama Rama Rama Rara - Tyagaraja",
+    "Navaneeta Chora - Tyagaraja",
+    "Pullay Piravi - Oothukadu Venkata Subbaiyer"
+   ],
+   "film_songs": [
+    "En Veettu... (partial title as labelled on ragasurabhi",
+    "full title/movie not confirmed)"
+   ]
+  },
+  {
+   "name": "Sindhubhairavi",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/sindhubhairavi",
+   "also_known_as": [
+    "Sindhubhairavi",
+    "Sindhubhairavi raga",
+    "Sindhubhairavi ragam"
+   ],
+   "kind": "bhashanga",
+   "parent": "Janya of Melakarta 8 Hanumatodi (Todi); in Hindustani music maps to Asavari thaat",
+   "arohanam": "S R1 G2 M1 P D1 N2 S",
+   "avarohanam": "S N2 D1 P M1 G2 R1 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R1",
+     "G2",
+     "M1",
+     "P",
+     "D1",
+     "N2"
+    ],
+    "used_in_phrases": [
+     "R2",
+     "G3",
+     "M2",
+     "D2",
+     "N3"
+    ]
+   },
+   "scale_positions": [
+    0,
+    1,
+    3,
+    5,
+    7,
+    8,
+    10
+   ],
+   "phrase_positions": [
+    2,
+    4,
+    6,
+    9,
+    11
+   ],
+   "how_to_hear": "The soulful raaga that closes concerts, Ilaiyaraaja's 'Naan Oru Sindhu' (Sindhu Bhairavi); tender pathos, bhajan-like devotion.",
+   "confused_with": "Not to be confused with Sindhi Bhairavi, Sindh, Sindhura, Sindhura Bhairavi",
+   "jeeva_swaras": "Gandhara (G) and Dhaivata (D) are the identity/emphasis notes (the sources label them vadi/samvadi rather than jeeva): D noteworthy in the arohana, G in the avarohana.",
+   "nyasa_swaras": "Panchama (P) is the named nyasa svara (Shadja is an implied universal landing).",
+   "songs": [
+    "Venkatachala Nilayam, Purandara Dasa",
+    "Thillana, Lalgudi Jayaraman",
+    "Karunai Deivame, Madurai Srinivasan"
+   ],
+   "film_songs": [
+    "Kaatrinile Varum Geetham, M.S. Subbulakshmi (1945)",
+    "Sindhu Bhairavi-based songs in Muthu, Kandukondain Kandukondain"
+   ]
+  },
+  {
+   "name": "Suraṭi",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/surati",
+   "also_known_as": [
+    "Surati",
+    "Surati raga",
+    "Surati ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "28 Harikambhoji",
+   "arohanam": "S R2 M1 P N2 D2 N2 S",
+   "avarohanam": "S N2 D2 P M1 G3 P M1 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The auspicious 'mangalam' raaga sung to bless the close of a concert, heard in Tyagaraja's 'Geetarthamu'; warm and reassuring.",
+   "confused_with": "Kedaragaula (Kedara Gowlai)",
+   "jeeva_swaras": "Panchama (P), Nishada (N), Rishabha (R)",
+   "nyasa_swaras": "Rishabha (R)",
+   "songs": [
+    "Geetarthamu (Tyagaraja)",
+    "Angarakam Ashrayamyaham / Navagraha kriti (Muthuswami Dikshitar)",
+    "Sri Venkatesa Girisham (Muthuswami Dikshitar)"
+   ],
+   "film_songs": [
+    "Alarshara Parithaapam, Swathi Thirunal (Malayalam), composer M. B. Sreenivasan, sung by K. J. Yesudas & B. Arundhathi"
+   ]
+  },
+  {
+   "name": "Sāma",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/sama",
+   "also_known_as": [
+    "Sama",
+    "Sama raga",
+    "Sama ragam"
+   ],
+   "kind": "shadava (six-note)",
+   "parent": "28 Harikambhoji",
+   "arohanam": "S R2 M1 P D2 S",
+   "avarohanam": "S D2 P M1 G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The serene, meditative raaga of 'Manasa Sancharare': plain, unhurried, almost ornament-free phrases that settle the mind.",
+   "confused_with": "Arabhi (shares nearly the same notes; differs mainly in the nyasa swara, Sama rests on gandhara)",
+   "jeeva_swaras": "Madhyama (M1), Dhaivata (D2) and Gandhara (G3) are the ragachaya (identity) svaras; the soft rendering of Ma and an elongated Gandhara are Sama's speciality.",
+   "nyasa_swaras": "Gandhara (G3) is the classic resting note that evokes Sama (distinguishing it from Arabhi); darbar.org additionally lists Rishabha (R2) and Panchama (P).",
+   "songs": [
+    "Annapurne Vishalakshi (Muthuswami Dikshitar)",
+    "Shantamu Leka (Tyagaraja)",
+    "Narayana (Papanasam Sivan)"
+   ],
+   "film_songs": []
+  },
+  {
+   "name": "Sāvēri",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/saveri",
+   "also_known_as": [
+    "Saveri",
+    "Saveri raga",
+    "Saveri ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Janya of 15th melakarta Mayamalavagowla",
+   "arohanam": "S R1 M1 P D1 S",
+   "avarohanam": "S N3 D1 P M1 G3 R1 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R1",
+     "G3",
+     "M1",
+     "P",
+     "D1",
+     "N3"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    4,
+    5,
+    7,
+    8,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "A raaga of compassionate pleading (karuna), Dikshitar's 'Sri Rajagopala'; listen for its weighty, plaintive dips on ri and dha.",
+   "confused_with": "Karnataka Shuddha Saveri and Malahari (share scale material)",
+   "jeeva_swaras": "Ri and Dha (R1, D1).",
+   "nyasa_swaras": "Ma, Pa, Dha (M1, P, D1).",
+   "songs": [
+    "Sankari Sankuru (Shyama Sastri)",
+    "Raama Baana (Tyagaraja)",
+    "Bhavayaami Raghuraamam (Swathi Thirunal)"
+   ],
+   "film_songs": []
+  },
+  {
+   "name": "Tōḍi",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/todi",
+   "also_known_as": [
+    "Todi",
+    "Todi raga",
+    "Todi ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "8th melakarta (Hanumatodi is itself the janaka/melakarta raga)",
+   "arohanam": "S R1 G2 M1 P D1 N2 S",
+   "avarohanam": "S N2 D1 P M1 G2 R1 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R1",
+     "G2",
+     "M1",
+     "P",
+     "D1",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    3,
+    5,
+    7,
+    8,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The towering raaga of Oothukkadu's 'Thaaye Yashoda': vast and majestic, heavy with deep winding gamaka (oscillation).",
+   "confused_with": "Not Hindustani Todi (= Carnatic Shubhapantuvarali); Carnatic Todi's Hindustani equivalent is Bhairavi thaat",
+   "jeeva_swaras": "G, M, D (per karnatik.com)",
+   "nyasa_swaras": "G, M, P, D, N (per karnatik.com)",
+   "songs": [
+    "Thaye Yashoda (Oothukkadu Venkata Kavi)",
+    "Rave Himagiri Kumari (Shyama Sastri)",
+    "Shri Krishnam Bhaja Manasa (Muthuswami Dikshitar)"
+   ],
+   "film_songs": [
+    "Naadamaya Ee Lokavella (Jeevana Chaitra, 1992)",
+    "Ellam Sivan Seyal (Sivakavi, 1943)"
+   ]
+  },
+  {
+   "name": "Varāḷi",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/varali",
+   "also_known_as": [
+    "Varali",
+    "Varali raga",
+    "Varali ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Janya of the 39th melakarta, Jhalavarali (Jhālavarāḷi)",
+   "arohanam": "S G1 R1 G1 M2 P D1 N3 S",
+   "avarohanam": "S N3 D1 P M2 G1 R1 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R1",
+     "G1",
+     "M2",
+     "P",
+     "D1",
+     "N3"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    2,
+    6,
+    7,
+    8,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "A mystic, austere raaga, Dikshitar's 'Mamava Meenakshi'; listen for its stark, plaintive phrases evoking detachment (vairagya).",
+   "confused_with": "Pantuvarali (differs only in gandharam), Subhapantuvarali (uses sadharana gandharam), Vijayasree (lacks dhaivatham), Jaganmohana",
+   "jeeva_swaras": "Gandharam (G1), Madhyamam (M2), and Nishadam (N3), rendered with characteristic gamaka",
+   "nyasa_swaras": "Shadjam (S), listed as the graha/amsa/nyasa swara",
+   "songs": [
+    "Kanakana Ruchira, Tyagaraja (Pancharatna kriti)",
+    "Mamava Meenakshi, Muthuswami Dikshitar",
+    "Karunajooduvamma, Syama Sastri"
+   ],
+   "film_songs": [
+    "ANavattAl avar seyyum (kannigA), per Karnatik.com",
+    "manaivi amaivadellAm (manmaddalIlai), per Karnatik.com"
+   ]
+  },
+  {
+   "name": "Yadukula kāṁbōji",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/yadukula-kamboji",
+   "also_known_as": [
+    "Yadukula kamboji",
+    "Yadukula kamboji raga",
+    "Yadukula kamboji ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "28 Harikambhoji",
+   "arohanam": "S R2 M1 P D2 S",
+   "avarohanam": "S N2 D2 P M1 G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The gentle, serene raaga of Tyagaraja's 'Hecharikaga Rara' and Dikshitar's Saturn kriti 'Divakara Tanujam': soft, plaintive vakra phrases.",
+   "confused_with": "Shuddha Saveri (symmetric pentatonic, same arohana notes); Kedaragaula (kaisiki nishadam replaces D2 in ascent)",
+   "jeeva_swaras": "G3 and N2 (occur only in the avarohana yet impart the raga's character); R2 (oscillated) with the signature S R M movement is central, and M is dwelt upon.",
+   "nyasa_swaras": "P and S are the principal resting notes; the rakti phrase S P D S (and S S P D S in the mandra sthayi) is a special landing prayoga.",
+   "songs": [
+    "Hecharikaga Rara - Tyagaraja",
+    "Kamakshi Padayugame - Shyama Shastri",
+    "Divakara Tanujam - Muthuswami Dikshitar"
+   ],
+   "film_songs": [
+    "Kuluvalilae (Muthu)",
+    "Kaasikku Pogum Sanyasi (Chandrodhayam)"
+   ]
+  },
+  {
+   "name": "Ānandabhairavi",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/anandabhairavi",
+   "also_known_as": [
+    "Anandabhairavi",
+    "Anandabhairavi raga",
+    "Anandabhairavi ragam"
+   ],
+   "kind": "bhashanga",
+   "parent": "20 Natabhairavi",
+   "arohanam": "S G2 R2 G2 M1 P D2 P S",
+   "avarohanam": "S N2 D2 P M1 G2 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G2",
+     "M1",
+     "P",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": [
+     "G3",
+     "D1",
+     "N3"
+    ]
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [
+    4,
+    8,
+    11
+   ],
+   "how_to_hear": "Syama Sastri's favourite soothing raaga, his 'O Jagadamba' to Goddess Kamakshi; a folk and devotional staple said to calm the mind.",
+   "confused_with": "Reethigowla and Huseni (allied ragas)",
+   "jeeva_swaras": "Gandhara (sadharana G2) and Madhyama (shuddha M1) are the principal jeeva / life-line swaras; Ga is sung with a stress (nokku), and Panchama is also treated as a pivotal note.",
+   "nyasa_swaras": "Nishada and Shadja are the nyasa (resting) swaras; in alapana a relaxing halt is made on sadharana Ga and Panchama. Kaisiki Nishada (N2) is used but not dwelt upon.",
+   "songs": [
+    "Marivere Gati – Syama Sastri",
+    "Neeke Teliyaka – Tyagaraja",
+    "Manasa Guruguha – Muthuswami Dikshitar"
+   ],
+   "film_songs": [
+    "Poi Vaa Magale – Karnan (1964)",
+    "Sabari Malayil Vanna – Swami Ayyappan (1975)"
+   ]
+  },
+  {
+   "name": "Śankarābharaṇaṁ",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/sankarabharanam",
+   "also_known_as": [
+    "Sankarabharanam",
+    "Sankarabharanam raga",
+    "Sankarabharanam ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "29th melakarta – Dhīra Śankarābharaṇam (it is itself the mela / janaka raga)",
+   "arohanam": "S R2 G3 M1 P D2 N3 S",
+   "avarohanam": "S N3 D2 P M1 G3 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G3",
+     "M1",
+     "P",
+     "D2",
+     "N3"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The Carnatic major scale (do-re-mi), raaga of the film Sankarabharanam's 'Omkara Nadanu'; grand, symmetrical, fully resolved.",
+   "confused_with": "",
+   "jeeva_swaras": "G3 (gandhara) cited as the jeeva/life note; amsa & nyasa given as G, P, S",
+   "nyasa_swaras": "G3, P, S",
+   "songs": [
+    "Akshayalinga Vibho (Muthuswami Dikshitar)",
+    "Swararaga Sudharasa (Tyagaraja)",
+    "Saroja Dala Netri (Syama Sastri)"
+   ],
+   "film_songs": []
+  },
+  {
+   "name": "Śrī",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/sri",
+   "also_known_as": [
+    "Sri",
+    "Sri raga",
+    "Sri ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "22nd melakarta (Kharaharapriya), janya",
+   "arohanam": "S R2 M1 P N2 S",
+   "avarohanam": "S N2 P D2 N2 P M1 R2 G2 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G2",
+     "M1",
+     "P",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The auspicious raaga that closes Tyagaraja's Pancharatna 'Endaro Mahanubhavulu': listen for its zig-zag (vakra) descending phrases.",
+   "confused_with": "Madhyamavati (shares the S R2 M1 P N2 S pentatonic ascent). Note: 'Sri/Shree' is also an alternate name for Kharaharapriya itself; unrelated to Hindustani raga Shree",
+   "jeeva_swaras": "Rishabha (R2, chatushruti), described as the raga's life blood and both the jiva and nyasa svara.",
+   "nyasa_swaras": "Rishabha (R2), the nyasa (landing/resting) svara (the same jiva-and-nyasa statement).",
+   "songs": [
+    "Endaro Mahānubhāvulu, Tyagaraja (Pancharatna kriti)",
+    "Śrī Varalakshmī Namastubhyam, Muthuswami Dikshitar",
+    "Karuṇā Jūḍu Ninnu, Shyama Shastri"
+   ],
+   "film_songs": [
+    "Theendai Mei Theendai, En Swasa Kaatre (1999), A. R. Rahman"
+   ]
+  },
+  {
+   "name": "Śrīranjani",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/sriranjani",
+   "also_known_as": [
+    "Sriranjani",
+    "Sriranjani raga",
+    "Sriranjani ragam"
+   ],
+   "kind": "shadava (six-note)",
+   "parent": "22nd melakarta (Kharaharapriya), janya",
+   "arohanam": "S R2 G2 M1 D2 N2 S",
+   "avarohanam": "S N2 D2 M1 G2 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G2",
+     "M1",
+     "D2",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    5,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The bright, cheerful six-note raaga of Tyagaraja's 'Marubalka': pleasant and uplifting, easily mistaken for its cousin Abhogi.",
+   "confused_with": "Abhogi (Śrīranjani is essentially Abhogi + N2; treated as 'twin ragas'); also Jayamanohari",
+   "jeeva_swaras": "R2, G2, D2, N2 are the jeeva/life swaras; of these, Gandhara (G2) and Nishada (N2) are the identity-bearing kampita notes that carry the raga's svarupa.",
+   "nyasa_swaras": "M1 (madhyama), the nyasa (resting/landing) swara.",
+   "songs": [
+    "Marubalka, Tyagaraja",
+    "Śrī Dum Durge, Muthuswami Dikshitar",
+    "Gajavadana, Papanasam Sivan"
+   ],
+   "film_songs": [
+    "Naathamenum Kovililey, Manmadha Leelai",
+    "Naatham Elunthathadi, Gopura Vasalile"
+   ]
+  },
+  {
+   "name": "Ṣanmukhapriya",
+   "tradition": "carnatic",
+   "url": "https://twelveswaras.com/raaga/sanmukhapriya",
+   "also_known_as": [
+    "Sanmukhapriya",
+    "Sanmukhapriya raga",
+    "Sanmukhapriya ragam"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "56th melakarta (Shanmukhapriya itself); called Chāmaram in the Dikshitar school",
+   "arohanam": "S R2 G2 M2 P D1 N2 S",
+   "avarohanam": "S N2 D1 P M2 G2 R2 S",
+   "notes": {
+    "scale": [
+     "S",
+     "R2",
+     "G2",
+     "M2",
+     "P",
+     "D1",
+     "N2"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    6,
+    7,
+    8,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "The raaga of 'Ooru Vittu Ooru Vandhu' (Karakattakkaran): majestic yet aching, with a dark, minor-key intensity.",
+   "confused_with": "Simhendramadhyamam (melakarta 57), nearly identical scale, differing only in the nishadam (Shanmukhapriya uses N2 / kaisiki nishadam; Simhendramadhyamam uses N3)",
+   "jeeva_swaras": "All the swaras are jīvaswaras (per anuradhamahesh)",
+   "nyasa_swaras": "R, P and N",
+   "songs": [
+    "Siddhi Vinayakam, Muthuswami Dikshitar",
+    "Vaddane Varu, Tyagaraja",
+    "Marivere Dikkevarayya, Patnam Subramania Iyer"
+   ],
+   "film_songs": [
+    "Marainthirunthu Paarkkum, Thillana Mohanambal",
+    "Thakita Thadhimi"
+   ]
+  },
+  {
+   "name": "Yaman kalyāṇ",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/yaman-kalyan-hindustani",
+   "also_known_as": [
+    "Yaman kalyan",
+    "Raag Yaman kalyan",
+    "Rag Yaman kalyan"
+   ],
+   "kind": "bhashanga",
+   "parent": "Kalyan",
+   "arohanam": "N. R G M P D N S'",
+   "avarohanam": "S' N D P M G, G m G R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "G",
+     "m",
+     "M",
+     "P",
+     "D",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    6,
+    7,
+    9,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Tivra Ma throughout; the phrase N. R G and the leap to Ni are signatures. Sa and Pa are often skipped in the ascent.",
+   "confused_with": "Bhoop (Kalyan thaat but pentatonic); Yaman-Kalyan (adds shuddh Ma). Carnatic: Kalyāṇi/Mechakalyāṇi.",
+   "vadi": "Ga",
+   "samvadi": "Ni",
+   "pakad": "N. R G, R G, P M G R, S",
+   "time": "first prahar of the night (early evening)"
+  },
+  {
+   "name": "Bhūp",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/bhup-hindustani",
+   "also_known_as": [
+    "Bhup",
+    "Raag Bhup",
+    "Rag Bhup"
+   ],
+   "kind": "audava (five-note)",
+   "parent": "Kalyan",
+   "arohanam": "S R G P D S'",
+   "avarohanam": "S' D P G R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "G",
+     "P",
+     "D"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    7,
+    9
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Pentatonic S R G P D, no Ma or Ni; serene and open.",
+   "confused_with": "Deskar (same notes, different emphasis); Shuddh Kalyan. Carnatic: Mōhanaṁ / Bhoopali.",
+   "vadi": "Ga",
+   "samvadi": "Dha",
+   "pakad": "G R S D. S R G, P G, D P G R S",
+   "time": "first prahar of the night (early evening)"
+  },
+  {
+   "name": "Mālkauns",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/malkauns-hindustani",
+   "also_known_as": [
+    "Malkauns",
+    "Raag Malkauns",
+    "Rag Malkauns"
+   ],
+   "kind": "audava (five-note)",
+   "parent": "Bhairavi",
+   "arohanam": "S g m d n S'",
+   "avarohanam": "S' n d m g S",
+   "notes": {
+    "scale": [
+     "S",
+     "g",
+     "m",
+     "d",
+     "n"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    3,
+    5,
+    8,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Komal ga, dha, ni with shuddh ma; no Re or Pa. Deep, meditative.",
+   "confused_with": "Chandrakauns (shuddh Ni); Bageshri (has Re, Pa). Carnatic: Hindōḷaṁ.",
+   "vadi": "Ma",
+   "samvadi": "Sa",
+   "pakad": "m g m d, n d, m g S",
+   "time": "late night (third prahar)"
+  },
+  {
+   "name": "Bhairav",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/bhairav-hindustani",
+   "also_known_as": [
+    "Bhairav",
+    "Raag Bhairav",
+    "Rag Bhairav"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Bhairav",
+   "arohanam": "S r G m P d N S'",
+   "avarohanam": "S' N d P m G r S",
+   "notes": {
+    "scale": [
+     "S",
+     "r",
+     "G",
+     "m",
+     "P",
+     "d",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    4,
+    5,
+    7,
+    8,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Komal re and komal dha, taken with a slow andolan (oscillation); rest shuddh. Grave morning raaga.",
+   "confused_with": "Ahir Bhairav; Kalingda; Ramkali. Carnatic: Māyāmāḷavagauḷa.",
+   "vadi": "Dha",
+   "samvadi": "Re",
+   "pakad": "S r S, G m P, d P, G m r S",
+   "time": "dawn / early morning"
+  },
+  {
+   "name": "Dēś",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/des-hindustani",
+   "also_known_as": [
+    "Des",
+    "Raag Des",
+    "Rag Des"
+   ],
+   "kind": "bhashanga",
+   "parent": "Khamaj",
+   "arohanam": "S R m P N S'",
+   "avarohanam": "S' n D P m G R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "G",
+     "m",
+     "P",
+     "D",
+     "n",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Shuddh Ni ascending, komal Ni descending; pentatonic-ish rise, fuller fall. Bright, romantic.",
+   "confused_with": "Tilak Kamod, Sorath, Jaijaiwanti; Gaud Malhar. Carnatic-adjacent: Kamās.",
+   "vadi": "Re",
+   "samvadi": "Pa",
+   "pakad": "R m P, D m G R, m G R, n. S R",
+   "time": "second prahar of the night; monsoon"
+  },
+  {
+   "name": "Bihāg",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/bihag-hindustani",
+   "also_known_as": [
+    "Bihag",
+    "Raag Bihag",
+    "Rag Bihag"
+   ],
+   "kind": "bhashanga",
+   "parent": "Bilawal (Bhatkhande/Wikipedia); Kalyan per tanarang",
+   "arohanam": "N. S G m P N S'",
+   "avarohanam": "S' N D P M P G m G R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "G",
+     "m",
+     "M",
+     "P",
+     "D",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    6,
+    7,
+    9,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Sweet romantic night raga on shuddh notes; the giveaway is P M G m G, a fleeting tivra Ma resolving through shuddh Ma to Ga, over a Ga-Ni frame; Re and Dha only in meend.",
+   "confused_with": "Maru Bihag (tivra-Ma dominant); Bihagda; Nand. No clean Carnatic equivalent.",
+   "vadi": "Ga",
+   "samvadi": "Ni",
+   "pakad": "N. S G, m G, P M G m G, R S",
+   "time": "second prahar of the night (~9pm-12am)"
+  },
+  {
+   "name": "Bāgēśrī",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/bagesri-hindustani",
+   "also_known_as": [
+    "Bagesri",
+    "Raag Bagesri",
+    "Rag Bagesri"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Kafi",
+   "arohanam": "n. S g m D n S'",
+   "avarohanam": "S' n D m P D m g R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "g",
+     "m",
+     "P",
+     "D",
+     "n"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Serene late-night raga; the Sa-to-Ma leap (n. S m) and the falling m g R S with komal ga/ni over a strong Ma; Pa skipped or barely touched in ascent.",
+   "confused_with": "Bhimpalasi (Pa in aroha); Rageshri; Jaijaiwanti. Carnatic: Bageshri.",
+   "vadi": "Ma",
+   "samvadi": "Sa",
+   "pakad": "n. S m, g m D, m g R S",
+   "time": "second prahar of the night (~9pm-12am)"
+  },
+  {
+   "name": "Darbāri",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/darbari-hindustani",
+   "also_known_as": [
+    "Darbari",
+    "Raag Darbari",
+    "Rag Darbari"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Asavari",
+   "arohanam": "S R g m P, d n S'",
+   "avarohanam": "S' d n P m P g m R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "g",
+     "m",
+     "P",
+     "d",
+     "n"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    8,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Grave, majestic midnight raga; unmistakable slow wide andolan on komal Ga and komal Dha, low-register Re-Pa emphasis.",
+   "confused_with": "Adana (same swaras, faster, upper-register); Jaunpuri; Asavari. Carnatic: a Natabhairavi janya.",
+   "vadi": "Re",
+   "samvadi": "Pa",
+   "pakad": "R g R S, m P, d n P, m P g m R S",
+   "time": "third prahar of the night (midnight)"
+  },
+  {
+   "name": "Kēdār",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/kedar-hindustani",
+   "also_known_as": [
+    "Kedar",
+    "Raag Kedar",
+    "Rag Kedar"
+   ],
+   "kind": "bhashanga",
+   "parent": "Kalyan",
+   "arohanam": "S m, m P, D P N D, S'",
+   "avarohanam": "S' N D P, m P D P M, m G R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "G",
+     "m",
+     "M",
+     "P",
+     "D",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    6,
+    7,
+    9,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Opening S-m leap, both madhyams (shuddh Ma prominent, tivra Ma as ornament), Sa-Ma-Sa resting; Re and Ga dropped in ascent.",
+   "confused_with": "Hameer; Kamod; Chhayanat; Maru Bihag. Carnatic: Hamir Kalyani.",
+   "vadi": "Ma",
+   "samvadi": "Sa",
+   "pakad": "S m, m P, D P M, P m, R S",
+   "time": "first prahar of the night (~6-9pm)"
+  },
+  {
+   "name": "Khamāj",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/khamaj-hindustani",
+   "also_known_as": [
+    "Khamaj",
+    "Raag Khamaj",
+    "Rag Khamaj"
+   ],
+   "kind": "bhashanga",
+   "parent": "Khamaj",
+   "arohanam": "S G m P D N S'",
+   "avarohanam": "S' n D P m G R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "G",
+     "m",
+     "P",
+     "D",
+     "n",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Light, romantic; the signature is the two nishads: shuddh Ni climbing, komal ni falling, with Re dropped on the way up.",
+   "confused_with": "Des; Jhinjhoti; Tilak Kamod. Carnatic: Khamās.",
+   "vadi": "Ga",
+   "samvadi": "Ni",
+   "pakad": "m P D m G, n D P, m G R S",
+   "time": "second prahar of the night (~9pm-12am)"
+  },
+  {
+   "name": "Mārvā",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/marva-hindustani",
+   "also_known_as": [
+    "Marva",
+    "Raag Marva",
+    "Rag Marva"
+   ],
+   "kind": "shadava (six-note)",
+   "parent": "Marwa",
+   "arohanam": "N. D. r G M D N r' S'",
+   "avarohanam": "r' N D M G r S; N. D. r S",
+   "notes": {
+    "scale": [
+     "S",
+     "r",
+     "G",
+     "M",
+     "D",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    4,
+    6,
+    9,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Pancham omitted and Sa barely touched, so it floats unresolved on komal Re and shuddh Dha with a mandra-Dha to komal-Re leap; yearning dusk mood.",
+   "confused_with": "Puriya (same thaat, Ga-Ni emphasis); Sohni; Bhatiyar. Carnatic scale ~ Gamanashrama minus Pa.",
+   "vadi": "komal Re",
+   "samvadi": "Dha",
+   "pakad": "D. r; D M G r; r G M G r S",
+   "time": "sunset / sandhi-prakash (dusk)"
+  },
+  {
+   "name": "Puriyā dhanaśrī",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/puriya-dhanasri-hindustani",
+   "also_known_as": [
+    "Puriya dhanasri",
+    "Raag Puriya dhanasri",
+    "Rag Puriya dhanasri"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Poorvi",
+   "arohanam": "N. r G M P; M d N S'",
+   "avarohanam": "S' N d P M G M r G r S",
+   "notes": {
+    "scale": [
+     "S",
+     "r",
+     "G",
+     "M",
+     "P",
+     "d",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    4,
+    6,
+    7,
+    8,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Purvi-family raga using ONLY tivra Ma, with komal Re/Dha and a Pancham-centred M d P ascent; plaintive after-sunset mood.",
+   "confused_with": "Puriya (Marwa thaat, no Pa); Purvi (both madhyams); Gujari Todi. Carnatic: Pantuvarali/Kamavardhini.",
+   "vadi": "Pa",
+   "samvadi": "komal Re (tanarang: Sa)",
+   "pakad": "N. r G; M d P; M G M r G; r S",
+   "time": "after sunset / early evening (sandhi-prakash)"
+  },
+  {
+   "name": "Lalit",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/lalit-hindustani",
+   "also_known_as": [
+    "Lalit",
+    "Raag Lalit",
+    "Rag Lalit"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Poorvi",
+   "arohanam": "N. r G m M d N S'",
+   "avarohanam": "S' N d M m G; m G r S",
+   "notes": {
+    "scale": [
+     "S",
+     "r",
+     "G",
+     "m",
+     "M",
+     "d",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    4,
+    5,
+    6,
+    8,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Rare raga juxtaposing shuddh Ma and tivra Ma directly (m-M) while omitting Pa entirely, over komal Re/Dha; serene pre-dawn mood. Gharanas differ on shuddh vs komal Dha.",
+   "confused_with": "Lalit-Gauri; Sohni. Carnatic Lalita (namesake, but only shuddh Ma, no tivra Ma).",
+   "vadi": "shuddh Ma",
+   "samvadi": "Sa",
+   "pakad": "N. r G m; d M d; m G r S",
+   "time": "pre-dawn / last prahar of the night"
+  },
+  {
+   "name": "Basant",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/basant-hindustani",
+   "also_known_as": [
+    "Basant",
+    "Raag Basant",
+    "Rag Basant"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Poorvi",
+   "arohanam": "S G M d N S'",
+   "avarohanam": "S' N d P M G; M G r S",
+   "notes": {
+    "scale": [
+     "S",
+     "r",
+     "G",
+     "M",
+     "P",
+     "d",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    4,
+    6,
+    7,
+    8,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Spring raga; sparse vakra ascent that skips Re and Pa and leans on taar Sa, using tivra Ma with komal Re/Dha and the M d N d P phrase.",
+   "confused_with": "Paraj (closest cousin); Purvi; Puriya Dhanashri; Basant Bahar. Shares the Kamavardhini scale.",
+   "vadi": "Sa (esp. taar Sa)",
+   "samvadi": "Pa",
+   "pakad": "M d N d P; M G M G r S",
+   "time": "spring season; also second prahar of the night"
+  },
+  {
+   "name": "Śrī",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/sri-hindustani",
+   "also_known_as": [
+    "Sri",
+    "Raag Sri",
+    "Rag Sri"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Poorvi",
+   "arohanam": "S r M P N S'",
+   "avarohanam": "S' N d P M G r S",
+   "notes": {
+    "scale": [
+     "S",
+     "r",
+     "G",
+     "M",
+     "P",
+     "d",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    4,
+    6,
+    7,
+    8,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Built on the oscillating komal-Re to Pancham meend (Re-Pa sangati), skeletal ascent skipping Ga and Dha; austere devotional dusk raga. UNRELATED to the Carnatic ragam of the same name.",
+   "confused_with": "Puriya Dhanashri; Purvi; Basant; Gauri. NOT the Carnatic Sri (a Kharaharapriya janya); scale ~ Kamavardhini.",
+   "vadi": "komal Re",
+   "samvadi": "Pa",
+   "pakad": "N. r r P; P M G r; r S",
+   "time": "late afternoon into sunset (fourth prahar of day)"
+  },
+  {
+   "name": "Ahira bhairav",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/ahira-bhairav-hindustani",
+   "also_known_as": [
+    "Ahira bhairav",
+    "Raag Ahira bhairav",
+    "Rag Ahira bhairav"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Bhairav",
+   "arohanam": "S r G m P D n S'",
+   "avarohanam": "S' n D P m G r S",
+   "notes": {
+    "scale": [
+     "S",
+     "r",
+     "G",
+     "m",
+     "P",
+     "D",
+     "n"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    4,
+    5,
+    7,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Bhairav-like lower tetrachord with oscillating komal re, but a soft komal ni on top; komal re + komal ni, else shuddh, is the giveaway. Vadi/samvadi disputed (Ma-Sa vs Dha-Re).",
+   "confused_with": "Bhairav; Nat Bhairav; Bairagi Bhairav. Carnatic: Chakravakam (exact match).",
+   "vadi": "Ma (disputed)",
+   "samvadi": "Sa (disputed)",
+   "pakad": "S r G m, m G r S, .n .D .n r S",
+   "time": "early morning (first prahar)"
+  },
+  {
+   "name": "Alahaiyā bilāval",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/alahaiya-bilaval-hindustani",
+   "also_known_as": [
+    "Alahaiya bilaval",
+    "Raag Alahaiya bilaval",
+    "Rag Alahaiya bilaval"
+   ],
+   "kind": "bhashanga",
+   "parent": "Bilaval",
+   "arohanam": "S R G P D N S'",
+   "avarohanam": "S' N D P D n D P m G R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "G",
+     "m",
+     "P",
+     "D",
+     "n",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Bright shuddh Bilaval (major scale) whose single tell is the komal ni tucked between two dhaivats descending (D n D P); ascent skips madhyam.",
+   "confused_with": "plain Bilaval (no komal ni); Deshkar; Shankara. Carnatic scale: Śankarābharaṇaṁ.",
+   "vadi": "Dha",
+   "samvadi": "Ga",
+   "pakad": "G R G P, D n D P, m G R, G P D N S'",
+   "time": "morning (first prahar)"
+  },
+  {
+   "name": "Tōḍī",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/todi-hindustani",
+   "also_known_as": [
+    "Todi",
+    "Raag Todi",
+    "Rag Todi"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Todi",
+   "arohanam": "S r g M d N S'",
+   "avarohanam": "S' N d P M g r S",
+   "notes": {
+    "scale": [
+     "S",
+     "r",
+     "g",
+     "M",
+     "P",
+     "d",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    3,
+    6,
+    7,
+    8,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Grave, devotional late-morning raga: komal re, ati-komal ga, tivra ma, komal dha, shuddh ni. The tivra-ma + shuddh-ni signature. NOT the Carnatic raga also called Todi.",
+   "confused_with": "Gujari Todi (no Pa); Multani; Bilaskhani Todi (shuddh ma + komal ni). Carnatic: Shubhapantuvarali.",
+   "vadi": "komal Dha",
+   "samvadi": "komal Ga",
+   "pakad": ".d .N S r g, M g r g, r S",
+   "time": "late morning (second prahar)"
+  },
+  {
+   "name": "Bilāsakhānī tōḍī",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/bilasakhani-todi-hindustani",
+   "also_known_as": [
+    "Bilasakhani todi",
+    "Raag Bilasakhani todi",
+    "Rag Bilasakhani todi"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Bhairavi",
+   "arohanam": "S r g P d S'",
+   "avarohanam": "S' r' n d P, d n d m g r, r g r S",
+   "notes": {
+    "scale": [
+     "S",
+     "r",
+     "g",
+     "m",
+     "P",
+     "d",
+     "n"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    3,
+    5,
+    7,
+    8,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Plaintive Bhairavi-scale cousin of Todi (komal re, ga, dha, ni; shuddh ma) with a pentatonic S r g P d ascent and Todi-style meend on r-g. Shuddh ma + komal ni distinguish it from Miyan ki Todi.",
+   "confused_with": "Bhairavi; Komal Rishabh Asavari; Miyan ki Todi. Carnatic: Hanumatōḍi (the raga Carnatic calls 'Todi').",
+   "vadi": "komal Dha",
+   "samvadi": "komal Ga",
+   "pakad": "S r g P, d m g r, g r g r S, r .n .d S",
+   "time": "morning (second prahar)"
+  },
+  {
+   "name": "Bairāgi",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/bairagi-hindustani",
+   "also_known_as": [
+    "Bairagi",
+    "Raag Bairagi",
+    "Rag Bairagi"
+   ],
+   "kind": "audava (five-note)",
+   "parent": "Bhairav",
+   "arohanam": "S r m P n S'",
+   "avarohanam": "S' n P m r S",
+   "notes": {
+    "scale": [
+     "S",
+     "r",
+     "m",
+     "P",
+     "n"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    1,
+    5,
+    7,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Austere modern pentatonic (attributed to Pt. Ravi Shankar): S, komal re, shuddh ma, Pa, komal ni; no Ga, no Dha; Ma as vadi.",
+   "confused_with": "Bairagi Bhairav variants (add komal dha). Carnatic: Revati (same five notes).",
+   "vadi": "Ma",
+   "samvadi": "Sa",
+   "pakad": "m P n P m r, r P m r S, .n S r S",
+   "time": "early morning (first prahar)"
+  },
+  {
+   "name": "Hamsadhvāni",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/hamsadhvani-hindustani",
+   "also_known_as": [
+    "Hamsadhvani",
+    "Raag Hamsadhvani",
+    "Rag Hamsadhvani"
+   ],
+   "kind": "audava (five-note)",
+   "parent": "Bilawal",
+   "arohanam": "S R G P N S'",
+   "avarohanam": "S' N P G R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "G",
+     "P",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    7,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Bright cheerful pentatonic, only shuddh notes, NO Ma or Dha; the G-P-N leaps and N-P-G-R-S descent are the giveaway. Vadi/samvadi cited variably.",
+   "confused_with": "Shankara (adds Dha). Carnatic: Hamsadhwani (same S R G P N).",
+   "vadi": "Sa (some: Pa)",
+   "samvadi": "Pa (some: Re)",
+   "pakad": "G P N S', N P G R S, .N R G P",
+   "time": "late evening / early night"
+  },
+  {
+   "name": "Jōg",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/jog-hindustani",
+   "also_known_as": [
+    "Jog",
+    "Raag Jog",
+    "Rag Jog"
+   ],
+   "kind": "shadava (six-note)",
+   "parent": "Kafi",
+   "arohanam": "S G m P n S'",
+   "avarohanam": "S' n P m g S",
+   "notes": {
+    "scale": [
+     "S",
+     "g",
+     "G",
+     "m",
+     "P",
+     "n"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    3,
+    4,
+    5,
+    7,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Two-gandhar oscillation: shuddh Ga in ascent, komal ga in descent resolving through the signature M g S zigzag; no Re, no Dha, komal Ni.",
+   "confused_with": "Dhani (only komal ga); Jog Kauns. Carnatic near-equivalent ~ Nāṭa.",
+   "vadi": "Ma",
+   "samvadi": "Sa",
+   "pakad": "G M P n P, P n P M G M, M g S",
+   "time": "night (second prahar)"
+  },
+  {
+   "name": "Ābhōgī",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/abhogi-hindustani",
+   "also_known_as": [
+    "Abhogi",
+    "Raag Abhogi",
+    "Rag Abhogi"
+   ],
+   "kind": "audava (five-note)",
+   "parent": "Kafi",
+   "arohanam": "S R g m D S'",
+   "avarohanam": "S' D m g R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "g",
+     "m",
+     "D"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    5,
+    9
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Gentle introspective pentatonic with komal ga and shuddh Ma but NO Pa and NO Ni; komal ga approached vakra from above (m-g).",
+   "confused_with": "Bhimpalasi/Dhani phrasing (but no Pa/Ni here). Carnatic: Abhogi (identical S R2 G2 M1 D2).",
+   "vadi": "Ma",
+   "samvadi": "Sa",
+   "pakad": "S R g M, g M D S', D M g R S",
+   "time": "night (second prahar)"
+  },
+  {
+   "name": "Madhukauns",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/madhukauns-hindustani",
+   "also_known_as": [
+    "Madhukauns",
+    "Raag Madhukauns",
+    "Rag Madhukauns"
+   ],
+   "kind": "audava (five-note)",
+   "parent": "Kafi (label inconsistent with tivra Ma)",
+   "arohanam": "S g M P n S'",
+   "avarohanam": "S' n P M g S",
+   "notes": {
+    "scale": [
+     "S",
+     "g",
+     "M",
+     "P",
+     "n"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    3,
+    6,
+    7,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Malkauns re-cast with tivra Ma and Pa in place of shuddh Ma and komal Dha; the rare tivra-Ma + komal-ni pairing. Some renditions use shuddh Ma instead, so the Ma is disputed.",
+   "confused_with": "Malkauns (shuddh Ma, komal Dha, no Pa). Carnatic near-equivalent ~ Samudrapriya.",
+   "vadi": "Pa",
+   "samvadi": "Sa",
+   "pakad": "S g M P, M P g M g S, g M P n S'",
+   "time": "night (second prahar)"
+  },
+  {
+   "name": "Madhuvanti",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/madhuvanti-hindustani",
+   "also_known_as": [
+    "Madhuvanti",
+    "Raag Madhuvanti",
+    "Rag Madhuvanti"
+   ],
+   "kind": "sampurna (seven-note)",
+   "parent": "Todi (by convention; uses shuddh Re/Dha)",
+   "arohanam": "N. S g M P N S'",
+   "avarohanam": "S' N D P M g R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "g",
+     "M",
+     "P",
+     "D",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    6,
+    7,
+    9,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Sweet romantic afternoon raga with komal ga and tivra Ma; Re and Dha dropped in ascent, present in descent. Uses shuddh Re/Dha, so it does not truly fit Todi thaat.",
+   "confused_with": "Multani; Bhimpalasi; Patdeep. Carnatic parent: Dharmavati (also a Carnatic raga Madhuvanti).",
+   "vadi": "Pa",
+   "samvadi": "Sa",
+   "pakad": ".N S M g M P, M g S R S",
+   "time": "late afternoon (fourth prahar of day)"
+  },
+  {
+   "name": "Miyān malhār",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/miyan-malhar-hindustani",
+   "also_known_as": [
+    "Miyan malhar",
+    "Raag Miyan malhar",
+    "Rag Miyan malhar"
+   ],
+   "kind": "bhashanga",
+   "parent": "Kafi",
+   "arohanam": "N. S m R P n D N S'",
+   "avarohanam": "S' n D n P m P g m R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "g",
+     "m",
+     "P",
+     "D",
+     "n",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    3,
+    5,
+    7,
+    9,
+    10,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Serious monsoon raga in Kanada ang: the twin-nishad oscillation n D n P and the komal-ga resolution; Dha dropped in descent.",
+   "confused_with": "Megh Malhar; Bahar; Gaud Malhar; Darbari/Adana (Kanada ang). No standard Carnatic equivalent.",
+   "vadi": "Pa",
+   "samvadi": "Sa",
+   "pakad": "S R, R P, g g m R S, n. D N. N. S",
+   "time": "late night (second prahar); monsoon"
+  },
+  {
+   "name": "Gauḍ malhār",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/gaud-malhar-hindustani",
+   "also_known_as": [
+    "Gaud malhar",
+    "Raag Gaud malhar",
+    "Rag Gaud malhar"
+   ],
+   "kind": "bhashanga",
+   "parent": "Bilawal (disputed; Khamaj in some texts)",
+   "arohanam": "S R G m R P, m P D N S'",
+   "avarohanam": "S' n D n P m G R G S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "G",
+     "m",
+     "P",
+     "D",
+     "n",
+     "N"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    7,
+    9,
+    10,
+    11
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Monsoon raga marked by the abrupt Re-to-Pa leap (R P) and the Gaud-ang turn G R G S; shuddh Ni ascending, komal ni descending.",
+   "confused_with": "Miyan Malhar; Shuddh Malhar; Nat Malhar; Durga. No standard Carnatic equivalent.",
+   "vadi": "Ma",
+   "samvadi": "Sa",
+   "pakad": "S R G m, R P, m P D N S', D n P m, G R G S",
+   "time": "late night (second prahar); monsoon"
+  },
+  {
+   "name": "Mārūbihāg",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/marubihag-hindustani",
+   "also_known_as": [
+    "Marubihag",
+    "Raag Marubihag",
+    "Rag Marubihag"
+   ],
+   "kind": "bhashanga",
+   "parent": "Kalyan",
+   "arohanam": "N. S G M P N S'",
+   "avarohanam": "S' N D P M G M G R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "G",
+     "M",
+     "P",
+     "D",
+     "N"
+    ],
+    "used_in_phrases": [
+     "m"
+    ]
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    6,
+    7,
+    9,
+    11
+   ],
+   "phrase_positions": [
+    5
+   ],
+   "how_to_hear": "Romantic Kalyan-Bihag hybrid using tivra Ma in ascent (no Re/Dha) and a shuddh-Ma touch in the descending m G P; vadi/samvadi disputed.",
+   "confused_with": "Bihag (mainly shuddh Ma); Yaman/Kalyan. Carnatic: Behāg (also both madhyams).",
+   "vadi": "Ga (some: Pa)",
+   "samvadi": "Ni (some: Sa)",
+   "pakad": "M G, M G R S, S N. S, m G P, M G M G R S",
+   "time": "night (first-second prahar)"
+  },
+  {
+   "name": "Rāgēśrī",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/ragesri-hindustani",
+   "also_known_as": [
+    "Ragesri",
+    "Raag Ragesri",
+    "Rag Ragesri"
+   ],
+   "kind": "shadava (six-note)",
+   "parent": "Khamaj",
+   "arohanam": "S G m D n S'",
+   "avarohanam": "S' n D m G m R S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "G",
+     "m",
+     "D",
+     "n"
+    ],
+    "used_in_phrases": []
+   },
+   "scale_positions": [
+    0,
+    2,
+    4,
+    5,
+    9,
+    10
+   ],
+   "phrase_positions": [],
+   "how_to_hear": "Light-romantic night raga with no Pa, shuddh Ga and komal Ni; the shuddh Gandhar and the D-G pull separate it from Bageshri (komal Ga).",
+   "confused_with": "Bageshri (komal Ga); Malgunji; Bageshri-Kanada. Carnatic: Bageshri (a confusable, not exact).",
+   "vadi": "Ga",
+   "samvadi": "komal Ni",
+   "pakad": "n. D. n. S, G m R S, G m D n D m, G m R S",
+   "time": "night (second prahar)"
+  },
+  {
+   "name": "Śuddh sāraṅg",
+   "tradition": "hindustani",
+   "url": "https://twelveswaras.com/raaga/suddh-sarang-hindustani",
+   "also_known_as": [
+    "Suddh sarang",
+    "Raag Suddh sarang",
+    "Rag Suddh sarang"
+   ],
+   "kind": "bhashanga",
+   "parent": "Kalyan",
+   "arohanam": "N. S R M P N S'",
+   "avarohanam": "S' N D P M P m R S, N. S",
+   "notes": {
+    "scale": [
+     "S",
+     "R",
+     "m",
+     "M",
+     "P",
+     "D",
+     "N"
+    ],
+    "used_in_phrases": [
+     "n"
+    ]
+   },
+   "scale_positions": [
+    0,
+    2,
+    5,
+    6,
+    7,
+    9,
+    11
+   ],
+   "phrase_positions": [
+    10
+   ],
+   "how_to_hear": "Midday Sarang using BOTH madhyams together, the signature M m R (tivra Ma sliding to shuddh Ma) with no Ga; komal Ni used only occasionally, so its two-nishad status and time vary by gharana.",
+   "confused_with": "Brindavani Sarang (no tivra Ma/Dha); Madhmad Sarang; Gaud Sarang. Carnatic: Brindavana Saranga family (no exact equivalent).",
+   "vadi": "Re",
+   "samvadi": "Pa",
+   "pakad": "N. D. S, N. R S, M m R S, M P N S'",
+   "time": "late morning to midday (second prahar of day)"
+  }
+ ]
+}
