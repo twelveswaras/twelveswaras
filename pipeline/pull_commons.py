@@ -12,14 +12,15 @@ that manifest, ready for training. Folding these contributions into the next mod
 
 Three buckets (a contribution lands in exactly one):
   * TRAIN        rights-attested + in the model's vocabulary + a TRUSTWORTHY label
-                 (verification_status == 'verified', OR label_source == 'model_confirmed',
-                 which is self-verifying: the model already agreed with the contributor).
+                 (verification_status == 'verified'; OR label_source == 'model_confirmed',
+                 which is self-verifying: the model already agreed with the contributor; OR
+                 label_source == 'contributor_declared': the performer named their own raaga).
   * VOCAB_GROWTH rights-attested but the raaga is NOT one of the model's classes. This is a
                  new-raaga request, not a training row: it can't augment a class that does
                  not exist. Held (never trained, never dropped) so it accumulates toward a
                  future class — a raaga needs enough clips before it can BE a class.
-  * SKIP         not yet usable: rights not attested, in-vocab but unverified, disputed,
-                 no audio, or already pulled (dedup by audio_sha256).
+  * SKIP         not yet usable: rights not attested, in-vocab with a label of unknown origin,
+                 disputed, no audio, or already pulled (dedup by audio_sha256).
 
 The manifest is the dedup ledger: re-running is idempotent and pulls only what's new.
 """
@@ -107,6 +108,10 @@ def classify(row: dict, dual_classes: set[str], pulled: set[str],
         return SKIP, "disputed (in the expert queue)"
     if row.get("verification_status") == "verified" or row.get("label_source") == "model_confirmed":
         return TRAIN, "eligible"
+    # The contributor attested the clip as their own (is_own, checked above) and named its raaga:
+    # that is trusted for training without a community vote (policy, 2026-11-12; GOVERNANCE.md).
+    if row.get("label_source") == "contributor_declared":
+        return TRAIN, "eligible (performer-declared raaga)"
     return SKIP, "unverified (needs verification votes or a model-confirmed label)"
 
 
