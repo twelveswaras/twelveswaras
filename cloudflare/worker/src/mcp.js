@@ -5,6 +5,8 @@
 // The raaga facts come from site/data/raaga-reference.json, which tools/build_pages.py writes from
 // the same corrected data as the raaga pages, so the server and the pages can never disagree.
 
+import { askRecognizer } from './recognizer.js';
+
 const PROTOCOL_VERSION = '2025-06-18';
 const SUPPORTED_VERSIONS = ['2025-06-18', '2025-03-26', '2024-11-05'];
 const SERVER_INFO = { name: 'twelveswaras', version: '1', title: 'twelveswaras: identify and learn raagas' };
@@ -199,10 +201,9 @@ async function identifyRaaga(args, env) {
   const audio = await readCapped(res);
   if (!audio) return fail('The recording is too large: up to 25 MB (a few minutes is plenty).');
 
-  const form = new FormData();
-  form.append('audio', audio, u.pathname.split('/').pop() || 'clip');
-  const r = await fetch(`${env.SPACE_URL}/identify`, { method: 'POST', body: form });
-  const data = await r.json();
+  const reply = await askRecognizer(env.SPACE_URL, audio, u.pathname.split('/').pop() || 'clip');
+  if (reply.reason) return fail('The recognizer is unavailable right now. Try again in a minute.');
+  const { data } = reply;
   if (!data || data.error) return fail(`The recognizer could not use this recording${data && data.error ? `: ${data.error}` : ''}.`);
 
   const { raagas } = await loadReference(env);

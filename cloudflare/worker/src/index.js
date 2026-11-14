@@ -13,6 +13,7 @@
  */
 
 import { handleMcp } from './mcp.js';
+import { askRecognizer } from './recognizer.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -136,24 +137,13 @@ async function handleIdentify(request, env, ctx) {
   const audio = form.get('audio');
   if (!audio || typeof audio === 'string') return json({ error: 'no audio' }, 400);
 
-  // forward to the headless recognizer
-  const fwd = new FormData();
-  fwd.append('audio', audio, 'clip.webm');
-  let r;
-  try {
-    r = await fetch(env.SPACE_URL + '/identify', { method: 'POST', body: fwd });
-  } catch (e) {
-    identifyFailed(env, ctx, request, 'unreachable', errText(e));
+  // forward to the headless recognizer (one more try if the container drops it: recognizer.js)
+  const reply = await askRecognizer(env.SPACE_URL, audio, 'clip.webm');
+  if (reply.reason) {
+    identifyFailed(env, ctx, request, reply.reason, reply.detail);
     return json({ error: 'recognizer unavailable' }, 502);
   }
-  const text = await r.text();
-  let data;
-  try { data = JSON.parse(text); }
-  catch {
-    // e.g. the container restarting answers with a plain-text error page
-    identifyFailed(env, ctx, request, `bad_reply:${r.status}`, text);
-    return json({ error: 'recognizer unavailable' }, 502);
-  }
+  const { r, data } = reply;
 
   if (!data || data.error) {
     // A clip the recognizer rejects (400 "could not decode audio") is the clip's problem, not a
