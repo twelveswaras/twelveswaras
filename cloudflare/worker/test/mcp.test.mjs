@@ -21,6 +21,7 @@ function stubFetch({ audio = {}, recognizer = null } = {}) {
     calls.push({ url, init });
     if (url === 'https://site.test/data/raaga-reference.json') return new Response(REFERENCE);
     if (url === 'https://recognizer.test/identify') {
+      if (typeof recognizer === 'function') return recognizer();
       return new Response(JSON.stringify(recognizer || { no_prediction: true, top3: [] }));
     }
     if (url in audio) return audio[url]();
@@ -173,6 +174,29 @@ test('identify_raaga fetches the recording, asks the recognizer, and links each 
   assert.ok(calls.some((x) => x.url === 'https://recognizer.test/identify' && x.init.method === 'POST'));
   await c.done();
   assert.deepEqual(env.DB.rows.map((v) => [v[1], v[3]]), [['mcp:identify_raaga', 'mcp']]);
+});
+
+// The recognizer's container sometimes drops a request ("Container suddenly disconnected, try
+// again", plain text): the tool tries once more, as the site does (recognizer.js).
+test('identify_raaga tries once more when the recognizer drops the request', async () => {
+  let n = 0;
+  stubFetch({
+    audio: { 'https://example.org/a.wav': () => new Response(new Uint8Array(100)) },
+    recognizer: () => (++n === 1 ? new Response('Container suddenly disconnected, try again', { status: 500 }) : Response.json(RECOGNIZED)),
+  });
+  const r = (await call('identify_raaga', { audio_url: 'https://example.org/a.wav' })).body.result;
+  assert.equal(n, 2);
+  assert.equal(r.structuredContent.top3[0].raaga, 'Kalyāṇi');
+});
+
+test('identify_raaga says the recognizer is unavailable when the second try fails too', async () => {
+  stubFetch({
+    audio: { 'https://example.org/a.wav': () => new Response(new Uint8Array(100)) },
+    recognizer: () => new Response('Container suddenly disconnected, try again', { status: 500 }),
+  });
+  const r = (await call('identify_raaga', { audio_url: 'https://example.org/a.wav' })).body.result;
+  assert.equal(r.isError, true);
+  assert.match(r.content[0].text, /recognizer is unavailable/i);
 });
 
 test('a low-confidence answer is reported as not sure', async () => {

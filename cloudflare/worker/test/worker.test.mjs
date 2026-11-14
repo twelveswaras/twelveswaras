@@ -294,6 +294,55 @@ test('identify: a reply that is not JSON (container restarting) → 502, recorde
   assert.match(logged.join('\n'), /bad_reply:503.*Container is not running/);
 });
 
+// The recognizer's container sometimes drops a request mid-way ("Container suddenly disconnected,
+// try again": 3 of 135 calls on 13 Nov 2026, each fine seconds later). That answer is plain text, so
+// it is told apart from the recognizer's own JSON errors; such a reply, or no reply, is tried once more.
+function scripted(...replies) {
+  const calls = [];
+  const fake = async (url, init) => {
+    calls.push({ url, audio: init.body.get('audio') });
+    const next = replies[Math.min(calls.length - 1, replies.length - 1)];
+    return typeof next === 'function' ? next() : next.clone();
+  };
+  return { fake, calls };
+}
+
+test('identify: a dropped container connection is tried once more, and its answer returned', async () => {
+  const { fake, calls } = scripted(new Response('Container suddenly disconnected, try again', { status: 500 }),
+    Response.json({ top3: [{ raaga: 'Saveri', confidence: 0.8 }], tonic_hz: 140 }));
+  const { res, body, rows, logged } = await identifyWith(fake);
+  assert.equal(res.status, 200);
+  assert.equal(body.top3[0].raaga, 'Saveri');
+  assert.equal(calls.length, 2);
+  assert.equal((await calls[1].audio.arrayBuffer()).byteLength, 3, 'the second try carries the same clip');
+  assert.equal(failureRow(rows), undefined, 'a recovered call is not a failure');
+  assert.equal(logged.length, 0);
+});
+
+test('identify: an unreachable recognizer is tried once more too', async () => {
+  const { fake, calls } = scripted(() => { throw new TypeError('Network connection lost'); }, Response.json({ top3: [], tonic_hz: 140 }));
+  const { res } = await identifyWith(fake);
+  assert.equal(res.status, 200);
+  assert.equal(calls.length, 2);
+});
+
+test('identify: only once more: a second failure is a 502, recorded once', async () => {
+  const { fake, calls } = scripted(new Response('Container suddenly disconnected, try again', { status: 500 }));
+  const { res, rows } = await identifyWith(fake);
+  assert.equal(res.status, 502);
+  assert.equal(calls.length, 2);
+  assert.equal(rows.filter((r) => r.sql.includes('INSERT INTO events')).length, 1);
+  assert.equal(failureRow(rows).values[3], 'bad_reply:500');
+});
+
+test("identify: the recognizer's own answers are not retried: a rejected clip, or its JSON error", async () => {
+  for (const reply of [Response.json({ error: 'could not decode audio' }, { status: 400 }), Response.json({ error: 'model crashed' }, { status: 500 })]) {
+    const { fake, calls } = scripted(reply);
+    await identifyWith(fake);
+    assert.equal(calls.length, 1);
+  }
+});
+
 test('identify: a clip the recognizer cannot decode keeps its 400, recorded as rejected', async () => {
   const { res, body, rows } = await identifyWith(async () =>
     Response.json({ error: 'could not decode audio', detail: 'x' }, { status: 400 }));
