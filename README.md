@@ -13,6 +13,7 @@ raaga, shows the tonic (Sa) it heard, and helps you learn to hear that raaga you
 [![Runs on Cloudflare](https://img.shields.io/badge/runs%20on-Cloudflare-F38020.svg?logo=cloudflare&logoColor=white)](cloudflare/DEPLOY.md)
 [![twelveswaras MCP connector: tool definition quality and endpoint health on Glama](https://glama.ai/mcp/connectors/io.github.sathya-sankaran/twelveswaras/badges/score.svg)](https://glama.ai/mcp/connectors/io.github.sathya-sankaran/twelveswaras)
 [![twelveswaras MCP connector on mcptry](https://mcptry.com/badge/io.github.sathya-sankaran/twelveswaras)](https://mcptry.com/servers/io.github.sathya-sankaran/twelveswaras)
+[![Listed on mcpservers.org](https://mcpservers.org/badge.svg)](https://mcpservers.org/servers/twelveswaras/twelveswaras)
 
 <p align="center">
   <a href="https://twelveswaras.com"><img src="docs/screenshots/home-desktop.png" alt="The twelveswaras.com home page: 'What's the raaga? Learn to hear it.' above the microphone button that starts a listen" width="820"></a>
