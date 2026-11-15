@@ -33,6 +33,7 @@ Cloudflare (Worker + container), with no third-party embed.
 - [What it does](#what-it-does)
 - [Features](#features)
 - [Use it from an AI assistant (MCP)](#use-it-from-an-ai-assistant-mcp)
+- [Run it locally / command line](#run-it-locally--command-line)
 - [Open data](#open-data)
 - [How it works](#how-it-works)
 - [Accuracy](#accuracy)
@@ -115,6 +116,30 @@ curl -s https://twelveswaras.com/mcp \
 
 The server is [`cloudflare/worker/src/mcp.js`](cloudflare/worker/src/mcp.js).
 
+## Run it locally / command line
+
+The npm package [`twelveswaras`](cli/) is a command line and a local MCP server in one (Node 18+, no
+dependencies). It names the raaga in a recording on your own machine, which the hosted
+`identify_raaga` cannot (it needs a public URL):
+
+```bash
+npx -y twelveswaras identify concert.m4a              # top three, confidence, tonic, each raaga's page
+npx -y twelveswaras identify concert.m4a --from 2:30  # skip applause or talk (needs ffmpeg)
+npx -y twelveswaras raaga mohanam
+npx -y twelveswaras notes "S R2 G3 P D2"
+npx -y twelveswaras list --tradition hindustani
+npx -y twelveswaras identify concert.m4a --format md | npx -y mdshare-mcp upload -   # or --share
+```
+
+With no arguments it runs as a stdio MCP server with the same four tools, where `identify_raaga`
+also takes `path`, a file on this machine. For a desktop client:
+
+```json
+{ "mcpServers": { "twelveswaras": { "command": "npx", "args": ["-y", "twelveswaras"] } } }
+```
+
+See [`cli/README.md`](cli/README.md).
+
 ## Open data
 
 Both files are CC-BY-4.0. Credit them as "twelveswaras (twelveswaras.com), CC-BY-4.0".
@@ -182,7 +207,8 @@ limitations are listed in [`METHODOLOGY.md`](METHODOLOGY.md#known-limitations).
 | `tests/` | The Python test suite. |
 | `e2e/` | Browser tests (Playwright) against the site, with the recognizer API stubbed. |
 | `raagas*.json`, `raaga_guide*.json`, `raaga_profiles.json`, `raaga_corrections.json` | The raaga reference data the site and the open data are built from. |
-| `server.json` | The MCP Registry entry. |
+| `cli/` | The npm package `twelveswaras`: the command line and the local MCP server. |
+| `server.json` | The MCP Registry entry (the hosted server and the npm package). |
 
 ## Development
 
@@ -214,6 +240,9 @@ pytest tests/ -q
 
 # Worker and MCP unit tests (Node 20, no dependencies, no network)
 cd cloudflare/worker && node --test
+
+# The command line (cli/), same: no dependencies, no network
+cd cli && node --test
 
 # Browser tests: the static site served from site/, the recognizer API stubbed
 cd e2e

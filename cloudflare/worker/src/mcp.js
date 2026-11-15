@@ -6,6 +6,9 @@
 // the same corrected data as the raaga pages, so the server and the pages can never disagree.
 
 import { askRecognizer } from './recognizer.js';
+import { identifyLimited, tooMany } from './ratelimit.js';
+// what an answer means: shared with the twelveswaras command line, which publishes it in its package
+import { describeIdentification } from '../../../cli/src/describe.js';
 
 const PROTOCOL_VERSION = '2025-06-18';
 const SUPPORTED_VERSIONS = ['2025-06-18', '2025-03-26', '2024-11-05'];
@@ -143,7 +146,6 @@ async function listRaagas(args, env) {
 }
 
 const MAX_AUDIO = 25 * 1024 * 1024;
-const NOT_SURE = 0.45;     // the site's own abstention threshold (site/index.html ABSTAIN_CONF)
 
 /** A public http(s) URL, not a loopback, private or link-local address. */
 function publicUrl(raw) {
@@ -207,18 +209,8 @@ async function identifyRaaga(args, env) {
   if (!data || data.error) return fail(`The recognizer could not use this recording${data && data.error ? `: ${data.error}` : ''}.`);
 
   const { raagas } = await loadReference(env);
-  const page = (name, trad) => (raagas.find((x) => x.name === name && x.tradition === trad) || {}).url || null;
-  const top3 = (data.top3 || []).map((t) => ({ raaga: t.raaga, tradition: t.tradition, confidence: Math.round(t.confidence * 100) / 100, url: page(t.raaga, t.tradition) }));
-  const confident = !data.no_prediction && top3.length > 0 && top3[0].confidence >= NOT_SURE;
-  const heard = Math.round(data.heard_seconds || 0);
-  const note = !top3.length ? 'No raaga was heard: it needs a clear melody, ideally over a tanpura or drone.'
-    : !confident ? 'Not sure: it may be a raaga outside the 70, or the recording needs a clearer drone. These are the closest guesses.'
-    : heard < 60 ? `Heard ${heard} s; answers firm up after about a minute.` : '';
-  const out = { top3, tonic_hz: data.tonic_hz ?? null, heard_seconds: heard, confident, note };
-  const text = top3.length
-    ? `${confident ? 'Most likely' : 'Not sure; closest'}: ${top3.map((t) => `${t.raaga} (${t.tradition}, ${Math.round(t.confidence * 100)}%)`).join(', ')}. Tonic ${out.tonic_hz ? `${Math.round(out.tonic_hz)} Hz` : 'unknown'}. ${note}`.trim()
-    : note;
-  return done(out, text);
+  const { structured, text } = describeIdentification(data, raagas);
+  return done(structured, text);
 }
 
 const HANDLERS = { find_raaga: findRaaga, raagas_with_notes: raagasWithNotes, list_raagas: listRaagas, identify_raaga: identifyRaaga };
@@ -262,6 +254,10 @@ export async function handleMcp(request, env, ctx, log) {
       const handler = HANDLERS[params.name];
       if (!handler) return err(id, -32602, `Unknown tool: ${params.name}`);
       if (log) ctx.waitUntil(log(`mcp:${params.name}`));
+      if (params.name === 'identify_raaga') {
+        const wait = await identifyLimited(env, request);
+        if (wait) return ok(id, fail(tooMany(wait)));
+      }
       try { return ok(id, await handler(params.arguments || {}, env)); }
       catch { return ok(id, fail(`The ${params.name} tool failed; twelveswaras may be briefly unavailable. Try again shortly.`)); }
     }

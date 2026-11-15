@@ -99,9 +99,11 @@ test('cleanId truncates before validating, so an over-long token is rejected not
 });
 
 // ---- cleanSource -----------------------------------------------------------------------------
-test('cleanSource is a two-value enum and nulls everything else', () => {
+test('cleanSource is a closed enum (live, file, cli) and nulls everything else', () => {
   assert.equal(cleanSource('live'), 'live');
   assert.equal(cleanSource('file'), 'file');
+  assert.equal(cleanSource('cli'), 'cli');            // the twelveswaras command line (cli/)
+  assert.equal(cleanSource('CLI'), null);
   assert.equal(cleanSource('other'), null);
   assert.equal(cleanSource(''), null);
   assert.equal(cleanSource(undefined), null);
@@ -257,19 +259,21 @@ test('POST /result rejects an unknown source or reason rather than storing it', 
 // A failed recognition used to be one opaque 502 "recognizer unavailable", whatever happened. Each
 // failure now records WHY (one events row, no audio, no session) and a clip the recognizer rejects
 // keeps its own status, so a bad clip never reads as a server error.
-function identifyRequest() {
+function identifyRequest(filename = 'clip.webm', ip = null) {
   const fd = new FormData();
-  fd.append('audio', new Blob([new Uint8Array([1, 2, 3])], { type: 'audio/webm' }), 'clip.webm');
-  return new Request('https://twelveswaras.com/api/identify', { method: 'POST', body: fd, headers: { Origin: 'https://twelveswaras.com' } });
+  fd.append('audio', new Blob([new Uint8Array([1, 2, 3])], { type: 'audio/webm' }), filename);
+  const headers = { Origin: 'https://twelveswaras.com' };
+  if (ip) headers['cf-connecting-ip'] = ip;
+  return new Request('https://twelveswaras.com/api/identify', { method: 'POST', body: fd, headers });
 }
-async function identifyWith(fakeFetch) {
+async function identifyWith(fakeFetch, request = identifyRequest()) {
   const realFetch = globalThis.fetch, realError = console.error;
   const logged = [];
   globalThis.fetch = fakeFetch;
   console.error = (...a) => logged.push(a.join(' '));
   try {
     const DB = stubDB(), ctx = stubCtx();
-    const res = await worker.fetch(identifyRequest(), { ...ENV, DB }, ctx);
+    const res = await worker.fetch(request, { ...ENV, DB }, ctx);
     await ctx.settle();
     return { res, body: await res.json(), rows: DB.rows, logged };
   } finally {
@@ -513,4 +517,91 @@ test('POST /result keeps each prediction\'s tradition (Tōḍī exists in both)'
   await ctx.settle();
   const stored = JSON.parse(db.rows[0].values[3]);
   assert.deepEqual(stored.map((e) => e.tradition), ['hindustani', 'carnatic', null]);
+});
+
+// ---- /identify: the upload's own format ---------------------------------------------------------
+// Every upload used to reach the recognizer as clip.webm, whatever it was. The recognizer reads only
+// the name's extension (space/api.py: the temp file's suffix), so an m4a or mp3 is decoded as one
+// when its extension is passed on. Only the extension: the rest of a name is the visitor's, and a
+// path in it (../../x.mp3) must never reach the recognizer.
+test('identify: passes the upload\'s extension on, never the rest of its name', async () => {
+  const cases = [['concert.m4a', 'clip.m4a'], ['Song Name.MP3', 'clip.mp3'], ['../../etc/x.wav', 'clip.wav'],
+    ['clip.webm', 'clip.webm'], ['no-extension', 'clip.webm'], ['x.m4a;rm -rf', 'clip.webm'], ['x.verylongext', 'clip.webm']];
+  for (const [sent, want] of cases) {
+    const { fake, calls } = scripted(Response.json({ top3: [], tonic_hz: 140 }));
+    await identifyWith(fake, identifyRequest(sent));
+    assert.equal(calls[0].audio.name, want, sent);
+  }
+});
+
+// ---- /identify: a per-IP limit -------------------------------------------------------------------
+// /identify had no limit and no key, so a scripted loop could keep the recognizer container busy
+// for everyone. A live listen in the browser sends at most 24 /identify calls (one every 3.5 to 7 s
+// for up to 150 s, site/index.html maybeSend), so four back-to-back listens in ten minutes stay
+// under 100; a loop does not. The counter is in D1 (one row per IP), as mdshare's create limit, so
+// it holds across Cloudflare's isolates.
+function rateDB() {
+  const counts = new Map();
+  return {
+    counts,
+    prepare(sql) {
+      return { bind: (...v) => ({
+        first: async () => {
+          if (!sql.includes('rate_limits')) return null;
+          const [key, resetAt] = v;
+          const e = counts.get(key) || { count: 0, reset_at: resetAt };
+          e.count += 1;
+          counts.set(key, e);
+          return { count: e.count, reset_at: e.reset_at };
+        },
+        run: async () => ({ success: true }),
+      }) };
+    },
+  };
+}
+
+test('identify: the 101st call from one IP inside ten minutes is a 429 with Retry-After, and never reaches the recognizer', async () => {
+  const DB = rateDB();
+  const realFetch = globalThis.fetch;
+  let recognizerCalls = 0;
+  globalThis.fetch = async () => { recognizerCalls++; return Response.json({ top3: [], tonic_hz: 140 }); };
+  try {
+    for (let i = 0; i < 100; i++) {
+      const r = await worker.fetch(identifyRequest('clip.webm', '203.0.113.7'), { ...ENV, DB }, stubCtx());
+      assert.equal(r.status, 200, `call ${i + 1}`);
+    }
+    const res = await worker.fetch(identifyRequest('clip.webm', '203.0.113.7'), { ...ENV, DB }, stubCtx());
+    assert.equal(res.status, 429);
+    const retry = Number(res.headers.get('Retry-After'));
+    assert.ok(retry > 0 && retry <= 600, `Retry-After ${retry}`);
+    assert.match((await res.json()).error, /too many/i);
+    assert.equal(res.headers.get('Access-Control-Allow-Origin'), 'https://twelveswaras.com');
+    assert.equal(recognizerCalls, 100);
+    // another address is not affected
+    const other = await worker.fetch(identifyRequest('clip.webm', '198.51.100.1'), { ...ENV, DB }, stubCtx());
+    assert.equal(other.status, 200);
+  } finally { globalThis.fetch = realFetch; }
+});
+
+test('identify: the limit fails open when D1 cannot count (a missing table never blocks a listen)', async () => {
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async () => Response.json({ top3: [], tonic_hz: 140 });
+  try {
+    const DB = { prepare() { return { bind: () => ({ first: async () => { throw new Error('no such table: rate_limits'); }, run: async () => ({}) }) }; } };
+    const res = await worker.fetch(identifyRequest('clip.webm', '203.0.113.7'), { ...ENV, DB }, stubCtx());
+    assert.equal(res.status, 200);
+  } finally { globalThis.fetch = realFetch; }
+});
+
+test('the D1 schema has the rate_limits table the /identify limit counts in', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const sql = await readFile(new URL('../../schema.sql', import.meta.url), 'utf8');
+  assert.match(sql, /CREATE TABLE IF NOT EXISTS rate_limits \(/);
+});
+
+test('POST /result records a command-line identification as source cli', async () => {
+  const db = stubDB(); const ctx = stubCtx();
+  await worker.fetch(postJSON('/api/result', { top3: [{ raaga: 'Kalyāṇi', tradition: 'carnatic', confidence: 0.7 }], source: 'cli' }), { ...ENV, DB: db }, ctx);
+  await ctx.settle();
+  assert.equal(db.rows[0].values[9], 'cli');
 });

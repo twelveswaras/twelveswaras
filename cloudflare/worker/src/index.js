@@ -8,19 +8,22 @@
  *   - optionally stores an opt-in clip to R2 for the CC-BY commons (only when the client consents),
  *   - returns the JSON to the page.
  *
- * Bindings (wrangler.toml): SPACE_URL (var, the recognizer's URL), ALLOW_ORIGIN (var), DB (D1),
- * CLIPS (R2).
+ * Bindings (wrangler.toml): SPACE_URL (var, the recognizer's URL), ALLOW_ORIGIN (var), DB (D1: the
+ * logs and the /identify rate limit), CLIPS (R2).
  */
 
 import { handleMcp } from './mcp.js';
 import { askRecognizer } from './recognizer.js';
+import { identifyLimited, tooMany } from './ratelimit.js';
 
 export default {
   async fetch(request, env, ctx) {
-    // the MCP server answers any origin (agents and their inspectors), so it sets its own CORS
+    // the MCP server answers any origin (agents and their inspectors), so it sets its own CORS.
+    // The twelveswaras command line answers raaga, notes and list through it: its calls count as cli.
     if (new URL(request.url).pathname.endsWith('/mcp')) {
+      const source = /^twelveswaras-cli\//.test(request.headers.get('user-agent') || '') ? 'cli' : 'mcp';
       return handleMcp(request, env, ctx, (event) => insertEvent(env, {
-        event, session: null, source: 'mcp', country: country(request), referrer: null }));
+        event, session: null, source, country: country(request), referrer: null }));
     }
     return cors(await route(request, env, ctx), env, request);
   },
@@ -84,8 +87,8 @@ function cors(resp, env, request) {
   return new Response(resp.body, { status: resp.status, headers: h });
 }
 
-function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj), { status, headers: { 'content-type': 'application/json' } });
+function json(obj, status = 200, headers = {}) {
+  return new Response(JSON.stringify(obj), { status, headers: { 'content-type': 'application/json', ...headers } });
 }
 
 const country = (request) => (request.cf && request.cf.country) || null;
@@ -137,8 +140,12 @@ async function handleIdentify(request, env, ctx) {
   const audio = form.get('audio');
   if (!audio || typeof audio === 'string') return json({ error: 'no audio' }, 400);
 
-  // forward to the headless recognizer (one more try if the container drops it: recognizer.js)
-  const reply = await askRecognizer(env.SPACE_URL, audio, 'clip.webm');
+  const wait = await identifyLimited(env, request);
+  if (wait) return json({ error: tooMany(wait) }, 429, { 'Retry-After': String(wait) });
+
+  // forward to the headless recognizer (one more try if the container drops it: recognizer.js),
+  // under the upload's own extension so an m4a or mp3 is decoded as one
+  const reply = await askRecognizer(env.SPACE_URL, audio, audio.name);
   if (reply.reason) {
     identifyFailed(env, ctx, request, reply.reason, reply.detail);
     return json({ error: 'recognizer unavailable' }, 502);
@@ -258,8 +265,9 @@ function cleanId(v) {
 }
 
 // Which entry point the step came through. A closed enum, so it stays a dimension we can group by.
+// 'live' (the microphone), 'file' (an upload in the page), 'cli' (the twelveswaras command line).
 function cleanSource(v) {
-  return v === 'live' || v === 'file' ? v : null;
+  return v === 'live' || v === 'file' || v === 'cli' ? v : null;
 }
 
 // A contribution's musical tradition. Closed enum; anything else (incl. an "Another raaga" pick

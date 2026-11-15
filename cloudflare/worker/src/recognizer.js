@@ -8,11 +8,19 @@
 
 const errText = (e) => String((e && e.message) || e);
 
+/** The name the recognizer sees: clip.<the upload's extension>, or clip.webm. The recognizer reads
+ *  only the extension (space/api.py decodes through a temp file with that suffix), so an m4a or mp3
+ *  is decoded as one. Nothing else of a visitor's file name, or a path in it, is passed on. */
+export function audioName(name) {
+  const ext = /\.([a-z0-9]{1,5})$/i.exec(typeof name === 'string' ? name : '');
+  return ext ? `clip.${ext[1].toLowerCase()}` : 'clip.webm';
+}
+
 /** { r, data } with the recognizer's JSON answer, or { reason, detail } when there was none twice. */
 export async function askRecognizer(spaceUrl, audio, filename) {
   const once = async () => {
     const form = new FormData();
-    form.append('audio', audio, filename);
+    form.append('audio', audio, audioName(filename));
     let r;
     try {
       r = await fetch(spaceUrl + '/identify', { method: 'POST', body: form });
