@@ -49,3 +49,16 @@ def test_agents_can_find_the_mcp_server_and_the_reference():
     assert sorted(card["tools"]) == ["find_raaga", "identify_raaga", "list_raagas", "raagas_with_notes"]
     reg = json.loads((ROOT / "server.json").read_text())
     assert reg["remotes"][0]["url"] == "https://twelveswaras.com/mcp"
+
+
+def test_the_command_line_package_is_listed_and_documented():
+    """The npm package `twelveswaras` (cli/) is in the MCP Registry entry under the same name, and
+    llms.txt tells agents they can run it locally (it identifies a file on the machine)."""
+    pkg = json.loads((ROOT / "cli" / "package.json").read_text())
+    reg = json.loads((ROOT / "server.json").read_text())
+    assert pkg["mcpName"] == reg["name"]
+    npm = [p for p in reg["packages"] if p["registryType"] == "npm"]
+    assert npm == [{"registryType": "npm", "identifier": pkg["name"], "version": pkg["version"],
+                    "transport": {"type": "stdio"}}]
+    llms = (ROOT / "site" / "llms.txt").read_text()
+    assert "npx -y twelveswaras identify" in llms

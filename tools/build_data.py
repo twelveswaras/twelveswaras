@@ -156,6 +156,16 @@ def build_llms_txt(recs: list[dict]) -> str:
         "by any spelling), raagas_with_notes (raagas by their notes, Carnatic or Hindustani), "
         "list_raagas, identify_raaga (the raaga in a recording at a public URL; not stored).",
         "",
+        "## Run it locally / command line",
+        "",
+        "- The npm package `twelveswaras` (Node 18+, no dependencies) is a command line and a local MCP "
+        "server. It names the raaga in a file on your own machine, which the hosted tool cannot: "
+        "`npx -y twelveswaras identify recording.m4a` (up to 25 MB; `--from 2:30` skips applause, with "
+        "ffmpeg). Also `twelveswaras raaga <name>`, `twelveswaras notes \"S R2 G3 P D2\"`, "
+        "`twelveswaras list`; `--json` for scripts, `--format md` for a document with the credit.",
+        "- With no arguments it is a stdio MCP server (`npx -y twelveswaras`) with the same four tools, "
+        "where identify_raaga also takes `path`, a recording on this machine.",
+        "",
         "## Open data and licences",
         "",
         f"- The raaga pages as data: {SITE_URL}/data/raaga-reference.json (CC-BY-4.0): 70 raagas "

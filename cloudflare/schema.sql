@@ -115,3 +115,15 @@ CREATE TABLE IF NOT EXISTS votes (
   voter        TEXT                              -- optional pseudonymous session id
 );
 CREATE INDEX IF NOT EXISTS idx_votes_contrib ON votes(contribution);
+
+-- Per-IP counters for the limit on identifying (cloudflare/worker/src/ratelimit.js): /identify and
+-- the MCP tool identify_raaga, 100 per address per ten minutes, so a scripted loop cannot keep the
+-- recognizer busy for everyone. Same shape as mdshare's rate_limits. One row per address, reused
+-- window after window; no IP is kept anywhere else. On the live DB, run once:
+--   wrangler d1 execute twelveswaras --remote --file cloudflare/schema.sql
+-- (every statement here is IF NOT EXISTS). Until it exists the limit fails open.
+CREATE TABLE IF NOT EXISTS rate_limits (
+  key       TEXT PRIMARY KEY,   -- "identify:<ip>"
+  count     INTEGER NOT NULL DEFAULT 0,
+  reset_at  INTEGER NOT NULL    -- epoch ms; the window starts again once this has passed
+);

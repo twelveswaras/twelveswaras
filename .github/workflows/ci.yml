@@ -84,6 +84,11 @@ jobs:
         # is imported directly (so a parse error fails here too) and D1/R2 are stubs.
         working-directory: cloudflare/worker
         run: node --test
+      - name: Command-line unit tests
+        # cli/: the twelveswaras npm package (command line + local MCP server). No dependencies and
+        # no network: fetch is a stub that plays twelveswaras.com.
+        working-directory: cli
+        run: node --test
 
   e2e:
     name: e2e (playwright)

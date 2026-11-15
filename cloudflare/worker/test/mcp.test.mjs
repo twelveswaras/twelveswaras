@@ -253,3 +253,30 @@ function logDB() {
   const rows = [];
   return { rows, prepare: () => ({ bind: (...v) => ({ run: async () => { rows.push(v); } }) }) };
 }
+
+// identify_raaga shares /identify's per-IP limit (ratelimit.js), or a loop would simply move here.
+test('identify_raaga over the per-IP limit says so and downloads nothing', async () => {
+  const calls = stubFetch({ recognizer: RECOGNIZED });
+  const DB = { prepare: () => ({ bind: () => ({
+    first: async () => ({ count: 101, reset_at: Date.now() + 90_000 }), run: async () => {} }) }) };
+  const { body } = await call('identify_raaga', { audio_url: 'https://example.org/a.mp3' }, { env: { ...ENV, DB } });
+  assert.equal(body.result.isError, true);
+  assert.match(body.result.content[0].text, /too many recordings/i);
+  assert.equal(calls.filter((x) => !x.url.endsWith('.json')).length, 0);
+});
+
+// The twelveswaras command line (cli/) answers raaga, notes and list through this server; its
+// User-Agent (twelveswaras-cli/<version>) records those calls as source cli, not mcp, so ops can
+// tell the two apart.
+test('a tool call from the twelveswaras command line is logged as source cli', async () => {
+  stubFetch();
+  for (const [ua, want] of [['twelveswaras-cli/0.1.0', 'cli'], ['claude-code/2.0', 'mcp'], [null, 'mcp']]) {
+    const env = { ...ENV, DB: logDB() }, c = ctx();
+    const headers = { 'content-type': 'application/json' };
+    if (ua) headers['user-agent'] = ua;
+    await worker.fetch(new Request('https://twelveswaras.com/mcp', { method: 'POST', headers,
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'list_raagas', arguments: {} } }) }), env, c);
+    await c.done();
+    assert.deepEqual(env.DB.rows.map((v) => [v[1], v[3]]), [['mcp:list_raagas', want]], String(ua));
+  }
+});

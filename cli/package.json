@@ -1,0 +1,40 @@
+{
+  "name": "twelveswaras",
+  "version": "0.1.0",
+  "description": "Name the raaga in a recording of Carnatic or Hindustani music, and look up 70 raagas: a command line and a local MCP server for twelveswaras.com.",
+  "type": "module",
+  "bin": {
+    "twelveswaras": "bin/twelveswaras.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "homepage": "https://twelveswaras.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twelveswaras/twelveswaras.git",
+    "directory": "cli"
+  },
+  "keywords": [
+    "raaga",
+    "raga",
+    "carnatic",
+    "hindustani",
+    "indian-classical-music",
+    "music-recognition",
+    "mcp",
+    "cli"
+  ],
+  "mcpName": "io.github.sathya-sankaran/twelveswaras",
+  "scripts": {
+    "test": "node --test",
+    "prepack": "cp ../LICENSE LICENSE"
+  }
+}

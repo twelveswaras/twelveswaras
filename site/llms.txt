@@ -20,6 +20,11 @@ Recognizer model: XGBoost on tonic-normalized Time-Delayed Melody Surfaces (TDMS
 
 - Endpoint: https://twelveswaras.com/mcp (Streamable HTTP, no sign-in). Tools: find_raaga (look a raaga up by any spelling), raagas_with_notes (raagas by their notes, Carnatic or Hindustani), list_raagas, identify_raaga (the raaga in a recording at a public URL; not stored).
 
+## Run it locally / command line
+
+- The npm package `twelveswaras` (Node 18+, no dependencies) is a command line and a local MCP server. It names the raaga in a file on your own machine, which the hosted tool cannot: `npx -y twelveswaras identify recording.m4a` (up to 25 MB; `--from 2:30` skips applause, with ffmpeg). Also `twelveswaras raaga <name>`, `twelveswaras notes "S R2 G3 P D2"`, `twelveswaras list`; `--json` for scripts, `--format md` for a document with the credit.
+- With no arguments it is a stdio MCP server (`npx -y twelveswaras`) with the same four tools, where identify_raaga also takes `path`, a recording on this machine.
+
 ## Open data and licences
 
 - The raaga pages as data: https://twelveswaras.com/data/raaga-reference.json (CC-BY-4.0): 70 raagas with scale, parent, scale and phrase notes, key notes, songs.
