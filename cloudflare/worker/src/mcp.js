@@ -18,7 +18,7 @@ export const INSTRUCTIONS = `twelveswaras: an open-source "Shazam for raagas" fo
 
 Tools: find_raaga to look a raaga up by any spelling (Mohanam, Mōhanaṁ, Bhoop, "kalyani ragam"); raagas_with_notes to find raagas by their notes (Carnatic S R2 G3 P D2, or Hindustani S R G P D with komal r g d n and tivra M); list_raagas for the full list; identify_raaga to name the raaga in a recording at a public URL.
 
-Limits: the facts were checked against published sources (Wikipedia, karnatik.com, ragasurabhi, darbar.org, tanarang) but are not reviewed by a musician. identify_raaga needs about a minute or more of music, ideally with a tanpura or drone; on real recordings its top answer is right about 71% of the time and the right raaga is in its top three about 80% of the time. It only knows the 70 raagas; for any other it names the closest. When it is not sure, say so. Recordings are not stored.
+Limits: the facts were checked against published sources (Wikipedia, karnatik.com, ragasurabhi, darbar.org, tanarang); not yet reviewed by a musician. identify_raaga needs about a minute or more of music, ideally with a tanpura or drone; on real recordings its top answer is right about 71% of the time and the right raaga is in its top three about 80% of the time. It only knows the 70 raagas; for any other it names the closest. When it is not sure, say so. Recordings are not stored.
 
 Attribution: credit "twelveswaras (twelveswaras.com), CC-BY-4.0" and link the raaga's page (each answer carries its url).`;
 

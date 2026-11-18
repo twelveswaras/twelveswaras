@@ -57,7 +57,9 @@ test('initialize names the server, its scope and how to credit it', async () => 
   assert.equal(r.serverInfo.name, 'twelveswaras');
   assert.match(r.instructions, /70 raagas/);
   assert.match(r.instructions, /CC-BY-4\.0/);
-  assert.match(r.instructions, /not reviewed by a musician/);
+  // One wording for the reference facts across the site, llms.txt, README, MCP and CLI.
+  assert.match(r.instructions, /checked against published sources \([^)]*\); not yet reviewed by a musician\./);
+  assert.doesNotMatch(r.instructions, /are not reviewed by a musician/);
 });
 
 test('tools/list offers the four tools, all read-only', async () => {
