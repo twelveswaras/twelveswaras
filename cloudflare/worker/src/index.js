@@ -15,15 +15,20 @@
 import { handleMcp } from './mcp.js';
 import { askRecognizer } from './recognizer.js';
 import { identifyLimited, tooMany } from './ratelimit.js';
+import { callerMode, isBot, isCli, isSiteHost } from './usage.js';
 
 export default {
   async fetch(request, env, ctx) {
     // the MCP server answers any origin (agents and their inspectors), so it sets its own CORS.
     // The twelveswaras command line answers raaga, notes and list through it: its calls count as cli.
+    // A bot's calls are answered but not counted.
     if (new URL(request.url).pathname.endsWith('/mcp')) {
-      const source = /^twelveswaras-cli\//.test(request.headers.get('user-agent') || '') ? 'cli' : 'mcp';
-      return handleMcp(request, env, ctx, (event) => insertEvent(env, {
-        event, session: null, source, country: country(request), referrer: null }));
+      const ua = request.headers.get('user-agent');
+      if (isBot(ua)) return handleMcp(request, env, ctx, null, null);
+      const source = isCli(ua) ? 'cli' : 'mcp';
+      return handleMcp(request, env, ctx,
+        (event) => insertEvent(env, { event, session: null, source, country: country(request), referrer: null }),
+        (event) => countUse(env, event, source));
     }
     return cors(await route(request, env, ctx), env, request);
   },
@@ -37,10 +42,10 @@ async function route(request, env, ctx) {
   // match /identify and /health with or without the /api prefix, so the same worker serves both
   // same-origin (twelveswaras.com/api/identify) and the direct staging URL (…workers.dev/identify)
   if (request.method === 'POST' && url.pathname.endsWith('/identify')) {
-    return handleIdentify(request, env, ctx);
+    return countApi(request, env, ctx, 'identify', await handleIdentify(request, env, ctx));
   }
   if (request.method === 'POST' && url.pathname.endsWith('/contribute')) {
-    return handleContribute(request, env, ctx);
+    return countApi(request, env, ctx, 'contribute', await handleContribute(request, env, ctx));
   }
   // one row per finished session: the wheel posts the final (locked) result here when it stops
   if (request.method === 'POST' && url.pathname.endsWith('/result')) {
@@ -71,11 +76,7 @@ function allowedOrigin(origin, env) {
   if (!origin) return primary;
   let host;
   try { host = new URL(origin).hostname; } catch { return primary; }
-  if (
-    host === 'twelveswaras.com' || host === 'www.twelveswaras.com' ||
-    host === 'localhost' || host === '127.0.0.1' || host.endsWith('.pages.dev')
-  ) return origin;
-  return primary;
+  return isSiteHost(host) ? origin : primary;
 }
 
 function cors(resp, env, request) {
@@ -107,6 +108,20 @@ async function insertEvent(env, row) {
       `INSERT INTO events (ts, event, session, source, country, referrer) VALUES (?, ?, ?, ?, ?, ?)`
     ).bind(new Date().toISOString(), row.event, row.session, row.source, row.country, row.referrer).run();
   } catch { /* D1 unavailable */ }
+}
+
+// One use counted by mode (usage.js): the event and its mode, and nothing about the caller (no
+// session, country or referrer). Daily totals are COUNT(*) GROUP BY date(ts), event, source.
+function countUse(env, event, source) {
+  return insertEvent(env, { event, session: null, source, country: null, referrer: null });
+}
+
+// The site and the command line are counted once per finished listen through /result (the page
+// polls /identify every few seconds, so counting /identify would over-count them). Any other
+// caller never posts /result, so its successful call is counted here: api:identify, api:contribute.
+function countApi(request, env, ctx, what, resp) {
+  if (resp.ok && env.DB && callerMode(request) === 'api') ctx.waitUntil(countUse(env, `api:${what}`, 'api'));
+  return resp;
 }
 
 // A failed recognition: why, in Workers Logs (with the detail) and as one events row (the reason

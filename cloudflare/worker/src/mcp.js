@@ -7,6 +7,7 @@
 
 import { askRecognizer } from './recognizer.js';
 import { identifyLimited, tooMany } from './ratelimit.js';
+import { mcpClient } from './usage.js';
 // what an answer means: shared with the twelveswaras command line, which publishes it in its package
 import { describeIdentification } from '../../../cli/src/describe.js';
 
@@ -232,8 +233,9 @@ function rpc(body) {
 const ok = (id, result) => rpc({ jsonrpc: '2.0', id, result });
 const err = (id, code, message) => rpc({ jsonrpc: '2.0', id, error: { code, message } });
 
-/** POST one JSON-RPC request, get one JSON response. `log(event)` records a tool call for usage. */
-export async function handleMcp(request, env, ctx, log) {
+/** POST one JSON-RPC request, get one JSON response. `log(event)` records a tool call for usage;
+ *  `count(event)` records the AI client at initialize, as one of a fixed set (usage.js mcpClient). */
+export async function handleMcp(request, env, ctx, log, count) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
   if (request.method !== 'POST') return new Response('Method Not Allowed', { status: 405, headers: { allow: 'POST, OPTIONS', ...CORS } });
   let msg;
@@ -246,6 +248,7 @@ export async function handleMcp(request, env, ctx, log) {
   switch (method) {
     case 'initialize': {
       const v = SUPPORTED_VERSIONS.includes(params.protocolVersion) ? params.protocolVersion : PROTOCOL_VERSION;
+      if (count) ctx.waitUntil(count(`mcp_client:${mcpClient(params.clientInfo?.name)}`));
       return ok(id, { protocolVersion: v, capabilities: { tools: {} }, serverInfo: SERVER_INFO, instructions: INSTRUCTIONS });
     }
     case 'ping': return ok(id, {});

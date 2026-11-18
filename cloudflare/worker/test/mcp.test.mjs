@@ -282,3 +282,46 @@ test('a tool call from the twelveswaras command line is logged as source cli', a
     assert.deepEqual(env.DB.rows.map((v) => [v[1], v[3]]), [['mcp:list_raagas', want]], String(ua));
   }
 });
+
+// Which AI client an MCP session comes from, counted at initialize as one of a fixed set
+// (usage.js mcpClient): the raw clientInfo.name is never stored, nor anything else about the caller.
+async function initialize(clientInfo, ua) {
+  const env = { ...ENV, DB: logDB() }, c = ctx();
+  const headers = { 'content-type': 'application/json' };
+  if (ua) headers['user-agent'] = ua;
+  await worker.fetch(new Request('https://twelveswaras.com/mcp', { method: 'POST', headers,
+    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: { protocolVersion: '2025-06-18', clientInfo } }) }), env, c);
+  await c.done();
+  return env.DB.rows;
+}
+
+test('initialize counts the AI client product, never the raw name, and nothing about the caller', async () => {
+  stubFetch();
+  for (const [info, want] of [[{ name: 'claude-ai', version: '0.1' }, 'claude-ai'], [{ name: 'Visual Studio Code' }, 'vscode'],
+                              [{ name: 'my-secret-agent-for-Acme' }, 'other'], [undefined, 'other']]) {
+    const rows = await initialize(info, 'node');
+    assert.equal(rows.length, 1, JSON.stringify(info));
+    const [, event, session, source, country, referrer] = rows[0];
+    assert.equal(event, `mcp_client:${want}`);
+    assert.equal(source, 'mcp');
+    assert.deepEqual([session, country, referrer], [null, null, null]);
+    assert.ok(!JSON.stringify(rows).includes('Acme'));
+  }
+});
+
+test('initialize through the local MCP server (the command line) counts its client as source cli', async () => {
+  stubFetch();
+  const rows = await initialize({ name: 'claude-code' }, 'twelveswaras-cli/0.3.0');
+  assert.deepEqual(rows.map((v) => [v[1], v[3]]), [['mcp_client:claude-code', 'cli']]);
+});
+
+test('a bot calling the MCP server is not counted at all', async () => {
+  stubFetch();
+  assert.deepEqual(await initialize({ name: 'claude-ai' }, 'Mozilla/5.0 (compatible; GPTBot/1.1)'), []);
+  const env = { ...ENV, DB: logDB() }, c = ctx();
+  await worker.fetch(new Request('https://twelveswaras.com/mcp', { method: 'POST',
+    headers: { 'content-type': 'application/json', 'user-agent': 'AhrefsBot/7.0' },
+    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'list_raagas', arguments: {} } }) }), env, c);
+  await c.done();
+  assert.deepEqual(env.DB.rows, []);
+});

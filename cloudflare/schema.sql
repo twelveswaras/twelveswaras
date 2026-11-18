@@ -54,8 +54,18 @@ CREATE TABLE IF NOT EXISTS events (
                                         -- plus identify_failed, written by the worker itself when
                                         -- a recognition fails (source = the reason, e.g.
                                         -- unreachable, bad_reply:503, rejected:400, error:500)
+                                        -- plus use by mode (worker src/usage.js; bots, told by
+                                        -- User-Agent, are not counted and the User-Agent is never kept):
+                                        --   mcp:<tool>            an MCP tool call (source mcp | cli; country kept)
+                                        --   mcp_client:<product>  an MCP initialize, by AI client: claude-code,
+                                        --     claude-ai, cursor, windsurf, vscode, chatgpt, codex, gemini,
+                                        --     cline, inspector, other (source mcp | cli); never the raw name
+                                        --   api:identify, api:contribute  a successful call from neither the
+                                        --     site nor the command line (source api)
+                                        -- mcp_client:* and api:* rows keep session, country and referrer NULL.
   session  TEXT,                        -- anonymous per-tab token, dies with the tab
-  source   TEXT,                        -- 'live' | 'file', where the step has one; the reason for identify_failed
+  source   TEXT,                        -- 'live' | 'file', where the step has one; the reason for identify_failed;
+                                        -- the mode ('mcp' | 'cli' | 'api') for the use counts above
   country  TEXT,                        -- request.cf.country (coarse geo, not PII)
   referrer TEXT                         -- acquisition referrer HOST only, same rule as above
 );
