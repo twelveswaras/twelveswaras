@@ -36,7 +36,7 @@ Recognizer model: XGBoost on tonic-normalized Time-Delayed Melody Surfaces (TDMS
 
 ## Honesty
 
-- The reference facts (scales, parents, note sets) were checked against published sources (Wikipedia and its List of Janya ragas, karnatik.com, ragasurabhi, darbar.org, tanarang); the corrections and their sources are in raaga_corrections.json in the repo. They are not reviewed by a musician. Where sources disagree, the raaga page lists the variants; say so rather than presenting one form as the only one, and cite the raaga page.
+- The reference facts (scales, parents, note sets) were checked against published sources (Wikipedia and its List of Janya ragas, karnatik.com, ragasurabhi, darbar.org, tanarang); not yet reviewed by a musician. The corrections and their sources are in raaga_corrections.json in the repo. Where sources disagree, the raaga page lists the variants; say so rather than presenting one form as the only one, and cite the raaga page.
 
 ## Carnatic raaga pages
 

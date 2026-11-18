@@ -176,3 +176,19 @@ def test_description_and_faq_carry_only_the_notation():
 
 def test_a_clean_scale_has_no_note():
     assert '<p class="note">' not in page("Mōhanaṁ", MOHANAM)
+
+
+REVIEW = "checked against published sources; not yet reviewed by a musician"
+
+
+def test_og_url_is_the_canonical():
+    for h in (page("Mōhanaṁ", MOHANAM), page("Yaman", YAMAN, "hindustani"), B.INDEX_TEMPLATE):
+        canonical = re.search(r'<link rel="canonical" href="([^"]+)">', h).group(1)
+        assert f'<meta property="og:url" content="{canonical}">' in h
+
+
+def test_pages_say_the_facts_are_checked_but_not_yet_reviewed_by_a_musician():
+    for h in (page("Mōhanaṁ", MOHANAM), page("Yaman", YAMAN, "hindustani"), B.INDEX_TEMPLATE):
+        assert REVIEW in h
+        assert not re.search(r"pending (a musician|review)", h) and "preview, draft" not in h
+    assert 'class="draftbar"' in page("Yaman", YAMAN, "hindustani")   # a visible marker stays on the page

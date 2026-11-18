@@ -86,6 +86,26 @@ def test_software_jsonld_carries_version_and_doi():
     assert f"https://doi.org/{DOI}" in app["sameAs"]
 
 
+REVIEW = "checked against published sources; not yet reviewed by a musician"
+
+
+def test_home_and_about_give_one_review_status_for_the_reference_facts():
+    for page in ("index.html", "about/index.html"):
+        s = (ROOT / "site" / page).read_text(encoding="utf-8")
+        assert REVIEW in s, page
+        assert not re.search(r"pending (a musician|review)", s) and "still draft" not in s, page
+        assert any(REVIEW in answer for answer in _faq(page).values()), page
+
+
+def test_about_says_how_to_use_it_from_an_ai_assistant_or_the_command_line():
+    q = "Can I use it from an AI assistant or the command line?"
+    answer = _faq("about/index.html")[q]
+    assert "https://twelveswaras.com/mcp" in answer and "npx twelveswaras" in answer
+    s = (ROOT / "site" / "about" / "index.html").read_text(encoding="utf-8")
+    assert f"<summary>{q}</summary>" in s
+    assert 'href="https://www.npmjs.com/package/twelveswaras"' in s
+
+
 if __name__ == "__main__":
     import pytest
 

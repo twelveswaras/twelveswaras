@@ -38,7 +38,7 @@ See [`GOVERNANCE.md`](GOVERNANCE.md) for how contributions are verified and prom
 
 The [Raaga Explorer](https://twelveswaras.com) ships a browsable reference for the raaga
 set: a beginner "tell", how-to-hear notes, a playable swara wheel, and allied /
-graha-bhedam links. These reference facts are **draft, pending expert review**.
+graha-bhedam links. These reference facts are **checked against published sources; not yet reviewed by a musician**.
 
 If you are a Carnatic musician, teacher, or serious student, reviewing this reference is a
 genuinely valuable contribution. The underlying data lives in the tracked JSON files at
@@ -101,7 +101,7 @@ Top-level directories:
 | Path          | What it is |
 |---------------|------------|
 | `raaga_id/`   | The core library: pitch extraction, features (TDMS), model, training, calibration, evaluation. |
-| `apps/`       | Entry-point apps: `identify`, `contribute`, `verify`, usage logging. |
+| `apps/`       | Entry-point apps: `identify` (the local demo) and `usage_log` (the old Hugging Face usage logger, superseded by D1). |
 | `space/`      | Source of the recognizer API (`api.py`), bundled into the Cloudflare container by `cloudflare/recognizer/assemble.sh`. The old Hugging Face Space it was named for is retired. |
 | `cloudflare/` | The Cloudflare Worker API, D1 schema, and Pages config behind twelveswaras.com. |
 | `site/`       | The static website front-end. |

@@ -197,7 +197,7 @@ limitations are listed in [`METHODOLOGY.md`](METHODOLOGY.md#known-limitations).
 | Path | What it is |
 |------|------------|
 | `raaga_id/` | The core library: pitch extraction, features (TDMS), model, training, calibration, evaluation. |
-| `apps/` | Entry points: `identify` (local demo), `contribute`, `verify`, usage logging. |
+| `apps/` | Entry points: `identify` (the local demo) and `usage_log` (the old Hugging Face usage logger, superseded by D1). |
 | `space/` | Source of the recognizer API (`api.py`), bundled into the Cloudflare container by `cloudflare/recognizer/assemble.sh`. |
 | `cloudflare/` | The Worker API and MCP server (`worker/`), the recognizer container (`recognizer/`), the D1 schema, and [`DEPLOY.md`](cloudflare/DEPLOY.md). |
 | `site/` | The static website, including `site/data/` (the open data). |

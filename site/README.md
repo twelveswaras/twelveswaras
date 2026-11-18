@@ -1,6 +1,6 @@
 # twelveswaras.com static site
 
-The public site (twelveswaras.com), served from `site/` by GitHub Pages. Pure static, with no
+The public site (twelveswaras.com), served from `site/` by Cloudflare Pages. Pure static, with no
 build step at deploy time; the raaga pages and open data are pre-generated from a data layer.
 
 ## What's here
@@ -37,11 +37,12 @@ build step at deploy time; the raaga pages and open data are pre-generated from 
     cd e2e && npm run screenshots
 
 ## Deploy
-Pushing changes under `site/**` to `main` triggers `.github/workflows/pages.yml`, which uploads
-`site/` to GitHub Pages (custom domain via `site/CNAME`). No branch-folder config needed. To
-redeploy without a code change: `gh workflow run pages.yml`. Note: never `gh run rerun` a failed
-Pages job (it re-uploads the artifact and fails with "Multiple artifacts"); fire a fresh run, and
-space retries a few minutes apart to avoid the transient "try again later" throttle.
+A merge to `main` deploys `site/` to Cloudflare Pages (project `twelveswaras-site`) from the
+`deploy` job in `.github/workflows/ci.yml`, once the verify, lint and e2e jobs pass. Pull requests
+never deploy, and neither does a manual `workflow_dispatch` run (the job deploys only on a push).
+To redeploy without a code change, with Cloudflare credentials in the environment:
+
+    npx --yes wrangler@4 pages deploy site --project-name=twelveswaras-site --branch=main
 
 ## Wire the recognizer
 `index.html` runs the recognizer first-party: it posts audio to `/api/identify` on

@@ -69,11 +69,13 @@
     {"@type": "Question", "name": "Is twelveswaras really free, with no account?",
      "acceptedAnswer": {"@type": "Answer", "text": "Yes. Non-commercial, open-source code, an open CC-BY data commons, and no sign-up. It is a public good, not a product."}},
     {"@type": "Question", "name": "Which raagas does it know?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Seventy raagas: forty Carnatic and thirty Hindustani, a mix of common melakarta, janya and thaat raagas you hear in concerts. The Hindustani reference pages are still draft, pending a musician's review."}},
+     "acceptedAnswer": {"@type": "Answer", "text": "Seventy raagas: forty Carnatic and thirty Hindustani, a mix of common melakarta, janya and thaat raagas you hear in concerts. The reference facts on the raaga pages are checked against published sources; not yet reviewed by a musician."}},
     {"@type": "Question", "name": "What happens to my recording?",
      "acceptedAnswer": {"@type": "Answer", "text": "If you are only identifying a raaga, your audio is analysed and then discarded, never stored. A clip is kept only if you choose to contribute it, and it is made public only if you also choose to release it under CC-BY."}},
     {"@type": "Question", "name": "Can I reuse the data or the model?",
-     "acceptedAnswer": {"@type": "Answer", "text": "The code is MIT, and the model weights and the community data commons are CC-BY-4.0, all freely reusable with attribution. The running recognizer is AGPL-3.0 because it uses Essentia. The weights are on the v1.0.0 release on GitHub; cite twelveswaras with doi:10.5281/zenodo.24096813."}}
+     "acceptedAnswer": {"@type": "Answer", "text": "The code is MIT, and the model weights and the community data commons are CC-BY-4.0, all freely reusable with attribution. The running recognizer is AGPL-3.0 because it uses Essentia. The weights are on the v1.0.0 release on GitHub; cite twelveswaras with doi:10.5281/zenodo.24096813."}},
+    {"@type": "Question", "name": "Can I use it from an AI assistant or the command line?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Yes: add https://twelveswaras.com/mcp as a remote MCP connector in Claude, ChatGPT, Cursor or any MCP client, with no sign-in (setup is in the README on GitHub). For a recording on your own machine, the twelveswaras npm package runs npx twelveswaras identify recording.m4a, and with no arguments it is a local MCP server."}}
   ]
 }
 </script>
@@ -202,7 +204,7 @@
   <section>
     <h2>What this is</h2>
     <p class="lead">Play it about a minute of Carnatic or Hindustani music and it names the raaga, tells you how sure it is, and shows you how to hear that raaga yourself. It is a non-commercial public good: no company owns it, there is no login, no ads, and nothing about you is sold.</p>
-    <p>The <b>twelve swaras</b> are the twelve note-positions of the octave, the shared alphabet of Carnatic and Hindustani music. That is the name, and the intent: both traditions, one tool. Carnatic came first; Hindustani is now in preview (draft, pending review).</p>
+    <p>The <b>twelve swaras</b> are the twelve note-positions of the octave, the shared alphabet of Carnatic and Hindustani music. That is the name, and the intent: both traditions, one tool. Carnatic came first; Hindustani is now in preview (its reference facts are checked against published sources; not yet reviewed by a musician).</p>
     <div class="facts">
       <span class="chip"><b>40</b> raagas</span>
       <span class="chip">code · <b>MIT</b></span>
@@ -245,7 +247,7 @@
 
   <section>
     <h2>What it can and cannot do yet</h2>
-    <p>Seventy raagas: forty Carnatic and thirty Hindustani, a mix of the melakarta, janya and thaat raagas you hear most often in concerts. The Hindustani reference pages are still draft, pending a musician's review. It is accurate on clean studio recordings and less so in the wild, and closing that gap is exactly what the commons is for: every clip people contribute helps. The "how to hear it" notes on each raaga page are a first draft, and we are looking for Carnatic and Hindustani musicians and teachers to help refine them. We would rather tell you this than overclaim.</p>
+    <p>Seventy raagas: forty Carnatic and thirty Hindustani, a mix of the melakarta, janya and thaat raagas you hear most often in concerts. The reference facts on the raaga pages are checked against published sources; not yet reviewed by a musician. It is accurate on clean studio recordings and less so in the wild, and closing that gap is exactly what the commons is for: every clip people contribute helps. The "how to hear it" notes on each raaga page are a first draft, and we are looking for Carnatic and Hindustani musicians and teachers to help refine them. We would rather tell you this than overclaim.</p>
   </section>
 
   <section>
@@ -273,11 +275,13 @@
     <details open><summary>Is it really free, with no account?</summary>
       <p>Yes. Non-commercial, open-source code, an open CC-BY data commons, and no sign-up. It is a public good, not a product.</p></details>
     <details><summary>Which raagas does it know?</summary>
-      <p>Seventy raagas, forty Carnatic and thirty Hindustani, a mix of the raagas you hear most often in concerts. The Hindustani reference pages are still draft, pending review.</p></details>
+      <p>Seventy raagas, forty Carnatic and thirty Hindustani, a mix of the raagas you hear most often in concerts. The reference facts on the raaga pages are checked against published sources; not yet reviewed by a musician.</p></details>
     <details><summary>What happens to my recording?</summary>
       <p>If you are only identifying, it is analysed and discarded, never stored. A clip is kept only if you choose to contribute it, and made public only if you also choose to release it. The section above has the full detail.</p></details>
     <details><summary>Can I reuse the data or the model?</summary>
       <p>The code is MIT, and the model weights and the community data commons are CC-BY-4.0, all freely reusable with attribution. The running recognizer is AGPL-3.0 because it uses Essentia. The weights are on the v1.0.0 release on GitHub; cite twelveswaras with doi:10.5281/zenodo.24096813.</p></details>
+    <details><summary>Can I use it from an AI assistant or the command line?</summary>
+      <p>Yes: add <code>https://twelveswaras.com/mcp</code> as a remote MCP connector in Claude, ChatGPT, Cursor or any MCP client, with no sign-in (<a href="https://github.com/twelveswaras/twelveswaras#use-it-from-an-ai-assistant-mcp">setup</a>). For a recording on your own machine, the <a href="https://www.npmjs.com/package/twelveswaras">twelveswaras npm package</a> runs <code>npx twelveswaras identify recording.m4a</code>, and with no arguments it is a local MCP server.</p></details>
   </section>
 
   <section class="cta">
