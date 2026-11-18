@@ -96,7 +96,7 @@ sign-in). Add it as a remote or custom connector in Claude, ChatGPT, Cursor or a
 published in the official
 [MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.sathya-sankaran/twelveswaras)
 as `io.github.sathya-sankaran/twelveswaras` (the entry is [`server.json`](server.json)). AI apps send
-their own name when they connect. We count calls by app (Claude, Cursor, …) and keep nothing else.
+their own name when they connect. We count MCP sessions by app (Claude, Cursor, …) and keep nothing else.
 
 | Tool | What it does |
 |------|--------------|
