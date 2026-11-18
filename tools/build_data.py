@@ -155,6 +155,11 @@ def build_llms_txt(recs: list[dict]) -> str:
         f"- Endpoint: {SITE_URL}/mcp (Streamable HTTP, no sign-in). Tools: find_raaga (look a raaga up "
         "by any spelling), raagas_with_notes (raagas by their notes, Carnatic or Hindustani), "
         "list_raagas, identify_raaga (the raaga in a recording at a public URL; not stored).",
+        "- No key. Please send a `User-Agent` that names your app (for example `my-app/1.0`). We read "
+        "it only to tell apps, AI tools and crawlers apart, so our counts of how each mode is used stay "
+        "honest. We don't store it, and we don't track who you are.",
+        "- AI apps send their own name when they connect. We count calls by app (Claude, Cursor, \u2026) "
+        "and keep nothing else.",
         "",
         "## Run it locally / command line",
         "",

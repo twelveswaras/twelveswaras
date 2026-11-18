@@ -51,7 +51,9 @@ when it is not sure, it says so.
 
 Each identification is counted once on the site, as a browser listen is (the raaga names, the
 tonic and how long it heard; never the audio or the file name). Requests carry the User-Agent
-`twelveswaras-cli/<version>`. The site allows each address 100 identifications in ten minutes.
+`twelveswaras-cli/<version>`. We read it only to tell apps, AI tools and crawlers apart, so our
+counts of how each mode is used stay honest. We don't store it, and we don't track who you are.
+The site allows each address 100 identifications in ten minutes.
 
 ## As an MCP server
 

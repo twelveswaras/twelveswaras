@@ -95,7 +95,8 @@ twelveswaras is a remote MCP server at **`https://twelveswaras.com/mcp`** (Strea
 sign-in). Add it as a remote or custom connector in Claude, ChatGPT, Cursor or any MCP client. It is
 published in the official
 [MCP Registry](https://registry.modelcontextprotocol.io/v0/servers?search=io.github.sathya-sankaran/twelveswaras)
-as `io.github.sathya-sankaran/twelveswaras` (the entry is [`server.json`](server.json)).
+as `io.github.sathya-sankaran/twelveswaras` (the entry is [`server.json`](server.json)). AI apps send
+their own name when they connect. We count calls by app (Claude, Cursor, …) and keep nothing else.
 
 | Tool | What it does |
 |------|--------------|
@@ -113,6 +114,10 @@ curl -s https://twelveswaras.com/mcp \
   -H 'accept: application/json, text/event-stream' \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
 ```
+
+No key is needed. If you call it from your own code, please send a `User-Agent` that names your
+app (for example `my-app/1.0`). We read it only to tell apps, AI tools and crawlers apart, so our
+counts of how each mode is used stay honest. We don't store it, and we don't track who you are.
 
 The server is [`cloudflare/worker/src/mcp.js`](cloudflare/worker/src/mcp.js).
 
