@@ -133,7 +133,7 @@ CREATE INDEX IF NOT EXISTS idx_votes_contrib ON votes(contribution);
 --   wrangler d1 execute twelveswaras --remote --file cloudflare/schema.sql
 -- (every statement here is IF NOT EXISTS). Until it exists the limit fails open.
 CREATE TABLE IF NOT EXISTS rate_limits (
-  key       TEXT PRIMARY KEY,   -- "identify:<ip>"
+  key       TEXT PRIMARY KEY,   -- "identify:<sha256 of RATE_LIMIT_SALT and the address>"; never the address
   count     INTEGER NOT NULL DEFAULT 0,
   reset_at  INTEGER NOT NULL    -- epoch ms; the window starts again once this has passed
 );
