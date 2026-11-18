@@ -197,6 +197,7 @@ TEMPLATE = """<!doctype html>
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <meta property="og:type" content="article">
+<meta property="og:url" content="https://twelveswaras.com/raaga/__SLUG__">
 <meta property="og:title" content="__TITLE__">
 <meta property="og:description" content="__DESC__">
 <meta property="og:image" content="https://twelveswaras.com/raaga/og/__SLUG__.png">
@@ -360,7 +361,7 @@ __JSONLD__
   </header>
 __HEAR____CONFUSE____LISTEN____COUSINS__
   <div class="cta-row"><a class="cta" href="../">Identify a raaga →</a></div>
-  <p class="draftbar">◐ Draft: the reference facts on this page are compiled from public sources and are pending review by a musician. Corrections welcome via GitHub.</p>
+  <p class="draftbar">◐ The reference facts on this page are checked against published sources; not yet reviewed by a musician. Corrections welcome via GitHub.</p>
 </main>
 </div>
 
@@ -913,6 +914,7 @@ INDEX_TEMPLATE = """<!doctype html>
 <meta name="theme-color" content="#0b0a08">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta property="og:url" content="https://twelveswaras.com/raaga/">
 <meta property="og:title" content="The raagas: 40 Carnatic + 30 Hindustani · twelveswaras">
 <meta property="og:description" content="Browse the raagas twelveswaras recognises: 40 Carnatic grouped by melakarta and 30 Hindustani (preview) grouped by thaat.">
 <meta property="og:image" content="https://twelveswaras.com/og.png">
@@ -998,13 +1000,13 @@ INDEX_TEMPLATE = """<!doctype html>
   <header class="hero">
     <p class="eyebrow">The raagas</p>
     <h1>The raagas: Carnatic and Hindustani</h1>
-    <p class="sub">40 Carnatic raagas grouped by parent melakarta, and 30 Hindustani raagas (preview, draft) grouped by thaat, so allied raagas sit side by side. Tap any one for its swaras and how to hear it.</p>
+    <p class="sub">40 Carnatic raagas grouped by parent melakarta, and 30 Hindustani raagas (preview) grouped by thaat, so allied raagas sit side by side. Tap any one for its swaras and how to hear it.</p>
   </header>
 
 __SECTIONS__
 
   <p class="foot">
-    Grouped from our draft reference; a few parent-mēḷa placements (marked mēḷa?) are debated and pending a musician's review. ·
+    The reference facts are checked against published sources; not yet reviewed by a musician. A few parent-mēḷa placements (marked mēḷa?) are debated. ·
     <a href="../">identify a raaga →</a> · <a href="../listen/">train your ear →</a> · <a href="https://github.com/twelveswaras">github →</a> · <a href="https://github.com/twelveswaras/twelveswaras/blob/main/PDGI.md">a digital commons →</a>
   </p>
 </main>
@@ -1080,8 +1082,8 @@ def main() -> None:
         "license": "https://creativecommons.org/licenses/by/4.0/",
         "attribution": "twelveswaras (twelveswaras.com), CC-BY-4.0",
         "provenance": ("The facts on the twelveswaras raaga pages: scales, parents and note sets checked against "
-                       "published sources (corrections and their sources in raaga_corrections.json); not reviewed "
-                       "by a musician. Positions count semitones from Sa (0-11)."),
+                       "published sources (corrections and their sources in raaga_corrections.json); not yet "
+                       "reviewed by a musician. Positions count semitones from Sa (0-11)."),
         "count": len(records), "raagas": records,
     }
     (ROOT / "site" / "data" / "raaga-reference.json").write_text(

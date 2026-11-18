@@ -3,7 +3,7 @@
  "homepage": "https://twelveswaras.com",
  "license": "https://creativecommons.org/licenses/by/4.0/",
  "attribution": "twelveswaras (twelveswaras.com), CC-BY-4.0",
- "provenance": "The facts on the twelveswaras raaga pages: scales, parents and note sets checked against published sources (corrections and their sources in raaga_corrections.json); not reviewed by a musician. Positions count semitones from Sa (0-11).",
+ "provenance": "The facts on the twelveswaras raaga pages: scales, parents and note sets checked against published sources (corrections and their sources in raaga_corrections.json); not yet reviewed by a musician. Positions count semitones from Sa (0-11).",
  "count": 70,
  "raagas": [
   {

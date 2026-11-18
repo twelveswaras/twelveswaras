@@ -2,7 +2,7 @@
 
     python -m tools.build_data
 
-Emits two files into site/ (served by GitHub Pages), regenerated whenever
+Emits two files into site/ (served by Cloudflare Pages), regenerated whenever
 raaga_guide.json changes, so the public data can never drift from the app:
 
   site/data/raagas.json  : the raaga reference as open CC-BY JSON (API/LLM tier 1)
@@ -181,8 +181,9 @@ def build_llms_txt(recs: list[dict]) -> str:
         "",
         "- The reference facts (scales, parents, note sets) were checked against published sources "
         "(Wikipedia and its List of Janya ragas, karnatik.com, ragasurabhi, darbar.org, tanarang); "
-        "the corrections and their sources are in raaga_corrections.json in the repo. They are not "
-        "reviewed by a musician. Where sources disagree, the raaga page lists the variants; say so "
+        "not yet reviewed by a musician. The corrections and their sources are in "
+        "raaga_corrections.json in the repo. Where sources disagree, the raaga page lists the "
+        "variants; say so "
         "rather than presenting one form as the only one, and cite the raaga page.",
         "",
         "## Carnatic raaga pages",

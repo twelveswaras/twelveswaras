@@ -65,9 +65,7 @@ is hard-coded; `?api=` only overrides for local/dev.
 ## 4. DNS / custom domain
 
 Move the `twelveswaras.com` zone to Cloudflare (or add `app.twelveswaras.com`). Once the zone is on
-Cloudflare, the Worker route `twelveswaras.com/api/*` and the Pages project resolve same-origin. This
-also replaces the GitHub-Pages hosting for the app surface (the static marketing site can stay on
-Pages too, or move under the same zone).
+Cloudflare, the Worker route `twelveswaras.com/api/*` and the Pages project resolve same-origin.
 
 ## 5. Hugging Face is retired (done)
 
@@ -86,11 +84,13 @@ touches Hugging Face any more.
   **no keep-warm cron** (`crons = []`), so cost tracks actual use. The price is a cold start: the
   first answer after sleep took 42.6 s (2026-10-24). The page pings `/api/warm` on load so that wait
   happens while a visitor reads; re-enabling a cron would remove it at the cost of always-on time.
-- **Rate limiting:** a Cloudflare WAF rate-limiting rule (Security -> WAF -> Rate limiting rules)
-  protects `/api/identify`: **50 requests / 10s per IP per data center, block for 10s**. On the Free
-  plan this is the one allowed WAF rule, and the period is fixed at 10s and counting is per-colo
-  (characteristics must include `cf.colo.id`). The limit is generous on purpose: a real listen sends
-  only ~3 identify polls per 10s, so shared concert/CGNAT IPs are safe, while a hammering loop is
-  cut off. The Workers-native rate-limit binding does NOT enforce on the Free plan (verified), so do
-  not rely on it here. `/api/contribute` is not rate-limited (Free allows one rule; it is lower risk
-  behind the rights gate + sha256 dedup).
+- **Rate limiting:** the Worker limits each IP to **100 identifications per 10 minutes**, shared
+  by `/api/identify` and the MCP tool `identify_raaga` (`worker/src/ratelimit.js`). Over the limit,
+  `/api/identify` answers 429 with `Retry-After`. The count lives in the D1 table `rate_limits`
+  (`schema.sql`; one row per address, reused window after window), because a per-isolate counter
+  in memory does not hold across Cloudflare's edge. A live listen sends at most 24 identify calls,
+  so four listens back to back stay under the limit while a scripted loop does not. The limit fails
+  open: until `rate_limits` exists, or if D1 cannot count, nobody is blocked. A Cloudflare WAF
+  rate-limiting rule on `/api/identify` (50 requests / 10 s per IP per data center), if configured,
+  is an extra layer in front of it. `/api/contribute` is not rate-limited (it is lower risk behind
+  the rights gate and sha256 dedup).
