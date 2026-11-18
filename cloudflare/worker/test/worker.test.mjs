@@ -367,6 +367,57 @@ test('identify: a normal answer records nothing (identify is not logged)', async
   assert.equal(rows.length, 0);
 });
 
+// ---- use by mode: the API ----------------------------------------------------------------------
+// The site's own calls (and the command line's) are counted once per finished listen through
+// /result, so /identify itself is not logged for them: the page polls it every few seconds. A caller
+// that is neither the site nor the command line (a script, another app) never posts /result, so a
+// successful identify from one is counted here as api:identify, with nothing about the caller.
+function apiIdentify(headers) {
+  const fd = new FormData();
+  fd.append('audio', new Blob([new Uint8Array([1, 2, 3])], { type: 'audio/webm' }), 'clip.webm');
+  return new Request('https://twelveswaras.com/api/identify', { method: 'POST', body: fd, headers });
+}
+const OK = async () => Response.json({ top3: [], tonic_hz: 140 });
+
+test('identify from an API caller is counted as api:identify, mode api, nothing about the caller', async () => {
+  const { res, rows } = await identifyWith(OK, apiIdentify({ 'user-agent': 'python-requests/2.31', 'cf-connecting-ip': '203.0.113.9' }));
+  assert.equal(res.status, 200);
+  assert.equal(rows.length, 1);
+  const [ts, event, session, source, country, referrer] = rows[0].values;
+  assert.match(ts, /^\d{4}-\d\d-\d\dT/);
+  assert.deepEqual([event, source, session, country, referrer], ['api:identify', 'api', null, null, null]);
+  assert.ok(!JSON.stringify(rows).includes('203.0.113.9') && !JSON.stringify(rows).includes('python'));
+});
+
+test('identify from the command line or a bot is not counted here', async () => {
+  for (const ua of ['twelveswaras-cli/0.3.0', 'Mozilla/5.0 (compatible; Googlebot/2.1)']) {
+    const { res, rows } = await identifyWith(OK, apiIdentify({ 'user-agent': ua }));
+    assert.equal(res.status, 200);
+    assert.equal(rows.length, 0, ua);
+  }
+});
+
+test('a failed identify from an API caller is recorded as the failure only, not as use', async () => {
+  const { res, rows } = await identifyWith(async () => Response.json({ error: 'model crashed' }, { status: 500 }),
+    apiIdentify({ 'user-agent': 'curl/8.4.0' }));
+  assert.equal(res.status, 502);
+  assert.deepEqual(rows.map((r) => r.values[1]), ['identify_failed']);
+});
+
+test('a contribution from an API caller is counted as api:contribute', async () => {
+  const fd = new FormData();
+  fd.append('audio', new Blob([new Uint8Array([1, 2, 3])], { type: 'audio/webm' }), 'clip.webm');
+  fd.append('raaga', 'Mohanam');
+  fd.append('is_own', 'true');
+  const DB = stubDB(), ctx = stubCtx();
+  const res = await worker.fetch(new Request('https://twelveswaras.com/api/contribute', { method: 'POST', body: fd,
+    headers: { 'user-agent': 'curl/8.4.0' } }), { ...ENV, DB }, ctx);
+  await ctx.settle();
+  assert.equal(res.status, 200);
+  const use = DB.rows.filter((r) => r.sql.includes('INSERT INTO events')).map((r) => [r.values[1], r.values[3]]);
+  assert.deepEqual(use, [['api:contribute', 'api']]);
+});
+
 test('identify: recording a failure never breaks the reply (D1 down)', async () => {
   const realFetch = globalThis.fetch, realError = console.error;
   globalThis.fetch = async () => { throw new TypeError('down'); };
