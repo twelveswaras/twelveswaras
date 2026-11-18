@@ -18,7 +18,8 @@ function stubDB() {
       return {
         bind(...values) {
           return {
-            run: async () => { rows.push({ sql, values }); return { success: true }; },
+            // the rate limiter's housekeeping (rate_limits) is not a record of use
+            run: async () => { if (!/rate_limits/.test(sql)) rows.push({ sql, values }); return { success: true }; },
             first: async () => null,                  // the contribute dedup lookup: never a duplicate
           };
         },
@@ -364,8 +365,7 @@ test('identify: a recognizer error reply is a 502, recorded with its status', as
 test('identify: a normal answer records nothing (identify is not logged)', async () => {
   const { res, rows } = await identifyWith(async () => Response.json({ top3: [], tonic_hz: 140 }));
   assert.equal(res.status, 200);
-  // the rate limiter's own housekeeping (rate_limits) is not a record of the identification
-  assert.equal(rows.filter((r) => !/rate_limits/.test(r.sql)).length, 0);
+  assert.equal(rows.length, 0);
 });
 
 // ---- use by mode: the API ----------------------------------------------------------------------
