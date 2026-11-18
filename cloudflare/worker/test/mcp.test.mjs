@@ -253,7 +253,8 @@ test('the recognizer being down is a tool error, not a protocol fault', async ()
 
 function logDB() {
   const rows = [];
-  return { rows, prepare: () => ({ bind: (...v) => ({ run: async () => { rows.push(v); } }) }) };
+  // the rate limiter's housekeeping (rate_limits) is not a logged event
+  return { rows, prepare: (sql) => ({ bind: (...v) => ({ run: async () => { if (!/rate_limits/.test(sql)) rows.push(v); } }) }) };
 }
 
 // identify_raaga shares /identify's per-IP limit (ratelimit.js), or a loop would simply move here.

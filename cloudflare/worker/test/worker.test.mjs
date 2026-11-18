@@ -18,7 +18,8 @@ function stubDB() {
       return {
         bind(...values) {
           return {
-            run: async () => { rows.push({ sql, values }); return { success: true }; },
+            // the rate limiter's housekeeping (rate_limits) is not a record of use
+            run: async () => { if (!/rate_limits/.test(sql)) rows.push({ sql, values }); return { success: true }; },
             first: async () => null,                  // the contribute dedup lookup: never a duplicate
           };
         },
@@ -641,6 +642,31 @@ test('identify: the limit fails open when D1 cannot count (a missing table never
     const DB = { prepare() { return { bind: () => ({ first: async () => { throw new Error('no such table: rate_limits'); }, run: async () => ({}) }) }; } };
     const res = await worker.fetch(identifyRequest('clip.webm', '203.0.113.7'), { ...ENV, DB }, stubCtx());
     assert.equal(res.status, 200);
+  } finally { globalThis.fetch = realFetch; }
+});
+
+test('identify: the limit never stores an address: the key is a salted hash, and expired rows are deleted', async () => {
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = async () => Response.json({ top3: [], tonic_hz: 140 });
+  try {
+    const deletes = [];
+    const DB = rateDB();
+    const prepare = DB.prepare.bind(DB);
+    DB.prepare = (sql) => /^\s*DELETE FROM rate_limits/.test(sql)
+      ? { bind: (...v) => ({ run: async () => { deletes.push(v); return { success: true }; } }) }
+      : prepare(sql);
+    const before = Date.now();
+    await worker.fetch(identifyRequest('clip.webm', '203.0.113.7'), { ...ENV, DB, RATE_LIMIT_SALT: 'salt-a' }, stubCtx());
+    const [key] = [...DB.counts.keys()];
+    assert.doesNotMatch(key, /203\.0\.113\.7/);
+    assert.match(key, /^identify:[0-9a-f]{64}$/);
+    // windows that have ended are removed on the same call, so no row outlives its ten minutes for long
+    assert.equal(deletes.length, 1);
+    assert.ok(deletes[0][0] >= before && deletes[0][0] <= Date.now());
+    // the salt is secret: the same address under another salt is another key (no lookup table can undo it)
+    const DB2 = rateDB();
+    await worker.fetch(identifyRequest('clip.webm', '203.0.113.7'), { ...ENV, DB: DB2, RATE_LIMIT_SALT: 'salt-b' }, stubCtx());
+    assert.notEqual([...DB2.counts.keys()][0], key);
   } finally { globalThis.fetch = realFetch; }
 });
 
