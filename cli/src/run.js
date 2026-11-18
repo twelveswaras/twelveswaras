@@ -68,7 +68,7 @@ const TRADITIONS = ['carnatic', 'hindustani'];
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const pct = (c) => `${Math.round(c * 100)}%`;
 const named = (r) => `${r.name} (${r.tradition})`;
-const credit = `\n---\n\nFrom ${CREDIT}. The facts are checked against published sources, not reviewed by a musician.\n`;
+const credit = `\n---\n\nFrom ${CREDIT}. The facts are checked against published sources; not yet reviewed by a musician.\n`;
 
 /** Ask a hosted tool; its own error is a failure, its structured answer is the result. */
 async function ask(api, name, args) {

@@ -144,6 +144,8 @@ test('--format md carries the CC-BY credit', async () => {
   for (const argv of [['list', '--format', 'md'], ['raaga', 'kalyani', '--format', 'md'], ['notes', 'S R2 G3 P D2', '--format', 'md']]) {
     const r = await run(argv, io().io);
     assert.match(r.stdout, /CC-BY-4\.0/, argv.join(' '));
+    // The site's, llms.txt's and README's wording for the reference facts.
+    assert.match(r.stdout, /checked against published sources; not yet reviewed by a musician\./, argv.join(' '));
     assert.match(r.stdout, /^# /, argv.join(' '));
   }
 });

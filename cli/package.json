@@ -1,6 +1,6 @@
 {
   "name": "twelveswaras",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Name the raaga in a recording of Carnatic or Hindustani music, and look up 70 raagas: a command line and a local MCP server for twelveswaras.com.",
   "type": "module",
   "bin": {
