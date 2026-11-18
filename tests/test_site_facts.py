@@ -62,7 +62,7 @@ def test_llms_txt_asks_for_a_user_agent_and_says_what_is_counted():
     assert ("Please send a `User-Agent` that names your app (for example `my-app/1.0`). We read it only to "
             "tell apps, AI tools and crawlers apart, so our counts of how each mode is used stay honest. "
             "We don't store it, and we don't track who you are.") in text
-    assert ("AI apps send their own name when they connect. We count calls by app (Claude, Cursor, \u2026) "
+    assert ("AI apps send their own name when they connect. We count MCP sessions by app (Claude, Cursor, \u2026) "
             "and keep nothing else.") in text
 
 

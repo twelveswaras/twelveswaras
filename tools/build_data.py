@@ -158,7 +158,7 @@ def build_llms_txt(recs: list[dict]) -> str:
         "- No key. Please send a `User-Agent` that names your app (for example `my-app/1.0`). We read "
         "it only to tell apps, AI tools and crawlers apart, so our counts of how each mode is used stay "
         "honest. We don't store it, and we don't track who you are.",
-        "- AI apps send their own name when they connect. We count calls by app (Claude, Cursor, \u2026) "
+        "- AI apps send their own name when they connect. We count MCP sessions by app (Claude, Cursor, \u2026) "
         "and keep nothing else.",
         "",
         "## Run it locally / command line",
