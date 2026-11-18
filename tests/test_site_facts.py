@@ -57,6 +57,15 @@ def test_llms_txt_states_licences_and_how_to_cite():
     assert "CC-BY-4.0" in text and "weights" in text
 
 
+def test_llms_txt_asks_for_a_user_agent_and_says_what_is_counted():
+    text = _llms()
+    assert ("Please send a `User-Agent` that names your app (for example `my-app/1.0`). We read it only to "
+            "tell apps, AI tools and crawlers apart, so our counts of how each mode is used stay honest. "
+            "We don't store it, and we don't track who you are.") in text
+    assert ("AI apps send their own name when they connect. We count calls by app (Claude, Cursor, \u2026) "
+            "and keep nothing else.") in text
+
+
 def test_published_llms_txt_is_the_generated_one():
     assert (ROOT / "site" / "llms.txt").read_text(encoding="utf-8") == _llms()
 
