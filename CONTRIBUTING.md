@@ -115,7 +115,7 @@ Please do not edit `site/` or `cloudflare/` casually; those are the live deploym
 
 - Keep changes focused and add or update tests where it makes sense.
 - Run `pytest tests/` before opening a PR.
-- The repo uses `ruff` for linting.
+- Run `ruff check .` before opening a PR; CI runs it too, pinned to the version in `.github/workflows/ci.yml`.
 - House style: **no em-dashes** in prose. Use commas, colons, or parentheses.
 
 ## Reporting issues

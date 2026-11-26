@@ -338,3 +338,39 @@ time at 15 / 30 / 60 s, and the count sits at 4-5 from 15 s on instead of shrink
 confident early even when wrong, so the number would be a guess presented as evidence. A count of
 raagas whose scale fits the notes heard was also ruled out: the data-derived swara profiles
 (raaga_profiles.json) are too smeared by gamaka to define a raaga's notes.
+
+### Searching for Sa only near the singer's range (2026-11-10, not adopted)
+
+The literature suggests restricting the Sa search to one octave set by the singer's register
+(Gulati et al., JNMR 2014). Pre-registered on the `tools/tonic_bench` concerts, split by concert: Sa
+searched only in an octave below the median sung pitch, its one setting chosen on the tune half. On
+the confirm half (64 recordings) usable Sa fell from 0.719 to **0.438** at 60 s (4 fixed, 22 broken)
+and from 0.766 to 0.500 at 150 s. The median sung pitch has no fixed distance from Sa, and any octave
+window still holds Ma and Pa, so the rule mostly cut the true Sa out. This is the third Sa heuristic
+to fail after the fact (see 2026-09-14 and 2026-11-09); listening time is what helps.
+
+### Training on what the site computes (2026-11-12, not adopted)
+
+The model trains on the dataset's own pitch files and its hand-annotated Sa; the site computes pitch
+with Essentia's Melodia and estimates Sa. With the dataset's audio (Zenodo 7278511, used locally, never
+redistributed) the live recipe was retrained on the site's own features: same 776 of 777 tracks, the
+shipped model's held-out split, augmentation and swara chains. Pre-registered pass mark: real-world
+top-1 at least 59/80 and top-3 at least 0.800. The control first: the live model re-scored 0.713 /
+0.800.
+
+| model | real-world top-1 | top-3 |
+|---|---|---|
+| live (dataset pitch, annotated Sa) | **0.713** | 0.800 |
+| site features (Melodia pitch, estimated Sa) | 0.662 | 0.812 |
+
+It failed. The site's Sa is usable on about 90% of these studio recordings (429/477 Carnatic,
+271/299 Hindustani); training on the other 10% taught the model noise rather than robustness. The
+mismatch between training and use is not what limits accuracy.
+
+### Contributed clips as a second real-world test (2026-11-12)
+
+The ten contributions in raagas the model knows (performers' own labels, unverified) score **1/10**
+top-1 and 2/10 top-3 with the live model. Six are under 40 s and four under 20 s; the one right
+answer is the one long clip (4 min 51 s). Three Carnatic clips were answered with Hindustani raagas.
+The contribute page now asks for a minute or more (2026-11-12). Every trial is scored on these too,
+reported beside the 80 clips; ten clips are too few to gate on.
