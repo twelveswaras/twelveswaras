@@ -257,7 +257,8 @@ npx playwright test
 ```
 
 CI also fails on any em-dash (U+2014) in a tracked Markdown file, checks that `CITATION.cff` parses,
-and checks the site's JSON-LD. The repo uses `ruff` for linting.
+and checks the site's JSON-LD. It also runs `ruff check .` (pinned to the version in `ci.yml`), so run
+it before you push.
 
 ## Deploy
 
@@ -285,9 +286,12 @@ public scorecard of how each one is implemented and where it still falls short.
 **Roadmap.** Deepen the commons before widening it: more in-the-wild audio of the current 70 raagas
 (about 12 varied recordings per raaga is the floor for learning one); new raagas are trained in only
 once they reach that, always quarantined from the 70. Next, fold contributed clips into a retrain and
-publish the CC-BY contributor dataset. Then quality: audio-based methods (pretrained music models)
-once the dataset audio is available, allied-raaga disambiguation, an out-of-distribution detector for
-confident-but-wrong cases, a real-world Hindustani benchmark, and an expert-annotation tier.
+publish the CC-BY contributor dataset. Then quality: allied-raaga disambiguation, an
+out-of-distribution detector for confident-but-wrong cases, a real-world Hindustani benchmark, and an
+expert-annotation tier. The dataset audio is now available for research use; training on features
+computed from it the way the site computes them did not help (see the benchmark leaderboard), and
+published results for pretrained music models on raagas are weak, so a better pitch tracker is the
+audio-based method still worth a trial.
 
 ## Citing this work
 

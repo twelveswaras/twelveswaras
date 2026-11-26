@@ -937,8 +937,8 @@
         fd.append('consent_version', CONSENT);
         var res=await fetch(API+'/contribute',{method:'POST',body:fd}); var d=await res.json();
         if(!res.ok || (d&&d.error)) throw new Error((d&&d.error)||'failed');
-        g('cc-card').innerHTML='<p class="cc-done"><b>Thank you.</b> Your correction is queued for review, '
-          +'it teaches the recognizer <span id="cc-done-raaga"></span>.</p>';
+        g('cc-card').innerHTML='<p class="cc-done"><b>Thank you.</b> Your correction joins the next training round, '
+          +'where it teaches the recognizer <span id="cc-done-raaga"></span>.</p>';
         g('cc-done-raaga').textContent=raaga;
         g('cc-open').style.display='none';
         ev('correct_sent', source);

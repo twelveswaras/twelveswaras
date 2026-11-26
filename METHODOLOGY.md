@@ -83,7 +83,7 @@ relevant, corroborating the pitch-focused choice.
 - **Drone dependency**: the tonic is found from the tanpura; drone-less solo audio collapses
   accuracy (measured ~0.67→0.33). Concert/TV audio (always has a drone) is fine.
 - **Allied raagas**: janya raagas of the same parent mela share a scale and differ mainly in
-  gamaka/phrasing (e.g. the Harikāmbhōji and Karaharapriya families). TDMS narrows these
+  gamaka/phrasing (e.g. the Harikāmbhōji and Kharaharapriya families). TDMS narrows these
   confusions; second-order swara chains (`raaga_id/swara.py`) narrow them further (on the pairs the
   model confuses most, held-out track top-1 rose 0.647 -> 0.804 in cross-validation), but
   allied pairs remain the main source of error.
