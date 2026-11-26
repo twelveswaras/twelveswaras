@@ -1,0 +1,5 @@
+# Cloudflare Pages redirects. Kharaharapriya's page moved from the dataset's spelling (2026-11-26);
+# keep the old address, the .html form the app once linked, and old share images working.
+/raaga/karaharapriya /raaga/kharaharapriya 301
+/raaga/karaharapriya.html /raaga/kharaharapriya 301
+/raaga/og/karaharapriya.png /raaga/og/kharaharapriya.png 301

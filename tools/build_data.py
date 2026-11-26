@@ -52,9 +52,21 @@ def _n_hindustani() -> int:
     return len(json.load(open(ROOT / "raagas.hindustani.json", encoding="utf-8"))["canonical"])
 
 
+# The dataset (and so the model) spells a few raagas differently from the way musicians and references
+# write them. The site shows, and addresses the page by, the usual spelling; the model keeps its own.
+# Kharaharapriya: Wikipedia, karnatik.com and teachers write it so ("khara" is the katapayadi prefix
+# that makes it the 22nd mela). site/_redirects sends the old address on.
+SHOWN_AS = {"Karaharapriya": "Kharaharapriya"}
+
+
+def shown(name: str) -> str:
+    """The raaga's name as people know it (see SHOWN_AS); unchanged for every other raaga."""
+    return SHOWN_AS.get(name, name)
+
+
 def slug(name: str, suffix: str = "") -> str:
     """URL/id slug: strip diacritics, drop spaces, lowercase. Mirrors the page path."""
-    d = unicodedata.normalize("NFKD", name)
+    d = unicodedata.normalize("NFKD", shown(name))
     d = "".join(c for c in d if not unicodedata.combining(c))
     return d.lower().replace("ṁ", "m").replace(" ", "-") + suffix
 
@@ -194,7 +206,7 @@ def build_llms_txt(recs: list[dict]) -> str:
         "## Carnatic raaga pages",
         "",
     ]
-    lines += [f"- [{r['name']}]({r['url']})" for r in recs]
+    lines += [f"- [{shown(r['name'])}]({r['url']})" for r in recs]
     lines += ["", "## Hindustani raaga pages", ""]
     lines += [f"- [{nm}]({SITE_URL}/raaga/{slug(nm, '-hindustani')})" for nm in _hindustani_names()]
     lines.append("")

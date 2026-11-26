@@ -25,7 +25,7 @@ import unicodedata
 from pathlib import Path
 
 from tools import build_og
-from tools.build_data import SEMITONE, slug
+from tools.build_data import SEMITONE, shown, slug
 
 ROOT = Path(__file__).resolve().parent.parent
 GUIDE = ROOT / "raaga_guide.json"
@@ -518,7 +518,7 @@ def cousins_section(cousins: list[str]) -> str:
     if not cousins:
         return ""
     cards = "\n".join(
-        f'      <a class="card" href="{slug(c)}.html">{esc(c)}</a>' for c in cousins)
+        f'      <a class="card" href="{slug(c)}.html">{esc(shown(c))}</a>' for c in cousins)
     return ('\n  <section>\n    <h2>Modal cousins</h2>\n'
             '    <p style="margin:0 0 12px">The same set of notes heard with a different note as Sa'
             ' (graha bhedam). These raagas share this scale-shape.</p>\n'
@@ -539,9 +539,9 @@ def search_words(name: str, ref: dict, label: str, hin: bool, aro: str, ava: str
         thaat, jati, pakad, samay = (ref.get(k, "") for k in ("thaat", "jati", "pakad", "samay"))
         title = f"Raag {p} (Hindustani): aroh, avroh and pakad · twelveswaras"
         head = ", ".join(x for x in (f"{thaat} thaat" if thaat else "", jati) if x) or "a Hindustani raaga"
-        desc = " ".join(x for x in (
+        desc = " ".join(x for x in (                # the scale first: Google shows ~155 characters
+            f"Raag {p} aroh {aro}, avroh {ava}." if aro and ava else "",
             f"Raag {p}{also}: {head}.",
-            f"Aroh {aro}, avroh {ava}." if aro and ava else "",
             f"Pakad {pakad}." if pakad else "",
             f"Vadi {ref['vadi']}, samvadi {ref['samvadi']}." if ref.get("vadi") and ref.get("samvadi") else "",
             "How to hear it, and raagas it is confused with.") if x)
@@ -565,9 +565,9 @@ def search_words(name: str, ref: dict, label: str, hin: bool, aro: str, ava: str
             head = f"{kind} janya of melakarta {m[0]}, {m[1]}"
         else:
             head = f"{kind} Carnatic raaga"
-        desc = " ".join(x for x in (
+        desc = " ".join(x for x in (                # the scale first: Google shows ~155 characters
+            f"{p} arohanam {aro}, avarohanam {ava}." if aro and ava else "",
             f"{p}{also} raga: {head}.",
-            f"Arohanam {aro}, avarohanam {ava}." if aro and ava else "",
             f"Kritis: {', '.join(kriti_names)}." if kritis else "",
             "How to hear it, and raagas it is confused with.") if x)
         names = [p, f"{p} raga", f"{p} ragam"]
@@ -683,7 +683,7 @@ def card(name: str, swaras: list[str], ref: dict, trad: dict = TRAD["carnatic"])
     hin = trad["word"] == "Hindustani"
     aro, ava = scale(ref, hin)
     w = wheel_notes(swaras, aro, ava, trad)
-    return {"slug": slug(name, trad["suffix"]), "name": name,
+    return {"slug": slug(name, trad["suffix"]), "name": shown(name),
             "eyebrow": heading(len(w["scale"]) + len(w["anya"]), ref, hin)[1],
             "count": len(w["scale"]) + len(w["anya"]),
             "labels": w["labels"], "semis": w["scale"], "anya": w["anya"],
@@ -698,9 +698,11 @@ def reference_record(name: str, swaras: list[str], ref: dict, trad: dict = TRAD[
     hin = trad["word"] == "Hindustani"
     c = card(name, swaras, ref, trad)
     label = heading(c["count"], ref, hin)[0]
-    _, _, names, _ = search_words(name, ref, label, hin, c["aro"], c["ava"])
+    _, _, names, _ = search_words(shown(name), ref, label, hin, c["aro"], c["ava"])
+    if shown(name) != name:
+        names.append(name)                  # the dataset's spelling, which the recognizer answers with
     rec = {
-        "name": name, "tradition": trad["word"].lower(), "url": f"https://twelveswaras.com/raaga/{c['slug']}",
+        "name": shown(name), "tradition": trad["word"].lower(), "url": f"https://twelveswaras.com/raaga/{c['slug']}",
         "also_known_as": names, "kind": label,
         "parent": ref.get("thaat" if hin else "parent_mela", ""),
         "arohanam": c["aro"], "avarohanam": c["ava"],
@@ -723,6 +725,8 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
                trad: dict = TRAD["carnatic"]) -> str:
     hin = trad["word"] == "Hindustani"
     word = trad["word"]
+    spelled = name                  # the dataset's (and the model's) spelling
+    name = shown(name)              # the spelling people know (build_data.SHOWN_AS)
     # The wheel highlights the "life" and "resting" notes; for Hindustani those are the vadi and
     # samvadi (the raaga's most and second-most important notes), which map cleanly onto the same
     # jeeva/nyasa highlight slots.
@@ -746,6 +750,8 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
 
     aro, ava = scale(ref, hin)
     title, desc, names, faq = search_words(name, ref, label, hin, aro, ava)
+    if spelled != name:
+        names.append(spelled)
     known = plain(name)
     if known != name:
         struct_html += f'\n    <p class="struct">Also written {esc(known)}.</p>'
@@ -863,7 +869,7 @@ def build_index(guide: dict, ref: dict, hguide: dict | None = None, href: dict |
                 tags += '<span class="tag q" title="parent mēḷa is debated across sources">mēḷa?</span>'
             cards.append(
                 f'      <a class="card" href="{slug(nm)}.html">'
-                f'<div class="cn"><span class="name">{esc(nm)}</span>{tags}</div>'
+                f'<div class="cn"><span class="name">{esc(shown(nm))}</span>{tags}</div>'
                 f'<div class="chips">{swara_chips(swaras)}</div></a>')
         sections.append(
             f'  <section class="fam">\n'

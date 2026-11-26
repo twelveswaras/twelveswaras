@@ -516,35 +516,6 @@
       "reviewed": false
     },
     {
-      "name": "Karaharapriya",
-      "slug": "karaharapriya",
-      "url": "https://twelveswaras.com/raaga/karaharapriya",
-      "swaras": [
-        "S",
-        "R2",
-        "G2",
-        "M1",
-        "P",
-        "D2",
-        "N2"
-      ],
-      "swara_semitones": [
-        0,
-        2,
-        3,
-        5,
-        7,
-        9,
-        10
-      ],
-      "arohana": "",
-      "avarohana": "",
-      "pakad": "",
-      "listen_for": "",
-      "confused_with": "",
-      "reviewed": false
-    },
-    {
       "name": "Kēdāragauḷa",
       "slug": "kedaragaula",
       "url": "https://twelveswaras.com/raaga/kedaragaula",
@@ -561,6 +532,35 @@
         0,
         2,
         4,
+        5,
+        7,
+        9,
+        10
+      ],
+      "arohana": "",
+      "avarohana": "",
+      "pakad": "",
+      "listen_for": "",
+      "confused_with": "",
+      "reviewed": false
+    },
+    {
+      "name": "Karaharapriya",
+      "slug": "kharaharapriya",
+      "url": "https://twelveswaras.com/raaga/kharaharapriya",
+      "swaras": [
+        "S",
+        "R2",
+        "G2",
+        "M1",
+        "P",
+        "D2",
+        "N2"
+      ],
+      "swara_semitones": [
+        0,
+        2,
+        3,
         5,
         7,
         9,
