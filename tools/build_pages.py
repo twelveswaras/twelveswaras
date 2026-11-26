@@ -582,11 +582,31 @@ def search_words(name: str, ref: dict, label: str, hin: bool, aro: str, ava: str
     return title, desc, names, faq
 
 
-def heading(n: int, ref: dict, hin: bool) -> tuple[str, str]:
-    """The note-count label ("audava (five-note)") for a raaga using `n` notes, and the eyebrow over
-    the name, shared by the page and its share card. More than seven: bhashanga (notes from outside
-    the parent)."""
-    label = COUNT_LABEL.get(n, "bhashanga" if n > 7 else "")
+COUNT_WORD = {5: "audava", 6: "shadava", 7: "sampurna"}
+NUMBER_WORD = {5: "five", 6: "six", 7: "seven"}
+
+
+def jati_label(aro: str, ava: str) -> str:
+    """The note-count label as the convention gives it: the notes going up, then the notes coming down
+    ("audava-sampurna (five notes up, seven down)"), or one word when both are the same ("audava
+    (five-note)"). Counts note names (S R G M P D N, komal or not), so octave marks and vakra turns
+    don't add notes. '' when a scale is missing or a count falls outside five to seven."""
+    up, down = (len({t.lstrip(".")[0].upper() for t in re.findall(_TOK, x)}) for x in (aro, ava))
+    if up not in COUNT_WORD or down not in COUNT_WORD:
+        return ""
+    if up == down:
+        return COUNT_LABEL[up]
+    return f"{COUNT_WORD[up]}-{COUNT_WORD[down]} ({NUMBER_WORD[up]} notes up, {NUMBER_WORD[down]} down)"
+
+
+def heading(n: int, ref: dict, hin: bool, aro: str = "", ava: str = "") -> tuple[str, str]:
+    """The note-count label for a raaga using `n` notes in all, and the eyebrow over the name, shared by
+    the page and its share card. The label counts the arohanam and avarohanam separately when both are
+    known (jati_label). A Carnatic raaga with more than seven notes in all is also bhashanga (notes
+    from outside the parent), a Carnatic term only: a Hindustani raaga using both forms of a note keeps
+    its counts."""
+    jati = jati_label(aro, ava) or ("" if n > 7 else COUNT_LABEL.get(n, ""))
+    label = jati if hin or n <= 7 else " ".join(x for x in (jati, "bhashanga") if x)
     if hin:
         thaat = ref.get("thaat", "")
         return label, "Hindustani raaga" + (f" · {thaat.split()[0]} thaat" if thaat else "")
@@ -684,7 +704,7 @@ def card(name: str, swaras: list[str], ref: dict, trad: dict = TRAD["carnatic"])
     aro, ava = scale(ref, hin)
     w = wheel_notes(swaras, aro, ava, trad)
     return {"slug": slug(name, trad["suffix"]), "name": shown(name),
-            "eyebrow": heading(len(w["scale"]) + len(w["anya"]), ref, hin)[1],
+            "eyebrow": heading(len(w["scale"]) + len(w["anya"]), ref, hin, aro, ava)[1],
             "count": len(w["scale"]) + len(w["anya"]),
             "labels": w["labels"], "semis": w["scale"], "anya": w["anya"],
             "aro": aro, "ava": ava,
@@ -697,7 +717,7 @@ def reference_record(name: str, swaras: list[str], ref: dict, trad: dict = TRAD[
     server answers from this file."""
     hin = trad["word"] == "Hindustani"
     c = card(name, swaras, ref, trad)
-    label = heading(c["count"], ref, hin)[0]
+    label = heading(c["count"], ref, hin, c["aro"], c["ava"])[0]
     _, _, names, _ = search_words(shown(name), ref, label, hin, c["aro"], c["ava"])
     if shown(name) != name:
         names.append(name)                  # the dataset's spelling, which the recognizer answers with
@@ -733,7 +753,7 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
     jeeva = parse_positions(ref.get("vadi" if hin else "jeeva_swaras", ""), swaras)
     nyasa = parse_positions(ref.get("samvadi" if hin else "nyasa_swaras", ""), swaras)
     c = card(name, swaras, ref, trad)
-    label, eyebrow = heading(c["count"], ref, hin)
+    label, eyebrow = heading(c["count"], ref, hin, c["aro"], c["ava"])
     if hin:
         thaat = ref.get("thaat", "")
         thesis = (f"{name} is a raaga in the Hindustani tradition"

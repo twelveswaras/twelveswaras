@@ -142,6 +142,38 @@ def test_the_old_and_dataset_spellings_redirect_to_the_page():
     assert rules[("/raaga/og/karaharapriya.png", "/raaga/og/kharaharapriya.png")] == "301"
 
 
+
+# --- the note-count label counts up and down separately, as the convention does ------------------
+
+def test_the_label_counts_the_arohanam_and_avarohanam_separately():
+    # The first term is the notes going up, the second the notes coming down (Wikipedia "Janya";
+    # Kambhoji shadava-sampurna, Malahari audava-shadava).
+    assert B.jati_label("S R1 M1 P D1 S", "S N3 D1 P M1 G3 R1 S") == "audava-sampurna (five notes up, seven down)"
+    assert B.jati_label("S R2 M1 P D2 S", "S D2 P M1 G3 R2 S") == "audava-shadava (five notes up, six down)"
+    assert B.jati_label("S R2 G3 P D2 S", "S D2 P G3 R2 S") == "audava (five-note)"
+    assert B.jati_label("S R2 G3 M1 P M1 D2 N2 S", "S N2 D2 P M1 G3 M1 R2 G3 R2 S") == "sampurna (seven-note)"
+    assert B.jati_label("N. R G M P D N S'", "S' N D P M G, G m G R S") == "sampurna (seven-note)"
+    assert B.jati_label("", "") == ""
+
+
+def test_saveri_and_sama_pages_say_audava_sampurna_and_audava_shadava():
+    def desc(page):
+        html = (Path(__file__).resolve().parent.parent / "site" / "raaga" / page).read_text()
+        return re.search(r'<meta name="description" content="([^"]*)"', html).group(1)
+
+    assert "an audava-sampurna (five notes up, seven down) janya of melakarta 15" in desc("saveri.html")
+    assert "an audava-shadava (five notes up, six down) janya of melakarta 28" in desc("sama.html")
+    # bhashanga (notes from outside the parent) is said with the counts, not instead of them
+    assert "an audava-sampurna (five notes up, seven down) bhashanga janya of melakarta 29" in desc("bilahari.html")
+
+
+def test_bhashanga_is_a_carnatic_word_only():
+    # Yaman uses both Ma: more than seven notes in all, but "bhashanga" is not a Hindustani term.
+    label, _ = B.heading(8, {}, True, "N. R G M P D N S'", "S' N D P m G R S")
+    assert label == "sampurna (seven-note)"
+    assert B.heading(8, {}, False, "S R2 G3 P D2 S", "S N3 D2 P M1 G3 R2 S")[0] == \
+        "audava-sampurna (five notes up, seven down) bhashanga"
+
 # --- the description leads with the scale, so search results show both lines ---------------------
 
 def test_every_built_description_shows_both_scales_before_google_cuts_it():

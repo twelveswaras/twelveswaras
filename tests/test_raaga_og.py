@@ -47,7 +47,10 @@ def test_text_is_escaped_and_long_names_shrink_to_fit():
     long = dict(mohanam_card(), name="Śankarābharaṇaṁ & co")
     svg = O.raaga_svg(long)
     assert "&amp; co" in svg
-    size = lambda s: int(re.search(r'class="name"[^>]*font-size="(\d+)"', s).group(1))
+
+    def size(s):
+        return int(re.search(r'class="name"[^>]*font-size="(\d+)"', s).group(1))
+
     assert size(svg) < size(O.raaga_svg(mohanam_card()))
 
 
