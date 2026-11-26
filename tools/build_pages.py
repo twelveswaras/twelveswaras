@@ -25,7 +25,7 @@ import unicodedata
 from pathlib import Path
 
 from tools import build_og
-from tools.build_data import SEMITONE, slug
+from tools.build_data import SEMITONE, shown, slug
 
 ROOT = Path(__file__).resolve().parent.parent
 GUIDE = ROOT / "raaga_guide.json"
@@ -518,7 +518,7 @@ def cousins_section(cousins: list[str]) -> str:
     if not cousins:
         return ""
     cards = "\n".join(
-        f'      <a class="card" href="{slug(c)}.html">{esc(c)}</a>' for c in cousins)
+        f'      <a class="card" href="{slug(c)}.html">{esc(shown(c))}</a>' for c in cousins)
     return ('\n  <section>\n    <h2>Modal cousins</h2>\n'
             '    <p style="margin:0 0 12px">The same set of notes heard with a different note as Sa'
             ' (graha bhedam). These raagas share this scale-shape.</p>\n'
@@ -539,9 +539,9 @@ def search_words(name: str, ref: dict, label: str, hin: bool, aro: str, ava: str
         thaat, jati, pakad, samay = (ref.get(k, "") for k in ("thaat", "jati", "pakad", "samay"))
         title = f"Raag {p} (Hindustani): aroh, avroh and pakad · twelveswaras"
         head = ", ".join(x for x in (f"{thaat} thaat" if thaat else "", jati) if x) or "a Hindustani raaga"
-        desc = " ".join(x for x in (
+        desc = " ".join(x for x in (                # the scale first: Google shows ~155 characters
+            f"Raag {p} aroh {aro}, avroh {ava}." if aro and ava else "",
             f"Raag {p}{also}: {head}.",
-            f"Aroh {aro}, avroh {ava}." if aro and ava else "",
             f"Pakad {pakad}." if pakad else "",
             f"Vadi {ref['vadi']}, samvadi {ref['samvadi']}." if ref.get("vadi") and ref.get("samvadi") else "",
             "How to hear it, and raagas it is confused with.") if x)
@@ -565,9 +565,9 @@ def search_words(name: str, ref: dict, label: str, hin: bool, aro: str, ava: str
             head = f"{kind} janya of melakarta {m[0]}, {m[1]}"
         else:
             head = f"{kind} Carnatic raaga"
-        desc = " ".join(x for x in (
+        desc = " ".join(x for x in (                # the scale first: Google shows ~155 characters
+            f"{p} arohanam {aro}, avarohanam {ava}." if aro and ava else "",
             f"{p}{also} raga: {head}.",
-            f"Arohanam {aro}, avarohanam {ava}." if aro and ava else "",
             f"Kritis: {', '.join(kriti_names)}." if kritis else "",
             "How to hear it, and raagas it is confused with.") if x)
         names = [p, f"{p} raga", f"{p} ragam"]
@@ -582,11 +582,31 @@ def search_words(name: str, ref: dict, label: str, hin: bool, aro: str, ava: str
     return title, desc, names, faq
 
 
-def heading(n: int, ref: dict, hin: bool) -> tuple[str, str]:
-    """The note-count label ("audava (five-note)") for a raaga using `n` notes, and the eyebrow over
-    the name, shared by the page and its share card. More than seven: bhashanga (notes from outside
-    the parent)."""
-    label = COUNT_LABEL.get(n, "bhashanga" if n > 7 else "")
+COUNT_WORD = {5: "audava", 6: "shadava", 7: "sampurna"}
+NUMBER_WORD = {5: "five", 6: "six", 7: "seven"}
+
+
+def jati_label(aro: str, ava: str) -> str:
+    """The note-count label as the convention gives it: the notes going up, then the notes coming down
+    ("audava-sampurna (five notes up, seven down)"), or one word when both are the same ("audava
+    (five-note)"). Counts note names (S R G M P D N, komal or not), so octave marks and vakra turns
+    don't add notes. '' when a scale is missing or a count falls outside five to seven."""
+    up, down = (len({t.lstrip(".")[0].upper() for t in re.findall(_TOK, x)}) for x in (aro, ava))
+    if up not in COUNT_WORD or down not in COUNT_WORD:
+        return ""
+    if up == down:
+        return COUNT_LABEL[up]
+    return f"{COUNT_WORD[up]}-{COUNT_WORD[down]} ({NUMBER_WORD[up]} notes up, {NUMBER_WORD[down]} down)"
+
+
+def heading(n: int, ref: dict, hin: bool, aro: str = "", ava: str = "") -> tuple[str, str]:
+    """The note-count label for a raaga using `n` notes in all, and the eyebrow over the name, shared by
+    the page and its share card. The label counts the arohanam and avarohanam separately when both are
+    known (jati_label). A Carnatic raaga with more than seven notes in all is also bhashanga (notes
+    from outside the parent), a Carnatic term only: a Hindustani raaga using both forms of a note keeps
+    its counts."""
+    jati = jati_label(aro, ava) or ("" if n > 7 else COUNT_LABEL.get(n, ""))
+    label = jati if hin or n <= 7 else " ".join(x for x in (jati, "bhashanga") if x)
     if hin:
         thaat = ref.get("thaat", "")
         return label, "Hindustani raaga" + (f" · {thaat.split()[0]} thaat" if thaat else "")
@@ -683,8 +703,8 @@ def card(name: str, swaras: list[str], ref: dict, trad: dict = TRAD["carnatic"])
     hin = trad["word"] == "Hindustani"
     aro, ava = scale(ref, hin)
     w = wheel_notes(swaras, aro, ava, trad)
-    return {"slug": slug(name, trad["suffix"]), "name": name,
-            "eyebrow": heading(len(w["scale"]) + len(w["anya"]), ref, hin)[1],
+    return {"slug": slug(name, trad["suffix"]), "name": shown(name),
+            "eyebrow": heading(len(w["scale"]) + len(w["anya"]), ref, hin, aro, ava)[1],
             "count": len(w["scale"]) + len(w["anya"]),
             "labels": w["labels"], "semis": w["scale"], "anya": w["anya"],
             "aro": aro, "ava": ava,
@@ -697,10 +717,12 @@ def reference_record(name: str, swaras: list[str], ref: dict, trad: dict = TRAD[
     server answers from this file."""
     hin = trad["word"] == "Hindustani"
     c = card(name, swaras, ref, trad)
-    label = heading(c["count"], ref, hin)[0]
-    _, _, names, _ = search_words(name, ref, label, hin, c["aro"], c["ava"])
+    label = heading(c["count"], ref, hin, c["aro"], c["ava"])[0]
+    _, _, names, _ = search_words(shown(name), ref, label, hin, c["aro"], c["ava"])
+    if shown(name) != name:
+        names.append(name)                  # the dataset's spelling, which the recognizer answers with
     rec = {
-        "name": name, "tradition": trad["word"].lower(), "url": f"https://twelveswaras.com/raaga/{c['slug']}",
+        "name": shown(name), "tradition": trad["word"].lower(), "url": f"https://twelveswaras.com/raaga/{c['slug']}",
         "also_known_as": names, "kind": label,
         "parent": ref.get("thaat" if hin else "parent_mela", ""),
         "arohanam": c["aro"], "avarohanam": c["ava"],
@@ -723,13 +745,15 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
                trad: dict = TRAD["carnatic"]) -> str:
     hin = trad["word"] == "Hindustani"
     word = trad["word"]
+    spelled = name                  # the dataset's (and the model's) spelling
+    name = shown(name)              # the spelling people know (build_data.SHOWN_AS)
     # The wheel highlights the "life" and "resting" notes; for Hindustani those are the vadi and
     # samvadi (the raaga's most and second-most important notes), which map cleanly onto the same
     # jeeva/nyasa highlight slots.
     jeeva = parse_positions(ref.get("vadi" if hin else "jeeva_swaras", ""), swaras)
     nyasa = parse_positions(ref.get("samvadi" if hin else "nyasa_swaras", ""), swaras)
     c = card(name, swaras, ref, trad)
-    label, eyebrow = heading(c["count"], ref, hin)
+    label, eyebrow = heading(c["count"], ref, hin, c["aro"], c["ava"])
     if hin:
         thaat = ref.get("thaat", "")
         thesis = (f"{name} is a raaga in the Hindustani tradition"
@@ -746,6 +770,8 @@ def build_page(name: str, swaras: list[str], ref: dict, cousins: list[str],
 
     aro, ava = scale(ref, hin)
     title, desc, names, faq = search_words(name, ref, label, hin, aro, ava)
+    if spelled != name:
+        names.append(spelled)
     known = plain(name)
     if known != name:
         struct_html += f'\n    <p class="struct">Also written {esc(known)}.</p>'
@@ -863,7 +889,7 @@ def build_index(guide: dict, ref: dict, hguide: dict | None = None, href: dict |
                 tags += '<span class="tag q" title="parent mēḷa is debated across sources">mēḷa?</span>'
             cards.append(
                 f'      <a class="card" href="{slug(nm)}.html">'
-                f'<div class="cn"><span class="name">{esc(nm)}</span>{tags}</div>'
+                f'<div class="cn"><span class="name">{esc(shown(nm))}</span>{tags}</div>'
                 f'<div class="chips">{swara_chips(swaras)}</div></a>')
         sections.append(
             f'  <section class="fam">\n'

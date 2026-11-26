@@ -44,8 +44,8 @@ def test_a_carnatic_title_and_description_say_what_people_search():
     title = re.search(r"<title>(.*?)</title>", h).group(1)
     assert title == "Mohanam raga: arohanam, avarohanam and songs · twelveswaras"
     desc = re.search(r'<meta name="description" content="([^"]*)"', h).group(1)
-    assert desc.startswith("Mohanam (Mōhanaṁ) raga: an audava (five-note) janya of melakarta 28, Harikambhoji. "
-                           "Arohanam S R2 G3 P D2 S, avarohanam S D2 P G3 R2 S.")
+    assert desc.startswith("Mohanam arohanam S R2 G3 P D2 S, avarohanam S D2 P G3 R2 S. "
+                           "Mohanam (Mōhanaṁ) raga: an audava (five-note) janya of melakarta 28, Harikambhoji.")
     assert "Mohana Rama" in desc and "a audava" not in desc
     assert f'<meta property="og:title" content="{title}">' in h
     assert '<h1 class="title">Mōhanaṁ</h1>' in h                       # the page keeps the name's own spelling
@@ -69,8 +69,8 @@ def test_a_hindustani_page_says_raag_aroh_avroh_pakad_thaat_and_time():
     title = re.search(r"<title>(.*?)</title>", h).group(1)
     assert title == "Raag Yaman kalyan (Hindustani): aroh, avroh and pakad · twelveswaras"
     desc = re.search(r'<meta name="description" content="([^"]*)"', h).group(1)
-    assert desc.startswith("Raag Yaman kalyan (Yaman kalyāṇ): Kalyan thaat, sampurna (7). Aroh N. R G M P D N S&#x27;, "
-                           "avroh S&#x27; N D P M G R S. Pakad N. R G, R G, P M G R, S.")
+    assert desc.startswith("Raag Yaman kalyan aroh N. R G M P D N S&#x27;, avroh S&#x27; N D P M G R S. "
+                           "Raag Yaman kalyan (Yaman kalyāṇ): Kalyan thaat, sampurna (7). Pakad N. R G, R G, P M G R, S.")
     term, faq = ld(h)
     assert term["alternateName"] == ["Yaman kalyan", "Raag Yaman kalyan", "Rag Yaman kalyan"]
     qa = {q["name"]: q["acceptedAnswer"]["text"] for q in faq["mainEntity"]}
@@ -110,10 +110,85 @@ def test_a_melakarta_raaga_says_so_and_composers_stay_out_of_the_description():
                kritis="Marivere Gati – Syama Sastri; Chakkani Raja (Tyagaraja); Mitri Bhagyame, Tyagaraja")
     h = page("Karaharapriya", ref, swaras=("S", "R2", "G2", "M1", "P", "D2", "N2"))
     desc = re.search(r'<meta name="description" content="([^"]*)"', h).group(1)
-    assert desc.startswith("Karaharapriya raga: a sampurna (seven-note) raaga, melakarta 22. ")
+    assert desc.startswith("Kharaharapriya arohanam S R2 G2 M1 P D2 N2 S, avarohanam S N2 D2 P M1 G2 R2 S. "
+                           "Kharaharapriya raga: a sampurna (seven-note) raaga, melakarta 22. ")
     assert "Kritis: Marivere Gati, Chakkani Raja, Mitri Bhagyame." in desc
     qa = {q["name"]: q["acceptedAnswer"]["text"] for q in ld(h)[1]["mainEntity"]}
-    assert qa["Is Karaharapriya a melakarta raga?"] == "Yes: melakarta 22."
+    assert qa["Is Kharaharapriya a melakarta raga?"] == "Yes: melakarta 22."
+
+
+# --- Kharaharapriya: the spelling people know, not the dataset's ---------------------------------
+
+def test_kharaharapriya_is_shown_and_addressed_by_its_usual_spelling():
+    # The dataset (and so the model) spells it Karaharapriya; Wikipedia, karnatik.com and teachers write
+    # Kharaharapriya ("khara" is the katapayadi prefix that makes it the 22nd mela).
+    from tools.build_data import slug
+
+    assert slug("Karaharapriya") == "kharaharapriya"
+    h = page("Karaharapriya", MOHANAM, swaras=("S", "R2", "G2", "M1", "P", "D2", "N2"))
+    assert re.search(r"<title>Kharaharapriya raga: ", h)
+    assert '<h1 class="title">Kharaharapriya</h1>' in h
+    assert "https://twelveswaras.com/raaga/kharaharapriya" in h
+    term = ld(h)[0]
+    assert term["name"] == "Kharaharapriya" and "Karaharapriya" in term["alternateName"]
+
+
+def test_the_old_and_dataset_spellings_redirect_to_the_page():
+    rules = {tuple(r.split()[:2]): r.split()[2] for r in
+             (Path(__file__).resolve().parent.parent / "site" / "_redirects").read_text().splitlines()
+             if r.strip() and not r.startswith("#")}
+    for old in ("/raaga/karaharapriya", "/raaga/karaharapriya.html"):
+        assert rules[(old, "/raaga/kharaharapriya")] == "301"
+    assert rules[("/raaga/og/karaharapriya.png", "/raaga/og/kharaharapriya.png")] == "301"
+
+
+
+# --- the note-count label counts up and down separately, as the convention does ------------------
+
+def test_the_label_counts_the_arohanam_and_avarohanam_separately():
+    # The first term is the notes going up, the second the notes coming down (Wikipedia "Janya";
+    # Kambhoji shadava-sampurna, Malahari audava-shadava).
+    assert B.jati_label("S R1 M1 P D1 S", "S N3 D1 P M1 G3 R1 S") == "audava-sampurna (five notes up, seven down)"
+    assert B.jati_label("S R2 M1 P D2 S", "S D2 P M1 G3 R2 S") == "audava-shadava (five notes up, six down)"
+    assert B.jati_label("S R2 G3 P D2 S", "S D2 P G3 R2 S") == "audava (five-note)"
+    assert B.jati_label("S R2 G3 M1 P M1 D2 N2 S", "S N2 D2 P M1 G3 M1 R2 G3 R2 S") == "sampurna (seven-note)"
+    assert B.jati_label("N. R G M P D N S'", "S' N D P M G, G m G R S") == "sampurna (seven-note)"
+    assert B.jati_label("", "") == ""
+
+
+def test_saveri_and_sama_pages_say_audava_sampurna_and_audava_shadava():
+    def desc(page):
+        html = (Path(__file__).resolve().parent.parent / "site" / "raaga" / page).read_text()
+        return re.search(r'<meta name="description" content="([^"]*)"', html).group(1)
+
+    assert "an audava-sampurna (five notes up, seven down) janya of melakarta 15" in desc("saveri.html")
+    assert "an audava-shadava (five notes up, six down) janya of melakarta 28" in desc("sama.html")
+    # bhashanga (notes from outside the parent) is said with the counts, not instead of them
+    assert "an audava-sampurna (five notes up, seven down) bhashanga janya of melakarta 29" in desc("bilahari.html")
+
+
+def test_bhashanga_is_a_carnatic_word_only():
+    # Yaman uses both Ma: more than seven notes in all, but "bhashanga" is not a Hindustani term.
+    label, _ = B.heading(8, {}, True, "N. R G M P D N S'", "S' N D P m G R S")
+    assert label == "sampurna (seven-note)"
+    assert B.heading(8, {}, False, "S R2 G3 P D2 S", "S N3 D2 P M1 G3 R2 S")[0] == \
+        "audava-sampurna (five notes up, seven down) bhashanga"
+
+# --- the description leads with the scale, so search results show both lines ---------------------
+
+def test_every_built_description_shows_both_scales_before_google_cuts_it():
+    # Google shows about the first 155-160 characters of a description.
+    root = Path(__file__).resolve().parent.parent / "site" / "raaga"
+    seen = 0
+    for f in sorted(root.glob("*.html")):
+        if f.name == "index.html":
+            continue
+        desc = re.search(r'<meta name="description" content="([^"]*)"', f.read_text()).group(1)
+        m = re.search(r"(?:avarohanam|avroh) ([^.]*)\.", desc)
+        if m:
+            seen += 1
+            assert m.end() <= 160, (f.name, m.end())
+    assert seen >= 60
 
 
 # --- the homepage answers the searches for what the app does -------------------------------------
@@ -168,7 +243,7 @@ def test_the_scale_shows_notation_and_keeps_the_research_note_below_it():
 def test_description_and_faq_carry_only_the_notation():
     h = page("Mōhanaṁ", NOTED)
     desc = re.search(r'<meta name="description" content="([^"]*)"', h).group(1)
-    assert "Arohanam S R2 G3 P D2 S, avarohanam S D2 P G3 R2 S." in desc
+    assert "arohanam S R2 G3 P D2 S, avarohanam S D2 P G3 R2 S." in desc
     assert "most-cited" not in desc and "Wikipedia" not in desc
     qa = {q["name"]: q["acceptedAnswer"]["text"] for q in ld(h)[1]["mainEntity"]}
     assert qa["What is the arohanam and avarohanam of Mohanam?"] == "Arohanam: S R2 G3 P D2 S. Avarohanam: S D2 P G3 R2 S."

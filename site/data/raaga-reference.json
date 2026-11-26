@@ -15,7 +15,7 @@
     "Atana raga",
     "Atana ragam"
    ],
-   "kind": "bhashanga",
+   "kind": "audava-sampurna (five notes up, seven down) bhashanga",
    "parent": "29th melakarta – Dhīra Śankarābharaṇam",
    "arohanam": "S R2 M1 P N3 S",
    "avarohanam": "S N3 D2 P M1 P G3 R2 S",
@@ -66,7 +66,7 @@
     "Behag raga",
     "Behag ragam"
    ],
-   "kind": "bhashanga",
+   "kind": "shadava-sampurna (six notes up, seven down) bhashanga",
    "parent": "29 Dheera Shankarabharanam (sources place Behag under Shankarabharanam, NOT Harikambhoji)",
    "arohanam": "S G3 M1 P N3 D2 N3 S",
    "avarohanam": "S N3 D2 P M2 G3 M1 G3 R2 S",
@@ -116,7 +116,7 @@
     "Bhairavi raga",
     "Bhairavi ragam"
    ],
-   "kind": "bhashanga",
+   "kind": "sampurna (seven-note) bhashanga",
    "parent": "Natabhairavi (20th melakarta); bhashanga janya that borrows chatushruti dhaivatam (D2) from Kharaharapriya",
    "arohanam": "S G2 R2 G2 M1 P D2 N2 S",
    "avarohanam": "S N2 D1 P M1 G2 R2 S",
@@ -167,7 +167,7 @@
     "Bilahari raga",
     "Bilahari ragam"
    ],
-   "kind": "bhashanga",
+   "kind": "audava-sampurna (five notes up, seven down) bhashanga",
    "parent": "29th melakarta – Dhīra Śankarābharaṇam",
    "arohanam": "S R2 G3 P D2 S",
    "avarohanam": "S N3 D2 P M1 G3 R2 S",
@@ -219,7 +219,7 @@
     "Begada raga",
     "Begada ragam"
    ],
-   "kind": "bhashanga",
+   "kind": "sampurna (seven-note) bhashanga",
    "parent": "29th melakarta – Dhīra Śankarābharaṇam",
    "arohanam": "S G3 R2 G3 M1 P D2 N2 D2 P S",
    "avarohanam": "S N3 D2 P M1 G3 R2 S",
@@ -269,7 +269,7 @@
     "Dhanyasi raga",
     "Dhanyasi ragam"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "audava-sampurna (five notes up, seven down)",
    "parent": "Janya of 8th melakarta Hanumatodi (Dikshitar school derives it from 20th melakarta Natabhairavi)",
    "arohanam": "S G2 M1 P N2 S",
    "avarohanam": "S N2 D1 P M1 G2 R1 S",
@@ -318,7 +318,7 @@
     "Devagandhari raga",
     "Devagandhari ragam"
    ],
-   "kind": "bhashanga",
+   "kind": "audava-sampurna (five notes up, seven down) bhashanga",
    "parent": "29th melakarta – Dhīra Śankarābharaṇam",
    "arohanam": "S R2 M1 P D2 S",
    "avarohanam": "S N3 D2 N2 D2 P M1 G3 R2 S",
@@ -365,7 +365,7 @@
     "Gaula raga",
     "Gaula ragam"
    ],
-   "kind": "shadava (six-note)",
+   "kind": "audava-shadava (five notes up, six down)",
    "parent": "Janya of 15th melakarta Mayamalavagowla",
    "arohanam": "S R1 M1 P N3 S",
    "avarohanam": "S N3 P M1 R1 G3 M1 R1 S",
@@ -460,7 +460,7 @@
     "Husseni raga",
     "Husseni ragam"
    ],
-   "kind": "bhashanga",
+   "kind": "sampurna (seven-note) bhashanga",
    "parent": "22nd melakarta (Kharaharapriya), janya",
    "arohanam": "S R2 G2 M1 P N2 D2 N2 S",
    "avarohanam": "S N2 D1 P M1 G2 R2 S",
@@ -555,7 +555,7 @@
     "Kamas raga",
     "Kamas ragam"
    ],
-   "kind": "bhashanga",
+   "kind": "shadava-sampurna (six notes up, seven down) bhashanga",
    "parent": "28 Harikambhoji",
    "arohanam": "S M1 G3 M1 P D2 N2 S",
    "avarohanam": "S N2 D2 P M1 G3 R2 S",
@@ -597,13 +597,14 @@
    ]
   },
   {
-   "name": "Karaharapriya",
+   "name": "Kharaharapriya",
    "tradition": "carnatic",
-   "url": "https://twelveswaras.com/raaga/karaharapriya",
+   "url": "https://twelveswaras.com/raaga/kharaharapriya",
    "also_known_as": [
-    "Karaharapriya",
-    "Karaharapriya raga",
-    "Karaharapriya ragam"
+    "Kharaharapriya",
+    "Kharaharapriya raga",
+    "Kharaharapriya ragam",
+    "Karaharapriya"
    ],
    "kind": "sampurna (seven-note)",
    "parent": "22nd melakarta (Kharaharapriya), it is itself the 22nd melakarta, not a janya",
@@ -700,7 +701,7 @@
     "Kanada raga",
     "Kanada ragam"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "shadava (six-note)",
    "parent": "22nd melakarta (Kharaharapriya), janya",
    "arohanam": "S R2 G2 M1 D2 N2 S",
    "avarohanam": "S N2 P M1 G2 M1 R2 S",
@@ -745,7 +746,7 @@
     "Kapi raga",
     "Kapi ragam"
    ],
-   "kind": "bhashanga",
+   "kind": "audava-sampurna (five notes up, seven down) bhashanga",
    "parent": "Kharaharapriya (22nd melakarta)",
    "arohanam": "S R2 M1 P N3 S",
    "avarohanam": "S N2 D2 N2 P M1 G2 R2 S",
@@ -802,7 +803,7 @@
     "Kambhoji raga",
     "Kambhoji ragam"
    ],
-   "kind": "bhashanga",
+   "kind": "shadava-sampurna (six notes up, seven down) bhashanga",
    "parent": "28 Harikambhoji",
    "arohanam": "S R2 G3 M1 P D2 S",
    "avarohanam": "S N2 D2 P M1 G3 R2 S",
@@ -855,7 +856,7 @@
     "Kedaragaula raga",
     "Kedaragaula ragam"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "audava-sampurna (five notes up, seven down)",
    "parent": "28 Harikambhoji",
    "arohanam": "S R2 M1 P N2 S",
    "avarohanam": "S N2 D2 P M1 G3 R2 S",
@@ -944,7 +945,7 @@
     "Mukhari raga",
     "Mukhari ragam"
    ],
-   "kind": "bhashanga",
+   "kind": "shadava-sampurna (six notes up, seven down) bhashanga",
    "parent": "Kharaharapriya (22nd melakarta)",
    "arohanam": "S R2 M1 P N2 D2 S",
    "avarohanam": "S N2 D1 P M1 G2 R2 S",
@@ -1089,7 +1090,7 @@
     "Nata raga",
     "Nata ragam"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "sampurna-audava (seven notes up, five down)",
    "parent": "36th melakarta – Chalanata (Nāṭa is a janya of this mela)",
    "arohanam": "S R3 G3 M1 P D3 N3 S",
    "avarohanam": "S N3 P M1 R3 S",
@@ -1184,7 +1185,7 @@
     "Purvikalyani raga",
     "Purvikalyani ragam"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "shadava-sampurna (six notes up, seven down)",
    "parent": "53rd melakarta Gamanashrama",
    "arohanam": "S R1 G3 M2 P D2 P S",
    "avarohanam": "S N3 D2 P M2 G3 R1 S",
@@ -1232,7 +1233,7 @@
     "Ritigaula raga",
     "Ritigaula ragam"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "shadava-sampurna (six notes up, seven down)",
    "parent": "Kharaharapriya (22nd melakarta)",
    "arohanam": "S G2 R2 G2 M1 N2 D2 M1 N2 N2 S",
    "avarohanam": "S N2 D2 M1 G2 M1 P M1 G2 R2 S",
@@ -1330,7 +1331,7 @@
     "Sencurutti raga",
     "Sencurutti ragam"
    ],
-   "kind": "bhashanga",
+   "kind": "sampurna (seven-note) bhashanga",
    "parent": "28 Harikambhoji",
    "arohanam": "D2 S R2 G3 M1 P D2 N2",
    "avarohanam": "N2 D2 P M1 G3 R2 S N2 D2 P D2 S",
@@ -1383,7 +1384,7 @@
     "Sindhubhairavi raga",
     "Sindhubhairavi ragam"
    ],
-   "kind": "bhashanga",
+   "kind": "sampurna (seven-note) bhashanga",
    "parent": "Janya of Melakarta 8 Hanumatodi (Todi); in Hindustani music maps to Asavari thaat",
    "arohanam": "S R1 G2 M1 P D1 N2 S",
    "avarohanam": "S N2 D1 P M1 G2 R1 S",
@@ -1444,7 +1445,7 @@
     "Surati raga",
     "Surati ragam"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "shadava-sampurna (six notes up, seven down)",
    "parent": "28 Harikambhoji",
    "arohanam": "S R2 M1 P N2 D2 N2 S",
    "avarohanam": "S N2 D2 P M1 G3 P M1 R2 S",
@@ -1492,7 +1493,7 @@
     "Sama raga",
     "Sama ragam"
    ],
-   "kind": "shadava (six-note)",
+   "kind": "audava-shadava (five notes up, six down)",
    "parent": "28 Harikambhoji",
    "arohanam": "S R2 M1 P D2 S",
    "avarohanam": "S D2 P M1 G3 R2 S",
@@ -1536,7 +1537,7 @@
     "Saveri raga",
     "Saveri ragam"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "audava-sampurna (five notes up, seven down)",
    "parent": "Janya of 15th melakarta Mayamalavagowla",
    "arohanam": "S R1 M1 P D1 S",
    "avarohanam": "S N3 D1 P M1 G3 R1 S",
@@ -1680,7 +1681,7 @@
     "Yadukula kamboji raga",
     "Yadukula kamboji ragam"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "audava-sampurna (five notes up, seven down)",
    "parent": "28 Harikambhoji",
    "arohanam": "S R2 M1 P D2 S",
    "avarohanam": "S N2 D2 P M1 G3 R2 S",
@@ -1729,7 +1730,7 @@
     "Anandabhairavi raga",
     "Anandabhairavi ragam"
    ],
-   "kind": "bhashanga",
+   "kind": "shadava-sampurna (six notes up, seven down) bhashanga",
    "parent": "20 Natabhairavi",
    "arohanam": "S G2 R2 G2 M1 P D2 P S",
    "avarohanam": "S N2 D2 P M1 G2 R2 S",
@@ -1832,7 +1833,7 @@
     "Sri raga",
     "Sri ragam"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "audava-sampurna (five notes up, seven down)",
    "parent": "22nd melakarta (Kharaharapriya), janya",
    "arohanam": "S R2 M1 P N2 S",
    "avarohanam": "S N2 P D2 N2 P M1 R2 G2 R2 S",
@@ -1976,7 +1977,7 @@
     "Raag Yaman kalyan",
     "Rag Yaman kalyan"
    ],
-   "kind": "bhashanga",
+   "kind": "sampurna (seven-note)",
    "parent": "Kalyan",
    "arohanam": "N. R G M P D N S'",
    "avarohanam": "S' N D P M G, G m G R S",
@@ -2138,7 +2139,7 @@
     "Raag Des",
     "Rag Des"
    ],
-   "kind": "bhashanga",
+   "kind": "audava-sampurna (five notes up, seven down)",
    "parent": "Khamaj",
    "arohanam": "S R m P N S'",
    "avarohanam": "S' n D P m G R S",
@@ -2182,7 +2183,7 @@
     "Raag Bihag",
     "Rag Bihag"
    ],
-   "kind": "bhashanga",
+   "kind": "audava-sampurna (five notes up, seven down)",
    "parent": "Bilawal (Bhatkhande/Wikipedia); Kalyan per tanarang",
    "arohanam": "N. S G m P N S'",
    "avarohanam": "S' N D P M P G m G R S",
@@ -2226,7 +2227,7 @@
     "Raag Bagesri",
     "Rag Bagesri"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "audava-sampurna (five notes up, seven down)",
    "parent": "Kafi",
    "arohanam": "n. S g m D n S'",
    "avarohanam": "S' n D m P D m g R S",
@@ -2310,7 +2311,7 @@
     "Raag Kedar",
     "Rag Kedar"
    ],
-   "kind": "bhashanga",
+   "kind": "audava-sampurna (five notes up, seven down)",
    "parent": "Kalyan",
    "arohanam": "S m, m P, D P N D, S'",
    "avarohanam": "S' N D P, m P D P M, m G R S",
@@ -2354,7 +2355,7 @@
     "Raag Khamaj",
     "Rag Khamaj"
    ],
-   "kind": "bhashanga",
+   "kind": "shadava-sampurna (six notes up, seven down)",
    "parent": "Khamaj",
    "arohanam": "S G m P D N S'",
    "avarohanam": "S' n D P m G R S",
@@ -2480,7 +2481,7 @@
     "Raag Lalit",
     "Rag Lalit"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "shadava (six-note)",
    "parent": "Poorvi",
    "arohanam": "N. r G m M d N S'",
    "avarohanam": "S' N d M m G; m G r S",
@@ -2522,7 +2523,7 @@
     "Raag Basant",
     "Rag Basant"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "audava-sampurna (five notes up, seven down)",
    "parent": "Poorvi",
    "arohanam": "S G M d N S'",
    "avarohanam": "S' N d P M G; M G r S",
@@ -2564,7 +2565,7 @@
     "Raag Sri",
     "Rag Sri"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "audava-sampurna (five notes up, seven down)",
    "parent": "Poorvi",
    "arohanam": "S r M P N S'",
    "avarohanam": "S' N d P M G r S",
@@ -2648,7 +2649,7 @@
     "Raag Alahaiya bilaval",
     "Rag Alahaiya bilaval"
    ],
-   "kind": "bhashanga",
+   "kind": "shadava-sampurna (six notes up, seven down)",
    "parent": "Bilaval",
    "arohanam": "S R G P D N S'",
    "avarohanam": "S' N D P D n D P m G R S",
@@ -2692,7 +2693,7 @@
     "Raag Todi",
     "Rag Todi"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "shadava-sampurna (six notes up, seven down)",
    "parent": "Todi",
    "arohanam": "S r g M d N S'",
    "avarohanam": "S' N d P M g r S",
@@ -2734,7 +2735,7 @@
     "Raag Bilasakhani todi",
     "Rag Bilasakhani todi"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "audava-sampurna (five notes up, seven down)",
    "parent": "Bhairavi",
    "arohanam": "S r g P d S'",
    "avarohanam": "S' r' n d P, d n d m g r, r g r S",
@@ -2852,7 +2853,7 @@
     "Raag Jog",
     "Rag Jog"
    ],
-   "kind": "shadava (six-note)",
+   "kind": "audava (five-note)",
    "parent": "Kafi",
    "arohanam": "S G m P n S'",
    "avarohanam": "S' n P m g S",
@@ -2968,7 +2969,7 @@
     "Raag Madhuvanti",
     "Rag Madhuvanti"
    ],
-   "kind": "sampurna (seven-note)",
+   "kind": "audava-sampurna (five notes up, seven down)",
    "parent": "Todi (by convention; uses shuddh Re/Dha)",
    "arohanam": "N. S g M P N S'",
    "avarohanam": "S' N D P M g R S",
@@ -3010,7 +3011,7 @@
     "Raag Miyan malhar",
     "Rag Miyan malhar"
    ],
-   "kind": "bhashanga",
+   "kind": "shadava-sampurna (six notes up, seven down)",
    "parent": "Kafi",
    "arohanam": "N. S m R P n D N S'",
    "avarohanam": "S' n D n P m P g m R S",
@@ -3054,7 +3055,7 @@
     "Raag Gaud malhar",
     "Rag Gaud malhar"
    ],
-   "kind": "bhashanga",
+   "kind": "sampurna (seven-note)",
    "parent": "Bilawal (disputed; Khamaj in some texts)",
    "arohanam": "S R G m R P, m P D N S'",
    "avarohanam": "S' n D n P m G R G S",
@@ -3098,7 +3099,7 @@
     "Raag Marubihag",
     "Rag Marubihag"
    ],
-   "kind": "bhashanga",
+   "kind": "audava-sampurna (five notes up, seven down)",
    "parent": "Kalyan",
    "arohanam": "N. S G M P N S'",
    "avarohanam": "S' N D P M G M G R S",
@@ -3144,7 +3145,7 @@
     "Raag Ragesri",
     "Rag Ragesri"
    ],
-   "kind": "shadava (six-note)",
+   "kind": "audava-shadava (five notes up, six down)",
    "parent": "Khamaj",
    "arohanam": "S G m D n S'",
    "avarohanam": "S' n D m G m R S",
@@ -3184,7 +3185,7 @@
     "Raag Suddh sarang",
     "Rag Suddh sarang"
    ],
-   "kind": "bhashanga",
+   "kind": "audava-shadava (five notes up, six down)",
    "parent": "Kalyan",
    "arohanam": "N. S R M P N S'",
    "avarohanam": "S' N D P M P m R S, N. S",

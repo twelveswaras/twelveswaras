@@ -54,7 +54,9 @@ def test_hindustani_notation_maps_to_positions():
 
 
 def test_the_research_note_sets_are_in_the_guide():
-    has = lambda name, *notes: set(notes) <= set(GUIDE[name]["swaras"])
+    def has(name, *notes):
+        return set(notes) <= set(GUIDE[name]["swaras"])
+
     assert has("Hussēnī", "D1") and has("Dēvagāndhāri", "N2") and has("Bilahari", "N2")
     assert has("Kāṁbhōji", "N3") and has("Kamās", "N3") and has("Sencuruṭṭi", "G2")
     assert has("Kāpi", "G3", "D1", "N3") and has("Ānandabhairavi", "G3", "D1", "N3")

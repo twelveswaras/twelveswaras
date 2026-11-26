@@ -46,7 +46,10 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install lint deps
-        run: pip install pyyaml
+        run: pip install pyyaml ruff==0.15.20
+      - name: Python lint (ruff)
+        # The same check the dev process runs locally; pinned so a new ruff release can't fail CI by itself.
+        run: ruff check .
       - name: No em-dashes in prose (Markdown)
         # Project style: never an em-dash (U+2014) in human-facing prose. Scoped to
         # tracked Markdown; site HTML is checked by hand (its em-dashes are in code comments).
